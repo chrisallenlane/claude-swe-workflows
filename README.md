@@ -32,6 +32,8 @@ Uses adversarial representation to make decisions. Spawns advocate agents for ea
 - Simple preferences (just ask directly)
 - Decisions requiring real-world testing to resolve
 
+[Detailed documentation](skills/deliberate/README.md)
+
 ### /iterate - Automated Development Workflow
 
 Orchestrates a complete development cycle through specialist agents: requirements → planning → implementation → QA → code review → documentation.
@@ -102,6 +104,8 @@ Three-phase test suite review: fills coverage gaps, identifies missing fuzz test
 - Periodically, as a comprehensive test health check
 
 **Key principle:** Tests are a system, not a checklist. Add what's missing, then clean up what's broken.
+
+[Detailed documentation](skills/test-review/README.md)
 
 ### /release-review - Pre-Release Readiness Check
 
