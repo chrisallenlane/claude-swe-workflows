@@ -5,6 +5,7 @@ Software engineering workflows for Claude Code, providing skills and specialist 
 ## Installation
 
 ```bash
+claude plugin marketplace add https://github.com/chrisallenlane/claude-plugins.git
 claude plugin install claude-swe-workflows@chrisallenlane
 ```
 

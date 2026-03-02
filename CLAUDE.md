@@ -10,6 +10,7 @@ This is `claude-swe-workflows`, a Claude Code plugin for software engineering wo
 
 ```
 ├── .claude-plugin/
+│   ├── marketplace.json # Marketplace manifest (lists plugins for installation)
 │   └── plugin.json      # Plugin metadata (name, version, description, license)
 ├── agents/              # Agent definitions
 │   └── agent-name.md    # Agent prompt with YAML frontmatter
