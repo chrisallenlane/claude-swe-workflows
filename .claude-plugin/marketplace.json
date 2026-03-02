@@ -7,18 +7,8 @@
   },
   "plugins": [
     {
-      "name": "deliberate",
-      "description": "Adversarial deliberation process for making decisions by spawning advocate agents to argue different options",
-      "version": "1.0.0",
-      "author": {
-        "name": "Chris Allen Lane"
-      },
-      "source": "./deliberate",
-      "category": "productivity"
-    },
-    {
       "name": "swe",
-      "description": "Software engineering workflow with iterate/scope skills and specialist agents",
+      "description": "Software engineering workflow with deliberation, planning, implementation, and quality skills plus specialist agents",
       "version": "1.0.0",
       "author": {
         "name": "Chris Allen Lane"

@@ -4,6 +4,22 @@ Software engineering workflow plugin providing skills and specialist agents for 
 
 ## Skills
 
+### /deliberate - Adversarial Decision Making
+
+Uses adversarial representation to make decisions. Spawns advocate agents for each option who argue their cases, rebut each other, and respond to probing questions before a judge (Claude) renders a verdict with reasoning and trade-offs.
+
+**Use when:**
+- Vendor/tool/library selection
+- Architectural decisions with multiple valid approaches
+- Build vs buy decisions
+- Technology stack choices
+- Strategic decisions with trade-offs
+
+**Don't use when:**
+- Decisions with a clearly correct answer
+- Simple preferences (just ask directly)
+- Decisions requiring real-world testing to resolve
+
 ### /iterate - Automated Development Workflow
 
 Orchestrates a complete development cycle through specialist agents: requirements → planning → implementation → QA → code review → documentation.
@@ -142,6 +158,7 @@ Specialist agents spawned by the skills above:
 
 | Agent                 | Purpose                                                                                               |
 |-----------------------|-------------------------------------------------------------------------------------------------------|
+| `advocate`            | Argues for a specific option in deliberation proceedings                                              |
 | `swe-planner`         | Decomposes complex tasks into implementation plans                                                    |
 | `swe-sme-golang`      | Go implementation specialist                                                                          |
 | `swe-sme-graphql`     | GraphQL schema and resolver specialist                                                                |
@@ -164,15 +181,15 @@ Specialist agents spawned by the skills above:
 
 ## Workflow Integration
 
-This plugin is part of a three-stage workflow:
+The skills form a three-stage workflow:
 
 ```
 /deliberate  →  /scope  →  /iterate
    decide        plan      implement
 ```
 
-Use `/deliberate` (from the deliberate plugin) to resolve architectural
-questions, `/scope` to explore and create tickets, and `/iterate` to implement.
+Use `/deliberate` to resolve architectural questions, `/scope` to explore and
+create tickets, and `/iterate` to implement.
 
 Enter at any stage. Complex decisions benefit from the full workflow.
 Straightforward changes can go directly to `/iterate`.

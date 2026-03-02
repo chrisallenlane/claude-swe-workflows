@@ -48,13 +48,11 @@ claude --plugin-dir ./plugin-name
 
 ## Workflow
 
-The plugins form a three-stage development workflow:
+The plugin's skills form a three-stage development workflow:
 
 ```
 /deliberate  →  /scope  →  /iterate
    decide        plan      implement
 ```
 
-**deliberate**: Adversarial decision-making through advocate agents.
-
-**swe**: Software engineering workflow with `/scope` (planning), `/iterate` (implementation), `/bugfix` (bug-fixing), `/project` (multi-ticket orchestration), `/refactor` (tactical cleanup), `/arch-review` (architectural restructuring), `/test-review` (comprehensive test suite review), `/test-mutate` (mutation testing), `/release-review` (pre-release readiness), and `/doc-review` (documentation audit) skills, plus specialist agents.
+**swe**: Software engineering workflow with `/deliberate` (adversarial decision-making), `/scope` (planning), `/iterate` (implementation), `/bugfix` (bug-fixing), `/project` (multi-ticket orchestration), `/refactor` (tactical cleanup), `/arch-review` (architectural restructuring), `/test-review` (comprehensive test suite review), `/test-mutate` (mutation testing), `/release-review` (pre-release readiness), and `/doc-review` (documentation audit) skills, plus specialist agents.
