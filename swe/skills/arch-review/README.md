@@ -32,7 +32,7 @@ The `/arch-review` skill analyzes codebase architecture and collaborates with th
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ /arch-review Workflow                                            │
+│ /arch-review Workflow                                           │
 └─────────────────────────────────────────────────────────────────┘
 
  ┌──────────────────────────────────────────────┐
@@ -144,7 +144,7 @@ The `/arch-review` skill analyzes codebase architecture and collaborates with th
  └──────────────────────────────────────────────┘    │
                     ▼                                │
            All items done?                           │
-           ├─ No  → Back to step 8 ─────────────────┘
+           ├─ No  → Back to step 8 ──────────────────┘
            └─ Yes ▼
  ┌──────────────────────────────────────────────┐
  │  9. COMPLETION SUMMARY                       │

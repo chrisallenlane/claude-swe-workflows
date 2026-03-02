@@ -20,20 +20,20 @@ Interactive pre-flight checklist before cutting a release. Spawns a scanner agen
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                  RELEASE REVIEW                      │
+│                  RELEASE REVIEW                     │
 ├─────────────────────────────────────────────────────┤
-│  1. Determine release context                        │
-│  2. Spawn qa-release-eng agent (static analysis)     │
-│  3. Present Phase 1 findings (fast checks)           │
-│  4. User decides: continue to execution checks?      │
-│  5. Run test suite                                   │
-│  6. Run build verification                           │
-│  7. Check documentation freshness                    │
-│  8. Present full consolidated report                 │
-│  9. User selects which items to address              │
-│ 10. Implement selected fixes                         │
-│ 11. Re-verify affected checks                        │
-│ 12. Final summary with release recommendation        │
+│  1. Determine release context                       │
+│  2. Spawn qa-release-eng agent (static analysis)    │
+│  3. Present Phase 1 findings (fast checks)          │
+│  4. User decides: continue to execution checks?     │
+│  5. Run test suite                                  │
+│  6. Run build verification                          │
+│  7. Check documentation freshness                   │
+│  8. Present full consolidated report                │
+│  9. User selects which items to address             │
+│ 10. Implement selected fixes                        │
+│ 11. Re-verify affected checks                       │
+│ 12. Final summary with release recommendation       │
 └─────────────────────────────────────────────────────┘
 ```
 

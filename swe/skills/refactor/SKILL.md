@@ -20,20 +20,20 @@ Autonomous refactoring workflow that iteratively improves code quality within th
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                  REFACTORING LOOP                    │
+│                  REFACTORING LOOP                   │
 ├─────────────────────────────────────────────────────┤
-│  1. Determine scope                                  │
-│  2. Select aggression ceiling                        │
-│  3. Gather QA instructions                           │
-│  4. Spawn fresh swe-refactor agent (full scan)       │
-│  5. Select least aggressive changes available        │
-│  6. If none remain → exit to summary                 │
-│  7. Spawn SME agent (implement batch)                │
-│  8. Spawn QA agent (verify)                          │
-│     ├─ PASS → commit, goto 4                         │
-│     └─ FAIL → retry (max 3), then abort batch        │
-│  9. Completion summary                               │
-│ 10. Update documentation (/doc-review)               │
+│  1. Determine scope                                 │
+│  2. Select aggression ceiling                       │
+│  3. Gather QA instructions                          │
+│  4. Spawn fresh swe-refactor agent (full scan)      │
+│  5. Select least aggressive changes available       │
+│  6. If none remain → exit to summary                │
+│  7. Spawn SME agent (implement batch)               │
+│  8. Spawn QA agent (verify)                         │
+│     ├─ PASS → commit, goto 4                        │
+│     └─ FAIL → retry (max 3), then abort batch       │
+│  9. Completion summary                              │
+│ 10. Update documentation (/doc-review)              │
 └─────────────────────────────────────────────────────┘
 ```
 

@@ -33,7 +33,7 @@ The `/refactor` skill autonomously improves code quality within the existing arc
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ /refactor Workflow                                               │
+│ /refactor Workflow                                              │
 └─────────────────────────────────────────────────────────────────┘
 
  ┌──────────────────────────────────────────────┐
@@ -86,18 +86,18 @@ The `/refactor` skill autonomously improves code quality within the existing arc
  │  ────────────────────────────────────────    │   │
  │  Agent: qa-engineer                          │   │
  │                                              │   │
- │  Passes? ──┬─ Yes → Commit ─────────────────┤   │
- │            └─ No  → Return to SME ──┐       │   │
- │                     (max 3 attempts)│       │   │
- │                                     ▼       │   │
- │                     ┌────────────────────┐  │   │
- │                     │ Still failing?     │  │   │
- │                     │ → Revert batch     │  │   │
- │                     │ → Log failure      │  │   │
- │                     └──────────┬─────────┘  │   │
- │                                │            │   │
- └────────────────────────────────┼────────────┘   │
-                                  ▼                │
+ │  Passes? ──┬─ Yes → Commit ──────────────────┤   │
+ │            └─ No  → Return to SME ──┐        │   │
+ │                     (max 3 attempts)│        │   │
+ │                                     ▼        │   │
+ │                     ┌────────────────────┐   │   │
+ │                     │ Still failing?     │   │   │
+ │                     │ → Revert batch     │   │   │
+ │                     │ → Log failure      │   │   │
+ │                     └──────────┬─────────┘   │   │
+ │                                │             │   │
+ └────────────────────────────────┼─────────────┘   │
+                                  ▼                 │
                      Rescan with fresh agent ───────┘
 
  ┌──────────────────────────────────────────────┐

@@ -18,22 +18,22 @@ Orchestrates a batch of tickets as a cohesive project. Creates a project branch,
 
 ```
 ┌──────────────────────────────────────────────────────┐
-│                  PROJECT WORKFLOW                      │
+│                  PROJECT WORKFLOW                    │
 ├──────────────────────────────────────────────────────┤
-│  1. Receive ticket specification                      │
-│  2. Detect issue tracker & fetch tickets               │
-│  3. Project planning (present to user)                 │
-│  4. Create project branch                              │
-│  5. Per-ticket loop:                                   │
-│     ├─ 5a. Create topic branch                         │
-│     ├─ 5b. Run /iterate (autonomous mode)              │
-│     ├─ 5c. Merge topic branch → project branch         │
-│     ├─ 5d. Post-merge verification gate                │
-│     └─ 5e. Delete topic branch                         │
-│  6. Cross-cutting quality passes                       │
-│     ├─ 6a. /refactor (SAFE aggression)                 │
-│     └─ 6b. /doc-review                                 │
-│  7. Final review (present to user)                     │
+│  1. Receive ticket specification                     │
+│  2. Detect issue tracker & fetch tickets             │
+│  3. Project planning (present to user)               │
+│  4. Create project branch                            │
+│  5. Per-ticket loop:                                 │
+│     ├─ 5a. Create topic branch                       │
+│     ├─ 5b. Run /iterate (autonomous mode)            │
+│     ├─ 5c. Merge topic branch → project branch       │
+│     ├─ 5d. Post-merge verification gate              │
+│     └─ 5e. Delete topic branch                       │
+│  6. Cross-cutting quality passes                     │
+│     ├─ 6a. /refactor (SAFE aggression)               │
+│     └─ 6b. /doc-review                               │
+│  7. Final review (present to user)                   │
 └──────────────────────────────────────────────────────┘
 ```
 

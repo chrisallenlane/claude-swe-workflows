@@ -31,13 +31,13 @@ The `/project` skill takes a batch of tickets, plans their execution order, impl
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ /project Workflow                                                │
+│ /project Workflow                                               │
 └─────────────────────────────────────────────────────────────────┘
 
  ┌──────────────────────────────────────────────┐
  │  1. RECEIVE TICKET SPECIFICATION             │
  │  ────────────────────────────────────────    │
- │  • Explicit IDs (#12, #15, #18)             │
+ │  • Explicit IDs (#12, #15, #18)              │
  │  • Tag/label query ("all tagged v2.0")       │
  │  • Milestone ("Sprint 4")                    │
  └──────────────────┬───────────────────────────┘
@@ -104,7 +104,7 @@ The `/project` skill takes a batch of tickets, plans their execution order, impl
  ┌──────────────────────────────────────────────┐
  │  6. CROSS-CUTTING QUALITY PASSES             │
  │  ────────────────────────────────────────    │
- │  6a. /test-review (full suite)                │
+ │  6a. /test-review (full suite)               │
  │  6b. /refactor (SAFE aggression)             │
  │  6c. /doc-review (full audit)                │
  └──────────────────┬───────────────────────────┘

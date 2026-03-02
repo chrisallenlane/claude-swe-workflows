@@ -47,7 +47,7 @@ The `/release-review` skill performs a comprehensive pre-flight check before cut
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ /release-review Workflow                                          │
+│ /release-review Workflow                                        │
 └─────────────────────────────────────────────────────────────────┘
 
  ┌──────────────────────────────────────────────┐
@@ -79,8 +79,8 @@ The `/release-review` skill performs a comprehensive pre-flight check before cut
  │                                              │
  │  Ask: Continue with execution checks?        │
  │  ├─ Continue → proceed to step 4             │
- │  ├─ Fix first → exit, user fixes, re-runs   │
- │  └─ Skip → go to step 7                     │
+ │  ├─ Fix first → exit, user fixes, re-runs    │
+ │  └─ Skip → go to step 7                      │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -95,7 +95,7 @@ The `/release-review` skill performs a comprehensive pre-flight check before cut
  │  7. FULL CONSOLIDATED REPORT                 │
  │  ────────────────────────────────────────    │
  │  All findings numbered by severity:          │
- │  BLOCKERS → WARNINGS → PASSED               │
+ │  BLOCKERS → WARNINGS → PASSED                │
  │                                              │
  │  User selects which items to address         │
  └──────────────────┬───────────────────────────┘

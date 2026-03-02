@@ -32,7 +32,7 @@ The `/fix` skill orchestrates a diagnosis-first bug-fixing workflow through spec
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ /fix Workflow                                                    │
+│ /fix Workflow                                                   │
 └─────────────────────────────────────────────────────────────────┘
 
  ┌──────────────────────────────────────────────┐
@@ -55,7 +55,7 @@ The `/fix` skill orchestrates a diagnosis-first bug-fixing workflow through spec
  │  • This is the contract: when it passes,     │
  │    the bug is fixed                          │
  │                                              │
- │  Can't reproduce? ──┬─ Back to step 1       │
+ │  Can't reproduce? ──┬─ Back to step 1        │
  │                     └─ (max 2 attempts)      │
  └──────────────────┬───────────────────────────┘
                     ▼
