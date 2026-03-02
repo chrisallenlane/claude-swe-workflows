@@ -4,35 +4,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a Claude Code plugin marketplace repository containing distributable plugins. Each plugin provides skills and/or agents that extend Claude Code's capabilities.
+This is a Claude Code plugin for software engineering workflows. It provides skills and agents that extend Claude Code's capabilities for systematic development.
 
 ## Plugin Structure
 
-Each plugin is a subdirectory with this structure:
-
 ```
-plugin-name/
 ├── .claude-plugin/
 │   └── plugin.json      # Plugin metadata (name, version, description, license)
-├── agents/              # Agent definitions (optional)
+├── agents/              # Agent definitions
 │   └── agent-name.md    # Agent prompt with YAML frontmatter
-├── skills/              # Skill definitions (optional)
+├── skills/              # Skill definitions
 │   └── skill-name/
 │       └── SKILL.md     # Skill prompt with YAML frontmatter
-└── README.md            # Plugin documentation (optional)
+└── README.md
 ```
-
-The root `.claude-plugin/marketplace.json` registers all plugins for distribution.
 
 ## Development
 
-Test a plugin locally:
+Test the plugin locally:
 
 ```bash
-claude --plugin-dir ./plugin-name
+claude --plugin-dir .
 ```
 
-## Writing Plugins
+## Writing Skills and Agents
 
 **Skills** (in `skills/*/SKILL.md`):
 - YAML frontmatter: `name`, `description`, `model` (opus/sonnet/haiku - lowercase)
@@ -48,11 +43,11 @@ claude --plugin-dir ./plugin-name
 
 ## Workflow
 
-The plugin's skills form a three-stage development workflow:
+The skills form a three-stage development workflow:
 
 ```
 /deliberate  →  /scope  →  /iterate
    decide        plan      implement
 ```
 
-**swe**: Software engineering workflow with `/deliberate` (adversarial decision-making), `/scope` (planning), `/iterate` (implementation), `/bugfix` (bug-fixing), `/project` (multi-ticket orchestration), `/refactor` (tactical cleanup), `/arch-review` (architectural restructuring), `/test-review` (comprehensive test suite review), `/test-mutate` (mutation testing), `/release-review` (pre-release readiness), and `/doc-review` (documentation audit) skills, plus specialist agents.
+Skills: `/deliberate` (adversarial decision-making), `/scope` (planning), `/iterate` (implementation), `/bugfix` (bug-fixing), `/project` (multi-ticket orchestration), `/refactor` (tactical cleanup), `/arch-review` (architectural restructuring), `/test-review` (comprehensive test suite review), `/test-mutate` (mutation testing), `/release-review` (pre-release readiness), and `/doc-review` (documentation audit), plus specialist agents.
