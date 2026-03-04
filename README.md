@@ -143,9 +143,9 @@ Coordinates specialist agents through a bug-fixing cycle: clarify bug, reproduce
 
 [Detailed documentation](skills/bugfix/README.md)
 
-### /project - Multi-Ticket Orchestration
+### /batch - Multi-Ticket Orchestration
 
-Orchestrates a batch of tickets as a cohesive project. Creates a project branch, implements each ticket sequentially using `/iterate` in autonomous mode, runs cross-cutting quality passes (`/refactor`, `/doc-review`), and presents results for final human review.
+Orchestrates a batch of tickets as a cohesive unit. Creates a project branch, implements each ticket sequentially using `/iterate` in autonomous mode, runs cross-cutting quality passes (`/refactor`, `/doc-review`), and presents results for final human review.
 
 **Use when:**
 - Implementing a batch of related tickets from your issue tracker
@@ -154,7 +154,7 @@ Orchestrates a batch of tickets as a cohesive project. Creates a project branch,
 
 **Key principle:** Maximize autonomy, minimize accumulated error. Pull the andon cord immediately when something goes wrong.
 
-[Detailed documentation](skills/project/README.md)
+[Detailed documentation](skills/batch/README.md)
 
 ### /doc-review - Documentation Quality Audit
 

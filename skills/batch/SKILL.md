@@ -1,12 +1,12 @@
 ---
-name: project
-description: Multi-ticket project workflow. Takes a batch of tickets, plans execution order, implements each via /iterate in autonomous mode, runs cross-cutting quality passes, and presents results for final review.
+name: batch
+description: Multi-ticket batch workflow. Takes a batch of tickets, plans execution order, implements each via /iterate in autonomous mode, runs cross-cutting quality passes, and presents results for final review.
 model: opus
 ---
 
-# Project - Multi-Ticket Orchestration Workflow
+# Batch - Multi-Ticket Orchestration Workflow
 
-Orchestrates a batch of tickets as a cohesive project. Creates a project branch, implements each ticket sequentially using the `/iterate` workflow in autonomous mode, runs cross-cutting quality passes, and presents results for final human review.
+Orchestrates a batch of tickets as a cohesive unit. Creates a project branch, implements each ticket sequentially using the `/iterate` workflow in autonomous mode, runs cross-cutting quality passes, and presents results for final human review.
 
 ## Philosophy
 
@@ -18,11 +18,11 @@ Orchestrates a batch of tickets as a cohesive project. Creates a project branch,
 
 ```
 ┌──────────────────────────────────────────────────────┐
-│                  PROJECT WORKFLOW                    │
+│                   BATCH WORKFLOW                     │
 ├──────────────────────────────────────────────────────┤
 │  1. Receive ticket specification                     │
 │  2. Detect issue tracker & fetch tickets             │
-│  3. Project planning (present to user)               │
+│  3. Batch planning (present to user)                 │
 │  4. Create project branch                            │
 │  5. Per-ticket loop:                                 │
 │     ├─ 5a. Create topic branch                       │
@@ -85,7 +85,7 @@ Accept tickets from the user in any of these forms:
 
 **Andon cord** if tracker is unavailable or tickets can't be fetched.
 
-### 3. Project Planning
+### 3. Batch Planning
 
 Analyze all fetched tickets and produce an execution plan:
 
@@ -109,7 +109,7 @@ Analyze all fetched tickets and produce an execution plan:
 ### 4. Create Project Branch
 
 - Identify the main branch (`main` or `master`)
-- Create project branch from current HEAD: `feat/project-<descriptive-name>`
+- Create project branch from current HEAD: `feat/batch-<descriptive-name>`
 - Branch name derived from the tag, milestone, or a brief summary of the ticket batch
 - **Andon cord** if branch already exists — ask user whether to resume or start fresh
 
@@ -131,7 +131,7 @@ Follow the `/iterate` workflow with these overrides for autonomous operation:
 |---------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Step 1** (requirements)                   | Pre-loaded from ticket body. Do not prompt user for requirements. If the ticket lacks explicit acceptance criteria, derive them from the description. If the description is empty or incoherent, **andon cord**. |
 | **Step 2** (planning)                       | Follow normal conditional logic — invoke `swe-planner` for complex tasks, skip for simple ones.                                                                                                                  |
-| **Steps 3-4** (implementation + acceptance) | Follow normal logic. If acceptance verification fails 3 times, **andon cord** (do not escalate to user within `/iterate` — escalate here at the project level).                                                  |
+| **Steps 3-4** (implementation + acceptance) | Follow normal logic. If acceptance verification fails 3 times, **andon cord** (do not escalate to user within `/iterate` — escalate here at the batch level).                                                    |
 | **Step 5a** (security review)               | Follow normal logic. If critical/high findings cannot be resolved by the implementation agent, **andon cord**.                                                                                                   |
 | **Steps 5b-5c** (refactoring/perf review)   | Follow normal logic — these are advisory.                                                                                                                                                                        |
 | **Step 6** (implement review feedback)      | Follow normal logic.                                                                                                                                                                                             |
@@ -184,7 +184,7 @@ Run the `/doc-review` workflow:
 Present comprehensive summary to user:
 
 ```
-## Project Complete
+## Batch Complete
 
 ### Tickets Implemented
 - #12: <title> — <brief outcome>
@@ -202,7 +202,7 @@ Present comprehensive summary to user:
 - Documentation: N updates
 
 ### Branch Status
-- Project branch: feat/project-<name>
+- Project branch: feat/batch-<name>
 - Base branch: <main branch>
 - Ready to merge
 ```
@@ -227,7 +227,7 @@ The orchestrator maintains:
 
 **Context management:**
 - The `/iterate` workflow within each ticket manages its own agent lifecycle
-- The project orchestrator tracks only summary-level state across tickets
+- The batch orchestrator tracks only summary-level state across tickets
 - Keep per-ticket summaries brief to avoid context window bloat across a large batch
 
 **Fresh state per ticket:**
@@ -238,13 +238,13 @@ The orchestrator maintains:
 ## Integration with Other Skills
 
 **Relationship to `/iterate`:**
-- `/project` is a higher-level orchestrator that runs `/iterate` for each ticket
+- `/batch` is a higher-level orchestrator that runs `/iterate` for each ticket
 - `/iterate` handles the full development cycle for a single ticket
-- `/project` adds: batching, ordering, branching strategy, cross-cutting quality passes
+- `/batch` adds: batching, ordering, branching strategy, cross-cutting quality passes
 
 **Relationship to `/scope`:**
-- `/scope` creates tickets; `/project` consumes them
-- Typical flow: `/scope` to plan and create tickets, then `/project` to implement the batch
+- `/scope` creates tickets; `/batch` consumes them
+- Typical flow: `/scope` to plan and create tickets, then `/batch` to implement the batch
 
 **Relationship to `/refactor`, `/doc-review`:**
 - These run as cross-cutting quality passes after all tickets are implemented

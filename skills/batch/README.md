@@ -1,8 +1,8 @@
-# /project - Multi-Ticket Orchestration Workflow
+# /batch - Multi-Ticket Orchestration Workflow
 
 ## Overview
 
-The `/project` skill takes a batch of tickets, plans their execution order, implements each one sequentially using the `/iterate` workflow in autonomous mode, runs cross-cutting quality passes, and presents results for final review. It turns a set of tickets into a single project branch ready to merge.
+The `/batch` skill takes a batch of tickets, plans their execution order, implements each one sequentially using the `/iterate` workflow in autonomous mode, runs cross-cutting quality passes, and presents results for final review. It turns a set of tickets into a single project branch ready to merge.
 
 **Key benefits:**
 - Batch execution of multiple tickets without intervention
@@ -14,24 +14,24 @@ The `/project` skill takes a batch of tickets, plans their execution order, impl
 
 ## When to Use
 
-**Use `/project` for:**
+**Use `/batch` for:**
 - Implementing a sprint's worth of tickets
 - Milestone or tag-based batches (e.g., "all v2.0 tickets")
 - Multiple related tickets that should ship together
 - Batches where you want autonomous execution with quality gates
 
-**Don't use `/project` for:**
+**Don't use `/batch` for:**
 - Single tickets (use `/iterate` or `/bugfix` directly)
 - Exploratory work or prototyping
 - Tickets that need heavy user collaboration during implementation (use `/iterate` interactively)
 
-**Rule of thumb:** If you have 2+ tickets you want implemented as a cohesive unit, use `/project`.
+**Rule of thumb:** If you have 2+ tickets you want implemented as a cohesive unit, use `/batch`.
 
 ## Workflow Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ /project Workflow                                               │
+│ /batch Workflow                                               │
 └─────────────────────────────────────────────────────────────────┘
 
  ┌──────────────────────────────────────────────┐
@@ -54,7 +54,7 @@ The `/project` skill takes a batch of tickets, plans their execution order, impl
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  3. PROJECT PLANNING                         │
+ │  3. BATCH PLANNING                            │
  │  ────────────────────────────────────────    │
  │  • Dependency analysis (explicit + implicit) │
  │  • Execution ordering                        │
@@ -65,7 +65,7 @@ The `/project` skill takes a batch of tickets, plans their execution order, impl
  ┌──────────────────────────────────────────────┐
  │  4. CREATE PROJECT BRANCH                    │
  │  ────────────────────────────────────────    │
- │  feat/project-<descriptive-name>             │
+ │  feat/batch-<descriptive-name>             │
  │  from current HEAD                           │
  │                                              │
  │  Andon cord if branch already exists         │
@@ -138,7 +138,7 @@ Detects the platform from `git remote -v`:
 
 Fetches title, body, acceptance criteria, labels, and dependencies for each ticket.
 
-### 3. Project Planning
+### 3. Batch Planning
 Analyzes the batch and produces an execution plan:
 - **Dependency analysis**: explicit "depends on" links + implicit (shared files/subsystems)
 - **Ordering**: dependencies first, then simpler tickets first among independents
@@ -147,7 +147,7 @@ Analyzes the batch and produces an execution plan:
 The plan is **presented to the user for approval** — this is the one planned interaction point before autonomous execution begins.
 
 ### 4. Create Project Branch
-Creates `feat/project-<descriptive-name>` from current HEAD. The project branch is the integration point — all topic branches merge into it, and the user merges it into main at the end.
+Creates `feat/batch-<descriptive-name>` from current HEAD. The project branch is the integration point — all topic branches merge into it, and the user merges it into main at the end.
 
 ### 5. Per-Ticket Execution Loop
 For each ticket in order:
@@ -201,7 +201,7 @@ The alternative — pressing forward and hoping later steps compensate — leads
 
 ```
 main
- └── feat/project-sprint-4          (project branch)
+ └── feat/batch-sprint-4          (project branch)
       ├── feat/issue-12-add-auth     (topic, merged + deleted)
       ├── feat/issue-15-fix-cache    (topic, merged + deleted)
       └── feat/issue-18-add-metrics  (topic, merged + deleted)
@@ -216,12 +216,12 @@ main
 
 ### Example 1: Sprint Batch
 ```
-User: /project #12, #15, #18
+User: /batch #12, #15, #18
 
 Detecting issue tracker... GitHub (gh CLI)
 Fetching tickets...
 
-## Project Plan
+## Batch Plan
 
 Execution order:
 1. #12: Add user authentication — foundation for other tickets
@@ -234,7 +234,7 @@ Estimated scope: 1 medium, 2 small
 Approve this plan?
 > Yes
 
-Creating branch: feat/project-sprint-4
+Creating branch: feat/batch-sprint-4
 
 [Ticket #12] Creating topic branch: feat/issue-12-add-auth
 [Ticket #12] Running /iterate (autonomous)...
@@ -258,7 +258,7 @@ Running cross-cutting quality passes...
 - /refactor: 1 DRY improvement (-12 lines)
 - /doc-review: README updated with auth docs
 
-## Project Complete
+## Batch Complete
 
 ### Tickets Implemented
 - #12: Add user authentication — JWT with refresh tokens
@@ -271,7 +271,7 @@ Running cross-cutting quality passes...
 - Tests added/modified: 23
 
 ### Branch Status
-- Project branch: feat/project-sprint-4
+- Project branch: feat/batch-sprint-4
 - Ready to merge into main
 ```
 
@@ -303,15 +303,15 @@ Awaiting your guidance.
 
 | Skill          | Relationship                                                                               |
 |----------------|--------------------------------------------------------------------------------------------|
-| `/scope`       | Creates tickets that `/project` consumes. Typical flow: `/scope` then `/project`.          |
-| `/iterate`     | Runs inside `/project` for each ticket. `/project` adds batching, ordering, and branching. |
-| `/bugfix`      | Not used by `/project` currently — all tickets go through `/iterate`.                      |
+| `/scope`       | Creates tickets that `/batch` consumes. Typical flow: `/scope` then `/batch`.          |
+| `/iterate`     | Runs inside `/batch` for each ticket. `/batch` adds batching, ordering, and branching. |
+| `/bugfix`      | Not used by `/batch` currently — all tickets go through `/iterate`.                      |
 | `/refactor`    | Runs as cross-cutting quality pass (SAFE aggression).                                      |
 | `/doc-review`  | Runs as cross-cutting quality pass.                                                        |
 
 ## Tips
 
-1. **Start with well-specified tickets.** `/project` works autonomously — vague tickets lead to andon cord pulls. Use `/scope` to create well-defined tickets first.
+1. **Start with well-specified tickets.** `/batch` works autonomously — vague tickets lead to andon cord pulls. Use `/scope` to create well-defined tickets first.
 
 2. **Review the execution plan.** Step 3 is your one planned interaction point. Catch ordering issues and ambiguous tickets here.
 
