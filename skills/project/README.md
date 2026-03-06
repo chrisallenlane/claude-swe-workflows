@@ -159,13 +159,13 @@ All tickets are fetched from the issue tracker (GitHub, Gitea, GitLab — auto-d
 
 Before implementation begins, the orchestrator asks what smoke testing should be performed. This is project-specific:
 
-| Project type | Example smoke test |
-|---|---|
-| CLI tool | Run the binary with representative commands, verify output |
-| MCP server | Build the binary, send JSON-RPC commands, verify responses |
-| Web app | Use Playwright MCP for browser testing |
-| Library | Run integration tests, verify public API end-to-end |
-| API server | Hit key endpoints, verify responses |
+| Project type | Example smoke test                                        |
+|--------------|-----------------------------------------------------------|
+| CLI tool     | Run the binary with representative commands, verify output |
+| MCP server   | Build the binary, send JSON-RPC commands, verify responses |
+| Web app      | Use Playwright MCP for browser testing                     |
+| Library      | Run integration tests, verify public API end-to-end        |
+| API server   | Hit key endpoints, verify responses                        |
 
 The procedure is recorded and reused for smoke testing (step 6) and as QA instructions for quality passes (step 7).
 
@@ -218,14 +218,14 @@ Smoke tests re-run after fixes until clean.
 
 Six sequential quality passes, each running its full workflow:
 
-| Pass | Parameters | Notes |
-|---|---|---|
-| **7a. `/refactor`** | MAXIMUM aggression, smoke test QA instructions, entire codebase | Tactical code cleanup |
-| **7b. `/arch-review`** | Entire codebase, autonomous mode (orchestrator reviews blueprint and decides what to implement) | Strategic architectural improvement |
-| **7c. `/refactor`** | Same as 7a | Only runs if arch-review made substantive changes (module restructuring, function moves — not just dead code or naming) |
-| **7d. `/test-review`** | Full test suite review | Coverage gaps, test quality audit |
-| **7e. `/doc-review`** | Full documentation audit | |
-| **7f. `/release-review`** | Autonomous mode (orchestrator triages findings) | Pre-release readiness check |
+| Pass                   | Parameters                                                                        | Notes                                                                                                    |
+|------------------------|-----------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| **7a. `/refactor`**    | MAXIMUM aggression, smoke test QA instructions, entire codebase                   | Tactical code cleanup                                                                                    |
+| **7b. `/arch-review`** | Entire codebase, autonomous mode (orchestrator reviews blueprint and decides what to implement) | Strategic architectural improvement                                                              |
+| **7c. `/refactor`**    | Same as 7a                                                                        | Only runs if arch-review made substantive changes (module restructuring, function moves — not just dead code or naming) |
+| **7d. `/test-review`** | Full test suite review                                                            | Coverage gaps, test quality audit                                                                        |
+| **7e. `/doc-review`**  | Full documentation audit                                                          |                                                                                                          |
+| **7f. `/release-review`** | Autonomous mode (orchestrator triages findings)                                | Pre-release readiness check                                                                              |
 
 Each pass runs its complete workflow including any embedded sub-passes (e.g., `/refactor` runs its own `/doc-review`). This redundancy is intentional — each agent sees the project with fresh context.
 
@@ -337,10 +337,10 @@ Updated at every major transition: batch start/complete, quality pass start/comp
 
 Beyond the mainline workflow, the orchestrator can invoke:
 
-| Tool | When to use |
-|---|---|
+| Tool          | When to use                                                                    |
+|---------------|--------------------------------------------------------------------------------|
 | `/deliberate` | Difficult autonomous decisions — spawns adversarial advocates to argue options |
-| `/bugfix` | Complex bugs encountered during smoke testing or quality passes |
+| `/bugfix`     | Complex bugs encountered during smoke testing or quality passes                |
 
 The orchestrator is encouraged to `/deliberate` before pulling the andon cord for judgment calls. If deliberation doesn't resolve the issue, then escalate.
 
@@ -503,18 +503,18 @@ Skipping /refactor (pass 2): arch-review was skipped
 
 ## Integration with Other Skills
 
-| Skill | Relationship |
-|---|---|
-| `/scope` | Creates tickets that `/project` consumes. Typical flow: `/scope` → organize into batches → `/project`. |
-| `/batch` | Runs inside `/project` for each batch. `/project` adds multi-batch coordination, smoke testing, and the quality pipeline. |
-| `/iterate` | Runs inside `/batch` for each ticket. The innermost implementation loop. |
-| `/refactor` | Runs as project-level quality pass (MAXIMUM aggression) and within each batch (SAFE aggression). |
-| `/arch-review` | Runs as project-level quality pass in autonomous mode. |
-| `/test-review` | Runs as project-level quality pass. |
-| `/doc-review` | Runs as project-level quality pass and within each batch and within `/refactor` and `/arch-review`. |
-| `/release-review` | Runs as the final quality pass before reporting. |
-| `/deliberate` | Available throughout for difficult autonomous decisions. |
-| `/bugfix` | Available for complex bugs found during smoke testing or quality passes. |
+| Skill              | Relationship                                                                                        |
+|--------------------|-----------------------------------------------------------------------------------------------------|
+| `/scope`           | Creates tickets that `/project` consumes. Typical flow: `/scope` → organize into batches → `/project`. |
+| `/batch`           | Runs inside `/project` for each batch. `/project` adds multi-batch coordination, smoke testing, and the quality pipeline. |
+| `/iterate`         | Runs inside `/batch` for each ticket. The innermost implementation loop.                            |
+| `/refactor`        | Runs as project-level quality pass (MAXIMUM aggression) and within each batch (SAFE aggression).    |
+| `/arch-review`     | Runs as project-level quality pass in autonomous mode.                                              |
+| `/test-review`     | Runs as project-level quality pass.                                                                 |
+| `/doc-review`      | Runs as project-level quality pass and within each batch and within `/refactor` and `/arch-review`. |
+| `/release-review`  | Runs as the final quality pass before reporting.                                                    |
+| `/deliberate`      | Available throughout for difficult autonomous decisions.                                            |
+| `/bugfix`          | Available for complex bugs found during smoke testing or quality passes.                            |
 
 **Hierarchy:**
 ```

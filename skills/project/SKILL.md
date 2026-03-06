@@ -151,15 +151,15 @@ For each batch in the planned order:
 
 Invoke the `/batch` workflow with these autonomous overrides:
 
-| `/batch` Step | Autonomous Override |
-|---|---|
-| **Step 1** (receive tickets) | Pre-loaded — pass the batch's ticket list directly |
-| **Step 2** (detect tracker & fetch) | Normal operation |
-| **Step 3** (batch planning) | **Orchestrator approves the plan autonomously.** Review the proposed execution order. Use `/deliberate` if the ordering is unclear or if there are concerning dependency patterns. Only pull the andon cord if tickets are fundamentally incoherent. |
-| **Step 4** (create project branch) | **Skip — already on the batch branch.** The batch branch serves as `/batch`'s "project branch." Topic branches are created from it. |
-| **Steps 5a-5e** (per-ticket loop) | Normal operation. Topic branches are created from the batch branch. Andon cord triggers cascade up to the project orchestrator. |
-| **Step 6** (quality passes) | Normal operation. Let `/batch` run its own refactor + doc-review. |
-| **Step 7** (final review) | **Orchestrator reviews autonomously.** Log the summary to `PROJECT_PROGRESS.md`. Do not wait for user input. |
+| `/batch` Step                 | Autonomous Override                                                                                                                                                                                                    |
+|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Step 1** (receive tickets)  | Pre-loaded — pass the batch's ticket list directly                                                                                                                                                                     |
+| **Step 2** (detect tracker & fetch) | Normal operation                                                                                                                                                                                                 |
+| **Step 3** (batch planning)   | **Orchestrator approves the plan autonomously.** Review the proposed execution order. Use `/deliberate` if the ordering is unclear or if there are concerning dependency patterns. Only pull the andon cord if tickets are fundamentally incoherent. |
+| **Step 4** (create project branch) | **Skip — already on the batch branch.** The batch branch serves as `/batch`'s "project branch." Topic branches are created from it.                                                                             |
+| **Steps 5a-5e** (per-ticket loop)  | Normal operation. Topic branches are created from the batch branch. Andon cord triggers cascade up to the project orchestrator.                                                                                  |
+| **Step 6** (quality passes)   | Normal operation. Let `/batch` run its own refactor + doc-review.                                                                                                                                                      |
+| **Step 7** (final review)     | **Orchestrator reviews autonomously.** Log the summary to `PROJECT_PROGRESS.md`. Do not wait for user input.                                                                                                          |
 
 #### 5c. Merge Batch Branch into Project Branch
 
@@ -207,16 +207,16 @@ Run the `/refactor` workflow with:
 
 Run the `/arch-review` workflow with autonomous overrides:
 
-| `/arch-review` Step | Autonomous Override |
-|---|---|
-| **Step 1** (scope) | Entire codebase |
-| **Step 2** (QA instructions) | The smoke testing procedure from step 2 |
-| **Step 3** (analyze) | Normal operation |
-| **Step 4** (present analysis) | **Orchestrator reviews the analysis.** Do not present to user. |
-| **Step 5** (iterate on plan) | **Orchestrator decides what to implement.** Approve items that are clearly beneficial (dead code removal, obvious naming improvements, clear function ownership fixes). For high-impact items (module dissolution, major restructuring, new module creation), use `/deliberate` to reason through the trade-offs. Defer items that seem out of scope for this project — note them in the final report as recommendations. |
-| **Step 6** (how to proceed) | Proceed with implementation of approved items |
-| **Steps 7-9** (implement + summary) | Normal operation |
-| **Step 10** (doc-review) | Normal operation |
+| `/arch-review` Step                  | Autonomous Override                                                                                                                                                                                                                                      |
+|--------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Step 1** (scope)                   | Entire codebase                                                                                                                                                                                                                                          |
+| **Step 2** (QA instructions)         | The smoke testing procedure from step 2                                                                                                                                                                                                                  |
+| **Step 3** (analyze)                 | Normal operation                                                                                                                                                                                                                                         |
+| **Step 4** (present analysis)        | **Orchestrator reviews the analysis.** Do not present to user.                                                                                                                                                                                           |
+| **Step 5** (iterate on plan)         | **Orchestrator decides what to implement.** Approve items that are clearly beneficial (dead code removal, obvious naming improvements, clear function ownership fixes). For high-impact items (module dissolution, major restructuring, new module creation), use `/deliberate` to reason through the trade-offs. Defer items that seem out of scope for this project — note them in the final report as recommendations. |
+| **Step 6** (how to proceed)          | Proceed with implementation of approved items                                                                                                                                                                                                            |
+| **Steps 7-9** (implement + summary)  | Normal operation                                                                                                                                                                                                                                         |
+| **Step 10** (doc-review)             | Normal operation                                                                                                                                                                                                                                         |
 
 **Track whether arch-review made substantive changes** — module restructuring, function moves, new modules. Dead code removal and naming fixes do not count. This determines whether step 7c runs.
 

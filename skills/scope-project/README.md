@@ -161,15 +161,15 @@ One subagent per ticket drafts detailed ticket content into a `.tickets/` stagin
 
 The heart of the workflow. An implementer agent reviews all tickets as if assigned to implement them tomorrow, looking for:
 
-| Check | What it catches |
-|---|---|
-| Implementable without guessing? | Vague requirements, undefined behaviors |
-| Testable acceptance criteria? | Subjective criteria ("it should be fast") |
-| Explicit dependencies? | Implicit ordering assumptions |
-| Missing tickets? | Work that falls through the cracks |
-| Overlapping tickets? | Conflicting changes to the same code |
-| Sound batch assignments? | Forward dependencies within a batch |
-| Accurate code references? | Stale file paths, wrong function names |
+| Check                          | What it catches                          |
+|--------------------------------|------------------------------------------|
+| Implementable without guessing? | Vague requirements, undefined behaviors  |
+| Testable acceptance criteria?  | Subjective criteria ("it should be fast") |
+| Explicit dependencies?         | Implicit ordering assumptions             |
+| Missing tickets?               | Work that falls through the cracks       |
+| Overlapping tickets?           | Conflicting changes to the same code     |
+| Sound batch assignments?       | Forward dependencies within a batch      |
+| Accurate code references?      | Stale file paths, wrong function names   |
 
 The implementer is a language-specific SME when available (Go SME for Go projects, etc.), giving it real implementation perspective.
 
@@ -288,13 +288,13 @@ and adds a missing ticket for shutdown handling.
 
 ## Integration with Other Skills
 
-| Skill | Relationship |
-|---|---|
-| `/scope` | Plans a single ticket interactively. `/scope-project` plans an entire project with adversarial review. |
-| `/project` | Implements what `/scope-project` plans. Tickets go upstream with batch labels that `/project` consumes directly. Typical flow: `/scope-project` → `/project`. |
-| `/batch` | Can also consume `/scope-project`'s tagged tickets if only one batch needs implementation. |
-| `/iterate` | Can implement individual tickets from `/scope-project` if full `/project` orchestration isn't needed. |
-| `/deliberate` | Available within `/scope-project` for difficult design decisions during planning. |
+| Skill          | Relationship                                                                                                                                       |
+|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/scope`       | Plans a single ticket interactively. `/scope-project` plans an entire project with adversarial review.                                             |
+| `/project`     | Implements what `/scope-project` plans. Tickets go upstream with batch labels that `/project` consumes directly. Typical flow: `/scope-project` → `/project`. |
+| `/batch`       | Can also consume `/scope-project`'s tagged tickets if only one batch needs implementation.                                                         |
+| `/iterate`     | Can implement individual tickets from `/scope-project` if full `/project` orchestration isn't needed.                                              |
+| `/deliberate`  | Available within `/scope-project` for difficult design decisions during planning.                                                                   |
 
 **The full pipeline:**
 ```

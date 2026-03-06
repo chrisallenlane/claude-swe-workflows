@@ -318,16 +318,16 @@ All N tickets created successfully.
 
 The implementer evaluates tickets against these criteria:
 
-| Criterion | What it means |
-|---|---|
-| **Implementable without guessing** | Requirements are precise enough that two different developers would build substantially the same thing |
-| **Testable acceptance criteria** | Each criterion can be verified with a concrete action ("run X, expect Y"), not a subjective judgment ("it should be fast") |
-| **Explicit dependencies** | Every ticket states what must exist before work begins — no implicit "presumably ticket A runs first" |
-| **No batch-internal forward dependencies** | Ticket B in batch 1 must not depend on ticket C in batch 1 if C comes after B in execution order |
-| **No gaps** | Every piece of necessary work is assigned to a ticket — nothing falls through the cracks |
-| **No overlaps** | No two tickets modify the same code in conflicting ways |
-| **Accurate code references** | File paths, function names, and module references in technical/implementation notes are correct |
-| **Appropriate scope** | Each ticket is a coherent unit of work — not so large it's unmanageable, not so small it's trivial |
+| Criterion                                | What it means                                                                                          |
+|------------------------------------------|--------------------------------------------------------------------------------------------------------|
+| **Implementable without guessing**       | Requirements are precise enough that two different developers would build substantially the same thing  |
+| **Testable acceptance criteria**         | Each criterion can be verified with a concrete action ("run X, expect Y"), not a subjective judgment ("it should be fast") |
+| **Explicit dependencies**               | Every ticket states what must exist before work begins — no implicit "presumably ticket A runs first"  |
+| **No batch-internal forward dependencies** | Ticket B in batch 1 must not depend on ticket C in batch 1 if C comes after B in execution order     |
+| **No gaps**                              | Every piece of necessary work is assigned to a ticket — nothing falls through the cracks               |
+| **No overlaps**                          | No two tickets modify the same code in conflicting ways                                                |
+| **Accurate code references**            | File paths, function names, and module references in technical/implementation notes are correct         |
+| **Appropriate scope**                    | Each ticket is a coherent unit of work — not so large it's unmanageable, not so small it's trivial     |
 
 ## Agent Coordination
 
