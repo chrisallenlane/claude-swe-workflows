@@ -395,7 +395,7 @@ Status: <current phase>
 
 **Hierarchy:**
 ```
-/project
+/implement-project
 ├── /implement-batch (per batch)
 │   ├── /implement (per ticket)
 │   ├── /refactor (per-batch quality)

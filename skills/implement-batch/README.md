@@ -1,4 +1,4 @@
-# /batch - Multi-Ticket Orchestration Workflow
+# /implement-batch - Multi-Ticket Orchestration Workflow
 
 ## Overview
 
@@ -31,7 +31,7 @@ The `/implement-batch` skill takes a batch of tickets, plans their execution ord
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ /batch Workflow                                               │
+│ /implement-batch Workflow                                     │
 └─────────────────────────────────────────────────────────────────┘
 
  ┌──────────────────────────────────────────────┐
@@ -216,7 +216,7 @@ main
 
 ### Example 1: Sprint Batch
 ```
-User: /batch #12, #15, #18
+User: /implement-batch #12, #15, #18
 
 Detecting issue tracker... GitHub (gh CLI)
 Fetching tickets...

@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+### Breaking Changes
+
+- **`/iterate` renamed to `/implement`.** The single-ticket implementation workflow is now
+  `/implement`. If you were using `/iterate`, use `/implement` instead.
+
+- **`/batch` renamed to `/implement-batch`.** The multi-ticket orchestration workflow is now
+  `/implement-batch`. If you were using `/batch`, use `/implement-batch` instead.
+
+- **`/project` renamed to `/implement-project`.** The full-lifecycle project workflow is now
+  `/implement-project`. If you were using `/project`, use `/implement-project` instead.
+
+The skill directories have been renamed accordingly (`skills/iterate/` → `skills/implement/`,
+etc.). Any local references to the old skill names in scripts or documentation should be updated.
+
 ## v2.0.0
 
 ### Breaking Changes

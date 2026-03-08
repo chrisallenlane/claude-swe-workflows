@@ -521,5 +521,5 @@ Creating tickets (10 subagents)...
 All 10 tickets created successfully.
 Cleaned up .tickets/ directory.
 
-Ready for implementation with: /project all tickets tagged batch-1, batch-2, batch-3
+Ready for implementation with: /implement-project all tickets tagged batch-1, batch-2, batch-3
 ```
