@@ -70,6 +70,7 @@ your task:
 | Verify test quality via mutation testing                | `/test-mutation`   |
 | Audit all project documentation                         | `/review-doc`    |
 | Pre-release readiness check                             | `/review-release`|
+| Perform a white-box security audit                      | `/audit-source`  |
 
 **Rules of thumb:**
 - Multiple batches of tickets forming a project? `/implement-project`
@@ -195,6 +196,17 @@ changes, and license compliance. Interactive — presents findings and lets
 you decide what to fix.
 
 [Detailed documentation](skills/review-release/README.md)
+
+### Security
+
+#### /audit-source — White-Box Security Audit
+
+Orchestrates a comprehensive security assessment of the project's source code
+using both defensive and offensive analysis. A blue-teamer evaluates the
+defensive posture first, then red-teamers attack informed by the defensive
+gaps. Dedicated red-teamers investigate each attack vector in depth. Findings
+are synthesized, exploit chains are explored, and the process iterates until
+no new chains emerge. Heavy and thorough by design.
 
 ### Decision and Diagnosis
 
