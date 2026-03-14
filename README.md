@@ -70,6 +70,7 @@ your task:
 | Verify test quality via mutation testing                | `/test-mutation`   |
 | Audit all project documentation                         | `/review-doc`    |
 | Pre-release readiness check                             | `/review-release`|
+| Audit web content for accessibility barriers            | `/review-a11y`   |
 | Assess code health across all project languages         | `/review-source` |
 | Perform a white-box security audit                      | `/audit-source`  |
 
@@ -197,6 +198,16 @@ changes, and license compliance. Interactive — presents findings and lets
 you decide what to fix.
 
 [Detailed documentation](skills/review-release/README.md)
+
+#### /review-a11y — Accessibility Audit
+
+Audits web content against WCAG 2.2 Level AA. Detects web content files
+(HTML, JSX/TSX, Vue, Svelte, CSS, templates), dispatches accessibility
+auditor agents to evaluate conformance, and produces a consolidated
+report prioritized by real-world user impact. Advisory only — no
+changes made.
+
+[Detailed documentation](skills/review-a11y/README.md)
 
 #### /review-source — Code Health Assessment
 
