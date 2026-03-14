@@ -51,7 +51,7 @@ The `/audit-source` skill orchestrates a comprehensive security assessment of th
 
 ### 1. Determine Scope
 
-The skill asks about scope, areas of concern, and areas to skip. User concerns inform prioritization but don't replace systematic analysis.
+The skill asks about scope, areas of concern, and areas to skip. By default, the audit targets production code only — test code, dev-only dependencies, generated code, and vendored code are excluded. Users can override these defaults. User concerns inform prioritization but don't replace systematic analysis.
 
 ### 2. Defense Evaluation (Blue Team)
 
