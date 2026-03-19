@@ -62,7 +62,7 @@ The `/bugfix` skill orchestrates a diagnosis-first bug-fixing workflow through s
  ┌──────────────────────────────────────────────┐
  │  3. DIAGNOSIS                                │
  │  ────────────────────────────────────────    │
- │  Agent: swe-diagnostician (read-only)        │
+ │  Agent: swe-bug-investigator (read-only)     │
  │                                              │
  │  • Trace execution paths                     │
  │  • Git archaeology (depth at discretion):    │
@@ -111,11 +111,11 @@ The `/bugfix` skill orchestrates a diagnosis-first bug-fixing workflow through s
  │      Authority: Can demand changes           │
  │                                              │
  │  6b. Refactoring (if non-trivial)            │
- │      Agent: swe-refactor                     │
+ │      Agent: swe-code-reviewer                     │
  │      Authority: Advisory suggestions         │
  │                                              │
  │  6c. Performance (if critical code)          │
- │      Agent: swe-perf-engineer                │
+ │      Agent: swe-perf-reviewer                │
  │      Authority: Advisory suggestions         │
  └──────────────────┬───────────────────────────┘
                     ▼
@@ -185,7 +185,7 @@ The `/bugfix` workflow diverges from `/implement` in steps 2-4, then rejoins for
 |------|------------------------|-----------------------------------------|
 | 1    | Gather requirements    | Clarify bug symptoms                    |
 | 2    | Planning (conditional) | **Write failing test** (SME)            |
-| 3    | Implementation         | **Diagnosis** (swe-diagnostician)       |
+| 3    | Implementation         | **Diagnosis** (swe-bug-investigator)    |
 | 4    | QA acceptance gate     | **Implement fix** (guided by diagnosis) |
 | 5+   | Reviews, docs, commit  | Same as `/implement` steps 5-11           |
 
@@ -226,7 +226,7 @@ A language-specific SME writes test(s) that encode the expected behavior:
 - `swe-sme-typescript` - TypeScript
 
 ### 3. Diagnosis
-The `swe-diagnostician` agent performs read-only root-cause analysis:
+The `swe-bug-investigator` agent performs read-only root-cause analysis:
 - **Traces execution paths** from the failing test through the code
 - **Git archaeology** at its own discretion:
   - Shallow: `git log` on involved files for recent changes
@@ -267,7 +267,7 @@ Workflow:
 1. Clarify: Which endpoint? Happens with all page sizes? Started after recent changes?
 2. Failing test: swe-sme-golang writes TestPaginationBoundary that asserts
    no duplicates — test fails against current code
-3. Diagnosis: swe-diagnostician traces pagination logic, finds boundary
+3. Diagnosis: swe-bug-investigator traces pagination logic, finds boundary
    comparison uses < instead of <=, git blame shows it was introduced
    in commit abc123 during a refactor. Also identifies: same pattern
    exists in the cursor-based pagination path.
@@ -290,7 +290,7 @@ Workflow:
 1. Clarify: Which endpoint? Error logs? Frequency? Load characteristics?
 2. Failing test: swe-sme-golang writes TestConcurrentCacheAccess using
    goroutines — test fails with data race detector
-3. Diagnosis: swe-diagnostician finds unsynchronized map access in cache,
+3. Diagnosis: swe-bug-investigator finds unsynchronized map access in cache,
    git log shows cache was added without mutex protection. Related: the
    cache eviction path has the same issue.
 4. Fix: Adds sync.RWMutex to cache, protects both read/write and eviction paths

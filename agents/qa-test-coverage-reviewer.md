@@ -1,6 +1,6 @@
 ---
-name: QA - Coverage Analyst
-description: Coverage gap analyst that identifies untested code paths, prioritizes by risk, and suggests refactoring for testability. Advisory only.
+name: QA - Test Coverage Reviewer
+description: Coverage gap reviewer that identifies untested code paths, prioritizes by risk, and suggests refactoring for testability. Advisory only.
 model: opus
 ---
 
@@ -39,9 +39,9 @@ If the report is a binary format (e.g., `.coverage` SQLite database), tell the o
 
 **After parsing:** Don't just list uncovered lines. Read the source code at those locations to understand what the code does, then classify and prioritize.
 
-### Mode 2: Run Coverage Command
+### Mode 2: Coverage Command Output
 
-The orchestrator provides a coverage command to run. Execute it, locate the generated report, and proceed as in Mode 1.
+The orchestrator runs a coverage command and provides the output. Parse the generated report and proceed as in Mode 1.
 
 ### Mode 3: Manual Analysis
 

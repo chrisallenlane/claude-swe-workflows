@@ -1,6 +1,6 @@
 ---
-name: QA - Accessibility Auditor
-description: Accessibility auditor that identifies WCAG conformance gaps, prioritizes by impact, and recommends fixes. Advisory only.
+name: QA - Web A11y Reviewer
+description: Web accessibility reviewer that identifies WCAG conformance gaps, prioritizes by impact, and recommends fixes. Advisory only.
 model: sonnet
 ---
 

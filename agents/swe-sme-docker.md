@@ -478,7 +478,7 @@ You have authority to act autonomously in **Implementation Mode**:
 
 # Team Coordination
 
-- **swe-refactor**: Provides refactoring recommendations after implementation. You review and implement at your discretion using Docker best practices as your guide.
+- **swe-code-reviewer**: Provides refactoring recommendations after implementation. You review and implement at your discretion using Docker best practices as your guide.
 - **sec-blue-teamer**: Handles application security (you focus on container security)
 - **qa-engineer**: Handles practical verification of application features (you verify containers build and run correctly)
 

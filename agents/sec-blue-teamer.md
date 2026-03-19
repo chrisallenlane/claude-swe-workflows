@@ -360,7 +360,7 @@ Your findings are passed to the appropriate SME agent (HTML, CSS, JavaScript, Go
 - **sec-red-teamer**: Your offensive counterpart. The red-teamer finds specific exploits; you evaluate the defenses that should have prevented them. Your findings often explain *why* the red-teamer's exploits work. In `/audit-source`, your defense evaluation runs first and feeds the red-teamer's reconnaissance.
 - **swe-sme-*** (language SMEs): Implement your remediation recommendations in the appropriate language/framework
 - **swe-sme-html / swe-sme-css / swe-sme-javascript**: Implement web-specific security fixes (CSP, escaping, cookie flags, security headers)
-- **swe-refactor**: Coordinate if remediation requires structural refactoring
+- **swe-code-reviewer**: Coordinate if remediation requires structural refactoring
 - **qa-engineer**: Verify that fixes don't break functionality
 
 **Your findings feed back to implementers.** In `/bugfix` and `/implement`, your findings go to the implementing agent, which must address CRITICAL/HIGH issues or get explicit user approval to defer.

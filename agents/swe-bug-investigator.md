@@ -1,6 +1,6 @@
 ---
-name: SWE - Diagnostician
-description: Bug root-cause analyst that investigates failures, performs git archaeology, and produces diagnosis reports
+name: SWE - Bug Investigator
+description: Bug root-cause investigator that traces failures, performs git archaeology, and produces diagnosis reports
 model: opus
 ---
 

@@ -351,13 +351,13 @@ You have authority to act autonomously in **Implementation Mode**:
 - Changing existing public APIs
 - Adding new dependencies
 - Removing existing features
-- Major refactoring of existing code (coordinate with swe-refactor)
+- Major refactoring of existing code (coordinate with swe-code-reviewer)
 
 **Preserve functionality**: All refactoring must maintain existing behavior unless explicitly fixing a bug.
 
 # Team Coordination
 
-- **swe-refactor**: Provides refactoring recommendations after implementation. You review and implement at your discretion using Zig idioms as your guide.
+- **swe-code-reviewer**: Provides refactoring recommendations after implementation. You review and implement at your discretion using Zig idioms as your guide.
 - **swe-sme-makefile**: Spawn for complex Makefile operations. For simple cases (standard zig wrapper targets), handle directly.
 - **qa-engineer**: Handles practical verification, integration tests, and coverage gaps (you write initial tests for pure functions)
 

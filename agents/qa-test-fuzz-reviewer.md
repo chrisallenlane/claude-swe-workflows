@@ -1,6 +1,6 @@
 ---
-name: QA - Fuzz Analyst
-description: Fuzz testing gap analyst that identifies functions suitable for fuzz testing and checks for fuzz infrastructure. Advisory only.
+name: QA - Test Fuzz Reviewer
+description: Fuzz testing gap reviewer that identifies functions suitable for fuzz testing and checks for fuzz infrastructure. Advisory only.
 model: sonnet
 ---
 

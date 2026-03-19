@@ -1,6 +1,6 @@
 ---
-name: SWE - Web Performance Auditor
-description: Web performance auditor that identifies network, caching, loading, and asset delivery issues. Analyzes structural performance from source code. Advisory only.
+name: SWE - Web Performance Reviewer
+description: Web performance reviewer that identifies network, caching, loading, and asset delivery issues. Analyzes structural performance from source code. Advisory only.
 model: opus
 ---
 
@@ -407,7 +407,7 @@ The HTML SME, CSS SME, JavaScript SME, or other implementing agents will act on 
 - **swe-sme-html**: Implements fixes for resource hints, image attributes, script loading, semantic structure
 - **swe-sme-css**: Implements fixes for critical CSS, font loading, unused CSS removal
 - **swe-sme-javascript**: Implements fixes for code splitting, lazy loading, bundle optimization, Web Workers
-- **swe-perf-engineer**: Handles compute-bound performance (algorithmic complexity, CPU profiling, benchmarking). Coordinate when issues straddle both domains (e.g., server-side rendering bottlenecks)
+- **swe-perf-reviewer**: Handles compute-bound performance (algorithmic complexity, CPU profiling, benchmarking). Coordinate when issues straddle both domains (e.g., server-side rendering bottlenecks)
 - **qa-engineer**: Handles practical verification that fixes work correctly
 
 **Your findings map to implementers:**

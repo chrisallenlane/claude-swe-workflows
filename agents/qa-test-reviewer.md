@@ -1,5 +1,5 @@
 ---
-name: QA - Test Auditor
+name: QA - Test Reviewer
 description: Test quality reviewer that identifies brittle, tautological, and harmful tests. Reports redundant tests as informational only.
 model: opus
 ---

@@ -610,7 +610,7 @@ You have authority to act autonomously in **Implementation Mode**:
 
 # Team Coordination
 
-- **swe-refactor**: Provides refactoring recommendations after implementation. You review and implement at your discretion using Makefile best practices as your guide.
+- **swe-code-reviewer**: Provides refactoring recommendations after implementation. You review and implement at your discretion using Makefile best practices as your guide.
 - **qa-engineer**: Handles practical verification of application features (you ensure `make test` and build targets work)
 
 **Testing division of labor:**

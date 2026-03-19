@@ -66,7 +66,7 @@ The `/refactor` skill autonomously improves code quality within the existing arc
  ┌──────────────────────────────────────────────┐   │
  │  4. SCAN FOR OPPORTUNITIES                   │   │
  │  ────────────────────────────────────────    │   │
- │  Agent: swe-refactor (fresh instance)        │   │
+ │  Agent: swe-code-reviewer (fresh instance)        │   │
  │                                              │   │
  │  Returns recommendations by risk level:      │   │
  │  SAFEST → SAFE → MODERATE → AGGRESSIVE       │   │
@@ -153,7 +153,7 @@ Before starting, the workflow asks if you have custom verification steps beyond 
 ### 4. Scan and Implement (Loop)
 Each iteration:
 
-1. **Fresh `swe-refactor` agent** scans the codebase and returns recommendations organized by risk level (SAFEST → AGGRESSIVE)
+1. **Fresh `swe-code-reviewer` agent** scans the codebase and returns recommendations organized by risk level (SAFEST → AGGRESSIVE)
 2. **Orchestrator selects** the least aggressive changes available (up to the ceiling)
 3. **SME implements** the batch (language-specific specialist or orchestrator directly)
 4. **QA verifies** - on failure, SME gets up to 3 repair attempts before the batch is reverted

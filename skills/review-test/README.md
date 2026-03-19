@@ -47,7 +47,7 @@ The `/review-test` skill performs a three-phase test suite review: fill coverage
  │  1a. Detect/obtain coverage data             │
  │      (existing report → generate → ask →     │
  │       manual analysis fallback)              │
- │  1b. Analyze gaps (qa-coverage-analyst)       │
+ │  1b. Analyze gaps (qa-test-coverage-reviewer)       │
  │  1c. Present findings by priority tier       │
  │      (CRITICAL → HIGH → LOW)                 │
  │  1d. User selects which gaps to fill         │
@@ -58,7 +58,7 @@ The `/review-test` skill performs a three-phase test suite review: fill coverage
  ┌──────────────────────────────────────────────┐
  │  PHASE 2: FUZZ COVERAGE                      │
  │  ────────────────────────────────────────    │
- │  2a. Analyze fuzz gaps (qa-fuzz-analyst)      │
+ │  2a. Analyze fuzz gaps (qa-test-fuzz-reviewer)      │
  │  2b. Check infrastructure                    │
  │      No fuzz infra? → Skip to Phase 3        │
  │  2c. Present candidates by priority          │
@@ -70,7 +70,7 @@ The `/review-test` skill performs a three-phase test suite review: fill coverage
  ┌──────────────────────────────────────────────┐
  │  PHASE 3: TEST QUALITY AUDIT                 │
  │  ────────────────────────────────────────    │
- │  3a. Scan for issues (qa-test-auditor)        │
+ │  3a. Scan for issues (qa-test-reviewer)        │
  │      • Tautological (can't fail)             │
  │      • Brittle (coupled to implementation)   │
  │      • Redundant (informational only)        │
@@ -103,19 +103,19 @@ Detects or generates a coverage report using a four-step waterfall:
 3. **Ask the user** for the correct command
 4. **Manual analysis fallback** — read source and test files to identify gaps by inspection
 
-For large scopes (>15 source files), the analysis is partitioned across multiple `qa-coverage-analyst` agents running in parallel.
+For large scopes (>15 source files), the analysis is partitioned across multiple `qa-test-coverage-reviewer` agents running in parallel.
 
 Findings are grouped by priority (CRITICAL / HIGH / LOW). Refactoring-for-testability suggestions are collected separately and presented in the final summary.
 
 ### Phase 2: Fuzz Coverage
 
-A single `qa-fuzz-analyst` agent checks whether fuzz testing infrastructure exists and identifies functions that are good fuzz candidates.
+A single `qa-test-fuzz-reviewer` agent checks whether fuzz testing infrastructure exists and identifies functions that are good fuzz candidates.
 
 If no fuzz infrastructure is detected, the phase is skipped with a recommendation for tooling. No attempt is made to set up fuzz tooling.
 
 ### Phase 3: Test Quality Audit
 
-For large scopes (>15 test files), the audit is partitioned across multiple `qa-test-auditor` agents running in parallel.
+For large scopes (>15 test files), the audit is partitioned across multiple `qa-test-reviewer` agents running in parallel.
 
 Issue categories and recommended actions:
 
@@ -208,11 +208,11 @@ Commit? > yes
 
 ## Agent Coordination
 
-| Phase   | Analysis Agent         | Parallelized | Implementation     |
-|---------|------------------------|--------------|---------------------|
-| Phase 1 | `qa-coverage-analyst`  | Yes (>15 files) | Language SME     |
-| Phase 2 | `qa-fuzz-analyst`      | No (single)  | Language SME        |
-| Phase 3 | `qa-test-auditor`      | Yes (>15 files) | Language SME     |
+| Phase   | Analysis Agent              | Parallelized    | Implementation |
+|---------|-----------------------------|-----------------|----------------|
+| Phase 1 | `qa-test-coverage-reviewer` | Yes (>15 files) | Language SME   |
+| Phase 2 | `qa-test-fuzz-reviewer`     | No (single)     | Language SME   |
+| Phase 3 | `qa-test-reviewer`          | Yes (>15 files) | Language SME   |
 
 Implementation is always parallelized by target test file — findings targeting the same file go to the same SME agent.
 

@@ -72,6 +72,7 @@ your task:
 | Pre-release readiness check                             | `/review-release`|
 | Audit web content for accessibility barriers            | `/review-a11y`   |
 | Assess code health across all project languages         | `/review-source` |
+| Review performance (compute and/or web)                 | `/review-perf`   |
 | Perform a white-box security audit                      | `/audit-source`  |
 
 **Rules of thumb:**
@@ -268,24 +269,29 @@ Specialist agents spawned by the workflows above:
 | `swe-sme-css`               | CSS styling, layout, and responsive design specialist                                                 |
 | `swe-sme-javascript`        | Vanilla JavaScript implementation specialist                                                          |
 | `swe-sme-typescript`        | TypeScript implementation and type design specialist                                                  |
-| `swe-refactor`              | Tactical code quality reviewer (DRY, dead code, naming, complexity)                                   |
-| `swe-review-arch`           | Architecture reviewer (noun analysis, module boundaries, blueprints)                                  |
-| `swe-diagnostician`         | Bug root-cause analyst (execution tracing, git archaeology, diagnosis reports)                        |
-| `swe-perf-engineer`         | Performance testing and optimization                                                                  |
+| `swe-code-reviewer`         | Tactical code quality reviewer (DRY, dead code, naming, complexity)                                   |
+| `swe-arch-reviewer`         | Architecture reviewer (noun analysis, module boundaries, blueprints)                                  |
+| `swe-bug-investigator`      | Bug root-cause investigator (execution tracing, git archaeology, diagnosis reports)                    |
+| `swe-perf-reviewer`         | Compute performance reviewer (algorithmic complexity, benchmarking, profiling, optimization)           |
+| `swe-web-perf-reviewer`    | Web performance reviewer (caching, asset delivery, loading strategy, Core Web Vitals)                  |
 | `qa-engineer`               | Practical verification and test coverage                                                              |
-| `qa-accessibility-auditor`  | WCAG accessibility auditor (keyboard navigation, ARIA, contrast, semantic structure)                  |
-| `qa-test-auditor`           | Test quality reviewer (brittle, tautological, useless tests)                                          |
-| `qa-coverage-analyst`       | Coverage gap analyst (coverage reports, risk prioritization, testability suggestions)                 |
-| `qa-fuzz-analyst`           | Fuzz testing gap analyst (fuzz infrastructure detection, candidate identification)                    |
-| `qa-test-mutator`           | Mutation testing worker (applies mutations, records results)                                          |
-| `qa-release-eng`            | Pre-release scanner (debug artifacts, versioning, changelog, git hygiene, breaking changes, licenses) |
-| `sec-blue-teamer`           | Defensive security analyst (control inventory, consistency, defense-in-depth, configuration)           |
-| `sec-red-teamer`            | Adversarial security analyst (attack surface mapping, exploitation, trust boundary analysis)           |
-| `doc-maintainer`            | Documentation updates and verification                                                                |
+| `qa-web-a11y-reviewer`      | WCAG accessibility reviewer (keyboard navigation, ARIA, contrast, semantic structure)                  |
+| `qa-test-reviewer`          | Test quality reviewer (brittle, tautological, useless tests)                                          |
+| `qa-test-coverage-reviewer` | Coverage gap reviewer (coverage reports, risk prioritization, testability suggestions)                 |
+| `qa-test-fuzz-reviewer`     | Fuzz testing gap reviewer (fuzz infrastructure detection, candidate identification)                    |
+| `qa-test-mutator`           | Mutation testing worker (applies mutations, records results)                                           |
+| `qa-release-engineer`       | Pre-release scanner (debug artifacts, versioning, changelog, git hygiene, breaking changes, licenses)  |
+| `sec-blue-teamer`           | Defensive security analyst (control inventory, consistency, defense-in-depth, configuration)            |
+| `sec-red-teamer`            | Adversarial security analyst (attack surface mapping, exploitation, trust boundary analysis)            |
+| `doc-maintainer`            | Documentation updates and verification                                                                 |
 
 ## Development
 
 See [HACKING.md](HACKING.md) for local development and testing instructions.
+
+## Versioning
+
+This project follows [Semantic Versioning](https://semver.org/). Skills (slash commands like `/implement`, `/review-perf`, etc.) are the public interface. Subagent names are internal implementation details and may be renamed or restructured without constituting a breaking change.
 
 ## Requirements
 

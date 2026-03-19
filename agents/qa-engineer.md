@@ -174,12 +174,12 @@ Evidence: [how verified]
 
 **Require approval:**
 - Major test infrastructure changes (new frameworks, significant CI changes)
-- Code refactoring to improve testability (coordinate with swe-refactor)
+- Code refactoring to improve testability (coordinate with swe-code-reviewer)
 
 # Team Coordination
 
 - **swe-sme-***: May write unit tests for pure functions as TDD - don't duplicate
-- **swe-perf-engineer**: Handles performance testing
+- **swe-perf-reviewer**: Handles performance review
 
 **Division of labor:**
 - SWE agents: Unit tests for pure functions during implementation

@@ -55,7 +55,7 @@ The `/review-arch` skill analyzes codebase architecture and collaborates with th
  ┌──────────────────────────────────────────────┐
  │  3. ANALYZE CODEBASE                         │
  │  ────────────────────────────────────────    │
- │  Agent: swe-review-arch (fresh instance)     │
+ │  Agent: swe-arch-reviewer (fresh instance)    │
  │                                              │
  │  Four sequential analysis steps:             │
  │  • Step 1: Catalog dead code                 │
@@ -185,7 +185,7 @@ Before starting, the workflow asks if you have custom verification steps beyond 
 These instructions are passed to the QA agent on every verification cycle. If you have no special requirements, standard verification (tests + linters) runs.
 
 ### 3. Analyze Codebase
-A fresh `swe-review-arch` agent performs four sequential analysis steps:
+A fresh `swe-arch-reviewer` agent performs four sequential analysis steps:
 
 | Step                   | What it does                                                                       |
 |------------------------|------------------------------------------------------------------------------------|

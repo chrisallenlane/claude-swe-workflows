@@ -58,9 +58,9 @@ Consolidated report with issues classified as CRITICAL (blocks access entirely),
 
 ## Agents Used
 
-| Agent                      | Role                                              |
-|----------------------------|---------------------------------------------------|
-| `qa-accessibility-auditor` | WCAG conformance audit with impact prioritization |
+| Agent                  | Role                                              |
+|------------------------|---------------------------------------------------|
+| `qa-web-a11y-reviewer` | WCAG conformance audit with impact prioritization |
 
 ## Resource Usage
 

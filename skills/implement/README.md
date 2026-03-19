@@ -100,11 +100,11 @@ The `/implement` skill orchestrates a complete development workflow through spec
  │      Authority: Can demand changes           │
  │                                              │
  │  5b. Refactoring (if non-trivial)            │
- │      Agent: swe-refactor                     │
+ │      Agent: swe-code-reviewer                     │
  │      Authority: Advisory suggestions         │
  │                                              │
  │  5c. Performance (if critical code)          │
- │      Agent: swe-perf-engineer                │
+ │      Agent: swe-perf-reviewer                │
  │      Authority: Advisory suggestions         │
  └──────────────────┬───────────────────────────┘
                     ▼
@@ -245,13 +245,13 @@ If security-sensitive code changed (auth, crypto, input validation):
 
 **5b. Refactoring Review (Advisory):**
 If non-trivial implementation (>50 lines, multiple files, complex logic):
-- `swe-refactor` analyzes code quality
+- `swe-code-reviewer` analyzes code quality
 - Identifies DRY violations, dead code, complexity
 - Provides recommendations (advisory only)
 
 **5c. Performance Review (Advisory):**
 If performance-critical code changed (hot paths, loops, DB queries):
-- `swe-perf-engineer` runs benchmarks and profiling
+- `swe-perf-reviewer` reviews code for performance bottlenecks
 - Identifies bottlenecks
 - Provides optimization recommendations (advisory only)
 
@@ -345,7 +345,7 @@ Workflow:
 3. Implement: swe-sme-golang adds flag, implements formatters, writes tests
 4. QA (acceptance): qa-engineer runs CLI with --format json and --format yaml,
                    verifies output actually works, writes additional test cases
-5. Review: swe-refactor suggests extracting common formatting logic
+5. Review: swe-code-reviewer suggests extracting common formatting logic
           (security/performance reviews skipped - not applicable)
 6. Respond: swe-sme-golang reviews refactoring suggestions, implements extraction
 7. Peer review: Fresh swe-sme-golang reviews, fixes minor naming inconsistency
@@ -366,7 +366,7 @@ Workflow:
 4. QA (acceptance): qa-engineer spawns test agent, actually tests password reset
                     flow end-to-end, verifies feature works
 5. Review: sec-blue-teamer finds timing attack vulnerability, recommends constant-time comparison
-          swe-refactor suggests extracting email service
+          swe-code-reviewer suggests extracting email service
           (performance reviews skipped - not applicable)
 6. Respond: swe-sme-graphql addresses security issue (must fix), implements email extraction
 7. Peer review: Fresh swe-sme-graphql reviews, cleans up error message formatting
@@ -386,7 +386,7 @@ Workflow:
 2. Plan: Skip (simple fix)
 3. Implement: Fix error, add test case
 4. QA (acceptance): Actually runs pagination, verifies correct behavior
-5. Review: swe-refactor finds no issues (all other reviews skipped)
+5. Review: swe-code-reviewer finds no issues (all other reviews skipped)
 6. Respond: Skip (no feedback to implement)
 7. Peer review: Skip (trivial change)
 8. QA (coverage): Coverage check

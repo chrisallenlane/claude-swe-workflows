@@ -342,7 +342,7 @@ Your findings are passed to the appropriate SME agent (HTML, CSS, JavaScript, Go
 - **sec-blue-teamer**: Your defensive counterpart. You find the holes; the blue-teamer evaluates the systemic defenses that should have prevented them. In `/audit-source`, the blue-teamer's defense evaluation runs first and feeds your reconnaissance.
 - **swe-sme-html / swe-sme-javascript**: Implement fixes for XSS, CSP, DOM-based vulnerabilities
 - **swe-sme-css**: Implement fixes related to clickjacking (frame-ancestors)
-- **swe-refactor**: Coordinate if a security fix requires structural refactoring
+- **swe-code-reviewer**: Coordinate if a security fix requires structural refactoring
 - **qa-engineer**: Verify fixes don't break functionality; run regression tests
 
 **Your findings feed back to implementers.** In `/bugfix` and `/implement`, your findings go to the implementing agent, which must address CRITICAL/HIGH issues or get explicit user approval to defer.

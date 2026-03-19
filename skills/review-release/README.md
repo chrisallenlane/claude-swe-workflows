@@ -61,7 +61,7 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
  ┌──────────────────────────────────────────────┐
  │  2. STATIC ANALYSIS (fast)                   │
  │  ────────────────────────────────────────    │
- │  Agent: qa-release-eng                       │
+ │  Agent: qa-release-engineer                       │
  │                                              │
  │  Scans for:                                  │
  │  • Debug/dev artifacts                       │
@@ -153,7 +153,7 @@ What version are you releasing?
 Any checks to skip?
 > Run everything
 
-Spawning qa-release-eng agent...
+Spawning qa-release-engineer agent...
 
 ## Release Readiness: Static Analysis
 
@@ -194,7 +194,7 @@ User: /review-release
 What version?
 > 2.0.0
 
-Spawning qa-release-eng agent...
+Spawning qa-release-engineer agent...
 
 ## Release Readiness: Static Analysis
 
@@ -243,7 +243,7 @@ Select items to address:
 ### Example 3: Fix Blockers First
 
 ```
-Spawning qa-release-eng agent...
+Spawning qa-release-engineer agent...
 
 ### BLOCKERS (3)
 1. [GIT] src/auth.go:42 — Merge conflict markers
