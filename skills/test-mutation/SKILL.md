@@ -168,6 +168,10 @@ Write the updated tracking file.
 - GraphQL → `swe-sme-graphql`
 - Ansible → `swe-sme-ansible`
 - Zig → `swe-sme-zig`
+- TypeScript → `swe-sme-typescript`
+- JavaScript → `swe-sme-javascript`
+- HTML → `swe-sme-html`
+- CSS → `swe-sme-css`
 
 **For languages without a dedicated SME**, implement the tests directly as orchestrator.
 

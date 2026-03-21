@@ -1,5 +1,16 @@
 # Changelog
 
+## v4.4.1
+
+### Improvements
+
+- **`/test-mutation` now runs on autopilot.** After initial setup, the workflow processes all pending modules unattended and commits per module, rather than pausing for user selection at each step.
+- **`/review-release` simplified.** Removed the Phase 1 pause between static analysis and execution checks for a smoother review flow.
+- **Web SMEs now dispatched by all skills.** The TypeScript, JavaScript, HTML, and CSS SME agents (added in v4.0.0) are now listed in the operational instructions for `/refactor`, `/review-arch`, `/bugfix`, `/test-mutation`, and `/review-test`. Previously these skills would fall back to direct implementation for web languages despite dedicated SMEs being available.
+- **`/review-perf` agent references standardized.** Now uses kebab-case agent identifiers consistent with all other skills.
+- **Co-Authored-By lines removed from commit templates** across all skills.
+- **Skill reference docs renamed** from `references/guide.md` to `references/README.md` for consistency.
+
 ## v4.4.0
 
 ### New Skills

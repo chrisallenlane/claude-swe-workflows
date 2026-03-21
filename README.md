@@ -299,7 +299,7 @@ Specialist agents spawned by the workflows above:
 
 ## Development
 
-See [HACKING.md](HACKING.md) for local development and testing instructions.
+See [HACKING.md](HACKING.md) for local development and testing instructions. See [CHANGELOG.md](CHANGELOG.md) for release history and [CONTRIBUTING.md](CONTRIBUTING.md) for contribution policy.
 
 ## Versioning
 

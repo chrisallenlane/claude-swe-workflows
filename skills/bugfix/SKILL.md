@@ -39,6 +39,10 @@ Loop back to user until the bug is clearly understood. You need enough informati
 - If Makefile changes: spawn `swe-sme-makefile` agent
 - If Ansible playbooks/roles: spawn `swe-sme-ansible` agent
 - If Zig project: spawn `swe-sme-zig` agent
+- If TypeScript project: spawn `swe-sme-typescript` agent
+- If JavaScript project: spawn `swe-sme-javascript` agent
+- If HTML/markup changes: spawn `swe-sme-html` agent
+- If CSS/styling changes: spawn `swe-sme-css` agent
 - Otherwise: write tests directly with general best practices
 
 **SME agent task:**

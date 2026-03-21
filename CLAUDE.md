@@ -19,6 +19,9 @@ This is `claude-swe-workflows`, a Claude Code plugin for software engineering wo
 │       ├── SKILL.md          # Skill prompt with YAML frontmatter
 │       └── references/
 │           └── README.md     # Human-readable guide for the skill
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── HACKING.md
 └── README.md
 ```
 

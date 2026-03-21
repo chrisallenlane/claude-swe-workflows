@@ -161,6 +161,10 @@ Use `AskUserQuestion` with multi-select. If more than ~10 findings, batch by tie
 - GraphQL: `swe-sme-graphql`
 - Ansible: `swe-sme-ansible`
 - Zig: `swe-sme-zig`
+- TypeScript: `swe-sme-typescript`
+- JavaScript: `swe-sme-javascript`
+- HTML: `swe-sme-html`
+- CSS: `swe-sme-css`
 
 **For languages without a dedicated SME:** implement directly as orchestrator.
 
