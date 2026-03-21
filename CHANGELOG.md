@@ -1,6 +1,15 @@
 # Changelog
 
-## Unreleased
+## v5.0.0
+
+### Breaking Changes
+
+- **Three skills renamed for consistency:**
+  - `/bugfix` → `/bug-fix`
+  - `/audit-source` → `/audit-security`
+  - `/review-source` → `/review-health`
+
+  Update any invocations or scripts that reference the old names.
 
 ### New Skills
 
@@ -10,13 +19,6 @@
 
 - **`swe-bug-assessor`** — Codebase risk assessor. Cross-references complexity, coverage, structural risk factors, and git history to identify where bugs are most likely to lurk. Produces a ranked hotspot list for focused investigation.
 - **`swe-bug-hunter`** — Focused bug investigator. Deep-dives into specific code regions identified by the assessor, writes reproducing tests for suspected bugs, and validates findings through test execution. Keeps valuable tests even when they invalidate a suspicion.
-
-### Improvements
-
-- **Skill names regularized.** Three skills renamed for consistency:
-  - `/bugfix` → `/bug-fix`
-  - `/audit-source` → `/audit-security`
-  - `/review-source` → `/review-health`
 
 ## v4.4.1
 
