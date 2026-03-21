@@ -264,8 +264,6 @@ git commit -m "$(cat <<'EOF'
 chore: pre-release cleanup
 
 [Brief description of what was removed/fixed]
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 EOF
 )"
 ```

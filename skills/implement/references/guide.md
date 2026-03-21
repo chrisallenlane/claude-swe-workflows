@@ -318,7 +318,6 @@ After presenting the summary, asks if you want to complete the workflow. If yes,
 **Commit changes:**
 - Creates commit with descriptive message
 - References ticket number if available
-- Includes Co-Authored-By: Claude line
 
 **Update/close ticket (if applicable):**
 - Detects platform integration

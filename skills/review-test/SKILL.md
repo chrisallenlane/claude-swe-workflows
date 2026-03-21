@@ -464,8 +464,6 @@ test: comprehensive test suite review
 [Brief description: added N coverage tests, N fuzz tests,
 deleted N bad tests, rewrote N brittle tests]
 Coverage: XX% → YY%
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 EOF
 )"
 ```

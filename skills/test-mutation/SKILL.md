@@ -272,8 +272,6 @@ test: improve mutation coverage for [module]
 Mutation score: X% → Y%
 - Added tests targeting N surviving mutations
 - [brief description of what the new tests verify]
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 EOF
 )"
 ```

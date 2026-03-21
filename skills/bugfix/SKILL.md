@@ -299,7 +299,6 @@ User may also explicitly request workflow completion at any point after step 11 
 - Create commit with descriptive message
 - If ticket number is known (from branch name, prior context, or user input):
   - Reference ticket in commit message (e.g., "Fixes #123" or "Closes: #123")
-- Include Co-Authored-By line: `Co-Authored-By: Claude <noreply@anthropic.com>`
 - Use heredoc format for multi-line commit messages
 
 **Example commit message format:**
@@ -312,8 +311,6 @@ Also added regression tests for adjacent edge cases identified during
 diagnosis.
 
 Fixes #456
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 #### 12b. Update/Close Issue Tracker Ticket (Conditional)
