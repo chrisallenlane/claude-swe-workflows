@@ -8,7 +8,7 @@ The `/test-mutation` skill verifies your tests actually catch bugs by systematic
 - Finds test weaknesses that line coverage metrics miss
 - Distinguishes tests that run code from tests that verify behavior
 - Multi-session with progress tracking (`.test-mutations.json`)
-- Interactive — you choose which survivors to address
+- Runs on autopilot — set the scope, then walk away
 - Writes targeted tests via language SME agents
 
 ## When to Use
@@ -51,21 +51,18 @@ For each mutation: apply the change, run the test suite, check if tests fail, th
 
 ```
 ┌──────────────────────────────────────────┐
-│  Initialize (load/create tracking file) │
-│              |                           │
-│  Pick a module to mutate                │
-│              |                           │
-│  Apply mutations, run tests each time    │
-│              |                           │
-│  Show surviving mutations                │
-│              |                           │
-│  User selects survivors to address       │
-│              |                           │
-│  Write tests targeting survivors         │
-│              |                           │
-│  Verify new tests kill the mutations     │
-│              |                           │
-│  Update progress, commit                 │
+│  SETUP (interactive)                     │
+│  Initialize (load/create tracking file)  │
+│  Detect test command (first run)         │
+│  Select scope (default: all pending)     │
+│                                          │
+│  EXECUTION (autopilot)                   │
+│  For each module in scope:               │
+│    Apply mutations, run tests each time  │
+│    Write tests targeting ALL survivors   │
+│    Verify new tests kill the mutations   │
+│    Commit changes                        │
+│  Final summary                           │
 └──────────────────────────────────────────┘
 ```
 
@@ -73,13 +70,23 @@ For each mutation: apply the change, run the test suite, check if tests fail, th
 
 The skill detects your test command (`make test`, `pytest`, `go test`, etc.), scans for source files, and creates `.test-mutations.json` to track progress.
 
+### Scope Selection
+
+You can specify individual files or test everything (the default). After scope is confirmed, the workflow runs unattended through all selected modules.
+
 ### Subsequent Runs
 
-Loads progress from the tracking file, shows what's been tested and what's pending, and lets you pick the next module.
+Loads progress from the tracking file, shows what's been tested and what's pending, and lets you pick the scope for this session.
 
-### After Mutations
+### Autopilot Execution
 
-Surviving mutations are presented as a numbered list. You select which to address, and the skill spawns a language-appropriate SME to write targeted tests. After writing, it re-applies the mutations to confirm the new tests catch them.
+For each module in scope, the workflow:
+1. Spawns a mutator agent to apply mutations and identify survivors
+2. Spawns an SME to write tests for all surviving mutations
+3. Verifies the new tests actually kill the mutations
+4. Commits changes and moves to the next module
+
+If something goes wrong (SME can't write a test, new tests fail, a mutation resists), the workflow logs the issue and continues with the next module. A final summary reports everything that succeeded and everything that was skipped.
 
 ## Mutation Score Interpretation
 
@@ -128,49 +135,39 @@ This file persists across sessions. You can commit it to share mutation scores w
 Loading .test-mutations.json...
 Project: 3/10 modules tested (overall score: 85%)
 
-Next pending: src/payment.go
-Proceed? > yes
+Scope? Enter file names/numbers, or press Enter to test all pending.
+> [Enter]
 
-Spawning qa-test-mutator...
-Applying 40 mutations...
+Starting autopilot run for 7 modules...
 
-Results:
-- Killed: 34 (85%)
-- Survived: 6
+[1/7] src/api/handler.go — score: 92% → 98%, 3 tests added. Continuing...
+[2/7] src/middleware.go — score: 100%, no survivors. Continuing...
+[3/7] src/models/user.go — score: 88% → 96%, 2 tests added. Continuing...
+...
+[7/7] src/utils/parser.go — score: 90% → 100%, 3 tests added.
 
-Surviving Mutations:
-1. [Line 42] amount + fee → amount - fee
-2. [Line 78] price > 0 → price >= 0
-3. [Line 103] valid && active → valid || active
-4. [Line 118] err != nil → err == nil
-5. [Line 92] maxRetries = 3 → maxRetries = 4
-6. [Line 55] removed audit.Log(transaction)
+## Mutation Testing Complete
 
-Address which survivors?
-> 1-4
+| Module                 | Before | After | Tests Added | Unresolved |
+|------------------------|--------|-------|-------------|------------|
+| src/api/handler.go     | —      | 98%   | 3           | 1          |
+| src/middleware.go      | —      | 100%  | 0           | 0          |
+| ...                    |        |       |             |            |
 
-Writing tests... Verifying... All mutations now killed.
-Mutation score: 85% → 95%
-
-Continue with next module? > no
-
-Session summary:
-- Tested: src/payment.go
-- Tests added: 4
-- Project score: 85% → 87%
-
-Commit? > yes
+Project: 10/10 modules complete, overall score: 94%
+Commits: 7
+Unresolved survivors: 3 (see summary above)
 ```
 
 ## Tips
 
-1. **Start with critical modules.** Auth, payment, data validation — the code where bugs matter most.
+1. **Start with critical modules.** Auth, payment, data validation — the code where bugs matter most. Pass specific files as the scope.
 
-2. **Incremental approach.** Test one module per session. Mutation testing is inherently slow (one test run per mutation).
+2. **Or just test everything.** Press Enter at the scope prompt and let it run. Come back when it's done.
 
 3. **Pair with /review-test.** Run `/review-test` first to fill coverage gaps and clean up bad tests, then `/test-mutation` to find remaining weaknesses. Review builds, mutate strengthens.
 
-4. **Don't chase 100%.** Address high-value survivors (business logic, error handling), accept diminishing returns on the rest.
+4. **Don't chase 100%.** Some surviving mutations (e.g., constant tweaks, logging removal) may not be worth testing. The final summary lists unresolved survivors so you can decide later.
 
 5. **Commit the tracking file.** Share mutation scores with your team. Track improvements over time.
 
