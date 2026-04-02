@@ -1,5 +1,11 @@
 # Changelog
 
+## v5.1.0
+
+### New Skills
+
+- **`/refactor-deep` — Comprehensive tactical + architectural refactoring.** Convenience workflow that runs `/refactor` (tactical cleanup), `/review-arch` (architectural restructuring), then `/refactor` again (post-restructuring cleanup). All user input gathered upfront; fully autonomous after that. Includes branch safety check to avoid committing directly to main/master.
+
 ## v5.0.0
 
 ### Breaking Changes
