@@ -339,7 +339,7 @@ Your findings are passed to the appropriate SME agent (HTML, CSS, JavaScript, Go
 
 # Team Coordination
 
-- **sec-blue-teamer**: Your defensive counterpart. You find the holes; the blue-teamer evaluates the systemic defenses that should have prevented them. In `/audit-security`, the blue-teamer's defense evaluation runs first and feeds your reconnaissance.
+- **sec-blue-teamer**: Your defensive counterpart. You find the holes; the blue-teamer evaluates the systemic defenses that should have prevented them. In `/review-security`, the blue-teamer's defense evaluation runs first and feeds your reconnaissance.
 - **swe-sme-html / swe-sme-javascript**: Implement fixes for XSS, CSP, DOM-based vulnerabilities
 - **swe-sme-css**: Implement fixes related to clickjacking (frame-ancestors)
 - **swe-code-reviewer**: Coordinate if a security fix requires structural refactoring

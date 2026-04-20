@@ -22,7 +22,7 @@ The `/bug-hunt` skill systematically hunts for bugs before they reach users. An 
 
 **Don't use `/bug-hunt` for:**
 - Fixing a known, reported bug (use `/bug-fix` — it's designed for reactive investigation)
-- Security-focused analysis (use `/audit-security` — it has dedicated security methodology)
+- Security-focused analysis (use `/review-security` — it has dedicated security methodology)
 - Improving test coverage for its own sake (use `/review-test`)
 - General code quality review (use `/review-health`)
 

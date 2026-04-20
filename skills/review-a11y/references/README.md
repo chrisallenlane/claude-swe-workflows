@@ -23,7 +23,7 @@ The `/review-a11y` skill audits web content against WCAG 2.2 Level AA. It detect
 - Non-web projects (CLI tools, APIs, libraries without UI)
 - Implementing fixes (just ask directly after reviewing findings)
 - General code quality (use `/review-health`)
-- Security review (use `/audit-security`)
+- Security review (use `/review-security`)
 
 **Rule of thumb:** If you want to know "can people with disabilities use this?" — use `/review-a11y`.
 

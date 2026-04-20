@@ -1,10 +1,10 @@
 ---
-name: audit-security
+name: review-security
 description: White-box security audit. Blue-teamer evaluates defensive posture, then red-teamers attack informed by defensive gaps. Iterates when exploit chains are discovered. Heavy and thorough by design.
 model: opus
 ---
 
-# Audit Source — White-Box Security Audit
+# Review Security — White-Box Security Audit
 
 Orchestrates a comprehensive security assessment of the project's source code using both defensive and offensive analysis. A blue-teamer evaluates the defensive posture first, then a lead red-teamer performs reconnaissance informed by the defensive gaps. Dedicated red-teamers investigate each attack vector in depth. Findings are synthesized, exploit chains are explored, and the process iterates until no new chains emerge.
 
@@ -311,21 +311,21 @@ After presenting findings, ask the user: "Would you like to route these findings
 
 **Relationship to `/bug-fix`:**
 - `/bug-fix` invokes `sec-blue-teamer` for scoped security review of changed code
-- `/audit-security` is a dedicated, full-depth security audit
-- Use `/audit-security` proactively; `/bug-fix` handles security reactively
+- `/review-security` is a dedicated, full-depth security audit
+- Use `/review-security` proactively; `/bug-fix` handles security reactively
 
 **Relationship to `/implement`:**
 - `/implement` may invoke `sec-blue-teamer` as part of its review phase
-- `/audit-security` is independent and deeper — run it when security assurance matters, not as part of routine development
+- `/review-security` is independent and deeper — run it when security assurance matters, not as part of routine development
 
 **Relationship to `/review-release`:**
 - `/review-release` includes basic security checks (secrets, debug artifacts)
-- `/audit-security` is a comprehensive pre-release security audit — run it before major releases or after significant feature additions
+- `/review-security` is a comprehensive pre-release security audit — run it before major releases or after significant feature additions
 
 ## Example Session
 
 ```
-> /audit-security
+> /review-security
 
 What is the scope of the audit?
 > Entire codebase

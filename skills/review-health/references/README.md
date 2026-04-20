@@ -22,11 +22,11 @@ The `/review-health` skill assesses source code health across all languages in a
 - When onboarding to a project and wanting to understand code quality
 
 **Don't use `/review-health` for:**
-- Finding specific bugs (use `/bug-fix` or `/audit-security`)
+- Finding specific bugs (use `/bug-fix` or `/review-security`)
 - Making changes (use `/refactor`)
 - Reviewing architecture (use `/review-arch`)
 - Reviewing test quality (use `/review-test`)
-- Security assessment (use `/audit-security`)
+- Security assessment (use `/review-security`)
 
 **Rule of thumb:** If you want to know "how healthy is this code?" — use `/review-health`. If you want to fix what's wrong — use `/refactor`.
 

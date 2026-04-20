@@ -22,7 +22,7 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
 - Routine development checks (use `/implement` or `/refactor`)
 - Test quality concerns (use `/review-test` or `/test-mutation`)
 - Documentation updates (use `/review-doc`)
-- Security audits (the sec-blue-teamer agent handles that during `/implement`; use `/audit-security` for deep audits)
+- Security audits (the sec-blue-teamer agent handles that during `/implement`; use `/review-security` for deep audits)
 
 **Key principle:** Releases deserve human review. This workflow surfaces issues — it doesn't silently fix them.
 

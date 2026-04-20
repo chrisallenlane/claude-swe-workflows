@@ -74,7 +74,7 @@ your task:
 | Audit web content for accessibility barriers            | `/review-a11y`       |
 | Assess code health across all project languages         | `/review-health`     |
 | Review performance (compute and/or web)                 | `/review-perf`       |
-| Perform a white-box security audit                      | `/audit-security`    |
+| Perform a white-box security audit                      | `/review-security`    |
 
 **Rules of thumb:**
 - Multiple batches of tickets forming a project? `/implement-project`
@@ -233,7 +233,7 @@ Advisory only — no changes made.
 
 ### Security
 
-#### /audit-security — White-Box Security Audit
+#### /review-security — White-Box Security Audit
 
 Orchestrates a comprehensive security assessment of the project's source code
 using both defensive and offensive analysis. A blue-teamer evaluates the
@@ -242,7 +242,7 @@ gaps. Dedicated red-teamers investigate each attack vector in depth. Findings
 are synthesized, exploit chains are explored, and the process iterates until
 no new chains emerge. Heavy and thorough by design.
 
-[Detailed documentation](skills/audit-security/SKILL.md)
+[Detailed documentation](skills/review-security/SKILL.md)
 
 ### Decision and Diagnosis
 

@@ -338,7 +338,7 @@ Recommending missing security tooling is always fair game, even when the defense
 - Verify the change doesn't weaken defensive posture
 - Skip the full inventory — focus on the delta
 
-**Remediation of red-team findings** (invoked after `/audit-security`):
+**Remediation of red-team findings** (invoked after `/review-security`):
 - Red-teamer findings are provided as input
 - For each finding, evaluate the defensive gap that allowed it
 - Recommend specific remediation — not just fixing the individual vulnerability, but strengthening the defense so the class of vulnerability can't recur
@@ -357,7 +357,7 @@ Your findings are passed to the appropriate SME agent (HTML, CSS, JavaScript, Go
 
 # Team Coordination
 
-- **sec-red-teamer**: Your offensive counterpart. The red-teamer finds specific exploits; you evaluate the defenses that should have prevented them. Your findings often explain *why* the red-teamer's exploits work. In `/audit-security`, your defense evaluation runs first and feeds the red-teamer's reconnaissance.
+- **sec-red-teamer**: Your offensive counterpart. The red-teamer finds specific exploits; you evaluate the defenses that should have prevented them. Your findings often explain *why* the red-teamer's exploits work. In `/review-security`, your defense evaluation runs first and feeds the red-teamer's reconnaissance.
 - **swe-sme-*** (language SMEs): Implement your remediation recommendations in the appropriate language/framework
 - **swe-sme-html / swe-sme-css / swe-sme-javascript**: Implement web-specific security fixes (CSP, escaping, cookie flags, security headers)
 - **swe-code-reviewer**: Coordinate if remediation requires structural refactoring
