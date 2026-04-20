@@ -46,7 +46,7 @@ consumes directly:
 
 For single tickets: `/scope` plans, `/implement` implements.
 
-Two supporting workflows are available at any level: `/deliberate`
+Two supporting workflows are available at any level: `/think-deliberate`
 (adversarial decision-making for hard choices) and `/bug-fix`
 (diagnosis-first bug fixing).
 
@@ -64,7 +64,7 @@ your task:
 | Plan a single feature and create a ticket               | `/scope`             |
 | Fix a bug with diagnosis and root-cause analysis        | `/bug-fix`           |
 | Proactively hunt for bugs before they're reported       | `/bug-hunt`          |
-| Make a hard decision with adversarial deliberation      | `/deliberate`        |
+| Make a hard decision with adversarial deliberation      | `/think-deliberate`        |
 | Clean up code quality (DRY, dead code, naming)          | `/refactor`          |
 | Rethink module boundaries and architecture              | `/review-arch`       |
 | Review and strengthen the test suite                    | `/review-test`       |
@@ -246,14 +246,14 @@ no new chains emerge. Heavy and thorough by design.
 
 ### Decision and Diagnosis
 
-#### /deliberate — Adversarial Decision Making
+#### /think-deliberate — Adversarial Decision Making
 
 Uses adversarial representation to make decisions. Spawns advocate agents
 for each option who argue their cases, rebut each other, and respond to
 probing questions before a judge renders a verdict with reasoning and
 trade-offs.
 
-[Detailed documentation](skills/deliberate/SKILL.md)
+[Detailed documentation](skills/think-deliberate/SKILL.md)
 
 #### /bug-fix — Diagnosis-First Bug Fixing
 

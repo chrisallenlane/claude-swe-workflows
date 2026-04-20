@@ -1,8 +1,8 @@
-# /deliberate - Adversarial Decision Making
+# /think-deliberate - Adversarial Decision Making
 
 ## Overview
 
-The `/deliberate` skill uses adversarial representation to make decisions. Inspired by the legal adversarial system, it spawns advocate agents who argue for each option, rebut each other's positions, and respond to probing questions. You (the judge) render a verdict with reasoning and trade-offs.
+The `/think-deliberate` skill uses adversarial representation to make decisions. Inspired by the legal adversarial system, it spawns advocate agents who argue for each option, rebut each other's positions, and respond to probing questions. You (the judge) render a verdict with reasoning and trade-offs.
 
 **Key benefits:**
 - Every option gets its best case argued — no option dismissed prematurely
@@ -13,14 +13,14 @@ The `/deliberate` skill uses adversarial representation to make decisions. Inspi
 
 ## When to Use
 
-**Use `/deliberate` for:**
+**Use `/think-deliberate` for:**
 - Vendor/tool/library selection
 - Architectural decisions with multiple valid approaches
 - Build vs buy decisions
 - Technology stack choices
 - Strategic decisions with trade-offs
 
-**Don't use `/deliberate` for:**
+**Don't use `/think-deliberate` for:**
 - Decisions with a clearly correct answer
 - Simple preferences (just ask directly)
 - Decisions requiring real-world testing to resolve
@@ -30,7 +30,7 @@ The `/deliberate` skill uses adversarial representation to make decisions. Inspi
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ /deliberate Workflow                                             │
+│ /think-deliberate Workflow                                             │
 └─────────────────────────────────────────────────────────────────┘
 
  ┌──────────────────────────────────────────────┐
@@ -122,7 +122,7 @@ The `/deliberate` skill uses adversarial representation to make decisions. Inspi
 ## Example Session
 
 ```
-> /deliberate Redis vs Memcached for our session store
+> /think-deliberate Redis vs Memcached for our session store
 
 What decision needs to be made?
 Session store for a web application — Redis vs Memcached.

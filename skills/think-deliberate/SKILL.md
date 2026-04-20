@@ -1,10 +1,10 @@
 ---
-name: deliberate
+name: think-deliberate
 description: Adversarial deliberation process for making decisions. Spawns advocate agents for each option who argue their cases before a judge (you) who renders a verdict.
 model: opus
 ---
 
-# Deliberate - Adversarial Decision Making
+# Think-Deliberate - Adversarial Decision Making
 
 Uses adversarial representation to ensure all options are robustly explored before making a decision. Inspired by the legal adversarial system where truth emerges from the collision of well-argued positions.
 

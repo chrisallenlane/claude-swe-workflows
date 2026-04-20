@@ -294,7 +294,7 @@ and adds a missing ticket for shutdown handling.
 | `/implement-project`     | Implements what `/scope-project` plans. Tickets go upstream with batch labels that `/implement-project` consumes directly. Typical flow: `/scope-project` → `/implement-project`. |
 | `/implement-batch`       | Can also consume `/scope-project`'s tagged tickets if only one batch needs implementation.                                                         |
 | `/implement`     | Can implement individual tickets from `/scope-project` if full `/implement-project` orchestration isn't needed.                                              |
-| `/deliberate`  | Available within `/scope-project` for difficult design decisions during planning.                                                                   |
+| `/think-deliberate`  | Available within `/scope-project` for difficult design decisions during planning.                                                                   |
 
 **The full pipeline:**
 ```
