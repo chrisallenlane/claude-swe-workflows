@@ -64,6 +64,7 @@ your task:
 | Plan a single feature and create a ticket               | `/scope`             |
 | Fix a bug with diagnosis and root-cause analysis        | `/bug-fix`           |
 | Proactively hunt for bugs before they're reported       | `/bug-hunt`          |
+| Brainstorm approaches to a goal                         | `/think-brainstorm`  |
 | Make a hard decision with adversarial deliberation      | `/think-deliberate`  |
 | Scrutinize an idea or plan before committing to it      | `/think-scrutinize`  |
 | Clean up code quality (DRY, dead code, naming)          | `/refactor`          |
@@ -247,6 +248,19 @@ no new chains emerge. Heavy and thorough by design.
 
 ### Decision and Diagnosis
 
+#### /think-brainstorm — Divergent Idea Generation
+
+Generates candidate approaches for a goal. Validates the assumptions
+embedded in the goal, then spawns parallel brainstormers running
+different techniques in isolation (first-principles, working-backwards,
+lateral, analogical, constraints-shift, etc.), and synthesizes the pool
+into a catalog of standouts, hybrid ideas, and reasonable alternatives.
+Produces feedback only — no code, no tickets, no artifacts. Natural
+handoff to `/think-deliberate` (choose) or `/think-scrutinize`
+(stress-test).
+
+[Detailed documentation](skills/think-brainstorm/SKILL.md)
+
 #### /think-deliberate — Adversarial Decision Making
 
 Uses adversarial representation to make decisions. Spawns advocate agents
@@ -295,6 +309,7 @@ Specialist agents spawned by the workflows above:
 | Agent                       | Purpose                                                                                                    |
 |-----------------------------|------------------------------------------------------------------------------------------------------------|
 | `thk-advocate`              | Argues for an assigned position in adversarial proceedings                                                 |
+| `thk-brainstormer`          | Good-faith idea generator parameterized by a specific brainstorming technique                              |
 | `thk-skeptic`               | Good-faith skeptic that identifies faults in an idea through an assigned critical lens                     |
 | `swe-planner`               | Decomposes complex tasks into implementation plans                                                         |
 | `swe-sme-golang`            | Go implementation specialist                                                                               |
