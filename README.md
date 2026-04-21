@@ -66,6 +66,7 @@ your task:
 | Proactively hunt for bugs before they're reported       | `/bug-hunt`          |
 | Pressure-test a problem's framing before solving it     | `/think-reframe`     |
 | Brainstorm approaches to a goal                         | `/think-brainstorm`  |
+| Reason about why a phenomenon is happening              | `/think-diagnose`    |
 | Make a hard decision with adversarial deliberation      | `/think-deliberate`  |
 | Scrutinize an idea or plan before committing to it      | `/think-scrutinize`  |
 | Clean up code quality (DRY, dead code, naming)          | `/refactor`          |
@@ -276,6 +277,20 @@ handoff to `/think-deliberate` (choose) or `/think-scrutinize`
 
 [Detailed documentation](skills/think-brainstorm/SKILL.md)
 
+#### /think-diagnose — Abductive Reasoning About Causes
+
+Figures out *why* something is happening. Takes a phenomenon, separates
+observations from interpretations, then spawns parallel diagnosticians
+applying different reasoning lenses in isolation (technical,
+human-factors, process, incentive-structure, environmental, temporal,
+measurement-artifact, statistical). The orchestrator evaluates candidate
+causes against evidence, calibrates confidence honestly (qualitative
+categories — no fabricated percentages), and reports leading candidates
+with distinguishing tests the user can run. Applicable to non-code
+phenomena. Produces feedback only — no code, no tickets, no artifacts.
+
+[Detailed documentation](skills/think-diagnose/SKILL.md)
+
 #### /think-deliberate — Adversarial Decision Making
 
 Uses adversarial representation to make decisions. Spawns advocate agents
@@ -325,6 +340,7 @@ Specialist agents spawned by the workflows above:
 |-----------------------------|------------------------------------------------------------------------------------------------------------|
 | `thk-advocate`              | Argues for an assigned position in adversarial proceedings                                                 |
 | `thk-brainstormer`          | Good-faith idea generator parameterized by a specific brainstorming technique                              |
+| `thk-diagnostician`         | Good-faith abductive reasoner that generates candidate causes through an assigned reasoning lens           |
 | `thk-reframer`              | Good-faith reframer that restates a problem through an assigned reframing lens                             |
 | `thk-skeptic`               | Good-faith skeptic that identifies faults in an idea through an assigned critical lens                     |
 | `swe-planner`               | Decomposes complex tasks into implementation plans                                                         |
