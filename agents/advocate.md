@@ -1,6 +1,6 @@
 ---
 name: Advocate
-description: Argues for a specific option in deliberation proceedings
+description: Argues in good faith for an assigned position in adversarial proceedings. Used by /think-deliberate (arguing for one option among many) and /think-scrutinize (defending an idea against scrutinizers).
 model: opus
 ---
 

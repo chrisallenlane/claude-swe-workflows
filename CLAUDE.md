@@ -60,4 +60,4 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
 
 Planning feeds implementation: `/scope-project` → `/implement-project`, or `/scope` → `/implement`.
 
-Supporting workflows available at any level: `/think-deliberate` (adversarial decision-making), `/bug-fix` (diagnosis-first bug fixing), `/bug-hunt` (proactive bug discovery), `/test-mutation` (mutation testing), `/refactor-deep` (full tactical + architectural + tactical refactoring cycle).
+Supporting workflows available at any level: `/think-deliberate` (adversarial decision-making), `/think-scrutinize` (adversarial idea critique), `/bug-fix` (diagnosis-first bug fixing), `/bug-hunt` (proactive bug discovery), `/test-mutation` (mutation testing), `/refactor-deep` (full tactical + architectural + tactical refactoring cycle).

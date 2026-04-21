@@ -64,7 +64,8 @@ your task:
 | Plan a single feature and create a ticket               | `/scope`             |
 | Fix a bug with diagnosis and root-cause analysis        | `/bug-fix`           |
 | Proactively hunt for bugs before they're reported       | `/bug-hunt`          |
-| Make a hard decision with adversarial deliberation      | `/think-deliberate`        |
+| Make a hard decision with adversarial deliberation      | `/think-deliberate`  |
+| Scrutinize an idea or plan before committing to it      | `/think-scrutinize`  |
 | Clean up code quality (DRY, dead code, naming)          | `/refactor`          |
 | Rethink module boundaries and architecture              | `/review-arch`       |
 | Review and strengthen the test suite                    | `/review-test`       |
@@ -74,7 +75,7 @@ your task:
 | Audit web content for accessibility barriers            | `/review-a11y`       |
 | Assess code health across all project languages         | `/review-health`     |
 | Review performance (compute and/or web)                 | `/review-perf`       |
-| Perform a white-box security audit                      | `/review-security`    |
+| Perform a white-box security audit                      | `/review-security`   |
 
 **Rules of thumb:**
 - Multiple batches of tickets forming a project? `/implement-project`
@@ -255,6 +256,17 @@ trade-offs.
 
 [Detailed documentation](skills/think-deliberate/SKILL.md)
 
+#### /think-scrutinize — Devil's Advocate for Ideas
+
+Stress-tests an idea or plan before you commit to implementing it. Spawns
+critical scrutinizers from multiple angles (technical, economic,
+operational, etc.), pairs them with an advocate defending the idea in
+good faith, then synthesizes a report of faults that survived
+cross-examination. Produces feedback only — no code, no tickets, no
+artifacts.
+
+[Detailed documentation](skills/think-scrutinize/SKILL.md)
+
 #### /bug-fix — Diagnosis-First Bug Fixing
 
 Coordinates specialist agents through a diagnosis-first bug-fixing cycle:
@@ -282,7 +294,8 @@ Specialist agents spawned by the workflows above:
 
 | Agent                       | Purpose                                                                                                    |
 |-----------------------------|------------------------------------------------------------------------------------------------------------|
-| `advocate`                  | Argues for a specific option in deliberation proceedings                                                   |
+| `advocate`                  | Argues for an assigned position in adversarial proceedings                                                 |
+| `scrutinizer`               | Good-faith critic that identifies faults in an idea through a specific lens                                |
 | `swe-planner`               | Decomposes complex tasks into implementation plans                                                         |
 | `swe-sme-golang`            | Go implementation specialist                                                                               |
 | `swe-sme-graphql`           | GraphQL schema and resolver specialist                                                                     |
