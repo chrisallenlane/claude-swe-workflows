@@ -64,7 +64,7 @@ Uses adversarial representation to ensure all options are robustly explored befo
 ### 3. Spawn Advocates (Parallel)
 
 **For each option, spawn an advocate agent:**
-- Use `Task` tool with `subagent_type: "Advocate"`
+- Use `Task` tool with `subagent_type: "THK - Advocate"`
 - Pass the option they represent
 - Pass the decision context and criteria
 - Pass any relevant background information

@@ -1,12 +1,12 @@
 ---
 name: think-scrutinize
-description: Good-faith adversarial scrutiny of an idea or plan. Spawns critical scrutinizers across relevant lenses, pairs them with an advocate defending the idea, and synthesizes the exchange into a report. Produces feedback only — no code, no tickets, no artifacts.
+description: Good-faith adversarial scrutiny of an idea or plan. Spawns critical skeptics across relevant lenses, pairs them with an advocate defending the idea, and synthesizes the exchange into a report. Produces feedback only — no code, no tickets, no artifacts.
 model: opus
 ---
 
 # Think-Scrutinize - Devil's Advocate for Ideas
 
-Scrutinizes an idea or plan to identify its faults before implementation. Uses the same adversarial pattern as `/think-deliberate`, but pointed inward at a single idea instead of outward across competing options: scrutinizers critique, an advocate defends, scrutinizers counter-rebut, orchestrator synthesizes.
+Scrutinizes an idea or plan to identify its faults before implementation. Uses the same adversarial pattern as `/think-deliberate`, but pointed inward at a single idea instead of outward across competing options: skeptics critique, an advocate defends, skeptics counter-rebut, orchestrator synthesizes.
 
 **This skill produces no tangible artifacts.** It is a consultant, not an implementer. No code, no tickets, no commits. The output is a structured report of findings that survived adversarial testing.
 
@@ -15,10 +15,10 @@ Scrutinizes an idea or plan to identify its faults before implementation. Uses t
 **Judge (you, running this skill):**
 - Capture the idea in a written brief
 - Choose appropriate critical lenses
-- Spawn scrutinizers and the advocate
+- Spawn skeptics and the advocate
 - Synthesize the exchange into the final report
 
-**Scrutinizers:** Each receives a specific lens (technical, economic, operational, etc.) and critiques the idea in good faith through that lens.
+**Skeptics:** Each receives a specific lens (technical, economic, operational, etc.) and critiques the idea in good faith through that lens.
 
 **Advocate:** Defends the idea against the consolidated critique — concedes genuine faults, refutes weak ones.
 
@@ -31,11 +31,11 @@ The idea may arrive as:
 - **A document** — read the file (design doc, ticket, plan)
 - **Fresh user input** — capture it verbatim
 
-**Produce a written brief** of the idea as you understand it. Scrutinizers and the advocate critique and defend this brief. Ambiguity here corrupts everything downstream.
+**Produce a written brief** of the idea as you understand it. Skeptics and the advocate critique and defend this brief. Ambiguity here corrupts everything downstream.
 
 ### 2. Fact-Finding
 
-Probe for the context scrutinizers will need:
+Probe for the context skeptics will need:
 - **Goal** — what problem does this solve? What's the success criterion?
 - **Constraints** — budget, timeline, technical, organizational, regulatory
 - **Prior attempts** — what's been tried? What's been ruled out?
@@ -65,9 +65,9 @@ Select lenses that fit the idea's domain. The number is a judgment call — ther
 - 2-5 lenses is typical; more only for broad ideas
 - Include any angles the user nominated in step 2
 
-### 4. Spawn Scrutinizers (Parallel)
+### 4. Spawn Skeptics (Parallel)
 
-Spawn one `Scrutinizer` agent per lens, in parallel. Each receives:
+Spawn one `THK - Skeptic` agent per lens, in parallel. Each receives:
 - The written idea brief (from step 1)
 - Its assigned lens and what the lens means in this context
 - Relevant fact-finding context
@@ -79,12 +79,12 @@ Collect all critiques.
 
 Merge findings into a single brief:
 - Deduplicate overlapping findings (same fault seen by multiple lenses)
-- Preserve lens attribution (which scrutinizer raised what)
+- Preserve lens attribution (which skeptic raised what)
 - Keep severity labels honest — don't downgrade to look kind
 
 ### 6. Spawn Advocate
 
-Spawn an `Advocate` agent with:
+Spawn a `THK - Advocate` agent with:
 - The idea brief
 - The consolidated critique
 - Mandate: **defend the idea in good faith**. This is not a competition against other options — there is one idea on the table. Concede genuine faults; refute weak critiques.
@@ -93,19 +93,19 @@ The advocate returns a rebuttal per finding.
 
 ### 7. Counter-Rebuttal (Parallel)
 
-Each scrutinizer sees the advocate's rebuttals to *its own* findings and responds per finding:
+Each skeptic sees the advocate's rebuttals to *its own* findings and responds per finding:
 - **Concede** — rebuttal is sound; the fault was weak or wrong
 - **Hold** — rebuttal missed the point; the fault stands
 - **Refine** — rebuttal was partly right; narrow the fault to what still applies
 
-Scrutinizers run in parallel.
+Skeptics run in parallel.
 
 ### 8. Synthesize and Report
 
 For each finding, verdict is one of:
-- **Stands** — scrutinizer held; rebuttal didn't resolve it
-- **Refuted** — scrutinizer conceded, or rebuttal clearly resolved it
-- **Partial** — scrutinizer refined; narrowed concern remains
+- **Stands** — skeptic held; rebuttal didn't resolve it
+- **Refuted** — skeptic conceded, or rebuttal clearly resolved it
+- **Partial** — skeptic refined; narrowed concern remains
 - **Uncertain** — both sides have a point; user judgment needed
 
 **Final report format:**
@@ -147,7 +147,7 @@ This skill is one-shot. If the user refines the idea based on the report, they *
 
 - **No artifacts.** No code, tickets, commits, or documents.
 - **Good faith on both sides.** No strawmen, no exaggeration.
-- **Lens focus.** Each scrutinizer stays within its assigned angle.
+- **Lens focus.** Each skeptic stays within its assigned angle.
 - **Honest "no faults found"** is a valid, valuable outcome.
 
 ## When to Use
@@ -166,6 +166,6 @@ This skill is one-shot. If the user refines the idea based on the report, they *
 
 ## Philosophy
 
-The skill exists to make ideas stronger. A good scrutinizer finds the faults that matter, not the most faults. A good advocate defends honestly, not desperately. The user gets the truth that emerges from their collision.
+The skill exists to make ideas stronger. A good skeptic finds the faults that matter, not the most faults. A good advocate defends honestly, not desperately. The user gets the truth that emerges from their collision.
 
 Charlie Munger, borrowing from Jacobi: **"Invert, always invert."** Before committing to an idea, understand how it could fail. `/think-scrutinize` formalizes that instinct — not as unstructured doubt, but as adversarial stress-testing with honest synthesis.

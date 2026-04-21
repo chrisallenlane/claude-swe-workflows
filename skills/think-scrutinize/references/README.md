@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `/think-scrutinize` skill stress-tests an idea or plan before you commit to implementing it. It spawns critical scrutinizers from multiple angles (technical, economic, operational, etc.), pairs them with an advocate defending the idea, and produces a synthesized report of faults that survived cross-examination.
+The `/think-scrutinize` skill stress-tests an idea or plan before you commit to implementing it. It spawns critical skeptics from multiple angles (technical, economic, operational, etc.), pairs them with an advocate defending the idea, and produces a synthesized report of faults that survived cross-examination.
 
 **Key properties:**
 - Adversarial by design — critique meets defense meets counter-critique
@@ -60,7 +60,7 @@ The `/think-scrutinize` skill stress-tests an idea or plan before you commit to 
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  4. SPAWN SCRUTINIZERS (parallel)            │
+ │  4. SPAWN SKEPTICS (parallel)                │
  │  ────────────────────────────────────────    │
  │  One agent per lens                          │
  │  Each returns structured critique            │
@@ -82,7 +82,7 @@ The `/think-scrutinize` skill stress-tests an idea or plan before you commit to 
  ┌──────────────────────────────────────────────┐
  │  7. COUNTER-REBUTTAL (parallel)              │
  │  ────────────────────────────────────────    │
- │  Scrutinizers respond: concede/hold/refine   │
+ │  Skeptics respond: concede/hold/refine   │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -100,7 +100,7 @@ The `/think-scrutinize` skill stress-tests an idea or plan before you commit to 
 | Role          | What they do                                                             |
 |---------------|--------------------------------------------------------------------------|
 | Judge (you)   | Capture idea, choose lenses, spawn agents, synthesize report             |
-| Scrutinizers  | Critique the idea through assigned lenses (parallel)                     |
+| Skeptics  | Critique the idea through assigned lenses (parallel)                     |
 | Advocate      | Defends the idea in good faith — concedes real faults, refutes weak ones |
 
 ## Critical Lenses
@@ -140,7 +140,7 @@ The skill is **one-shot by design**. If the report suggests revision, refine you
 > /think-scrutinize Let's scrutinize our plan to migrate the session
   store from Postgres to Redis.
 
-Before I spawn scrutinizers, let me confirm my understanding:
+Before I spawn skeptics, let me confirm my understanding:
 
 Idea brief:
 - Move session data (user sessions, CSRF tokens, rate-limit counters)
@@ -164,10 +164,10 @@ Lenses I'll apply: technical, operational, temporal, adversarial-user.
 Skipping regulatory (no relevant compliance scope) and economic
 (infrastructure cost is not in scope per the plan).
 
-[Spawning 4 scrutinizers in parallel...]
+[Spawning 4 skeptics in parallel...]
 [Consolidating critiques...]
 [Spawning advocate to rebut...]
-[Scrutinizers counter-rebutting in parallel...]
+[Skeptics counter-rebutting in parallel...]
 
 ## Scrutinization Report
 
@@ -220,4 +220,4 @@ before cutover.
 
 Inspired by Charlie Munger's adaptation of Jacobi: **"Invert, always invert."** Before committing to an idea, understand how it could fail. The skill formalizes this instinct — not as unstructured doubt, but as adversarial stress-testing with honest synthesis.
 
-A good scrutinizer finds the faults that matter, not the most faults. A good advocate defends honestly, not desperately. What emerges is the truth the idea needs to hear before it becomes code, tickets, or commitments.
+A good skeptic finds the faults that matter, not the most faults. A good advocate defends honestly, not desperately. What emerges is the truth the idea needs to hear before it becomes code, tickets, or commitments.

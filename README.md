@@ -259,7 +259,7 @@ trade-offs.
 #### /think-scrutinize — Devil's Advocate for Ideas
 
 Stress-tests an idea or plan before you commit to implementing it. Spawns
-critical scrutinizers from multiple angles (technical, economic,
+critical skeptics from multiple angles (technical, economic,
 operational, etc.), pairs them with an advocate defending the idea in
 good faith, then synthesizes a report of faults that survived
 cross-examination. Produces feedback only — no code, no tickets, no
@@ -294,8 +294,8 @@ Specialist agents spawned by the workflows above:
 
 | Agent                       | Purpose                                                                                                    |
 |-----------------------------|------------------------------------------------------------------------------------------------------------|
-| `advocate`                  | Argues for an assigned position in adversarial proceedings                                                 |
-| `scrutinizer`               | Good-faith critic that identifies faults in an idea through a specific lens                                |
+| `thk-advocate`              | Argues for an assigned position in adversarial proceedings                                                 |
+| `thk-skeptic`               | Good-faith skeptic that identifies faults in an idea through an assigned critical lens                     |
 | `swe-planner`               | Decomposes complex tasks into implementation plans                                                         |
 | `swe-sme-golang`            | Go implementation specialist                                                                               |
 | `swe-sme-graphql`           | GraphQL schema and resolver specialist                                                                     |
