@@ -64,6 +64,7 @@ your task:
 | Plan a single feature and create a ticket               | `/scope`             |
 | Fix a bug with diagnosis and root-cause analysis        | `/bug-fix`           |
 | Proactively hunt for bugs before they're reported       | `/bug-hunt`          |
+| Pressure-test a problem's framing before solving it     | `/think-reframe`     |
 | Brainstorm approaches to a goal                         | `/think-brainstorm`  |
 | Make a hard decision with adversarial deliberation      | `/think-deliberate`  |
 | Scrutinize an idea or plan before committing to it      | `/think-scrutinize`  |
@@ -248,6 +249,20 @@ no new chains emerge. Heavy and thorough by design.
 
 ### Decision and Diagnosis
 
+#### /think-reframe — Problem Redefinition Before Problem Solving
+
+Pressure-tests how a problem is framed before anyone tries to solve it.
+Extracts the premises embedded in the stated problem, then spawns
+parallel reframers applying different lenses in isolation
+(problem-vs-symptom, scope-shift, stakeholder-shift, level-of-abstraction,
+time-horizon, inversion, category-shift, constraints-shift), and
+synthesizes the alternatives into a report with a clear recommendation:
+keep the original framing, adopt a specific reframing, or explore further.
+Produces feedback only — no code, no tickets, no artifacts. Sits upstream
+of `/think-brainstorm` in the natural pipeline.
+
+[Detailed documentation](skills/think-reframe/SKILL.md)
+
 #### /think-brainstorm — Divergent Idea Generation
 
 Generates candidate approaches for a goal. Validates the assumptions
@@ -310,6 +325,7 @@ Specialist agents spawned by the workflows above:
 |-----------------------------|------------------------------------------------------------------------------------------------------------|
 | `thk-advocate`              | Argues for an assigned position in adversarial proceedings                                                 |
 | `thk-brainstormer`          | Good-faith idea generator parameterized by a specific brainstorming technique                              |
+| `thk-reframer`              | Good-faith reframer that restates a problem through an assigned reframing lens                             |
 | `thk-skeptic`               | Good-faith skeptic that identifies faults in an idea through an assigned critical lens                     |
 | `swe-planner`               | Decomposes complex tasks into implementation plans                                                         |
 | `swe-sme-golang`            | Go implementation specialist                                                                               |
