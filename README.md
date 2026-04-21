@@ -69,6 +69,7 @@ your task:
 | Reason about why a phenomenon is happening              | `/think-diagnose`    |
 | Make a hard decision with adversarial deliberation      | `/think-deliberate`  |
 | Scrutinize an idea or plan before committing to it      | `/think-scrutinize`  |
+| Reflect on a completed experience to update beliefs     | `/think-reflect`     |
 | Clean up code quality (DRY, dead code, naming)          | `/refactor`          |
 | Rethink module boundaries and architecture              | `/review-arch`       |
 | Review and strengthen the test suite                    | `/review-test`       |
@@ -311,6 +312,20 @@ artifacts.
 
 [Detailed documentation](skills/think-scrutinize/SKILL.md)
 
+#### /think-reflect — Retrospective Learning
+
+Extracts learnings from a completed experience — a project that shipped,
+an incident that resolved, a decision that played out. Gathers ground
+truth (observations) separately from recollections (memory), actively
+loads external sources (logs, timelines, notes, git history), then spawns
+parallel reflectors applying different lenses in isolation
+(what-worked-vs-got-lucky, what-didn't, what-surprised,
+system-rewards-vs-intent, decisions-that-aged, what-to-tell-past-self,
+patterns-that-recur). The headline output is **updated mental models** —
+changed beliefs — not a findings document. Produces feedback only.
+
+[Detailed documentation](skills/think-reflect/SKILL.md)
+
 #### /bug-fix — Diagnosis-First Bug Fixing
 
 Coordinates specialist agents through a diagnosis-first bug-fixing cycle:
@@ -341,6 +356,7 @@ Specialist agents spawned by the workflows above:
 | `thk-advocate`              | Argues for an assigned position in adversarial proceedings                                                 |
 | `thk-brainstormer`          | Good-faith idea generator parameterized by a specific brainstorming technique                              |
 | `thk-diagnostician`         | Good-faith abductive reasoner that generates candidate causes through an assigned reasoning lens           |
+| `thk-reflector`             | Good-faith reflector that extracts learnings from an experience through an assigned reflection lens        |
 | `thk-reframer`              | Good-faith reframer that restates a problem through an assigned reframing lens                             |
 | `thk-skeptic`               | Good-faith skeptic that identifies faults in an idea through an assigned critical lens                     |
 | `swe-planner`               | Decomposes complex tasks into implementation plans                                                         |
