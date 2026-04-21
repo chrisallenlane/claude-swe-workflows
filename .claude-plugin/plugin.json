@@ -1,10 +1,10 @@
 {
   "name": "claude-swe-workflows",
-  "version": "5.1.0",
-  "description": "Software engineering workflow with deliberation, planning, implementation, and quality skills plus specialist agents",
+  "version": "6.0.0",
+  "description": "Software engineering workflows with skills for planning, implementation, quality review, and structured thinking, plus a suite of specialist agents",
   "author": {
     "name": "Chris Allen Lane"
   },
   "license": "MIT",
-  "keywords": ["swe", "workflow", "agents", "qa", "code-review", "deliberation", "decision-making"]
+  "keywords": ["swe", "workflow", "agents", "qa", "code-review", "planning", "implementation", "thinking", "reasoning", "decision-making"]
 }

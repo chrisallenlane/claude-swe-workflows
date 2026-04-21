@@ -1,5 +1,46 @@
 # Changelog
 
+## v6.0.0
+
+### Breaking Changes
+
+- **Two skills renamed:**
+  - `/deliberate` → `/think-deliberate` (moved into the new `/think-*` namespace for pure-reasoning skills that produce no tangible artifacts)
+  - `/audit-security` → `/review-security` (the `audit-*` namespace is reserved for heavier tooling; security review fits the `/review-*` naming pattern alongside `/review-arch`, `/review-test`, `/review-health`, etc.)
+
+  Update any invocations or scripts that reference the old names.
+
+### New Skills
+
+The v6.0.0 release introduces a complete `/think-*` namespace for structured reasoning skills. Each skill formalizes a specific cognitive discipline that humans habitually skip, using parallel specialist agents with Nominal Group Technique (independent generation, then synthesis) to avoid anchoring. All `/think-*` skills produce feedback only — no code, tickets, or artifacts.
+
+- **`/think-reframe` — Problem redefinition before problem solving.** Extracts premises from a stated problem, then spawns parallel reframers applying different lenses (problem-vs-symptom, scope-shift, stakeholder-shift, level-of-abstraction, time-horizon, inversion, category-shift, constraints-shift), and synthesizes with an orchestrator recommendation (keep original / adopt reframing / further explore). Sits upstream of `/think-brainstorm` in the natural reasoning pipeline.
+
+- **`/think-brainstorm` — Divergent idea generation.** Validates assumptions in a goal, then spawns parallel brainstormers running different techniques in isolation (first-principles, working-backwards, lateral, analogical, constraints-shift, worst-possible-idea, six-hats-green, SCAMPER). Synthesizes into a catalog of standouts, hybrid ideas, and clustered alternatives.
+
+- **`/think-diagnose` — Abductive reasoning about causes.** Takes a phenomenon, separates observations from interpretations (enforced three-bucket split), then spawns parallel diagnosticians across reasoning lenses (technical, human-factors, process, incentive-structure, environmental, temporal, measurement-artifact, statistical). Hybrid generative + evaluative — the orchestrator evaluates candidate causes against evidence and calibrates confidence qualitatively (no fabricated percentages).
+
+- **`/think-scrutinize` — Devil's advocate for ideas.** Stress-tests an idea through parallel skeptics applying different critical lenses, pairs them with an advocate defending the idea in good faith, runs counter-rebuttal, and synthesizes a report of faults that survived cross-examination.
+
+- **`/think-reflect` — Retrospective learning from completed experience.** Extracts learnings from a completed project, incident, decision, or time period. Enforces observation-vs-recollection split during ground-truth gathering (memory drifts; git logs don't). Spawns parallel reflectors (what-worked-vs-got-lucky, what-didn't, what-surprised, system-rewards-vs-intent, decisions-that-aged, what-to-tell-past-self, patterns-that-recur) and surfaces **updated mental models** as first-class output.
+
+- **`/think-deliberate` — Adversarial decision-making.** (Renamed from `/deliberate`.) Spawns advocate agents per option who argue their cases, rebut each other, and respond to probing questions before a judge renders a verdict.
+
+### New Agents
+
+- **`thk-brainstormer`** — Good-faith idea generator parameterized by brainstorming technique.
+- **`thk-diagnostician`** — Good-faith abductive reasoner that generates candidate causes through an assigned reasoning lens.
+- **`thk-reflector`** — Good-faith reflector that extracts learnings from an experience through an assigned reflection lens.
+- **`thk-reframer`** — Good-faith reframer that restates a problem through an assigned reframing lens.
+- **`thk-skeptic`** — Good-faith skeptic that identifies faults in an idea through an assigned critical lens. (Replaces `scrutinizer`.)
+- **`thk-advocate`** — Argues in good faith for an assigned position in adversarial proceedings. Used by both `/think-deliberate` and `/think-scrutinize`. (Renamed from `advocate`.)
+
+Agent names are internal implementation details per the [Versioning](README.md#versioning) policy.
+
+### Design Pattern
+
+All `/think-*` skills share a consistent architecture: one generalist agent parameterized by lens/technique, spawned in parallel and isolation (Nominal Group Technique — independent generation prevents anchoring), with orchestrator-led synthesis. This pattern is documented in each skill's `SKILL.md` and should be followed for any future `/think-*` additions.
+
 ## v5.1.0
 
 ### New Skills
