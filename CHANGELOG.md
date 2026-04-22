@@ -1,5 +1,15 @@
 # Changelog
 
+## v6.1.0
+
+### New Skills
+
+- **`/review-deep` — Comprehensive pre-release review pipeline.** Thin orchestrator that runs every `/review-*` skill in sequence: `/review-health`, `/review-arch`, `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-doc`, `/review-release`. Each sub-skill keeps its normal interactive behavior — the operator participates throughout. The orchestrator auto-detects phases that do not apply (no web content → no a11y; no tests → no test review; no executable source → no security/perf) and asks for confirmation on the skip list before starting. Includes branch safety check to avoid committing directly to main/master, and ends with a consolidated report that synthesizes findings across all phases.
+
+### Infrastructure
+
+- **Release automation moved from `Makefile` to Claude + CI.** The top-level `Makefile` has been removed; release cutting is now driven by a Claude-assisted procedure documented in `HACKING.md`, with GitHub Actions handling tag-triggered releases. This is an internal workflow change — no effect on the public skill interface.
+
 ## v6.0.0
 
 ### Breaking Changes

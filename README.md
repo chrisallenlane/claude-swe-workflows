@@ -53,8 +53,9 @@ about causes), `/think-deliberate` (adversarial decision-making),
 `/think-scrutinize` (adversarial idea critique), `/think-reflect`
 (retrospective learning), `/bug-fix` (diagnosis-first bug fixing),
 `/bug-hunt` (proactive bug discovery), `/test-mutation` (mutation
-testing), and `/refactor-deep` (full tactical + architectural + tactical
-refactoring cycle).
+testing), `/refactor-deep` (full tactical + architectural + tactical
+refactoring cycle), and `/review-deep` (comprehensive pre-release
+review pipeline).
 
 ## Choosing a Workflow
 
@@ -86,6 +87,7 @@ your task:
 | Assess code health across all project languages         | `/review-health`     |
 | Review performance (compute and/or web)                 | `/review-perf`       |
 | Perform a white-box security audit                      | `/review-security`   |
+| Run every review dimension before a release, in one go  | `/review-deep`       |
 
 **Rules of thumb:**
 - Multiple batches of tickets forming a project? `/implement-project`
@@ -241,6 +243,19 @@ project type and dispatches the appropriate specialist(s) in parallel.
 Advisory only — no changes made.
 
 [Detailed documentation](skills/review-perf/SKILL.md)
+
+#### /review-deep — Comprehensive Pre-Release Review Pipeline
+
+Thin orchestrator that runs every `/review-*` skill in sequence:
+`/review-health`, `/review-arch`, `/review-security`, `/review-perf`,
+`/review-a11y`, `/review-test`, `/review-doc`, `/review-release`. Each
+sub-skill keeps its normal interactive behavior — the operator
+participates throughout. Auto-detects phases that don't apply (no web
+content → skip `/review-a11y`; no tests → skip `/review-test`; etc.)
+and asks for confirmation on the skip list before starting. Ends with
+a consolidated report that synthesizes findings across all phases.
+
+[Detailed documentation](skills/review-deep/SKILL.md)
 
 ### Security
 

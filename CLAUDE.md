@@ -56,8 +56,15 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
 ├── /implement-batch (per batch)
 │   └── /implement (per ticket)
 └── quality pipeline: /refactor, /review-arch, /review-test, /review-doc, /review-release
+
+/refactor-deep
+└── /refactor → /review-arch → /refactor → /review-doc
+
+/review-deep
+└── /review-health → /review-arch → /review-security → /review-perf
+  → /review-a11y → /review-test → /review-doc → /review-release
 ```
 
 Planning feeds implementation: `/scope-project` → `/implement-project`, or `/scope` → `/implement`.
 
-Supporting workflows available at any level: `/think-reframe` (problem redefinition), `/think-brainstorm` (divergent idea generation), `/think-diagnose` (abductive reasoning about causes), `/think-deliberate` (adversarial decision-making), `/think-scrutinize` (adversarial idea critique), `/think-reflect` (retrospective learning), `/bug-fix` (diagnosis-first bug fixing), `/bug-hunt` (proactive bug discovery), `/test-mutation` (mutation testing), `/refactor-deep` (full tactical + architectural + tactical refactoring cycle).
+Supporting workflows available at any level: `/think-reframe` (problem redefinition), `/think-brainstorm` (divergent idea generation), `/think-diagnose` (abductive reasoning about causes), `/think-deliberate` (adversarial decision-making), `/think-scrutinize` (adversarial idea critique), `/think-reflect` (retrospective learning), `/bug-fix` (diagnosis-first bug fixing), `/bug-hunt` (proactive bug discovery), `/test-mutation` (mutation testing), `/refactor-deep` (full tactical + architectural + tactical refactoring cycle), `/review-deep` (comprehensive pre-release review pipeline).

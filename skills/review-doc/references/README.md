@@ -77,6 +77,6 @@ Committed: "docs: review and update project documentation"
 
 1. **Run after `/refactor` or `/review-arch`.** These skills change code structure, which often makes docs stale.
 
-2. **Run before releases.** Stale docs in a release are embarrassing. A quick `/review-doc` catches drift.
+2. **Run before releases.** Stale docs in a release are embarrassing. A quick `/review-doc` catches drift. For a full pre-release sweep across every review dimension, `/review-deep` runs `/review-doc` as one of its phases.
 
 3. **Different from `/implement` step 9.** The `/implement` workflow's documentation step is scoped to the git diff. `/review-doc` audits everything regardless of recent changes.

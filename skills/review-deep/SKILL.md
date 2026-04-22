@@ -25,14 +25,14 @@ Convenience wrapper that runs every `/review-*` skill in a coordinated sequence.
 │  0. Branch safety check                              │
 │  1. Skip detection + user confirmation               │
 │  2. Execute enabled phases, in order:                │
-│     a. /review-health                                │
-│     b. /review-arch                                  │
-│     c. /review-security                              │
-│     d. /review-perf                                  │
-│     e. /review-a11y                                  │
-│     f. /review-test                                  │
-│     g. /review-doc                                   │
-│     h. /review-release                               │
+│     1. /review-health                                │
+│     2. /review-arch                                  │
+│     3. /review-security                              │
+│     4. /review-perf                                  │
+│     5. /review-a11y                                  │
+│     6. /review-test                                  │
+│     7. /review-doc                                   │
+│     8. /review-release                               │
 │  3. Consolidated final report                        │
 └──────────────────────────────────────────────────────┘
 ```
