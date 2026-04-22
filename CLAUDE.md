@@ -67,4 +67,24 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
 
 Planning feeds implementation: `/scope-project` → `/implement-project`, or `/scope` → `/implement`.
 
-Supporting workflows available at any level: `/think-reframe` (problem redefinition), `/think-brainstorm` (divergent idea generation), `/think-diagnose` (abductive reasoning about causes), `/think-deliberate` (adversarial decision-making), `/think-scrutinize` (adversarial idea critique), `/think-reflect` (retrospective learning), `/bug-fix` (diagnosis-first bug fixing), `/bug-hunt` (proactive bug discovery), `/test-mutation` (mutation testing), `/refactor-deep` (full tactical + architectural + tactical refactoring cycle), `/review-deep` (comprehensive pre-release review pipeline).
+Supporting workflows available at any level:
+
+**Reasoning and decisions:**
+
+- `/think-reframe` — problem redefinition
+- `/think-brainstorm` — divergent idea generation
+- `/think-diagnose` — abductive reasoning about causes
+- `/think-deliberate` — adversarial decision-making
+- `/think-scrutinize` — adversarial idea critique
+- `/think-reflect` — retrospective learning
+
+**Bug work:**
+
+- `/bug-fix` — diagnosis-first bug fixing
+- `/bug-hunt` — proactive bug discovery
+
+**Quality pipelines:**
+
+- `/test-mutation` — mutation testing
+- `/refactor-deep` — full tactical + architectural + tactical refactoring cycle
+- `/review-deep` — comprehensive pre-release review pipeline

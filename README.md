@@ -46,16 +46,27 @@ consumes directly:
 
 For single tickets: `/scope` plans, `/implement` implements.
 
-Supporting workflows are available at any level for reasoning and
-diagnosis: `/think-reframe` (problem redefinition), `/think-brainstorm`
-(divergent idea generation), `/think-diagnose` (abductive reasoning
-about causes), `/think-deliberate` (adversarial decision-making),
-`/think-scrutinize` (adversarial idea critique), `/think-reflect`
-(retrospective learning), `/bug-fix` (diagnosis-first bug fixing),
-`/bug-hunt` (proactive bug discovery), `/test-mutation` (mutation
-testing), `/refactor-deep` (full tactical + architectural + tactical
-refactoring cycle), and `/review-deep` (comprehensive pre-release
-review pipeline).
+Supporting workflows are available at any level:
+
+**Reasoning and decisions:**
+
+- `/think-reframe` — problem redefinition
+- `/think-brainstorm` — divergent idea generation
+- `/think-diagnose` — abductive reasoning about causes
+- `/think-deliberate` — adversarial decision-making
+- `/think-scrutinize` — adversarial idea critique
+- `/think-reflect` — retrospective learning
+
+**Bug work:**
+
+- `/bug-fix` — diagnosis-first bug fixing
+- `/bug-hunt` — proactive bug discovery
+
+**Quality pipelines:**
+
+- `/test-mutation` — mutation testing
+- `/refactor-deep` — full tactical + architectural + tactical refactoring cycle
+- `/review-deep` — comprehensive pre-release review pipeline
 
 ## Choosing a Workflow
 
