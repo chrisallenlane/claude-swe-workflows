@@ -1,5 +1,25 @@
 # Changelog
 
+## v7.0.0
+
+### Breaking Changes
+
+- **`/review-health` completely redesigned as a strategic-orientation skill.** The skill's behavior has changed substantially. In prior versions (introduced at v4.2.0), `/review-health` dispatched language-specific SME agents to evaluate idiomatic usage, consistency, and code quality, producing a consolidated health report with per-language ratings. In v7.0.0 it is a first-pass strategic-orientation review: it classifies the repository against a reference class and produces an evidence-cited map — not a grade — calibrated to that class. Output is advisory, intended to help the operator decide where to engage, where to tread carefully, and where to leave alone.
+
+  Operators who relied on the prior per-language code-health ratings should switch to `/review-arch` (architectural analysis) and `/review-security` / `/review-perf` (quality dimensions previously folded into the health skill). Operators invoking `/review-deep` will see the new strategic-orientation behavior as Phase 1 of that pipeline.
+
+### New Skills
+
+- **`/lead-project` — Autonomous technical lead.** Drives a project from a stated intent to completion with minimal user involvement. The user provides **commander's intent** at startup in five structured fields (purpose, key tasks, end state, constraints, non-goals); the skill then runs an **OODA loop** (Observe → Orient → Decide → Act) invoking other skills (`/scope`, `/implement`, `/refactor`, `/review-*`, `/bug-*`, `/think-*`) as it judges appropriate.
+
+  Termination is mechanically gated: every end-state condition classified as "mechanical" (shell-runnable) must actually execute and pass; a pre-termination review re-run (at minimum `/review-test` + `/review-release`) must produce no new high-severity findings; constraint violations must be clean; and two-cycle quiescence over git diff must hold. Subjective end-state conditions are surfaced to the user in the completion report rather than self-declared met. Trajectory audits every 10 cycles read git log / diff / intent directly (not the cycle log narrative) and can pull the andon cord on drift or thrash. Reviewer tie-breaker: contradictory review findings on the same file pull the cord rather than oscillate. State persisted in `LEAD_PROJECT_STATE.md` (gitignored) with branch SHAs recorded for resume safety. Hard cap of 50 cycles.
+
+  Sits one layer above `/implement-project` in the plugin hierarchy. User acts as product owner; the skill fills the project-manager / tech-lead role.
+
+### Infrastructure
+
+- **README, `CLAUDE.md`, and downstream skill READMEs updated** to position `/lead-project` at the top of the orchestration hierarchy and cross-reference from `/implement-project`, `/refactor-deep`, `/review-deep`, and `/scope-project`.
+
 ## v6.1.0
 
 ### New Skills
