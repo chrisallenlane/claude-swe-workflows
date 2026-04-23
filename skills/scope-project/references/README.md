@@ -288,18 +288,22 @@ and adds a missing ticket for shutdown handling.
 
 ## Integration with Other Skills
 
-| Skill          | Relationship                                                                                                                                       |
-|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/scope`       | Plans a single ticket interactively. `/scope-project` plans an entire project with adversarial review.                                             |
+| Skill               | Relationship                                                                                                                                       |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/scope`            | Plans a single ticket interactively. `/scope-project` plans an entire project with adversarial review.                                             |
 | `/implement-project`     | Implements what `/scope-project` plans. Tickets go upstream with batch labels that `/implement-project` consumes directly. Typical flow: `/scope-project` → `/implement-project`. |
+| `/lead-project`     | May invoke `/scope` to draft new tickets when gaps emerge mid-run. `/scope-project` is typically run by the user before `/lead-project` to establish the initial backlog. |
 | `/implement-batch`       | Can also consume `/scope-project`'s tagged tickets if only one batch needs implementation.                                                         |
-| `/implement`     | Can implement individual tickets from `/scope-project` if full `/implement-project` orchestration isn't needed.                                              |
-| `/think-deliberate`  | Available within `/scope-project` for difficult design decisions during planning.                                                                   |
+| `/implement`        | Can implement individual tickets from `/scope-project` if full `/implement-project` orchestration isn't needed.                                    |
+| `/think-deliberate` | Available within `/scope-project` for difficult design decisions during planning.                                                                   |
 
 **The full pipeline:**
 ```
 /scope-project  →  /implement-project
     plan             implement
+
+/scope-project  →  /lead-project
+    plan             autonomous orchestration (intent-driven)
 ```
 
 ## Tips

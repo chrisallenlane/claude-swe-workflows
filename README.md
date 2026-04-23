@@ -18,6 +18,9 @@ orchestrate lower-level ones. Each layer adds coordination, quality gates,
 and autonomy.
 
 ```
+/lead-project                                   ← autonomous tech lead (OODA loop)
+└── invokes any skill below, driven by commander's intent
+
 /implement-project                              ← full project lifecycle
 ├── /implement-batch (per batch)                ← multi-ticket orchestration
 │   ├── /implement (per ticket)         ← single-ticket implementation
@@ -46,6 +49,11 @@ consumes directly:
 
 For single tickets: `/scope` plans, `/implement` implements.
 
+For open-ended work where the next step depends on the outcome of the last,
+`/lead-project` runs an OODA loop — observing project state, deciding what
+to work on next, and invoking lower-level skills until commander's intent is
+fulfilled.
+
 Supporting workflows are available at any level:
 
 **Reasoning and decisions:**
@@ -73,34 +81,36 @@ Supporting workflows are available at any level:
 Not everything needs the full pipeline. Enter at the level that matches
 your task:
 
-| You want to...                                          | Use                  |
-|---------------------------------------------------------|----------------------|
-| Implement an entire multi-batch project autonomously    | `/implement-project` |
-| Implement a batch of related tickets                    | `/implement-batch`   |
-| Implement a single ticket or feature                    | `/implement`         |
-| Plan a multi-batch project with adversarial review      | `/scope-project`     |
-| Plan a single feature and create a ticket               | `/scope`             |
-| Fix a bug with diagnosis and root-cause analysis        | `/bug-fix`           |
-| Proactively hunt for bugs before they're reported       | `/bug-hunt`          |
-| Pressure-test a problem's framing before solving it     | `/think-reframe`     |
-| Brainstorm approaches to a goal                         | `/think-brainstorm`  |
-| Reason about why a phenomenon is happening              | `/think-diagnose`    |
-| Make a hard decision with adversarial deliberation      | `/think-deliberate`  |
-| Scrutinize an idea or plan before committing to it      | `/think-scrutinize`  |
-| Reflect on a completed experience to update beliefs     | `/think-reflect`     |
-| Clean up code quality (DRY, dead code, naming)          | `/refactor`          |
-| Rethink module boundaries and architecture              | `/review-arch`       |
-| Review and strengthen the test suite                    | `/review-test`       |
-| Verify test quality via mutation testing                | `/test-mutation`     |
-| Audit all project documentation                         | `/review-doc`        |
-| Pre-release readiness check                             | `/review-release`    |
-| Audit web content for accessibility barriers            | `/review-a11y`       |
-| First-pass strategic orientation on a repo              | `/review-health`     |
-| Review performance (compute and/or web)                 | `/review-perf`       |
-| Perform a white-box security audit                      | `/review-security`   |
-| Run every review dimension before a release, in one go  | `/review-deep`       |
+| You want to...                                                          | Use                  |
+|-------------------------------------------------------------------------|----------------------|
+| Drive a project to completion autonomously, deciding what to work on    | `/lead-project`      |
+| Implement an entire multi-batch project autonomously                    | `/implement-project` |
+| Implement a batch of related tickets                                    | `/implement-batch`   |
+| Implement a single ticket or feature                                    | `/implement`         |
+| Plan a multi-batch project with adversarial review                      | `/scope-project`     |
+| Plan a single feature and create a ticket                               | `/scope`             |
+| Fix a bug with diagnosis and root-cause analysis                        | `/bug-fix`           |
+| Proactively hunt for bugs before they're reported                       | `/bug-hunt`          |
+| Pressure-test a problem's framing before solving it                     | `/think-reframe`     |
+| Brainstorm approaches to a goal                                         | `/think-brainstorm`  |
+| Reason about why a phenomenon is happening                              | `/think-diagnose`    |
+| Make a hard decision with adversarial deliberation                      | `/think-deliberate`  |
+| Scrutinize an idea or plan before committing to it                      | `/think-scrutinize`  |
+| Reflect on a completed experience to update beliefs                     | `/think-reflect`     |
+| Clean up code quality (DRY, dead code, naming)                          | `/refactor`          |
+| Rethink module boundaries and architecture                              | `/review-arch`       |
+| Review and strengthen the test suite                                    | `/review-test`       |
+| Verify test quality via mutation testing                                | `/test-mutation`     |
+| Audit all project documentation                                         | `/review-doc`        |
+| Pre-release readiness check                                             | `/review-release`    |
+| Audit web content for accessibility barriers                            | `/review-a11y`       |
+| First-pass strategic orientation on a repo                              | `/review-health`     |
+| Review performance (compute and/or web)                                 | `/review-perf`       |
+| Perform a white-box security audit                                      | `/review-security`   |
+| Run every review dimension before a release, in one go                  | `/review-deep`       |
 
 **Rules of thumb:**
+- Open-ended work where the next step depends on the outcome of the last? `/lead-project`
 - Multiple batches of tickets forming a project? `/implement-project`
 - One batch of 2+ related tickets? `/implement-batch`
 - One ticket? `/implement` (or `/bug-fix` if it's a bug)
@@ -112,6 +122,23 @@ your task:
 
 These workflows manage the lifecycle of tickets — from implementation
 through quality passes to a merge-ready branch.
+
+#### /lead-project — Autonomous Technical Lead
+
+Drives a project from a stated commander's intent to completion with
+minimal user involvement. Takes structured intent from the user at startup
+(purpose, key tasks, end state, constraints, non-goals), then runs an OODA
+loop — observing project state, orienting against intent, deciding what to
+work on next, and acting by invoking other skills (`/scope`, `/implement`,
+`/refactor`, `/review-*`, `/bug-*`, `/think-*`). The user acts as product
+owner; the skill acts as project manager and tech lead.
+
+Stops autonomously when mechanical end-state conditions are met and reviews
+are clean, or pulls an andon cord when it hits a genuine blocker. Includes
+periodic trajectory audits (every 10 cycles) and a capped run (50 cycles)
+to prevent drift or thrash.
+
+[Detailed documentation](skills/lead-project/references/README.md)
 
 #### /implement-project — Full-Lifecycle Project Workflow
 

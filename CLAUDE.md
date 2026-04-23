@@ -52,6 +52,9 @@ claude --plugin-dir .
 The skills form a layered system. Higher-level workflows orchestrate lower-level ones:
 
 ```
+/lead-project
+└── OODA loop invoking any skill below, until commander's intent is met
+
 /implement-project
 ├── /implement-batch (per batch)
 │   └── /implement (per ticket)
@@ -65,7 +68,7 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
   → /review-a11y → /review-test → /review-doc → /review-release
 ```
 
-Planning feeds implementation: `/scope-project` → `/implement-project`, or `/scope` → `/implement`.
+Planning feeds implementation: `/scope-project` → `/implement-project`, or `/scope` → `/implement`. `/lead-project` sits one level higher — given a commander's intent, it decides which of the below skills to invoke and when.
 
 Supporting workflows available at any level:
 

@@ -114,6 +114,7 @@ Advisory-only phases produce reports you can act on manually or via `/refactor` 
 
 | Skill              | Relationship                                                                                            |
 |--------------------|---------------------------------------------------------------------------------------------------------|
+| `/lead-project`    | May invoke `/review-deep` near the end of a run as a comprehensive validation pass, or invoke individual `/review-*` skills earlier when specific concerns arise. |
 | `/review-health`   | Phase 1                                                                                                 |
 | `/review-arch`     | Phase 2                                                                                                 |
 | `/review-security` | Phase 3                                                                                                 |

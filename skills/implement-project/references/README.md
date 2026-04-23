@@ -507,6 +507,7 @@ Skipping /refactor (pass 2): review-arch was skipped
 
 | Skill              | Relationship                                                                                        |
 |--------------------|-----------------------------------------------------------------------------------------------------|
+| `/lead-project`    | Sits above `/implement-project` in the hierarchy. May invoke `/implement-project` when it has a coherent batch of tickets ready to execute. |
 | `/scope`           | Creates tickets that `/implement-project` consumes. Typical flow: `/scope` → organize into batches → `/implement-project`. |
 | `/implement-batch`           | Runs inside `/implement-project` for each batch. `/implement-project` adds multi-batch coordination, smoke testing, and the quality pipeline. |
 | `/implement`         | Runs inside `/implement-batch` for each ticket. The innermost implementation loop.                            |
@@ -520,17 +521,18 @@ Skipping /refactor (pass 2): review-arch was skipped
 
 **Hierarchy:**
 ```
-/implement-project
-├── /implement-batch (per batch)
-│   ├── /implement (per ticket)
-│   ├── /refactor (per-batch quality)
-│   └── /review-doc (per-batch quality)
-├── /refactor (project-level quality)
-├── /review-arch (project-level quality)
-├── /refactor (conditional second pass)
-├── /review-test (project-level quality)
-├── /review-doc (project-level quality)
-└── /review-release (project-level quality)
+/lead-project (optional outer orchestrator)
+└── /implement-project
+    ├── /implement-batch (per batch)
+    │   ├── /implement (per ticket)
+    │   ├── /refactor (per-batch quality)
+    │   └── /review-doc (per-batch quality)
+    ├── /refactor (project-level quality)
+    ├── /review-arch (project-level quality)
+    ├── /refactor (conditional second pass)
+    ├── /review-test (project-level quality)
+    ├── /review-doc (project-level quality)
+    └── /review-release (project-level quality)
 ```
 
 ## Tips
