@@ -24,7 +24,8 @@ The `/bug-hunt` skill systematically hunts for bugs before they reach users. An 
 - Fixing a known, reported bug (use `/bug-fix` — it's designed for reactive investigation)
 - Security-focused analysis (use `/review-security` — it has dedicated security methodology)
 - Improving test coverage for its own sake (use `/review-test`)
-- General code quality review (use `/review-health`)
+- General code quality cleanup (use `/refactor`)
+- Strategic orientation on an unfamiliar repo (use `/review-health`)
 
 **Rule of thumb:** If you know the bug, use `/bug-fix`. If you want to find the bugs you don't know about yet, use `/bug-hunt`.
 

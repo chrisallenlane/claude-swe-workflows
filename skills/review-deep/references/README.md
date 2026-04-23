@@ -85,7 +85,7 @@ A single report aggregating every enabled phase:
 
 | Phase              | What it does                                                      | Makes changes? |
 |--------------------|-------------------------------------------------------------------|----------------|
-| `/review-health`   | Source code health across all project languages via SME agents    | No             |
+| `/review-health`   | Strategic-orientation review: classification + per-class rubric   | No             |
 | `/review-arch`     | Noun-analysis architectural review; interactive blueprint         | Yes            |
 | `/review-security` | White-box security audit (blue team + red team + synthesis)       | No             |
 | `/review-perf`     | Compute and/or web performance review                             | No             |

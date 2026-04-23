@@ -95,7 +95,7 @@ your task:
 | Audit all project documentation                         | `/review-doc`        |
 | Pre-release readiness check                             | `/review-release`    |
 | Audit web content for accessibility barriers            | `/review-a11y`       |
-| Assess code health across all project languages         | `/review-health`     |
+| First-pass strategic orientation on a repo              | `/review-health`     |
 | Review performance (compute and/or web)                 | `/review-perf`       |
 | Perform a white-box security audit                      | `/review-security`   |
 | Run every review dimension before a release, in one go  | `/review-deep`       |
@@ -235,13 +235,19 @@ changes made.
 
 [Detailed documentation](skills/review-a11y/SKILL.md)
 
-#### /review-health — Code Health Assessment
+#### /review-health — Strategic Orientation Review
 
-Assesses source code health across all languages in the project. Detects
-languages, dispatches SME agents for specialist review (or generalists for
-unsupported languages), and produces a consolidated health report with
-per-language ratings. Advisory only — no changes made. Use to decide
-whether `/refactor` is needed.
+First-pass strategic-orientation review of a repository. Use when you want
+to step back and assess a repo strategically — inheriting a work project,
+evaluating a FOSS library, revisiting your own repo, onboarding a
+teammate. Produces an evidence-cited map (not a grade) calibrated to a
+reference class, built to inform decisions about where to engage, where
+to tread carefully, and where to leave alone. OODA-structured workflow
+(Observe → Orient → Decide → Act) with per-class rubrics, ASHI severity
+tiers on individual findings, and an explicit coverage manifest for
+unavailable tooling. Advisory only — no changes made. Routes to sibling
+specialists (`/review-arch`, `/refactor`, `/review-test`, etc.) when
+findings warrant deeper follow-up.
 
 [Detailed documentation](skills/review-health/SKILL.md)
 
