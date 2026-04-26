@@ -225,9 +225,12 @@ dissolution, and structural rethinking.
 
 #### /review-test — Comprehensive Test Suite Review
 
-Three-phase review: fills coverage gaps, identifies missing fuzz tests,
+Five-phase review: fills unit coverage gaps, surveys integration coverage,
+surveys E2E (browser) coverage for webapps, identifies missing fuzz tests,
 and audits test quality. Each phase has its own analysis → present →
-select → implement → verify cycle.
+select → implement → verify cycle. Phase 3 (E2E) cleanly skips when the
+project is not a webapp; integration and E2E phases verify by compile-check
+and prompt the user to run the suite ad-hoc rather than auto-running.
 
 [Detailed documentation](skills/review-test/SKILL.md)
 
@@ -462,45 +465,47 @@ bugs to SME agents for fixing.
 
 Specialist agents spawned by the workflows above:
 
-| Agent                       | Purpose                                                                                                    |
-|-----------------------------|------------------------------------------------------------------------------------------------------------|
-| `thk-ach-evidence-gatherer` | Good-faith evidence enumerator for ACH proceedings, parameterized by an evidence class                     |
-| `thk-ach-hypothesizer`      | Good-faith hypothesis generator for ACH proceedings, parameterized by a hypothesis-generation angle        |
-| `thk-advocate`              | Argues for an assigned position in adversarial proceedings                                                 |
-| `thk-brainstormer`          | Good-faith idea generator parameterized by a specific brainstorming technique                              |
-| `thk-diagnostician`         | Good-faith abductive reasoner that generates candidate causes through an assigned reasoning lens           |
-| `thk-premortemer`           | Good-faith failure imaginer that uses prospective hindsight to identify causes through an assigned failure-class lens |
-| `thk-reflector`             | Good-faith reflector that extracts learnings from an experience through an assigned reflection lens        |
-| `thk-reframer`              | Good-faith reframer that restates a problem through an assigned reframing lens                             |
-| `thk-skeptic`               | Good-faith skeptic that identifies faults in an idea through an assigned critical lens                     |
-| `swe-planner`               | Decomposes complex tasks into implementation plans                                                         |
-| `swe-sme-golang`            | Go implementation specialist                                                                               |
-| `swe-sme-graphql`           | GraphQL schema and resolver specialist                                                                     |
-| `swe-sme-docker`            | Dockerfile and container specialist                                                                        |
-| `swe-sme-makefile`          | Makefile and build system specialist                                                                       |
-| `swe-sme-ansible`           | Ansible automation specialist                                                                              |
-| `swe-sme-zig`               | Zig implementation specialist                                                                              |
-| `swe-sme-html`              | HTML structure, semantics, and accessibility specialist                                                    |
-| `swe-sme-css`               | CSS styling, layout, and responsive design specialist                                                      |
-| `swe-sme-javascript`        | Vanilla JavaScript implementation specialist                                                               |
-| `swe-sme-typescript`        | TypeScript implementation and type design specialist                                                       |
-| `swe-code-reviewer`         | Tactical code quality reviewer (DRY, dead code, naming, complexity)                                        |
-| `swe-arch-reviewer`         | Architecture reviewer (noun analysis, module boundaries, blueprints)                                       |
-| `swe-bug-assessor`          | Codebase risk assessor (complexity, coverage, structural risk, git churn — produces ranked hotspot list)   |
-| `swe-bug-hunter`            | Focused bug investigator (deep-dives hotspots, writes reproducing tests, validates findings)                |
-| `swe-bug-investigator`      | Bug root-cause investigator (execution tracing, git archaeology, diagnosis reports)                        |
-| `swe-perf-reviewer`         | Compute performance reviewer (algorithmic complexity, benchmarking, profiling, optimization)                |
-| `swe-web-perf-reviewer`     | Web performance reviewer (caching, asset delivery, loading strategy, Core Web Vitals)                      |
-| `qa-engineer`               | Practical verification and test coverage                                                                   |
-| `qa-web-a11y-reviewer`      | WCAG accessibility reviewer (keyboard navigation, ARIA, contrast, semantic structure)                      |
-| `qa-test-reviewer`          | Test quality reviewer (brittle, tautological, useless tests)                                               |
-| `qa-test-coverage-reviewer` | Coverage gap reviewer (coverage reports, risk prioritization, testability suggestions)                     |
-| `qa-test-fuzz-reviewer`     | Fuzz testing gap reviewer (fuzz infrastructure detection, candidate identification)                        |
-| `qa-test-mutator`           | Mutation testing worker (applies mutations, records results)                                               |
-| `qa-release-engineer`       | Pre-release scanner (debug artifacts, versioning, changelog, git hygiene, breaking changes, licenses)      |
-| `sec-blue-teamer`           | Defensive security analyst (control inventory, consistency, defense-in-depth, configuration)               |
-| `sec-red-teamer`            | Adversarial security analyst (attack surface mapping, exploitation, trust boundary analysis)               |
-| `doc-maintainer`            | Documentation updates and verification                                                                     |
+| Agent                          | Purpose                                                                                                    |
+|--------------------------------|------------------------------------------------------------------------------------------------------------|
+| `thk-ach-evidence-gatherer`    | Good-faith evidence enumerator for ACH proceedings, parameterized by an evidence class                     |
+| `thk-ach-hypothesizer`         | Good-faith hypothesis generator for ACH proceedings, parameterized by a hypothesis-generation angle        |
+| `thk-advocate`                 | Argues for an assigned position in adversarial proceedings                                                 |
+| `thk-brainstormer`             | Good-faith idea generator parameterized by a specific brainstorming technique                              |
+| `thk-diagnostician`            | Good-faith abductive reasoner that generates candidate causes through an assigned reasoning lens           |
+| `thk-premortemer`              | Good-faith failure imaginer that uses prospective hindsight to identify causes through an assigned failure-class lens |
+| `thk-reflector`                | Good-faith reflector that extracts learnings from an experience through an assigned reflection lens        |
+| `thk-reframer`                 | Good-faith reframer that restates a problem through an assigned reframing lens                             |
+| `thk-skeptic`                  | Good-faith skeptic that identifies faults in an idea through an assigned critical lens                     |
+| `swe-planner`                  | Decomposes complex tasks into implementation plans                                                         |
+| `swe-sme-golang`               | Go implementation specialist                                                                               |
+| `swe-sme-graphql`              | GraphQL schema and resolver specialist                                                                     |
+| `swe-sme-docker`               | Dockerfile and container specialist                                                                        |
+| `swe-sme-makefile`             | Makefile and build system specialist                                                                       |
+| `swe-sme-ansible`              | Ansible automation specialist                                                                              |
+| `swe-sme-zig`                  | Zig implementation specialist                                                                              |
+| `swe-sme-html`                 | HTML structure, semantics, and accessibility specialist                                                    |
+| `swe-sme-css`                  | CSS styling, layout, and responsive design specialist                                                      |
+| `swe-sme-javascript`           | Vanilla JavaScript implementation specialist                                                               |
+| `swe-sme-typescript`           | TypeScript implementation and type design specialist                                                       |
+| `swe-code-reviewer`            | Tactical code quality reviewer (DRY, dead code, naming, complexity)                                        |
+| `swe-arch-reviewer`            | Architecture reviewer (noun analysis, module boundaries, blueprints)                                       |
+| `swe-bug-assessor`             | Codebase risk assessor (complexity, coverage, structural risk, git churn — produces ranked hotspot list)   |
+| `swe-bug-hunter`               | Focused bug investigator (deep-dives hotspots, writes reproducing tests, validates findings)               |
+| `swe-bug-investigator`         | Bug root-cause investigator (execution tracing, git archaeology, diagnosis reports)                        |
+| `swe-perf-reviewer`            | Compute performance reviewer (algorithmic complexity, benchmarking, profiling, optimization)               |
+| `swe-web-perf-reviewer`        | Web performance reviewer (caching, asset delivery, loading strategy, Core Web Vitals)                      |
+| `qa-engineer`                  | Practical verification and test coverage                                                                   |
+| `qa-web-a11y-reviewer`         | WCAG accessibility reviewer (keyboard navigation, ARIA, contrast, semantic structure)                      |
+| `qa-test-reviewer`             | Test quality reviewer (brittle, tautological, useless tests)                                               |
+| `qa-test-coverage-reviewer`    | Coverage gap reviewer (coverage reports, risk prioritization, testability suggestions)                     |
+| `qa-test-integration-reviewer` | Integration test gap reviewer (seam survey, Mode A starter strategy, Mode B gaps and strategy expansion)   |
+| `qa-test-e2e-reviewer`         | E2E browser test gap reviewer (webapp detection, journey classification, Playwright-prescriptive Mode A)   |
+| `qa-test-fuzz-reviewer`        | Fuzz testing gap reviewer (fuzz infrastructure detection, candidate identification)                        |
+| `qa-test-mutator`              | Mutation testing worker (applies mutations, records results)                                               |
+| `qa-release-engineer`          | Pre-release scanner (debug artifacts, versioning, changelog, git hygiene, breaking changes, licenses)      |
+| `sec-blue-teamer`              | Defensive security analyst (control inventory, consistency, defense-in-depth, configuration)               |
+| `sec-red-teamer`               | Adversarial security analyst (attack surface mapping, exploitation, trust boundary analysis)               |
+| `doc-maintainer`               | Documentation updates and verification                                                                     |
 
 ## Development
 
