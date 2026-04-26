@@ -1,5 +1,35 @@
 # Changelog
 
+## v7.1.0
+
+### New Skills
+
+- **`/think-premortem` — Prospective failure imagination.** Treats a catastrophic failure as already-having-happened and reasons backward to the causes. Two modes: **plan mode** (a not-yet-committed plan; imagine its failure broadly across lenses) and **scenario mode** (a specific catastrophic scenario posed against an existing system; investigate the actual code and architecture for causes that could have allowed it). Spawns parallel pre-mortemers in isolation across failure-class lenses (technical, operational, estimation, scope, adoption, dependency-and-environment, team-and-coordination, incentive, detection, reversibility, adversarial), plus an always-on `first-principles` lens and 0–3 ad-hoc target-specific lenses. Synthesizes into a prioritized risk register with early-warning signals, calibrated qualitatively (high/moderate/low/uncertain). Sourced from Klein's pre-mortem methodology and the *prospective hindsight* finding from decision research.
+
+- **`/think-ach` — Analysis of Competing Hypotheses.** Operationalizes Richards Heuer's ACH technique (CIA tradition) to systematically narrow among multiple hypotheses against evidence. Spawns parallel hypothesizers across angles (leading, alternative, adversarial, null, deceptive, surprise) and parallel evidence-gatherers across classes (direct-observational, documentary-historical, structural, behavioral, absent, anomalous). Builds an explicit hypothesis-vs-evidence matrix with a four-value scoring system (C/I/N/A, with optional CC/II intensity). **Ranks hypotheses by least disconfirming evidence** — the central methodological insight: hypotheses cannot be proven, only failed-to-be-disproven. Includes diagnosticity analysis, sensitivity analysis, and falsification milestones. Designed to counter confirmation bias, premature closure, anchoring, and cherry-picking. Natural composition: `/think-diagnose` generates candidate causes, `/think-ach` rigorously narrows among them.
+
+### New Agents
+
+- **`thk-premortemer`** — failure imaginer for `/think-premortem` proceedings, parameterized by an assigned failure-class lens. Mode-aware (plan vs scenario) — investigates actual code with file:line citations in scenario mode.
+- **`thk-ach-hypothesizer`** — good-faith hypothesis generator for `/think-ach` proceedings, parameterized by a hypothesis-generation angle.
+- **`thk-ach-evidence-gatherer`** — good-faith evidence enumerator for `/think-ach` proceedings, parameterized by an evidence class.
+- **`qa-test-integration-reviewer`** — integration test gap reviewer. Surveys integration seams and recommends gaps within an existing strategy or, when none exists, proposes a starter strategy with infrastructure and ~5–8 starter tests anchored in critical flows.
+- **`qa-test-e2e-reviewer`** — end-to-end browser test gap reviewer. Detects whether the project is a webapp, surveys critical user journeys with Critical/Important/Nice-to-have classification, and prescribes Playwright unconditionally for greenfield Mode A while respecting existing Selenium/Cypress in Mode B (no migration push).
+
+### Behavior Changes
+
+- **`/review-security` — NGT isolation between blue and red first-pass.** The skill previously ran blue-teamer first and then a lead red-teamer informed by the blue-team report — sequential, with explicit information flow blue → red. This created an anchoring failure mode: whatever the blue team flagged became the salient territory for the red team, and gaps the defenders never considered were systematically suppressed. v7.1.0 introduces a parallel-isolated first pass (Nominal Group Technique discipline) followed by a synthesis step that categorizes each finding as **anchoring-suppressed** (red found, blue didn't account for — highest value), **convergent** (both teams independently flagged), **blue-flagged-unverified** (blue flagged, red didn't reach), or **divergent** (one team cleared what the other flagged). The lead red-teamer prompt is rewritten to remove blue-team input dependency for the first pass; focused red-teamers continue to receive blue-team context for targets whose origin includes blue-team data. The final report includes a synthesis section and expanded `Discovered by:` attribution values.
+
+- **`/review-test` — Two new phases (integration, E2E) and inside-out phase ordering.** The skill previously addressed unit coverage gaps, fuzz coverage, and test quality audit — and was fully blind to integration tests and in-browser tests. v7.1.0 inserts Phase 2 (integration coverage) and Phase 3 (E2E coverage, conditional on webapp detection) between unit coverage and fuzz, renumbering the existing fuzz phase to 4 and quality audit to 5. The new phases verify by compile-check only and prompt the user to run the suite ad-hoc — integration and E2E suites are not auto-run, recognizing that they are slow, may require fixtures up, and are often run only pre-release. Phase 3 includes an explicit user-confirmation step on journey classification (the most subjective input in the analysis) before any implementation begins. Mode A E2E recommendations prescribe Playwright unconditionally; Mode B respects existing Selenium/Cypress investment.
+
+### Infrastructure
+
+- **`THINK.md` design discipline document.** Repo-root document that captures the design discipline for the `/think-*` skill family. Includes the **five-test admission gate** for new `/think-*` skills (specific failure mode, practitioner tradition, unskippable questions, NGT discipline, honest "didn't apply"), cross-cutting practices (steelmanning, observation/recollection split, process-vs-luck attribution, calibrated qualitative confidence, prospective hindsight), and intellectual lineage (Kahneman, Tetlock, Schön, Klein, Taleb, de Bono, Delbecq & Van de Ven, Peirce). New `/think-*` skills must clear the five tests; existing `/scope`, `/implement`, `/refactor`, etc. are admitted by different criteria. A "spillover" section notes which practices apply across the plugin.
+
+- **`CLAUDE.md` updated** to reference `THINK.md` and require new `/think-*` skills to pass its admission gate.
+
+- **README.md and skill-level documentation updated** to position the new skills, agents, and workflow changes in the catalog and rules-of-thumb table.
+
 ## v7.0.0
 
 ### Breaking Changes
