@@ -343,19 +343,23 @@ with reinstated prep docs to test.
 
 ## Relationship to Other Skills
 
-| Skill                | Relationship                                                                          |
-|----------------------|---------------------------------------------------------------------------------------|
-| `/bug-fix`           | Code-specific diagnosis with artifact output; `/think-diagnose` is non-code, abstract |
-| `/think-brainstorm`  | Natural downstream — brainstorm remediations for the diagnosed cause                  |
-| `/think-scrutinize`  | Pressure-test either the diagnosis or the planned intervention                         |
-| `/think-reframe`     | If the phenomenon itself seems off, consider reframing before diagnosing              |
+| Skill                | Relationship                                                                                                  |
+|----------------------|---------------------------------------------------------------------------------------------------------------|
+| `/bug-fix`           | Code-specific diagnosis with artifact output; `/think-diagnose` is non-code, abstract                         |
+| `/think-ach`         | Natural downstream — when `/think-diagnose` surfaces multiple plausible causes, `/think-ach` rigorously narrows among them by ranking against evidence and disconfirmation |
+| `/think-brainstorm`  | Natural downstream — brainstorm remediations once the cause is identified                                     |
+| `/think-scrutinize`  | Pressure-test either the diagnosis or the planned intervention                                                |
+| `/think-reframe`     | If the phenomenon itself seems off, consider reframing before diagnosing                                      |
 
 **Natural pipeline (non-code phenomena):**
 
 ```
-/think-diagnose → /think-brainstorm → /think-deliberate → /think-scrutinize
-     why?            what to do?        which approach?     what's wrong?
+/think-diagnose → /think-ach → /think-brainstorm → /think-deliberate → /think-scrutinize
+     why?         narrow it      what to do?         which approach?     what's wrong?
+   (generate)    (disconfirm)
 ```
+
+`/think-diagnose` is generative — it casts a wide net for candidate causes. `/think-ach` is disconfirmation-focused — it ranks hypotheses by which has the *fewest* contradictions with evidence. They compose naturally: `/think-diagnose` produces the candidate set, `/think-ach` narrows it. Skip `/think-ach` when `/think-diagnose` already produces a strong-fit leading candidate with no close runners-up.
 
 ## Philosophy
 
