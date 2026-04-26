@@ -62,6 +62,7 @@ Supporting workflows are available at any level:
 - `/think-brainstorm` — divergent idea generation
 - `/think-diagnose` — abductive reasoning about causes
 - `/think-deliberate` — adversarial decision-making
+- `/think-premortem` — prospective failure imagination
 - `/think-scrutinize` — adversarial idea critique
 - `/think-reflect` — retrospective learning
 
@@ -95,6 +96,7 @@ your task:
 | Brainstorm approaches to a goal                                         | `/think-brainstorm`  |
 | Reason about why a phenomenon is happening                              | `/think-diagnose`    |
 | Make a hard decision with adversarial deliberation                      | `/think-deliberate`  |
+| Imagine how a plan could fail, or how a hypothetical catastrophe could hit a running system | `/think-premortem`   |
 | Scrutinize an idea or plan before committing to it                      | `/think-scrutinize`  |
 | Reflect on a completed experience to update beliefs                     | `/think-reflect`     |
 | Clean up code quality (DRY, dead code, naming)                          | `/refactor`          |
@@ -366,6 +368,25 @@ trade-offs.
 
 [Detailed documentation](skills/think-deliberate/SKILL.md)
 
+#### /think-premortem — Prospective Failure Imagination
+
+Treats a catastrophic failure as already-having-happened and reasons backward
+to the causes. Operates in two modes: **plan mode** (a not-yet-committed plan;
+imagine its catastrophic failure broadly across lenses) and **scenario mode**
+(a specific catastrophic scenario posed against an existing system;
+investigate the actual code and architecture for causes that could have
+allowed it). Spawns parallel pre-mortemers in isolation across failure-class
+lenses (technical, operational, estimation, scope, adoption,
+dependency-and-environment, team-and-coordination, incentive, detection,
+reversibility, adversarial). Synthesizes into a prioritized risk register
+with early-warning signals the user can monitor for, calibrated qualitatively
+(*high / moderate / low / uncertain*) rather than with fabricated percentages.
+Produces feedback only — no code, no tickets, no artifacts. Sourced from
+Klein's pre-mortem methodology and the *prospective hindsight* finding from
+decision research.
+
+[Detailed documentation](skills/think-premortem/SKILL.md)
+
 #### /think-scrutinize — Devil's Advocate for Ideas
 
 Stress-tests an idea or plan before you commit to implementing it. Spawns
@@ -421,6 +442,7 @@ Specialist agents spawned by the workflows above:
 | `thk-advocate`              | Argues for an assigned position in adversarial proceedings                                                 |
 | `thk-brainstormer`          | Good-faith idea generator parameterized by a specific brainstorming technique                              |
 | `thk-diagnostician`         | Good-faith abductive reasoner that generates candidate causes through an assigned reasoning lens           |
+| `thk-premortemer`           | Good-faith failure imaginer that uses prospective hindsight to identify causes through an assigned failure-class lens |
 | `thk-reflector`             | Good-faith reflector that extracts learnings from an experience through an assigned reflection lens        |
 | `thk-reframer`              | Good-faith reframer that restates a problem through an assigned reframing lens                             |
 | `thk-skeptic`               | Good-faith skeptic that identifies faults in an idea through an assigned critical lens                     |

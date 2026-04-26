@@ -78,6 +78,7 @@ Supporting workflows available at any level:
 - `/think-brainstorm` — divergent idea generation
 - `/think-diagnose` — abductive reasoning about causes
 - `/think-deliberate` — adversarial decision-making
+- `/think-premortem` — prospective failure imagination
 - `/think-scrutinize` — adversarial idea critique
 - `/think-reflect` — retrospective learning
 
