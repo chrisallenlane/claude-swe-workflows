@@ -318,6 +318,8 @@ no new chains emerge. Heavy and thorough by design.
 
 ### Decision and Diagnosis
 
+The `/think-*` skills share a common design discipline — each is a structured countermeasure to a specific cognitive failure mode, sourced from a practitioner tradition (decision research, reflective practice, adversarial proceduralism, NGT, and others). See [THINK.md](THINK.md) for the family's design discipline, the five-test admission gate for new `/think-*` skills, and the intellectual lineage.
+
 #### /think-reframe — Problem Redefinition Before Problem Solving
 
 Pressure-tests how a problem is framed before anyone tries to solve it.

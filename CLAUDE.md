@@ -22,7 +22,8 @@ This is `claude-swe-workflows`, a Claude Code plugin for software engineering wo
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── HACKING.md
-└── README.md
+├── README.md
+└── THINK.md            # Design discipline for the /think-* skill family
 ```
 
 ## Development
@@ -46,6 +47,8 @@ claude --plugin-dir .
 - Operate autonomously within defined scope
 
 **Model names must be lowercase** (`opus`, `sonnet`, `haiku`) - capitalized names are not recognized.
+
+**New `/think-*` skills must pass the five tests in [`THINK.md`](THINK.md).** When proposing or designing a new `/think-*` skill, read THINK.md first and check the proposal against the tests there. Skills outside the `/think-*` namespace are admitted by different criteria — primarily, whether they earn their keep in real software-engineering work — though the practitioner-methodology and structured-discipline values described in THINK.md apply across the plugin.
 
 ## Workflow
 
