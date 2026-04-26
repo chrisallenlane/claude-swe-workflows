@@ -61,6 +61,7 @@ Supporting workflows are available at any level:
 - `/think-reframe` — problem redefinition
 - `/think-brainstorm` — divergent idea generation
 - `/think-diagnose` — abductive reasoning about causes
+- `/think-ach` — analysis of competing hypotheses
 - `/think-deliberate` — adversarial decision-making
 - `/think-premortem` — prospective failure imagination
 - `/think-scrutinize` — adversarial idea critique
@@ -95,6 +96,7 @@ your task:
 | Pressure-test a problem's framing before solving it                     | `/think-reframe`     |
 | Brainstorm approaches to a goal                                         | `/think-brainstorm`  |
 | Reason about why a phenomenon is happening                              | `/think-diagnose`    |
+| Narrow among competing hypotheses against evidence                      | `/think-ach`         |
 | Make a hard decision with adversarial deliberation                      | `/think-deliberate`  |
 | Imagine how a plan could fail, or how a hypothetical catastrophe could hit a running system | `/think-premortem`   |
 | Scrutinize an idea or plan before committing to it                      | `/think-scrutinize`  |
@@ -361,6 +363,27 @@ phenomena. Produces feedback only — no code, no tickets, no artifacts.
 
 [Detailed documentation](skills/think-diagnose/SKILL.md)
 
+#### /think-ach — Analysis of Competing Hypotheses
+
+Systematically narrows among multiple hypotheses against evidence using
+Richards Heuer's Analysis of Competing Hypotheses (ACH) — a CIA-tradition
+technique designed to counter confirmation bias, premature closure,
+anchoring, and cherry-picking. Spawns parallel hypothesizers in isolation
+across angles (leading, alternative, adversarial, null, deceptive,
+surprise) and parallel evidence-gatherers across classes
+(direct-observational, documentary-historical, structural, behavioral,
+absent, anomalous). Builds an explicit hypothesis-vs-evidence matrix.
+**Ranks hypotheses by least disconfirming evidence**, not most confirming
+— the central insight: hypotheses cannot be proven, only failed-to-be-
+disproven. Includes diagnosticity analysis (which evidence actually
+discriminates), sensitivity analysis (what if load-bearing evidence is
+wrong?), and falsification milestones (what future observations would
+distinguish the top candidates). Produces feedback only — no code, no
+tickets, no artifacts. Natural composition: `/think-diagnose` generates
+candidate causes, `/think-ach` rigorously narrows among them.
+
+[Detailed documentation](skills/think-ach/SKILL.md)
+
 #### /think-deliberate — Adversarial Decision Making
 
 Uses adversarial representation to make decisions. Spawns advocate agents
@@ -441,6 +464,8 @@ Specialist agents spawned by the workflows above:
 
 | Agent                       | Purpose                                                                                                    |
 |-----------------------------|------------------------------------------------------------------------------------------------------------|
+| `thk-ach-evidence-gatherer` | Good-faith evidence enumerator for ACH proceedings, parameterized by an evidence class                     |
+| `thk-ach-hypothesizer`      | Good-faith hypothesis generator for ACH proceedings, parameterized by a hypothesis-generation angle        |
 | `thk-advocate`              | Argues for an assigned position in adversarial proceedings                                                 |
 | `thk-brainstormer`          | Good-faith idea generator parameterized by a specific brainstorming technique                              |
 | `thk-diagnostician`         | Good-faith abductive reasoner that generates candidate causes through an assigned reasoning lens           |

@@ -80,6 +80,7 @@ Supporting workflows available at any level:
 - `/think-reframe` — problem redefinition
 - `/think-brainstorm` — divergent idea generation
 - `/think-diagnose` — abductive reasoning about causes
+- `/think-ach` — analysis of competing hypotheses
 - `/think-deliberate` — adversarial decision-making
 - `/think-premortem` — prospective failure imagination
 - `/think-scrutinize` — adversarial idea critique
