@@ -505,6 +505,7 @@ Specialist agents spawned by the workflows above:
 | `qa-release-engineer`          | Pre-release scanner (debug artifacts, versioning, changelog, git hygiene, breaking changes, licenses)      |
 | `sec-blue-teamer`              | Defensive security analyst (control inventory, consistency, defense-in-depth, configuration)               |
 | `sec-red-teamer`               | Adversarial security analyst (attack surface mapping, exploitation, trust boundary analysis)               |
+| `ux-reviewer`                  | Methodical UX advocate for `/scope-project`'s pre-implementation review loop (seven-concern spine, target-type detection) |
 | `doc-maintainer`               | Documentation updates and verification                                                                     |
 
 ## Development

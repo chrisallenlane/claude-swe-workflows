@@ -1,6 +1,6 @@
 ---
 name: scope-project
-description: Adversarial project planning workflow. Explores the problem space, drafts tickets in batches, then pits a planner against an implementer to find gaps. Creates well-specified, batch-tagged tickets upstream only after the implementer signs off.
+description: Adversarial project planning workflow. Explores the problem space, drafts tickets in batches, then runs two sequential adversarial loops — a UX reviewer ("should we build this?") followed by an implementer ("could we build this?") — to find gaps before implementation. Creates well-specified, batch-tagged tickets upstream only after both loops sign off.
 model: opus
 ---
 
@@ -12,11 +12,13 @@ Thoroughly plans an entire project through exploration, iterative ticket draftin
 
 ## Philosophy
 
-**Planning is cheaper than rework.** A gap discovered during planning costs minutes to fix. The same gap discovered during implementation costs hours — and may cascade into other tickets. Invest heavily in planning quality.
+**Planning is cheaper than rework.** A gap discovered during planning costs minutes to fix. The same gap discovered during implementation costs hours — and may cascade into other tickets. A UX gap discovered after release costs more still. Invest heavily in planning quality.
 
-**Adversarial review catches what self-review misses.** The planner has blind spots — assumptions baked into the plan that seem obvious but aren't. An implementer reviewing with "could I actually build this?" eyes will find gaps the planner can't see.
+**Two adversarial loops catch two classes of gap.** The UX loop asks "should we build this?" — surfacing user-experience traps, mental-model misfits, dead ends, and missing recovery paths before they become shipped bugs. The implementer loop asks "could we build this?" — surfacing vague requirements, unclear dependencies, and missing tickets. Different lenses catch different gaps; the planner has blind spots in both.
 
-**Convergence is the goal, not perfection.** The planner and implementer iterate until the implementer is satisfied, not until every conceivable edge case is documented. Use judgment about when tickets are "good enough" — detailed enough to implement without guessing, but not so verbose they become novels.
+**UX issues are constraints, not negotiations.** The UX loop runs first so its findings become hard constraints on the implementation discussion. The implementer cannot negotiate UX away on grounds of effort. The escape hatch — implementer-surfaced infeasibility loops back to UX — preserves this discipline while handling the rare case where UX intent and physical feasibility conflict.
+
+**Convergence is the goal, not perfection.** Each loop iterates until its reviewer is satisfied, not until every conceivable edge case is documented. Use judgment about when tickets are "good enough" — detailed enough to implement without guessing, UX-cogent enough to not trap users, but not so verbose they become novels.
 
 **Batch structure is a planning decision.** Tickets go upstream already tagged with their batch assignment. The batch structure should reflect real implementation dependencies, not arbitrary grouping.
 
@@ -31,14 +33,20 @@ Thoroughly plans an entire project through exploration, iterative ticket draftin
 │  3. Draft project plan (present to user for approval)        │
 │  4. Create .tickets/ staging directory                       │
 │  5. Draft tickets (subagent per ticket)                      │
-│  6. Adversarial review loop:                                 │
+│  6. UX adversarial review loop:                              │
+│     ├─ UX reviewer reviews all tickets                       │
+│     ├─ Planner addresses feedback                            │
+│     ├─ Repeat until UX reviewer signs off                    │
+│     └─ Escalate to human if stalemated                       │
+│  7. Implementation adversarial review loop:                  │
 │     ├─ Implementer reviews all tickets                       │
 │     ├─ Planner addresses feedback                            │
+│     ├─ Escape hatch: UX-breaking infeasibility → step 6      │
 │     ├─ Repeat until implementer signs off                    │
 │     └─ Escalate to human if stalemated                       │
-│  7. Present final tickets to user                            │
-│  8. Cut tickets upstream (subagent per ticket)               │
-│  9. Clean up .tickets/ directory                             │
+│  8. Present final tickets to user                            │
+│  9. Cut tickets upstream (subagent per ticket)               │
+│ 10. Clean up .tickets/ directory                             │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -178,11 +186,91 @@ implementer from having to rediscover what the planner already found.]
 - Sequential for tickets with dependencies (later ticket needs to reference earlier ticket's content)
 - Each subagent writes its file and reports completion
 
-### 6. Adversarial Review Loop
+### 6. UX Adversarial Review Loop
 
-This is the heart of the workflow. A planner and an implementer iterate on the tickets until the implementer is satisfied.
+This loop runs **before** the implementer review. UX issues become hard constraints on the implementation discussion — they are not items the implementer can negotiate away on grounds of effort.
 
-#### 6a. Spawn Implementer
+The technical loop catches "could I build this?" reliably, but never asks "should this be built this way?". That is what this loop catches: features that work but trap users, surfaces that imply a mental model the user does not share, dead ends with no recovery, expert tools that lock out novices.
+
+#### 6a. Spawn UX Reviewer
+
+**Spawn a fresh `ux-reviewer` agent** to review the entire ticket set.
+
+The reviewer reads all tickets together (not ticket-by-ticket — coherence across tickets is part of what it evaluates) and walks a fixed seven-concern spine:
+
+1. **Coherence** — consistent mental model across tickets?
+2. **Completeness** — implicit user needs unaddressed? Dead ends?
+3. **Mental-model fit** — surface matches how users will think?
+4. **Implicit knowledge** — what must users already know?
+5. **Failure paths** — recovery legible when things go wrong?
+6. **Power/novice tension** — both served, or one privileged?
+7. **Orientation** — does the user know where they are and what's next?
+
+The agent auto-detects target type (CLI / MCP server / webapp / library / mixed) from project signals and adapts the *evidence it inspects* by type, but walks all seven concerns regardless. If the target type is ambiguous, it asks you to clarify.
+
+**Prompt the reviewer with:**
+
+```
+You are reviewing a draft ticket set as a UX advocate before implementation
+begins. Your role is adversarial: find user-experience problems while they
+are still cheap to fix.
+
+Review *all tickets together* — coherence across tickets is part of your
+evaluation. Walk the seven-concern spine systematically:
+
+1. Coherence — consistent mental model across tickets?
+2. Completeness — implicit user needs unaddressed? Dead ends?
+3. Mental-model fit — surface matches how users will think?
+4. Implicit knowledge — what must users already know?
+5. Failure paths — recovery legible when things go wrong?
+6. Power/novice tension — both served, or one privileged?
+7. Orientation — does the user know where they are and what's next?
+
+Auto-detect target type (CLI / MCP / webapp / library / mixed) from
+project signals. If ambiguous, ask the orchestrator. Adapt the *evidence
+you look at* by target type, but walk all seven concerns regardless.
+
+Categorize findings: blocker / concern / suggestion. Issue verdict:
+APPROVED or NEEDS REVISION.
+
+Do not critique technical implementation choices — that is the
+implementer's lens, not yours.
+```
+
+#### 6b. Planner Addresses UX Feedback
+
+The orchestrator (you, the planner) reviews each finding and responds:
+
+- **Blockers:** Must be addressed. Revise the affected ticket(s) so the UX issue is resolved.
+- **Concerns:** Address them, or document explicitly why the concern is acceptable in this context. Don't silently dismiss.
+- **Suggestions:** Use judgment. Accept those that improve the design; decline those that over-specify.
+
+**Asking the human is normal.** If the UX reviewer surfaces a question about user populations, intended audience, or design intent that you genuinely cannot answer, ask the user. UX questions surfaced here cost minutes; the same questions surfaced after release cost rework or shipped traps.
+
+**Update the `.tickets/` files** with revisions. UX-locked elements — concept names, error semantics, command/tool names, workflow shapes the reviewer approved — become hard constraints. The implementer review must not negotiate them away on grounds of effort. If the implementer later surfaces an infeasibility that breaks one of these, that is the escape hatch back to step 6, not a license to revise UX unilaterally.
+
+#### 6c. Re-Review
+
+**Spawn a fresh `ux-reviewer`** (clean context) to review the revised tickets. The fresh instance prevents anchoring on prior findings.
+
+**Repeat steps 6a-6c until:**
+
+- The reviewer returns `APPROVED` — the design is UX-cogent across the seven concerns
+- **Or** the process has stalemated — same blockers cycling without resolution
+
+**On stalemate:** Escalate to the human. UX stalemate usually means a design intent the user has not made explicit — exactly what this loop is designed to surface. Present the unresolved findings and ask for direction.
+
+**There is no hard iteration cap.** Convergence is the goal. Most projects converge in 1-2 rounds at this loop because the spine is fixed and the planner has more visibility into the design than into implementation feasibility.
+
+### 7. Implementation Adversarial Review Loop
+
+This is where the planner-implementer dialectic catches technical gaps. A planner and an implementer iterate on the tickets until the implementer is satisfied.
+
+**UX-locked elements from step 6 are constraints, not items the implementer can negotiate away.** The implementer reviews implementability; it does not get a second pass at the UX.
+
+**Escape hatch back to step 6:** If the implementer surfaces a finding that cannot be addressed without changing UX-locked elements (e.g., "the proposed UX requires synchronous network calls that aren't possible here"), return to step 6 with the new constraint as input. The UX reviewer iterates with the constraint in scope, the loop converges, and you resume step 7. This prevents implementer-wins-by-default — UX requirements stand unless physically infeasible. Document the constraint that triggered the loop-back so the UX reviewer has it.
+
+#### 7a. Spawn Implementer
 
 **Spawn a fresh implementer agent** to review all tickets. Select the appropriate agent type:
 
@@ -219,7 +307,7 @@ Produce a structured review with:
 - Verdict: APPROVED or NEEDS REVISION
 ```
 
-#### 6b. Planner Addresses Feedback
+#### 7b. Planner Addresses Feedback
 
 The orchestrator (you, the planner) reviews the implementer's findings and addresses each one:
 
@@ -233,19 +321,20 @@ The orchestrator (you, the planner) reviews the implementer's findings and addre
 
 **Update the `.tickets/` files** with revisions. If new tickets are added or batch structure changes, update the directory structure accordingly.
 
-#### 6c. Re-Review
+#### 7c. Re-Review
 
 **Spawn a fresh implementer agent** (clean context) to review the revised tickets. The fresh instance prevents anchoring on previous findings.
 
-**Repeat steps 6a-6c until:**
+**Repeat steps 7a-7c until:**
 - The implementer returns `APPROVED` — all tickets are implementable without guessing
 - **Or** the process has stalemated — the same issues keep cycling without resolution
+- **Or** the implementer surfaces a UX-breaking infeasibility — return to step 6 with the new constraint, then resume step 7 once the UX loop converges
 
 **On stalemate:** Escalate to the human. Present the unresolved issues and ask for direction. The planner and implementer may have a legitimate disagreement that requires human judgment.
 
 **There is no hard iteration cap.** The goal is convergence. Most projects should converge in 2-3 rounds. If it takes more, something fundamental may be underspecified — which is exactly what this workflow is designed to surface.
 
-### 7. Present Final Tickets to User
+### 8. Present Final Tickets to User
 
 After the implementer approves, present the complete ticket set to the user:
 
@@ -273,7 +362,7 @@ After the implementer approves, present the complete ticket set to the user:
 
 **Wait for user approval.** The user may request final adjustments before tickets go upstream.
 
-### 8. Cut Tickets Upstream
+### 9. Cut Tickets Upstream
 
 **Detect issue tracker** using the same detection as `/scope` and `/implement-batch`:
 - Check `CLAUDE.md` for tracker preference
@@ -309,7 +398,7 @@ After the implementer approves, present the complete ticket set to the user:
 All N tickets created successfully.
 ```
 
-### 9. Clean Up
+### 10. Clean Up
 
 - Remove the `.tickets/` directory
 - Remove the `.tickets/` entry from `.gitignore` (if this workflow added it)
@@ -335,22 +424,24 @@ The implementer evaluates tickets against these criteria:
 **Sequential phases:**
 - Steps 1-3 are interactive with the user (sequential)
 - Step 5 uses parallel subagents for ticket drafting
-- Step 6 is sequential (planner → implementer → planner → ...)
-- Step 8 uses parallel subagents for ticket creation
+- Step 6 is sequential (planner → UX reviewer → planner → ...)
+- Step 7 is sequential (planner → implementer → planner → ...)
+- Step 9 uses parallel subagents for ticket creation
 
 **Context management:**
-- The orchestrator maintains the project plan and tracks revision history
+- The orchestrator maintains the project plan and tracks revision history for both review loops
 - Ticket drafting subagents receive focused context (just their ticket's scope)
-- Implementer agents receive all tickets but no implementation history
-- Fresh implementer instances per review round (prevents anchoring)
+- UX reviewer and implementer agents receive all tickets but no review history
+- Fresh agent instances per review round in both loops (prevents anchoring)
 
 **State:**
 - `.tickets/` directory is the source of truth for ticket content
-- The orchestrator tracks: review round count, unresolved issues, human clarifications requested
+- The orchestrator tracks: per-loop review round counts, unresolved issues, human clarifications requested, UX-locked elements (so the implementer review honors them), and any escape-hatch loop-backs from step 7 to step 6
 
 ## Abort Conditions
 
 **Escalate to human:**
+- UX-review iteration has stalemated (same blockers cycling — usually means design intent the user has not made explicit)
 - Planner-implementer iteration has stalemated (same issues cycling)
 - Fundamental ambiguity that only the user can resolve
 - Issue tracker unavailable or tickets can't be created
@@ -360,8 +451,10 @@ The implementer evaluates tickets against these criteria:
 - Critical system error
 
 **Do NOT abort for:**
+- UX reviewer finding many issues in round 1 (that's the workflow working)
 - Implementer finding many issues (that's the workflow working)
-- Multiple rounds of revision (convergence takes time)
+- Multiple rounds of revision in either loop (convergence takes time)
+- An escape-hatch loop-back from step 7 to step 6 (normal and productive — surfaces a real conflict between UX intent and implementation feasibility)
 - Human clarification needed (normal and productive)
 
 ## Integration with Other Skills
@@ -428,6 +521,36 @@ Creating .tickets/ directory...
 Drafting tickets (9 subagents)...
 All tickets drafted.
 
+[UX Review — Round 1]
+Spawning ux-reviewer...
+Target type detected: CLI (with MCP server subcommand surface)
+
+UX reviewer findings:
+- BLOCKER (mental-model fit): Tickets #1-3 use "MCP tool" interchangeably
+  with "CLI command". An MCP-tool-calling agent and a CLI-typing user
+  have different expectations about idempotency, side effects, and
+  return shape. The ticket set does not clarify which model governs.
+- CONCERN (failure paths): Ticket #7 specifies error code mapping but
+  no ticket covers what an MCP client sees when the underlying CLI
+  command requires interactive input (confirmation prompts).
+- CONCERN (orientation): No ticket addresses how an MCP client knows
+  whether a long-running operation is still in progress.
+- Verdict: NEEDS REVISION
+
+Addressing UX findings...
+- Tickets #1-3: Added explicit note that MCP exposure must be
+  side-effect-aware; interactive commands require non-interactive
+  alternatives.
+- New ticket added to batch 3: "Long-running operation status reporting"
+- User, the UX reviewer asks: for the interactive-input issue — should
+  MCP clients see an error directing them to a non-interactive flag, or
+  should the MCP layer auto-decline interactive commands?
+> Auto-decline. MCP-exposed commands must be non-interactive.
+
+[UX Review — Round 2]
+Spawning fresh ux-reviewer...
+- Verdict: APPROVED
+
 [Adversarial Review — Round 1]
 Spawning implementer (swe-sme-golang)...
 
@@ -491,15 +614,17 @@ Addressing suggestions...
 8. Error handling and JSON-RPC error codes
 9. Integration tests
 10. Documentation
+11. Long-running operation status reporting
 
-Review rounds: 2
-Human clarifications: 1
+UX review rounds: 2
+Implementation review rounds: 2
+Human clarifications: 2
 
 Approve for upstream creation?
 > Yes
 
 Creating batch labels...
-Creating tickets (10 subagents)...
+Creating tickets (11 subagents)...
 
 ## Tickets Created
 
@@ -518,8 +643,9 @@ Creating tickets (10 subagents)...
 - #38: Error handling — github.com/.../issues/38
 - #39: Integration tests — github.com/.../issues/39
 - #40: Documentation — github.com/.../issues/40
+- #41: Long-running operation status reporting — github.com/.../issues/41
 
-All 10 tickets created successfully.
+All 11 tickets created successfully.
 Cleaned up .tickets/ directory.
 
 Ready for implementation with: /implement-project all tickets tagged batch-1, batch-2, batch-3
