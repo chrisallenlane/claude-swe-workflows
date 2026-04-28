@@ -1,5 +1,19 @@
 # Changelog
 
+## v7.2.0
+
+### New Agents
+
+- **`ux-reviewer`** — methodical UX advocate for `/scope-project`'s new first adversarial loop. Walks a fixed seven-concern spine (coherence, completeness, mental-model fit, implicit knowledge, failure paths, power/novice tension, orientation), auto-detecting target type (CLI / MCP / webapp / library / mixed) to choose what evidence to inspect. UX-locked elements become hard constraints on the implementation discussion.
+
+### Behavior Changes
+
+- **`/scope-project` — UX adversarial loop added before the implementer loop.** Previously the skill ran a single adversarial loop pitting a planner against an implementer agent to find gaps, ambiguities, and missing work. v7.2.0 inserts a sequential UX adversarial loop ahead of it: a fresh `ux-reviewer` agent walks the draft ticket set across a seven-concern spine (coherence, completeness, mental-model fit, implicit knowledge, failure paths, power/novice tension, orientation), with target-type auto-detection (CLI / MCP / webapp / library / mixed) governing what evidence to inspect. UX-locked elements become hard constraints on the subsequent implementation discussion, and an escape hatch routes implementer-surfaced UX-breaking infeasibilities back to the UX loop — the implementer cannot negotiate UX away on grounds of effort. The plugin had no UX advocate at any point in any workflow before this change.
+
+### Infrastructure
+
+- **GitHub release automation removed.** `.github/workflows/release.yml` and the entire `.github/` directory have been deleted. Claude Code plugins are distributed by git ref — consumers pin to a tag or branch and the marketplace files in the repo are the actual distribution mechanism — so the GitHub Releases artifact carried no functional payload. Its presence was also actively confusing on the Gitea side: Gitea Actions scans `.github/workflows/` as a fallback and was queuing phantom jobs against a non-existent runner on every tag push. Existing GitHub releases (v1.0.0 through v7.0.0) were deleted out of band; tags are preserved on both Gitea and the GitHub mirror. `HACKING.md` updated to reflect the simplified procedure.
+
 ## v7.1.0
 
 ### New Skills
@@ -58,7 +72,7 @@
 
 ### Infrastructure
 
-- **Release automation moved from `Makefile` to Claude + CI.** The top-level `Makefile` has been removed; release cutting is now driven by a Claude-assisted procedure documented in `HACKING.md`, with GitHub Actions handling tag-triggered releases. This is an internal workflow change — no effect on the public skill interface.
+- **Release automation moved from `Makefile` to a Claude-assisted procedure.** The top-level `Makefile` has been removed; release cutting is now driven by a procedure documented in `HACKING.md`. This is an internal workflow change — no effect on the public skill interface.
 
 ## v6.0.0
 

@@ -183,11 +183,14 @@ without doing implementation work.
 
 #### /scope-project — Adversarial Project Planning
 
-Plans an entire project through adversarial review. Explores the problem
-space, drafts tickets organized into batches, then pits a planner against
-an implementer agent to find gaps, ambiguities, and missing work. Only
-when the implementer is satisfied do tickets go upstream — already tagged
-with batch labels ready for `/implement-project` to consume.
+Plans an entire project through two sequential adversarial review loops.
+Explores the problem space, drafts tickets organized into batches, then
+runs a UX reviewer ("should we build this?") followed by an implementer
+("could we build this?") to find gaps, ambiguities, and missing work.
+UX-locked elements become hard constraints on the implementation
+discussion. Only when both loops sign off do tickets go upstream —
+already tagged with batch labels ready for `/implement-project` to
+consume.
 
 [Detailed documentation](skills/scope-project/SKILL.md)
 
