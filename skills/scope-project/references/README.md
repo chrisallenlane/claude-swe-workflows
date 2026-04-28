@@ -2,11 +2,12 @@
 
 ## Overview
 
-The `/scope-project` skill plans an entire project through two sequential adversarial review loops. It explores the problem space, drafts tickets organized into batches, then runs a UX reviewer loop ("should we build this?") followed by an implementer loop ("could we build this?") to find gaps, traps, ambiguities, and missing work. Only when both loops sign off do the tickets go upstream — already tagged with batch labels ready for `/implement-project` to consume.
+The `/scope-project` skill plans an entire project through sequential adversarial review loops. It explores the problem space, drafts tickets organized into batches, then runs a mandatory UX loop ("should we build this?"), zero or more discretionary specialist loops (security, performance) for projects with architectural implications in those domains, and a mandatory implementer loop ("could we build this?"). Only when every applicable loop signs off do the tickets go upstream — already tagged with batch labels ready for `/implement-project` to consume.
 
 **Key benefits:**
-- Two adversarial review loops catch different classes of planning gap: UX (step 6) for design cogency, implementation (step 7) for technical viability
-- UX issues become hard constraints on the implementation discussion, not items the implementer can negotiate away
+- Layered adversarial review catches different classes of planning gap: UX (step 6) for design cogency, specialist loops (step 7) for architectural quality concerns, implementation (step 8) for technical viability
+- The architectural filter governs specialist loop invocation, preventing checklist behavior on projects where the domain isn't load-bearing
+- Locked elements (UX-locked, security-locked, performance-locked) become hard constraints on downstream loops, not items later reviewers can negotiate away
 - Batch structure is a first-class planning artifact, not an afterthought
 - Implementation notes give implementers a head start on codebase context
 - Draft tickets are staged locally before going upstream — easy to revise
@@ -100,19 +101,35 @@ The `/scope-project` skill plans an entire project through two sequential advers
  │  • Address concerns or document why not      │
  │  • Accept/decline suggestions                │
  │  • UX-locked elements become hard            │
- │    constraints for step 7                    │
+ │    constraints for steps 7 and 8             │
  └──────────────────┬───────────────────────────┤
                     ▼                           │
             UX reviewer approved?               │
             ├─ No  → Fresh ux-reviewer ─────────┘
             │        (or escalate if stalemated)
             └─ Yes ▼
+    ┌────────────────────────────────────┐
+    │ SPECIALIST LOOPS (DISCRETIONARY)   │
+    │ Architectural filter governs       │
+    │ invocation. Skip if none apply.    │
+    │                                    │
+    │ Per loop (security, then perf):    │
+    │ • Spawn specialist agent           │
+    │ • Planner addresses findings       │
+    │ • Fresh agent per round            │
+    │ • Andon cord: planner can          │
+    │   escalate any time                │
+    │ • Approved findings → locked       │
+    │   elements (constraints for        │
+    │   step 8)                          │
+    └─────────────┬──────────────────────┘
+                  ▼
     ┌───────────────────────────┐
     │ IMPL ADVERSARIAL REVIEW   │◄──────────────┐
     └─────────────┬─────────────┘               │
                   ▼                             │
  ┌──────────────────────────────────────────────┐
- │  7a. IMPLEMENTER REVIEWS ALL TICKETS         │
+ │  8a. IMPLEMENTER REVIEWS ALL TICKETS         │
  │  ────────────────────────────────────────    │
  │  Agent: Language SME or general-purpose      │
  │                                              │
@@ -126,7 +143,7 @@ The `/scope-project` skill plans an entire project through two sequential advers
  │                                              │
  │  Verdict: APPROVED or NEEDS REVISION         │
  ├──────────────────────────────────────────────┤
- │  7b. PLANNER ADDRESSES FEEDBACK              │
+ │  8b. PLANNER ADDRESSES FEEDBACK              │
  │  ────────────────────────────────────────    │
  │  • Resolve blockers (revise tickets)         │
  │  • Answer questions (or ask human)           │
@@ -135,8 +152,10 @@ The `/scope-project` skill plans an entire project through two sequential advers
  │  • Adjust batch structure if needed          │
  │                                              │
  │  ESCAPE HATCH: if a finding requires         │
- │  changing UX-locked elements, return to      │
- │  step 6 with the constraint, then resume     │
+ │  changing any locked element (UX, security,  │
+ │  performance), return to the loop that       │
+ │  locked it (step 6 or step 7) with the       │
+ │  constraint, then resume                     │
  └──────────────────┬───────────────────────────┤
                     ▼                           │
             Implementer approved?               │
@@ -144,7 +163,7 @@ The `/scope-project` skill plans an entire project through two sequential advers
             │        (or escalate if stalemated)
             └─ Yes ▼
  ┌──────────────────────────────────────────────┐
- │  8. PRESENT FINAL TICKETS TO USER            │
+ │  9. PRESENT FINAL TICKETS TO USER            │
  │  ────────────────────────────────────────    │
  │  Summary view of all tickets and batches     │
  │  Review round counts and clarifications      │
@@ -152,7 +171,7 @@ The `/scope-project` skill plans an entire project through two sequential advers
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  9. CUT TICKETS UPSTREAM                     │
+ │  10. CUT TICKETS UPSTREAM                    │
  │  ────────────────────────────────────────    │
  │  • Create batch labels (batch-1, batch-2)    │
  │  • Spawn one subagent per ticket             │
@@ -161,7 +180,7 @@ The `/scope-project` skill plans an entire project through two sequential advers
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  10. CLEAN UP                                │
+ │  11. CLEAN UP                                │
  │  ────────────────────────────────────────    │
  │  Remove .tickets/ directory                  │
  │  Remove .gitignore entry                     │
@@ -180,9 +199,11 @@ Deep exploration of the codebase to understand the current architecture, affecte
 
 ### 3. Draft Project Plan
 
-The orchestrator synthesizes discovery and exploration into a structured plan: batch structure with ordering rationale, ticket inventory per batch, dependencies, and risk areas.
+The orchestrator synthesizes discovery and exploration into a structured plan: batch structure with ordering rationale, ticket inventory per batch, dependencies, risk areas, and **applicable specialist loops**.
 
-**This is presented to you for approval** — the primary human checkpoint. You can adjust batches, add/remove tickets, reorder, or ask questions. The plan must be approved before ticket drafting begins.
+**Applicable specialist loops.** As part of the plan, the orchestrator applies the architectural filter (see step 7) to identify which discretionary specialist loops will run. For each candidate (security, performance), it states whether the loop applies, with architectural rationale. This locks the decision before drafting begins and gives you full visibility — you can override the planner's selection (add a loop it skipped, or skip a loop it included).
+
+**The plan is presented to you for approval** — the primary human checkpoint. You can adjust batches, add/remove tickets, reorder, override specialist-loop selection, or ask questions. The plan must be approved before ticket drafting begins.
 
 ### 4-5. Draft Tickets
 
@@ -214,11 +235,30 @@ A `ux-reviewer` agent reads the entire ticket set as a UX advocate, walking a fi
 
 The agent auto-detects target type (CLI / MCP server / webapp / library / mixed) from project signals and adapts the *evidence it inspects* by type, while walking all seven concerns regardless. Ambiguous targets prompt a question to you.
 
-Findings are categorized as **blocker / concern / suggestion** with a verdict of `APPROVED` or `NEEDS REVISION`. The planner addresses each: revise tickets, ask the user for clarification on user populations or design intent, or accept/decline suggestions. A fresh `ux-reviewer` re-reviews each round. UX-locked elements approved by the loop become hard constraints for step 7.
+Findings are categorized as **blocker / concern / suggestion** with a verdict of `APPROVED` or `NEEDS REVISION`. The planner addresses each: revise tickets, ask the user for clarification on user populations or design intent, or accept/decline suggestions. A fresh `ux-reviewer` re-reviews each round. UX-locked elements approved by the loop become hard constraints for steps 7 and 8.
 
-### 7. Implementation Adversarial Review Loop
+### 7. Specialist Adversarial Review Loops
 
-The second adversarial loop, focused on technical viability. An implementer agent reviews all tickets as if assigned to implement them tomorrow, looking for:
+Zero or more discretionary specialist loops, governed by an **architectural filter**: invoke a specialist loop only when the concern would require an architectural change to fix later, not a localized code edit. Most projects skip this step entirely; the discipline is in *not* invoking when the concern isn't architectural.
+
+Initial pool: security and performance. Each loop structurally mirrors the UX loop (one agent, multi-round converge-to-approval, fresh agent per round, stalemate escalates to user).
+
+| Loop          | Trigger heuristics (necessary but not sufficient)                                                | Agent (spec-time)    |
+|---------------|--------------------------------------------------------------------------------------------------|----------------------|
+| Security      | Auth, registration, sessions, crypto, PII, payments, file uploads, multi-tenancy, trust boundaries | `sec-blue-teamer`    |
+| Performance   | Hot paths, large-scale data, real-time / latency-sensitive, batch processing at scale            | `swe-perf-reviewer`  |
+
+Applicability is decided at step 3 (project plan approval), not later — locking the choice before drafting prevents mid-flow renegotiation. When multiple loops apply, security runs first (rarely negotiable; performance often trades off against security), performance second.
+
+The agents are reused with **spec-time prompt adaptation**: each loop's invocation prompt frames the task as design review, not code audit. Findings should be design-shaping (architectural choices, missing controls, threat-model gaps) rather than code-level (library choice, micro-optimizations). Findings approved by the loop become **specialist-locked** (security-locked, performance-locked) — hard constraints for step 8.
+
+**Andon cord.** The planner has authority to escalate to you at any point during a specialist loop, not just on stalemate. Pull the cord when findings exceed what planning can resolve, when the loop seems off-rails, or when a finding warrants human judgment.
+
+**A11y is not in the initial pool.** Most accessibility work is implementation-time and fails the architectural filter. Genuinely architectural a11y concerns exist but are rare; if a project has one, the planner can spawn `qa-web-a11y-reviewer` ad-hoc rather than codifying a standing loop.
+
+### 8. Implementation Adversarial Review Loop
+
+The mandatory feasibility loop. An implementer agent reviews all tickets as if assigned to implement them tomorrow, looking for:
 
 | Check                          | What it catches                           |
 |--------------------------------|-------------------------------------------|
@@ -232,21 +272,23 @@ The second adversarial loop, focused on technical viability. An implementer agen
 
 The implementer is a language-specific SME when available (Go SME for Go projects, etc.), giving it real implementation perspective.
 
+**Locked elements from steps 6 and 7 are constraints, not items the implementer can negotiate away.** UX-locked, security-locked, and performance-locked elements stand. The implementer reviews implementability against those constraints; it does not get a second pass at design intent or quality posture.
+
 **The planner addresses each finding** by revising tickets, asking you for clarification, or pushing back. A fresh implementer then re-reviews. This continues until the implementer approves or the process stalemates (at which point you're brought in).
 
 **Asking you for clarification is normal.** The adversarial review surfaces questions that should be answered during planning, not during implementation. A question surfaced here saves much more time than the same question surfaced mid-implementation.
 
-**Escape hatch back to step 6.** If the implementer surfaces a finding that cannot be addressed without changing UX-locked elements (e.g., "the proposed UX requires synchronous network calls that aren't possible here"), the planner returns to step 6 with the new constraint as input. The UX reviewer iterates with the constraint in scope, the loop converges, and step 7 resumes. This prevents implementer-wins-by-default — UX requirements stand unless physically infeasible.
+**Escape hatch to the relevant prior loop.** If the implementer surfaces a finding that cannot be addressed without changing a locked element (UX-locked, security-locked, or performance-locked), the planner returns to the loop that locked the element with the new constraint as input. That loop reconverges; step 8 then resumes. This prevents implementer-wins-by-default — design and quality requirements stand unless physically infeasible.
 
-### 8. Present Final Tickets
+### 9. Present Final Tickets
 
-After both loops approve, the complete ticket set is presented for your final review. You can inspect any ticket in detail and request adjustments before creation.
+After every applicable loop approves, the complete ticket set is presented for your final review. You can inspect any ticket in detail and request adjustments before creation.
 
-### 9. Cut Tickets Upstream
+### 10. Cut Tickets Upstream
 
 Batch labels are created first, then tickets are created with labels applied. Each ticket includes the batch tag so `/implement-project` can consume them directly.
 
-### 10. Clean Up
+### 11. Clean Up
 
 The `.tickets/` staging directory is removed.
 
@@ -271,20 +313,23 @@ Each file is a markdown document with YAML frontmatter (title, batch, order, dep
 
 ## The Adversarial Reviews
 
-The two adversarial review loops are the distinguishing feature of `/scope-project`. Together they answer two questions:
+The layered adversarial review loops are the distinguishing feature of `/scope-project`. Together they answer three questions:
 
-- **Step 6 (UX loop): "Should we build this?"** — surfaces user-experience problems before implementation begins. Catches mental-model misfits, dead ends, missing recovery paths, power/novice imbalances, and the kind of UX defects that ship as bugs.
-- **Step 7 (Implementation loop): "Could we build this?"** — surfaces technical gaps. Catches vague requirements, unclear dependencies, missing tickets, batch-ordering issues, and stale code references.
+- **Step 6 (UX loop, mandatory): "Should we build this?"** — surfaces user-experience problems before implementation begins. Catches mental-model misfits, dead ends, missing recovery paths, power/novice imbalances, and the kind of UX defects that ship as bugs.
+- **Step 7 (Specialist loops, discretionary): "Is this sound on quality dimension X?"** — surfaces architectural quality concerns in domains where the project is load-bearing (security, performance). Skipped entirely when no specialist loops apply.
+- **Step 8 (Implementer loop, mandatory): "Could we build this?"** — surfaces technical gaps. Catches vague requirements, unclear dependencies, missing tickets, batch-ordering issues, and stale code references.
 
-The loops are sequential, not concurrent — UX issues become hard constraints on the implementation discussion. The implementer cannot negotiate UX away on grounds of effort. If the implementer surfaces an infeasibility that breaks UX-locked design, the planner returns to step 6 with the constraint as input (the escape hatch).
+The loops are sequential — earlier loops produce locked elements that downstream loops cannot negotiate away. Locked elements (UX-locked, security-locked, performance-locked) stand unless physically infeasible. If the implementer surfaces an infeasibility against any locked element, the planner returns to the loop that locked it (the generalized escape hatch).
 
-**Different perspectives catch different gaps.** The planner thinks about what needs to be done. The UX reviewer thinks about whether users will succeed. The implementer thinks about what they'd need to know to do it. These are fundamentally different lenses.
+**Different perspectives catch different gaps.** The planner thinks about what needs to be done. The UX reviewer thinks about whether users will succeed. The security reviewer thinks about threat models and trust boundaries. The performance reviewer thinks about scaling and contention. The implementer thinks about what they'd need to know to do it. These are fundamentally different lenses.
 
 **Fresh instances prevent anchoring.** Each review round spawns a new agent with a clean context. The new instance isn't anchored to the previous round's findings — it sees the tickets fresh and may notice different issues.
 
-**Convergence, not perfection.** The goal isn't to document every conceivable edge case — it's to reach a state where the design is UX-cogent (step 6) and implementable without guessing (step 7). Most projects converge in 1-2 rounds at the UX loop and 2-3 at the implementation loop.
+**The architectural filter prevents checklist behavior.** Specialist loops exist for projects where security or performance has *architectural* implications — concerns that would require rework to fix later. The filter is asked first, before any trigger heuristic. Most projects skip this step; for those that warrant it, the planning-time review prevents the kind of architectural defect that's catastrophic to bolt on later.
 
-**Stalemate triggers human involvement.** If a loop keeps cycling on the same issues, something fundamental is ambiguous. UX stalemate usually means a design intent the user has not made explicit; implementation stalemate usually means the planner and implementer have a legitimate disagreement requiring human judgment. Either way, bringing the user in is the right move — the adversarial process has done its job by surfacing exactly what needs human judgment.
+**Convergence, not perfection.** The goal isn't to document every conceivable edge case — it's to reach a state where the design is UX-cogent, sound on every applicable quality dimension, and implementable without guessing. Most projects converge in 1-2 rounds at each loop.
+
+**Stalemate triggers human involvement.** If a loop keeps cycling on the same issues, something fundamental is ambiguous. UX stalemate usually means design intent the user has not made explicit; specialist stalemate usually means a quality requirement the user has not stated; implementation stalemate usually means the planner and implementer have a legitimate disagreement requiring human judgment. The planner can also pull the andon cord proactively during a specialist loop without waiting for stalemate. Either way, bringing the user in is the right move — the adversarial process has done its job by surfacing exactly what needs human judgment.
 
 ## Examples
 
@@ -377,6 +422,62 @@ The planner revises, asks the human about the config filtering,
 and adds a missing ticket for shutdown handling.
 ```
 
+### Example 4: Security Loop on an Auth Project
+
+Specialist loops only run when the architectural filter admits them. This example shows the security loop catching architectural gaps in a user-registration project before any code was written.
+
+```
+## Project Plan: user registration and authentication
+
+### Batch 1: Auth foundations (4 tickets)
+1. Schema and password hashing
+2. Registration with email verification
+3. Login and session creation
+4. Logout and session invalidation
+[...]
+
+Applicable specialist loops:
+- Security: YES. Auth model, session storage, token generation, and
+  trust boundaries are architectural choices. Getting these wrong
+  would require rework, not localized fixes — architectural filter
+  passes.
+- Performance: NO. Auth flows are not performance-critical at expected
+  scale; rate limiting is in scope but doesn't require architectural
+  performance review.
+
+[UX loop — converged in 1 round]
+
+[Security Loop — Round 1]
+Spawning sec-blue-teamer (spec-time mode)...
+
+Security findings:
+- BLOCKER: No threat model documented. Tickets imply protection against
+  credential stuffing and account takeover but never state it.
+- BLOCKER: Session storage strategy unspecified. Server-side sessions?
+  Stateless JWTs? Choice has architectural consequences for logout
+  semantics, revocation, and horizontal scaling.
+- CONCERN: Email verification token generation unspecified — random
+  source, length, expiry.
+- MISSING TICKET: No audit logging ticket. Auth events without an audit
+  trail are an architectural gap.
+- MISSING TICKET: No account lockout policy after repeated failed logins.
+- Verdict: NEEDS REVISION
+
+Addressing security findings — added explicit threat model, locked
+session strategy to server-side rotation, specified token generation
+parameters, added audit logging ticket, added lockout policy ticket.
+
+[Security Loop — Round 2: APPROVED]
+
+Security-locked elements: threat model, session strategy, token
+parameters, audit logging requirements, lockout policy.
+
+[Implementation loop respected security-locked elements; no escape-hatch
+loop-back required.]
+```
+
+The security loop caught the threat-model gap, the session-storage ambiguity, and three missing tickets before any code was written. Each would have been an architectural rework if discovered post-implementation — exactly the kind of catastrophic-to-bolt-on concern this loop exists to catch.
+
 ## Integration with Other Skills
 
 | Skill               | Relationship                                                                                                                                       |
@@ -399,19 +500,21 @@ and adds a missing ticket for shutdown handling.
 
 ## Tips
 
-1. **Be specific during discovery.** The more precise your project description, the better the initial plan. Vagueness at step 1 becomes blockers at steps 6 and 7.
+1. **Be specific during discovery.** The more precise your project description, the better the initial plan. Vagueness at step 1 becomes blockers at steps 6, 7, and 8.
 
-2. **Engage with the plan review.** Step 3 is your chance to shape the project structure. Catch batch ordering issues and missing work here — it's cheaper than finding them during adversarial review.
+2. **Engage with the plan review and specialist-loop selection.** Step 3 is your chance to shape the project structure *and* override the planner's specialist-loop selection. If the planner skipped a loop you think applies, add it. If the planner included one that doesn't, skip it. Catch batch ordering issues and missing work here too — it's cheaper than finding them during adversarial review.
 
-3. **Welcome reviewer questions from both loops.** When either the UX reviewer or the implementer surfaces questions for you, that's the workflow working. UX questions in particular surface design intent the user has not made explicit — exactly the gaps that produce shipped traps. A question answered during planning saves far more time than the same question asked mid-implementation, or worse, after release.
+3. **Welcome reviewer questions from any loop.** When the UX reviewer, a specialist reviewer, or the implementer surfaces questions for you, that's the workflow working. UX questions surface design intent; specialist questions surface quality requirements you may not have stated; implementer questions surface technical ambiguity. A question answered during planning saves far more time than the same question asked mid-implementation, or worse, after release.
 
-4. **Trust the convergence process.** Multiple review rounds in either loop are normal, not a sign of failure. Each round improves ticket quality.
+4. **Trust the convergence process.** Multiple review rounds in any loop are normal, not a sign of failure. Each round improves ticket quality.
 
-5. **Don't be surprised by the escape hatch.** When the implementer surfaces an infeasibility that breaks UX-locked design, returning to step 6 is normal and productive — not a process failure. It is the workflow surfacing a real conflict between UX intent and implementation feasibility, which is precisely what either loop running alone would miss.
+5. **Don't be surprised by the escape hatch.** When the implementer surfaces an infeasibility that breaks any locked element (UX, security, performance), returning to the loop that locked it is normal and productive — not a process failure. It is the workflow surfacing a real conflict between intent and implementation feasibility, which is precisely what either loop running alone would miss.
 
-6. **Check the implementation notes.** These are what make `/scope-project` tickets superior to hand-written ones — they contain codebase context (file paths, function signatures, patterns) that an implementer would otherwise have to rediscover.
+6. **Trust the architectural filter.** Most projects skip step 7 entirely. That's the filter working as intended — discretionary loops should be invoked only when concerns are architectural, not when they're code-level. Resist the urge to add specialist loops "just to be thorough."
 
-7. **The batch structure matters.** Tickets go upstream with batch labels. Think about what each batch delivers as a coherent increment — batch 1 should be useful on its own, not just a foundation for batch 2.
+7. **Check the implementation notes.** These are what make `/scope-project` tickets superior to hand-written ones — they contain codebase context (file paths, function signatures, patterns) that an implementer would otherwise have to rediscover.
+
+8. **The batch structure matters.** Tickets go upstream with batch labels. Think about what each batch delivers as a coherent increment — batch 1 should be useful on its own, not just a foundation for batch 2.
 
 ## Requirements
 
