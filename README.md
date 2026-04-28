@@ -183,14 +183,18 @@ without doing implementation work.
 
 #### /scope-project — Adversarial Project Planning
 
-Plans an entire project through two sequential adversarial review loops.
+Plans an entire project through layered adversarial review loops.
 Explores the problem space, drafts tickets organized into batches, then
-runs a UX reviewer ("should we build this?") followed by an implementer
-("could we build this?") to find gaps, ambiguities, and missing work.
-UX-locked elements become hard constraints on the implementation
-discussion. Only when both loops sign off do tickets go upstream —
-already tagged with batch labels ready for `/implement-project` to
-consume.
+runs a mandatory UX loop ("should we build this?"), zero or more
+discretionary specialist loops (security, performance) for projects with
+architectural implications in those domains, and a mandatory implementer
+loop ("could we build this?") to find gaps, ambiguities, and missing
+work. The architectural filter governs specialist loop invocation,
+preventing checklist behavior on projects where the domain isn't
+load-bearing. Locked elements (UX-locked, security-locked,
+performance-locked) become hard constraints on downstream loops. Only
+when every applicable loop signs off do tickets go upstream — already
+tagged with batch labels ready for `/implement-project` to consume.
 
 [Detailed documentation](skills/scope-project/SKILL.md)
 
