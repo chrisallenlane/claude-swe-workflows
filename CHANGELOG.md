@@ -1,5 +1,11 @@
 # Changelog
 
+## v7.4.0
+
+### New Skills
+
+- **`/pre-compact` — Pre-compaction housekeeping.** A utility skill the user invokes immediately before `/compact` to seal session state that compaction would otherwise destroy. Walks a fixed three-step floor — persistent memory pass (always-on, never conditional: the skill's core promise), git hygiene pass (surface dirty state, ask before committing on the user's behalf), trash cleanup pass (conservative: when in doubt, do not delete) — followed by an open-judgment audit that looks past the checklist for session-specific items the floor cannot anticipate (open threads, undocumented decisions, background processes, stashes, in-flight worktrees). Ends with two outputs: an SBAR-formatted handoff with one of three explicit recommendations (**safe to compact**, **safe after [X]**, or **do not compact yet**), plus a copy-pasteable resume prompt for the post-compaction agent if pending work remains. The resume prompt is drafted while full conversation context is still in scope, producing a much higher-quality handoff than the post-compact agent could reconstruct from the lossy summary; if no work is pending, the skill emits the explicit line "No resume prompt — work is sealed." rather than skipping silently. The skill never invokes `/compact` itself — compaction is the user's call. Designed against an explicit no-escape-hatches discipline: users opt in by invoking, so the skill must reliably do what its name promises rather than offer conditional opt-outs that defeat its core purpose.
+
 ## v7.3.0
 
 ### Behavior Changes
