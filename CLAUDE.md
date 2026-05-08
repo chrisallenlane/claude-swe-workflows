@@ -96,3 +96,7 @@ Supporting workflows available at any level:
 - `/test-mutation` — mutation testing
 - `/refactor-deep` — full tactical + architectural + tactical refactoring cycle
 - `/review-deep` — comprehensive pre-release review pipeline
+
+**Utility:**
+
+- `/pre-compact` — pre-compaction housekeeping (memory, git, trash, SBAR, resume prompt)

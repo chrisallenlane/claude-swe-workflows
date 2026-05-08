@@ -78,6 +78,10 @@ Supporting workflows are available at any level:
 - `/refactor-deep` — full tactical + architectural + tactical refactoring cycle
 - `/review-deep` — comprehensive pre-release review pipeline
 
+**Utility:**
+
+- `/pre-compact` — pre-compaction housekeeping (memory, git, trash, SBAR, resume prompt)
+
 ## Choosing a Workflow
 
 Not everything needs the full pipeline. Enter at the level that matches
@@ -112,6 +116,7 @@ your task:
 | Review performance (compute and/or web)                                 | `/review-perf`       |
 | Perform a white-box security audit                                      | `/review-security`   |
 | Run every review dimension before a release, in one go                  | `/review-deep`       |
+| Tidy up the session before running `/compact`                           | `/pre-compact`       |
 
 **Rules of thumb:**
 - Open-ended work where the next step depends on the outcome of the last? `/lead-project`
@@ -467,6 +472,26 @@ reproducing test — no speculative reports. Optionally routes confirmed
 bugs to SME agents for fixing.
 
 [Detailed documentation](skills/bug-hunt/SKILL.md)
+
+### Utility
+
+#### /pre-compact — Pre-Compaction Housekeeping
+
+Run this immediately before `/compact`. Compaction destroys
+conversation context, so anything important from the session that
+isn't persisted somewhere durable is lost. Walks a fixed checklist
+as a floor — update persistent memory, audit `git status` and
+optionally commit (with permission), clean up trash files
+conservatively — then uses judgment to spot session-specific
+cleanup the checklist can't anticipate (open threads, undocumented
+decisions, background processes, stashes). Ends with an
+SBAR-formatted handoff with one of three explicit recommendations
+(**safe to compact**, **safe after [X]**, or **do not compact
+yet**), plus a copy-pasteable resume prompt the user can paste into
+the next turn if pending work remains. Does not invoke `/compact`
+itself.
+
+[Detailed documentation](skills/pre-compact/SKILL.md)
 
 ## Agents
 
