@@ -6,6 +6,8 @@ The `/lead-project` skill drives a project from a stated intent to completion wi
 
 The user fills the **product-owner** role; the skill fills the **project-manager / tech-lead** role.
 
+This skill is the highest-level implementation of the **autonomy discipline** documented in [`references/autonomy.md`](../../../references/autonomy.md). Its five-field commander's-intent schema is the **canonical implementation** referenced from that document; its handoff format adopts the shared template (with skill-specific extensions for the OODA cycle and mechanical end-state conditions); and it cascades sub-skill escalations through the orchestrator's judgment before any operator-facing handoff.
+
 **Key benefits:**
 - Unattended orchestration of the plugin's lower-level skills
 - Commander's intent as a durable anchor that survives context drift
@@ -129,6 +131,8 @@ The user fills the **product-owner** role; the skill fills the **project-manager
 
 Borrowed from military doctrine: the commander states **why** (purpose) and **what success looks like** (end state), not the detailed how. Subordinates have autonomy to adapt to circumstances as long as they preserve intent. In `/lead-project` the user is the commander; the skill is the subordinate.
 
+This five-field schema is the **canonical implementation** of commander's intent referenced from [`references/autonomy.md`](../../../references/autonomy.md). Other orchestrator-family skills (`/implement-project`, `/refactor-deep`) use lighter variants tailored to bounded work; `/lead-project`'s purpose is the most open-ended, so it elicits the full schema.
+
 Intent has five fields:
 
 | Field        | What it is                                                               | Example                                                               |
@@ -213,7 +217,7 @@ Borrowed from Toyota's production system: when something goes wrong, **stop the 
 - 50-cycle hard cap hit
 - Sub-skill andon cord cascades up
 
-**Handoff format** leads with a **project-level orientation paragraph** for the user returning cold, then blocker-specific details (what the skill was doing, what went wrong, what it tried, what it needs). Current state includes branch SHA, mechanical-condition pass count, and pending key tasks.
+**Handoff format** follows the **shared handoff template** in [`references/autonomy.md`](../../../references/autonomy.md). The template requires a project-level orientation paragraph (for the user returning cold), then the blocker-specific story (what was being attempted, what went wrong, what was tried), pre-loaded options (2–3 named choices), a recommendation with its pre-rebutted counterargument and the one tradeoff that would flip it, and a current-state snapshot. `/lead-project` extends current state with mechanical-condition pass count, pending key tasks, and a cycle-log pointer.
 
 ## Authority and Gates
 

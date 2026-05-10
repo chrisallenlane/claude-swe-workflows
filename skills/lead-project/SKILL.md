@@ -10,6 +10,8 @@ Drives a project from a stated intent to completion with minimal user involvemen
 
 ## Philosophy
 
+This skill implements the autonomy discipline documented in [`references/autonomy.md`](../../references/autonomy.md) at the highest level of the orchestrator family. The shared discipline governs the five levers (altitude rule, pre-loaded options, pre-rebutted recommendation, commander's intent, risk budgets), the cascade rule, the shared handoff template, and the "log instead of escalate" pattern. Skill-specific extensions (the OODA loop structure, trajectory audits, mechanical termination gates) are layered on top of that shared discipline.
+
 ### Commander's intent is the anchor
 
 The user states intent once, in structured form, at startup. Every subsequent decision traces back to it. Intent has five parts:
@@ -19,6 +21,8 @@ The user states intent once, in structured form, at startup. Every subsequent de
 - **End state** — concrete conditions defining "done"
 - **Constraints** — hard limits (what not to touch, what not to use)
 - **Non-goals** — explicit out-of-scope (prevents scope expansion)
+
+This five-field schema is the **canonical implementation** of commander's intent referenced from [`references/autonomy.md`](../../references/autonomy.md). Other orchestrator-family skills (`/implement-project`, `/refactor-deep`) use lighter variants — fewer fields because the work is more bounded — but `/lead-project`'s purpose is the most open-ended, so it elicits the full schema.
 
 Without a concrete end state, the loop has no termination condition and will drift into polish. If the user's initial statement is vague, keep asking until intent is crisp — "make it better" is not enough; "all features in backlog.md work end-to-end, `go test ./...` exits 0, and CHANGELOG covers the changes" is. Intent elicitation is the primary human-interaction point; invest the time.
 
@@ -436,43 +440,18 @@ Pull the cord when:
 
 ### Handoff format
 
-When pulling the cord, produce a structured handoff document. Append it to the state doc under a `## Andon Cord` section and present it to the user.
+Use the **shared handoff template** from [`references/autonomy.md`](../../references/autonomy.md). Append the produced handoff to the state doc under a `## Andon Cord` section and present it to the user.
 
-```
-## Andon Cord — Cycle N
+Skill-specific extensions to the shared template:
 
-### Project orientation (30-second reorient)
-[One paragraph. For a user returning cold: what is this project, where
- does it stand right now, what has changed since they last looked.
- Key-task status: which are done, in progress, deferred. Major recent
- milestones. Skip project background the user already knows — focus on
- state that has changed during this run.]
+- **Title** — `## Andon Cord — /lead-project — Cycle N` (the cycle number is load-bearing for this skill).
+- **What I tried** subsection — between "What went wrong" and "Pre-loaded options," include the actions attempted, `/think-*` skills invoked and their verdicts, and alternative approaches considered. This is a `/lead-project` extension; sub-skill orchestrators typically don't have enough decision history to populate it.
+- **Current state** must additionally include:
+  - `Mechanical end-state conditions: <K of M passing>`
+  - `Pending key tasks: <summary>`
+  - `Cycle log pointer: see LEAD_PROJECT_STATE.md cycles N-3 through N`
 
-### What I was trying to do
-[The key task or intent item driving this cycle.]
-
-### What went wrong
-[Specific failure mode. Concrete, not vague.]
-
-### What I tried
-[Actions attempted, /think-* skills invoked and their verdicts, alternative approaches considered.]
-
-### What I need from you
-[Specific decision, permission, or information required.
- Phrase as a yes/no or multiple-choice question when possible.]
-
-### Current state
-- Branch: <name> (at SHA <short>)
-- Commits on branch: N
-- Tests: <pass/fail with detail>
-- Build: <pass/fail>
-- Mechanical end-state conditions: <K of M passing>
-- Pending key tasks: <summary>
-
-### To resume
-[Instructions for re-invoking /lead-project after the blocker is resolved.
- Reference the state doc for context preservation.]
-```
+All other sections (project orientation, pre-loaded options, recommendation with pre-rebutted counterargument and what-would-flip, current state baseline, to resume) follow the shared template structure verbatim.
 
 After pulling the cord: stop. Do not attempt additional cycles. Wait for user input.
 

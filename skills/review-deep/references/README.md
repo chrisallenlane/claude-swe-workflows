@@ -123,7 +123,7 @@ Advisory-only phases produce reports you can act on manually or via `/refactor` 
 | `/review-test`     | Phase 6                                                                                                 |
 | `/review-doc`      | Phase 7                                                                                                 |
 | `/review-release`  | Phase 8                                                                                                 |
-| `/refactor-deep`   | Sibling workflow — change-oriented cycle (refactor → arch → refactor). Usually one or the other, not both. |
+| `/refactor-deep`   | Sibling workflow — change-oriented cycle (refactor → advisory arch review → doc). Usually one or the other, not both. |
 | `/implement-project` | Contains its own post-batch quality pipeline. `/review-deep` is the standalone equivalent for use outside a ticket-driven project. |
 
 ## Resource Usage

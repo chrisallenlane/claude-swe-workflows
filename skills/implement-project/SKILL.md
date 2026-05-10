@@ -10,11 +10,13 @@ Orchestrates an entire project from tickets to release-ready code. Implements ba
 
 ## Philosophy
 
+This skill implements the autonomy discipline documented in [`references/autonomy.md`](../../references/autonomy.md): the five levers (altitude rule, pre-loaded options, pre-rebutted recommendation, commander's intent, risk budgets), the cascade rule, the shared handoff template, and the "log instead of escalate" pattern. Its commander's-intent schema is the four-field variant defined there (tickets, acceptance bar, constraints, non-goals).
+
 **Autonomy is the default; escalation is the exception.** The goal is to complete an entire project — multiple batches of tickets, quality passes, and verification — without user intervention. When stuck, try `/think-deliberate` first. Only pull the andon cord when autonomous resolution has failed or is clearly futile.
 
 **The project branch is the single integration point.** All work flows into the project branch. Batches merge into it, quality passes commit to it, and the user makes one decision at the end: merge or don't.
 
-**Quality is layered.** Each quality pass builds on the previous one. Refactoring cleans the code so review-arch can focus on structure. Arch-review restructures so review-test can assess coverage of the final form. Doc-review documents what actually shipped. Release-review validates the whole.
+**Quality is layered.** Each quality pass builds on the previous one. Refactoring cleans the code so review-arch can focus on structure. Arch-review surfaces structural recommendations (advisory only — `/review-arch` no longer implements changes; see [`references/autonomy.md`](../../references/autonomy.md) section 7) so review-test can assess coverage of the current form. Doc-review documents what actually shipped. Release-review validates the whole.
 
 **Fresh eyes catch what familiarity misses.** Each quality pass runs its full workflow, including any embedded sub-passes (e.g., `/refactor` runs its own `/review-doc`). Redundancy is intentional — each agent sees the project with fresh context and may catch issues that prior passes normalized.
 
@@ -26,25 +28,26 @@ Orchestrates an entire project from tickets to release-ready code. Implements ba
 ├──────────────────────────────────────────────────────────────┤
 │  1. Gather tickets and batching strategy                     │
 │  2. Discuss smoke testing procedures                         │
-│  3. Plan execution across batches                            │
+│  3. Plan execution + elicit commander's intent               │
 │  4. Create project branch                                    │
 │  5. Per-batch loop:                                          │
 │     ├─ 5a. Create batch branch from project branch           │
-│     ├─ 5b. Run /implement-batch workflow (autonomous mode)             │
+│     ├─ 5b. Run /implement-batch workflow (autonomous mode)   │
 │     ├─ 5c. Merge batch branch → project branch               │
 │     ├─ 5d. Post-merge verification                           │
 │     └─ 5e. Clean up and checkpoint                           │
 │  6. Smoke testing                                            │
 │  7. Quality pipeline:                                        │
 │     ├─ 7a. /refactor (MAXIMUM aggression)                    │
-│     ├─ 7b. /review-arch (autonomous mode)                    │
-│     ├─ 7c. /refactor again (conditional)                     │
-│     ├─ 7d. /review-test                                      │
-│     ├─ 7e. /review-doc                                       │
-│     └─ 7f. /review-release                                   │
+│     ├─ 7b. /review-arch (autonomous mode — advisory report)  │
+│     ├─ 7c. /review-test                                      │
+│     ├─ 7d. /review-doc                                       │
+│     └─ 7e. /review-release                                   │
 │  8. Final report                                             │
 └──────────────────────────────────────────────────────────────┘
 ```
+
+The pre-autonomy-3 conditional second `/refactor` (formerly step 7c, ran when `/review-arch` made substantive changes) is removed. `/review-arch` is now advisory and does not make changes; the conditional can never fire.
 
 ## Available Tools
 
@@ -58,21 +61,16 @@ Beyond the mainline workflow, the orchestrator has access to additional workflow
 **This protocol applies throughout the entire workflow.** The andon cord is the escape valve for problems that cannot be resolved autonomously.
 
 **Before pulling the andon cord:**
-1. Attempt autonomous resolution first
-2. For judgment calls, run `/think-deliberate` to reason through options
-3. Only escalate if autonomous resolution has failed or is clearly futile
+1. Attempt autonomous resolution first.
+2. For judgment calls, run `/think-deliberate` to reason through options.
+3. Only escalate if autonomous resolution has failed or is clearly futile.
 
 **When the andon cord is pulled:**
-1. **Stop all work immediately** — do not attempt to continue with other batches or steps
-2. Present to user:
-   - Current phase and step
-   - What was attempted and what went wrong
-   - What autonomous resolution was tried (including any `/think-deliberate` results)
-   - Current state of all branches (what's merged, what's in-progress)
-   - Recommended path forward (if you have one)
-3. Wait for user guidance before resuming
+1. **Stop all work immediately** — do not attempt to continue with other batches or steps.
+2. Produce a handoff using the **shared handoff template** in [`references/autonomy.md`](../../references/autonomy.md). The escalation must include pre-loaded options (2–3 named choices), an explicit recommendation, the one tradeoff that would flip the recommendation, and a pre-rebutted counterargument. Include the skill-specific state: current phase and step, what `/think-deliberate` was already considered, current state of all branches (what's merged into the project branch, what's in-progress), and how far through the per-batch loop or quality pipeline the run is.
+3. Wait for user guidance before resuming.
 
-**Andon cord triggers:**
+**Andon cord triggers (skill-specific):**
 - Batch workflow pulls its own andon cord (cascades up)
 - Merge conflict between batch branch and project branch
 - Smoke testing reveals fundamental design issues that can't be fixed locally
@@ -106,11 +104,11 @@ Beyond the mainline workflow, the orchestrator has access to additional workflow
 
 **Record the procedure.** It will be used for:
 - Step 6 (smoke testing)
-- QA instructions passed to quality passes (steps 7a-7f)
+- QA instructions passed to quality passes (steps 7a-7e)
 
-### 3. Plan Execution Across Batches
+### 3. Plan Execution Across Batches + Elicit Commander's Intent
 
-Analyze all tickets across all batches and produce an execution plan.
+Analyze all tickets across all batches and produce an execution plan, and elicit the commander's-intent fields beyond the tickets themselves.
 
 **Per-batch analysis:**
 - Tickets in this batch and their dependencies
@@ -122,11 +120,23 @@ Analyze all tickets across all batches and produce an execution plan.
 - Optimal batch ordering
 - Risk areas where batches might conflict
 
+**Elicit commander's intent** (the four-field schema from [`references/autonomy.md`](../../references/autonomy.md)):
+
+| Field           | Default                                                            | Notes                                                                               |
+|-----------------|--------------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| Tickets         | Already gathered in step 1                                         | Pre-filled; operator confirms.                                                      |
+| Acceptance bar  | "All tickets implemented, full pipeline passes"                    | Operator may extend (e.g., "and CHANGELOG mentions every user-visible change").     |
+| Constraints     | None                                                               | Cross-cutting limits not encoded in individual tickets (e.g., "must remain compatible with library version X"). |
+| Non-goals       | None                                                               | Explicit out-of-scope items. The orchestrator will not touch these even if it sees opportunity. |
+
+Acceptance bar, constraints, and non-goals frame the orchestrator's judgment for the rest of the run. When the quality pipeline surfaces opportunities outside these bounds, they are deferred to the final report rather than acted on.
+
 **Present the plan to the user.** This is the primary planned user interaction point. Include:
 - Proposed batch execution order with rationale
 - Per-batch ticket listing with brief scope assessment
 - Any concerns about ticket specifications
 - Smoke testing procedure (confirmed)
+- Commander's intent (the four fields above)
 - Branch naming: `feat/project-<name>`, with `feat/batch-<name>` per batch
 
 **Wait for user approval before proceeding.**
@@ -203,42 +213,31 @@ Run the `/refactor` workflow with:
 - **QA instructions:** The smoke testing procedure from step 2
 - **Scope:** Entire codebase
 
-#### 7b. Arch Review (Autonomous Mode)
+#### 7b. Arch Review (Autonomous Mode — Advisory)
 
-Run the `/review-arch` workflow with autonomous overrides:
+Run the `/review-arch` workflow in **autonomous mode**. As of the autonomy-3 update, `/review-arch` no longer makes changes — autonomous mode produces an advisory report only, with recommendations naming specific implementation skills and scope hints.
 
-| `/review-arch` Step                  | Autonomous Override                                                                                                                                                                                                                                      |
-|--------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Step 1** (scope)                   | Entire codebase                                                                                                                                                                                                                                          |
-| **Step 2** (QA instructions)         | The smoke testing procedure from step 2                                                                                                                                                                                                                  |
-| **Step 3** (analyze)                 | Normal operation                                                                                                                                                                                                                                         |
-| **Step 4** (present analysis)        | **Orchestrator reviews the analysis.** Do not present to user.                                                                                                                                                                                           |
-| **Step 5** (iterate on plan)         | **Orchestrator decides what to implement.** Approve items that are clearly beneficial (dead code removal, obvious naming improvements, clear function ownership fixes). For high-impact items (module dissolution, major restructuring, new module creation), use `/think-deliberate` to reason through the trade-offs. Defer items that seem out of scope for this project — note them in the final report as recommendations. |
-| **Step 6** (how to proceed)          | Proceed with implementation of approved items                                                                                                                                                                                                            |
-| **Steps 7-9** (implement + summary)  | Normal operation                                                                                                                                                                                                                                         |
-| **Step 10** (review-doc)             | Normal operation                                                                                                                                                                                                                                         |
+Invocation parameters:
+- **Scope:** Entire codebase
+- **Mode:** Autonomous (explicit `interactive: false` parameter)
 
-**Track whether review-arch made substantive changes** — module restructuring, function moves, new modules. Dead code removal and naming fixes do not count. This determines whether step 7c runs.
+Capture the report. No SMEs are spawned by `/review-arch`, no commits are made, no tickets are created (ticket creation in `/review-arch` is reserved for interactive mode).
 
-#### 7c. Refactor Again (Conditional)
+**Surface the report's recommendations in the final report** (step 8) under "Deferred Items / Architectural Recommendations." Each recommendation already names a specific follow-up skill with scope hint; surface those verbatim so the operator can chain the right next step after the project ships.
 
-**Only run if review-arch made substantive changes** in step 7b.
-
-Run `/refactor` again with the same parameters as step 7a. Architectural restructuring often introduces code that benefits from tactical cleanup.
-
-#### 7d. Test Review
+#### 7c. Test Review
 
 Run the `/review-test` workflow.
 
 The orchestrator handles any interactive steps autonomously, applying the same pattern: implement what's clearly beneficial, `/think-deliberate` for judgment calls, andon cord as last resort.
 
-#### 7e. Doc Review
+#### 7d. Doc Review
 
 Run the `/review-doc` workflow:
 - Full documentation audit
 - Fixes committed separately
 
-#### 7f. Release Review
+#### 7e. Release Review
 
 Run the `/review-release` workflow with autonomous overrides:
 
@@ -268,15 +267,17 @@ Present comprehensive summary to user:
 
 ### Quality Pipeline Results
 - Refactor (pass 1): N commits, net -XXX lines
-- Arch Review: N items implemented, N deferred
-- Refactor (pass 2): [ran/skipped] — N commits, net -XXX lines
+- Arch Review: advisory report produced (no changes made — /review-arch is advisory)
 - Test Review: N tests added, N gaps filled
 - Doc Review: N documentation updates
 - Release Review: N findings resolved, N deferred
 
-### Deferred Items
+### Deferred Items / Architectural Recommendations
 [Items the orchestrator chose not to implement, with rationale.
- These are recommendations for the user to consider.]
+ Includes /review-arch's recommendations from step 7b — each names
+ a specific follow-up skill with scope hint (e.g.,
+ "Dead code in src/foo/: /refactor scoped to that directory").
+ These are actionable next steps for the user.]
 
 ### Statistics
 - Total commits: N
@@ -322,9 +323,8 @@ Status: <current phase>
 - Status: implementing
 
 ## Quality Pipeline
-- [x] Refactor (pass 1)
-- [ ] Arch Review
-- [ ] Refactor (pass 2)
+- [x] Refactor
+- [ ] Arch Review (advisory)
 - [ ] Test Review
 - [ ] Doc Review
 - [ ] Release Review
@@ -391,7 +391,7 @@ Status: <current phase>
 **Relationship to quality passes:**
 - `/implement-project` runs each quality pass as a complete workflow
 - Each pass operates on the full codebase with fresh context
-- Passes build on each other: refactor → review-arch → refactor → test → doc → release
+- Passes build on each other: refactor → review-arch (advisory) → test → doc → release
 
 **Hierarchy:**
 ```
@@ -401,8 +401,7 @@ Status: <current phase>
 │   ├── /refactor (per-batch quality)
 │   └── /review-doc (per-batch quality)
 ├── /refactor (project-level quality)
-├── /review-arch (project-level quality)
-├── /refactor (conditional second pass)
+├── /review-arch (project-level quality, autonomous mode — advisory)
 ├── /review-test (project-level quality)
 ├── /review-doc (project-level quality)
 └── /review-release (project-level quality)

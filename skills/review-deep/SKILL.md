@@ -187,5 +187,5 @@ Present a single report that aggregates the results of every enabled phase. The 
 - Use an individual `/review-*` skill for targeted single-dimension review, or when a previous `/review-deep` surfaced a specific area to re-examine.
 
 **Relationship to `/refactor-deep`:**
-- `/refactor-deep` composes refactoring skills: `/refactor`, `/review-arch`, `/refactor`, `/review-doc`. It is change-oriented.
+- `/refactor-deep` composes: `/refactor` (tactical cleanup), `/review-arch` (advisory architectural analysis, with optional ticket creation), `/review-doc`. It is change-oriented.
 - `/review-deep` composes review skills and is evaluation-oriented. It shares `/review-arch` and `/review-doc` with `/refactor-deep`; running both back-to-back in the same session is usually redundant. Prefer `/review-deep` when release readiness is the goal.

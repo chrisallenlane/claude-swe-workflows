@@ -64,7 +64,7 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
 └── quality pipeline: /refactor, /review-arch, /review-test, /review-doc, /review-release
 
 /refactor-deep
-└── /refactor → /review-arch → /refactor → /review-doc
+└── /refactor → /review-arch (advisory) → /review-doc
 
 /review-deep
 └── /review-health → /review-arch → /review-security → /review-perf
@@ -94,7 +94,7 @@ Supporting workflows available at any level:
 **Quality pipelines:**
 
 - `/test-mutation` — mutation testing
-- `/refactor-deep` — full tactical + architectural + tactical refactoring cycle
+- `/refactor-deep` — tactical cleanup followed by advisory architectural review (with optional ticket creation)
 - `/review-deep` — comprehensive pre-release review pipeline
 
 **Utility:**

@@ -4,13 +4,15 @@
 
 The `/implement-batch` skill takes a batch of tickets, plans their execution order, implements each one sequentially using the `/implement` workflow in autonomous mode, runs cross-cutting quality passes, and presents results for final review. It turns a set of tickets into a single project branch ready to merge.
 
+The skill is a **for-loop, not an orchestrator** in the autonomy sense — it has no commander's intent; the tickets carry the work definition. Its andon-cord pulls follow the shared autonomy discipline documented in [`references/autonomy.md`](../../../references/autonomy.md), and `/implement` escalations cascade up to this skill rather than going directly to the operator.
+
 **Key benefits:**
 - Batch execution of multiple tickets without intervention
 - Dependency-aware ordering
 - Each ticket gets full `/implement` quality treatment
 - Cross-cutting quality passes catch inter-ticket issues
 - Topic branches per ticket, merged into a project branch
-- Andon cord protocol stops work immediately on failures
+- Andon cord protocol stops work immediately on failures, using the shared handoff template
 
 ## When to Use
 
@@ -181,7 +183,7 @@ Presents a comprehensive summary. The user decides: merge the project branch to 
 
 Borrowed from Toyota's production system: when something goes wrong, **stop the line immediately**.
 
-**Triggers:**
+**Triggers (skill-specific):**
 - Acceptance verification fails 3 times
 - Unresolvable critical/high security findings
 - Post-merge test suite failure
@@ -191,9 +193,11 @@ Borrowed from Toyota's production system: when something goes wrong, **stop the 
 - Project branch already exists
 
 **What happens:**
-1. All work stops immediately
-2. User gets: which ticket failed, what step, what went wrong, current branch state
-3. Work resumes only after user guidance
+1. All work stops immediately.
+2. The skill produces a handoff using the **shared handoff template** in [`references/autonomy.md`](../../../references/autonomy.md). The handoff includes pre-loaded options (2–3 named choices), an explicit recommendation, the one tradeoff that would flip it, and a pre-rebutted counterargument — plus the skill-specific state: which ticket and step failed, current branch state, tracker links.
+3. Work resumes only after user guidance.
+
+**Cascade rule.** `/implement` escalations cascade up to `/implement-batch`, not directly to the operator. When `/implement` would otherwise pull its own cord (3-strike acceptance failure, unresolvable critical security finding), the batch skill catches that signal and pulls *its* cord with batch-level context (which ticket, what's already merged, etc.). See [`references/autonomy.md`](../../../references/autonomy.md) for the cascade rule.
 
 The alternative — pressing forward and hoping later steps compensate — leads to compounding errors that are much harder to fix.
 

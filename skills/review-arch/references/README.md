@@ -1,15 +1,17 @@
-# /review-arch - Blueprint-Driven Architectural Improvement
+# /review-arch - Advisory Architectural Analysis
 
 ## Overview
 
-The `/review-arch` skill analyzes codebase architecture and collaborates with the user to improve it. It spawns an analysis agent that builds a domain model via noun analysis and produces a target architecture blueprint, then presents those findings to the user for review and refinement. The user decides what to implement and how to proceed — changes are made through specialist agents with QA verification at each step.
+The `/review-arch` skill analyzes codebase architecture and produces a target blueprint via noun analysis. It is **advisory only** — the skill does not make changes to the codebase. When run interactively by an operator, it offers to convert the planned work into tickets in your issue tracker. When invoked by another skill (autonomous mode), it produces a structured report with concrete next-step recommendations.
+
+The plugin is moving `/review-*` skills toward advisory-only over time; `/review-arch` is the first concrete step in that direction. See [`references/autonomy.md`](../../../references/autonomy.md) section 7 for the broader direction.
 
 **Key benefits:**
-- Blueprint-driven - implements a coherent architectural target, not a grab-bag of independent fixes
+- Blueprint-driven analysis — surfaces a coherent target architecture, not a grab-bag of independent fixes
 - Noun analysis identifies the natural decomposition boundaries in the domain
-- Interactive review - user sees and shapes the plan before any changes are made
-- Atomic commits per item (easy to review, bisect, or revert)
-- Built-in quality gates with QA verification
+- Interactive review lets the user shape the plan before any tickets are cut
+- Ticket creation (interactive mode) routes the work to the right implementation skill with scope hints
+- Autonomous mode produces structured reports that orchestrators can surface in their final reports
 
 ## When to Use
 
@@ -19,315 +21,199 @@ The `/review-arch` skill analyzes codebase architecture and collaborates with th
 - After a codebase has grown organically and needs structural cleanup
 - When "helpers.go" or "utils.py" has become a dumping ground
 - Preparing a codebase for a major new feature that needs clean abstractions
+- Generating a coherent batch of refactoring tickets for `/implement-batch` to work through
 
 **Don't use `/review-arch` for:**
 - Routine code cleanup (use `/refactor` instead)
-- Quick DRY fixes or dead code removal (use `/refactor` instead)
-- Codebases without tests (restructuring needs verification)
-- Active development where changes are still in flux
+- Quick DRY fixes or dead code removal (use `/refactor`)
+- Active development where module structure is still in flux
 
-**Rule of thumb:** Use `/review-arch` when the module structure itself needs rethinking. Use `/refactor` when the code within modules needs cleaning up.
+**Rule of thumb:** Use `/review-arch` when the module structure itself needs rethinking — the output is a plan (or a set of tickets), not a set of commits.
+
+## Two Modes
+
+| Mode                  | When                                                                         | Output                                                                  |
+|-----------------------|------------------------------------------------------------------------------|-------------------------------------------------------------------------|
+| Interactive standalone| Invoked directly by the operator (default)                                   | Iterates plan with user; offers to cut tickets with preview-and-approve |
+| Autonomous            | Invoked by another skill (e.g., `/implement-project`, `/refactor-deep`)      | Structured report with skill-named next-step recommendations            |
+
+The mode is set by an explicit `interactive: true|false` parameter from the caller. When invoked directly by the operator without a parameter, the default is interactive. The operator can force autonomous output with `--autonomous` or force interactive with `--interactive` (rare; usually a hint the wrong skill is calling).
 
 ## Workflow Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ /review-arch Workflow                                           │
+│ /review-arch Workflow (advisory)                                │
 └─────────────────────────────────────────────────────────────────┘
 
  ┌──────────────────────────────────────────────┐
- │  1. DETERMINE SCOPE                          │
+ │  1. DETERMINE SCOPE AND MODE                 │
  │  ────────────────────────────────────────    │
- │  • Default: Entire codebase                  │
- │  • Or: User-specified path/module            │
+ │  • Scope: entire codebase or user-specified  │
+ │  • Mode: interactive or autonomous           │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  2. GATHER QA INSTRUCTIONS                   │
+ │  2. ANALYZE CODEBASE                         │
  │  ────────────────────────────────────────    │
- │  Ask user for custom verification steps:     │
- │  • Visual checks, screenshots                │
- │  • Manual test commands                      │
- │  • Specific scenarios to validate            │
- │  (Optional - standard tests run regardless)  │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  3. ANALYZE CODEBASE                         │
- │  ────────────────────────────────────────    │
- │  Agent: swe-arch-reviewer (fresh instance)    │
+ │  Agent: swe-arch-reviewer (fresh instance)   │
  │                                              │
  │  Four sequential analysis steps:             │
- │  • Step 1: Catalog dead code                 │
- │  • Step 2: Noun analysis (domain model)      │
- │  • Step 3: Identify repetition               │
- │  • Step 4: Produce target blueprint          │
+ │  • Catalog dead code                         │
+ │  • Noun analysis (domain model)              │
+ │  • Identify repetition                       │
+ │  • Produce target blueprint                  │
  │                                              │
- │  Returns dead code list + blueprint          │
+ │  No opportunities? → COMPLETION SUMMARY      │
+ └──────────────────┬───────────────────────────┘
+                    ▼
+              Mode? ────────┐
+                            │
+           interactive ◄────┘────► autonomous
+              │                          │
+              ▼                          │
+ ┌──────────────────────────────────────────────┐
+ │  3. PRESENT ANALYSIS TO USER                 │
+ │     (interactive only)                       │
+ ├──────────────────────────────────────────────┤
+ │  4. ITERATE ON PLAN WITH USER                │
+ │     (interactive only)                       │
+ ├──────────────────────────────────────────────┤
+ │  5. OFFER TO CUT TICKETS                     │
+ │     (interactive only)                       │
+ │  • Generate draft ticket per item            │
+ │  • Preview to user                           │
+ │  • Get approval; user may edit/remove        │
+ │  • Create in tracker with labels             │
+ └──────────────────┬───────────────────────────┘
+                    │                          │
+                    ▼                          ▼
+ ┌──────────────────────────────────────────────┐
+ │  6. COMPLETION SUMMARY                       │
+ │  ────────────────────────────────────────    │
+ │  Interactive: tickets created (or none)      │
+ │  Autonomous:  structured report for caller   │
  │                                              │
- │  No opportunities? → EXIT ──────────────► DONE
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  4. PRESENT ANALYSIS TO USER                 │
- │  ────────────────────────────────────────    │
- │  Show the user:                              │
- │  • Noun frequency table + evaluations        │
- │  • Proposed changes (blueprint items)        │
- │  • No-change items (with justifications)     │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  5. ITERATE ON PLAN WITH USER                │
- │  ────────────────────────────────────────    │
- │  User may:                                   │
- │  • Add, remove, or modify items              │
- │  • Ask questions about recommendations       │
- │  • Adjust scope or priorities                │
- │                                              │
- │  Continue until user is satisfied            │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  6. ASK USER HOW TO PROCEED                  │
- │  ────────────────────────────────────────    │
- │  User decides next steps:                    │
- │  • Implement changes now                     │
- │  • Create tickets for later                  │
- │  • Something else                            │
- │                                              │
- │  Not implementing? ─────────────────────► DONE
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  7. IMPLEMENT DEAD CODE REMOVAL              │
- │  ────────────────────────────────────────    │
- │  Batch all dead code removals together       │
- │  Agent: SME or orchestrator                  │
- │  Verify with QA, commit                      │
- └──────────────────┬───────────────────────────┘
-                    ▼
-        ┌───────────────────────┐
-        │  BLUEPRINT LOOP       │◄───────────────────┐
-        └───────────┬───────────┘                    │
-                    ▼                                │
- ┌──────────────────────────────────────────────┐    │
- │  8. IMPLEMENT BLUEPRINT ITEM                 │    │
- │  ────────────────────────────────────────    │    │
- │  Ordered by safety:                          │    │
- │  1. Linter/formatter fixes                   │    │
- │  2. Renames and stutter fixes                │    │
- │  3. File splits within modules               │    │
- │  4. Function moves within modules            │    │
- │  5. Module absorptions                       │    │
- │  6. Module dissolutions                      │    │
- │  7. New module creation                      │    │
- │                                              │    │
- │  Agent: Language-specific SME or generalist  │    │
- └──────────────────┬───────────────────────────┘    │
-                    ▼                                │
- ┌──────────────────────────────────────────────┐    │
- │  VERIFY CHANGES                              │    │
- │  ────────────────────────────────────────    │    │
- │  Agent: qa-engineer                          │    │
- │                                              │    │
- │  Passes? ──┬─ Yes → Commit, next item ───────┤    │
- │            └─ No  → Return to SME ──┐        │    │
- │                     (max 3 attempts)│        │    │
- │                                     ▼        │    │
- │                     ┌────────────────────┐   │    │
- │                     │ Still failing?     │   │    │
- │                     │ → Revert item      │   │    │
- │                     │ → Log failure      │   │    │
- │                     │ → Next item ───────┼───┤    │
- │                     └────────────────────┘   │    │
- └──────────────────────────────────────────────┘    │
-                    ▼                                │
-           All items done?                           │
-           ├─ No  → Back to step 8 ──────────────────┘
-           └─ Yes ▼
- ┌──────────────────────────────────────────────┐
- │  9. COMPLETION SUMMARY                       │
- │  ────────────────────────────────────────    │
- │  • Total commits made                        │
- │  • Net lines changed (target: negative)      │
- │  • Blueprint items completed vs skipped      │
- │  • Any skipped items with reasons            │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  10. UPDATE DOCUMENTATION                    │
- │  ────────────────────────────────────────    │
- │  Run /review-doc to fix stale docs           │
- │  (module renames, moved functions, etc.)     │
+ │  Both: "Recommended next steps" name         │
+ │  specific skills with scope hints            │
  └──────────────────────────────────────────────┘
 ```
 
 ## Workflow Details
 
-### 1. Determine Scope
-By default, the workflow operates on the entire codebase. You can specify a narrower scope:
+### 1. Determine Scope and Mode
 
-```
-/review-arch                     # Entire codebase
-/review-arch src/parser/         # Just the parser module
-```
+**Scope:** Default is the entire codebase. Caller may pass a narrower scope (directory, files, module). The scope is propagated to the analysis agent.
 
-The scope is passed to all spawned agents.
+**Mode:** Detected from the caller's parameter, or defaulted from invocation context (interactive when invoked directly by the operator; autonomous when invoked by another skill).
 
-### 2. Gather QA Instructions
-Before starting, the workflow asks if you have custom verification steps beyond the standard test suite. Examples:
+### 2. Analyze Codebase
 
-- "After each change, start the app and take a screenshot to verify rendering"
-- "Run `make demo` and check the output"
-- "Verify the CLI `--help` output is still valid"
-
-These instructions are passed to the QA agent on every verification cycle. If you have no special requirements, standard verification (tests + linters) runs.
-
-### 3. Analyze Codebase
 A fresh `swe-arch-reviewer` agent performs four sequential analysis steps:
 
 | Step                   | What it does                                                                       |
 |------------------------|------------------------------------------------------------------------------------|
 | 1. Prune dead code     | Catalogs unused functions, dead imports, legacy assumptions                        |
-| 2. Noun analysis       | Builds domain model - identifies what nouns exist, what's missing, what's misnamed |
+| 2. Noun analysis       | Builds domain model — identifies what nouns exist, where they live, where they should live |
 | 3. Identify repetition | Catalogs duplication patterns as inputs to the blueprint                           |
 | 4. Produce blueprint   | Synthesizes steps 1-3 into a target architecture                                   |
 
 The blueprint describes each module's target state: what it owns, what it absorbs from other modules, what gets renamed, and what implementation simplifications are possible.
 
-### 4. Present Analysis to User
-After the analysis agent returns, present its findings in full:
+The agent is unchanged by this skill's advisory shift — it produces the same output; the skill just routes that output differently.
 
-- **Noun analysis table**: The domain model — what nouns were found, where they live, and where they should live
-- **Proposed changes**: Blueprint items grouped by category — dead code removal, renames, moves, absorptions, dissolutions, new modules
-- **No-change items**: Modules the agent evaluated and explicitly decided to leave alone, with domain justifications
+### 3. Present Analysis to User *(interactive mode only)*
 
-### 5. Iterate on Plan with User
-The user shapes the plan before anything is implemented. They may add, remove, or modify items, ask questions about specific recommendations, or adjust priorities. Continue until the user is satisfied.
+After the analysis agent returns, the skill presents its findings in full:
 
-### 6. Ask User How to Proceed
-Once the plan is finalized, ask the user how they'd like to proceed. The user decides — implementation, tickets, or something else.
+- **Noun analysis table** — the domain model: what nouns were found, where they live, where they should live
+- **Proposed changes** — blueprint items grouped by category (dead code removal, renames, moves, absorptions, dissolutions, new modules)
+- **No-change items** — modules the agent evaluated and decided to leave alone, with domain justifications
 
-### 7-8. Implement Changes
-If the user chose to proceed with implementation:
+### 4. Iterate on Plan with User *(interactive mode only)*
 
-Dead code removal happens first (step 7) because it simplifies everything that follows. All dead code is batched together, implemented, verified by QA, and committed.
+The user shapes the plan before any tickets are cut. They may add, remove, or modify items, ask questions about specific recommendations, or adjust priorities. Continue until the user is satisfied.
 
-The orchestrator then works through blueprint items in safety order (step 8):
+This is the heart of the interactive flow. Architectural decisions are consequential and benefit from deliberation; don't rush this step.
 
-1. **Linter/formatter fixes** - mechanical, lowest risk
-2. **Renames and stutter fixes** - low risk, no structural change
-3. **File splits within existing modules** - same namespace, better navigability
-4. **Function moves within existing modules** - moderate risk
-5. **Module absorptions** (A absorbs functions from B)
-6. **Module dissolutions** (all of C's functions distributed elsewhere)
-7. **New module creation** - highest structural change
+### 5. Offer to Cut Tickets *(interactive mode only)*
 
-Each item goes through: SME implementation -> QA verification -> atomic commit.
+Once the plan is finalized, offer to convert the planned work into tickets. The user can decline — analysis stands as a planning artifact.
 
-**Available specialists:**
-- `swe-sme-golang` - Go projects
-- `swe-sme-makefile` - Makefiles
-- `swe-sme-docker` - Dockerfiles
-- `swe-sme-graphql` - GraphQL schemas
-- `swe-sme-ansible` - Ansible playbooks
-- `swe-sme-zig` - Zig projects
-- `swe-sme-html` - HTML/markup
-- `swe-sme-css` - CSS/styling
-- `swe-sme-javascript` - Vanilla JavaScript
-- `swe-sme-typescript` - TypeScript
+For each blueprint item (or cohesive group of items), generate a draft ticket including:
 
-**For other languages** (Python, Rust, Lua, etc.): The orchestrator implements directly, following language idioms.
+- **Title** — short, action-oriented
+- **Description** — rationale plus specific moves/renames
+- **Recommended implementation skill** — names the skill that should pick this up, with scope hint (e.g., `/refactor scoped to src/utils/`, or `/scope then /implement-batch` for cross-module work)
+- **Acceptance criteria** — what "done" looks like
 
-After each item, the `qa-engineer` agent verifies the change didn't break anything (test suite, linters, formatters). On failure, the SME gets up to 3 repair attempts. After 3 failures: revert the item, log the failure, continue with the next item.
+**Preview the full set to the user.** The user can approve as-is, edit any field, remove tickets they don't want cut, and choose labels (default: none).
 
-### 9. Completion Summary
-```
-## Arch Review Complete
+**On approval, create tickets in the tracker** using the same detection pattern as `/scope` (GitHub via `gh`, Gitea via MCP, GitLab via `glab`).
 
-### Statistics
-- Commits made: 7
-- Net lines changed: -198
-- Blueprint items completed: 5/5
+### 6. Completion Summary
 
-### Blueprint Status
-- snippet.lua: completed (renamed from parser.lua, absorbed frontmatter.lua)
-- keymaps.lua: completed (extracted from init.lua)
-- strings.lua: completed (dissolved, functions distributed)
-- loader.lua: completed (absorbed strip() from strings.lua)
-- init.lua: completed (simplified after extractions)
+The format depends on mode. Interactive mode lists tickets created (or notes that no tickets were cut); autonomous mode produces a structured report for the caller. Both modes include a "Recommended next steps" section that names specific skills with scope hints.
 
-### Skipped Items
-(none)
-```
-
-### 10. Update Documentation
-After the summary, the workflow runs `/review-doc` to bring project documentation up to date. Architectural changes rename modules, move functions, and change project structure — documentation that references the old structure becomes stale. The review-doc agent audits all documentation files and fixes issues it finds, committing separately from the refactoring commits.
+See SKILL.md for the exact templates.
 
 ## Tips for Effective Use
 
-1. **Ensure tests exist first.** Restructuring without tests is dangerous. The workflow relies on QA verification to catch regressions.
+1. **Mode is set by who calls the skill.** Operator at the keyboard → interactive. Orchestrator running autonomously → advisory report. The skill defaults sensibly; you rarely need to override.
 
-2. **Start with a clean working tree.** The workflow makes commits. Uncommitted changes will complicate things.
+2. **In interactive mode, the iteration phase (step 4) is where most of the value lands.** The agent's first proposal is rarely the right plan — the back-and-forth with the user shapes it into something accurate.
 
-3. **Review the commits afterward.** Each item is an atomic commit. You can review, amend, squash, or revert as needed.
+3. **Ticket creation is opt-in even in interactive mode.** If you want the analysis as a planning artifact rather than a set of tickets, decline at step 5. The recommendations stand.
 
-4. **Skipped items are information.** If an item fails 3 times, there may be a deeper issue. Review the skipped item details.
+4. **Pay attention to the "Recommended implementation skill" hint in each ticket.** It names the right next move (`/refactor` for mechanical changes; `/scope` then `/implement` for new modules; `/implement-batch` for cohesive groups).
 
-5. **Consider running `/refactor` first.** Cleaning up dead code and DRY violations with `/refactor` simplifies the architectural analysis.
+5. **Autonomous mode is for orchestrators, not for one-shot reports.** If you want a quick read-out without ticket creation, use interactive mode and decline at step 5. That's cleaner than `--autonomous` from the operator side.
 
-6. **Scope aggressively if needed.** For large codebases, target specific modules: `/review-arch src/core/` rather than everything.
+6. **Consider running `/refactor` first.** Cleaning up dead code and DRY violations with `/refactor` reduces noise in the architectural analysis. The analysis agent can then focus on structural opportunities rather than rediscovering tactical ones.
+
+7. **Scope aggressively for large codebases.** `/review-arch src/core/` targets a specific module; better than analyzing everything when you already know where the problems are.
 
 ## Agent Coordination
 
-**Sequential execution:**
-- One agent at a time
-- No parallel agent execution
-- Each agent completes before the next spawns
+**Single agent invocation.** The skill spawns `swe-arch-reviewer` once per invocation. No SMEs are spawned (no implementation). No QA agents are spawned (no changes to verify).
 
-**State maintained by orchestrator:**
-- Current blueprint and progress through it
-- Completed items (brief log)
-- Skipped items (with reasons)
-- Failure count per active item
-- Running totals for summary
+**State maintained by the skill:**
+- Mode (interactive or autonomous)
+- Scope
+- Analysis output from the agent
+- In interactive mode: the iterating plan as the user shapes it; tickets created at the end
 
 ## Abort Conditions
 
-**Abort current item:**
-- 3 consecutive QA failures -> revert, log, continue
+**Abort the workflow:**
+- Analysis agent fails or returns malformed output — retry once; if it fails again, surface the error.
+- User interrupts during iteration.
+- Tracker is unavailable when the user has approved ticket creation — surface the error; preserve the approved ticket set in the completion summary so the user can create the tickets manually.
 
-**Abort entire workflow:**
-- User interrupts
-- Git repository in unclean state
-- Critical system error
-
-**Agent failures:**
-- Spawn failure -> retry once, then abort workflow
-- Malformed output -> log, skip item, continue
-- Timeout -> treat as failure, apply retry logic
+**Do NOT abort for:**
+- Empty findings — that's a valid outcome. Report "no architectural improvements identified" and exit cleanly.
+- User declining to cut tickets — analysis stands as a planning artifact.
 
 ## Philosophy
 
-The `/review-arch` workflow embodies several key principles:
+The `/review-arch` workflow embodies several principles:
+
+**Review and implementation are different concerns.**
+- A skill that does both makes both worse.
+- `/review-arch` surfaces opportunities and routes them to implementation skills via tickets.
+- The plugin's broader direction is for `/review-*` skills to move toward advisory-only (see [`references/autonomy.md`](../../../references/autonomy.md) section 7).
 
 **Organization first:**
-- Every module should own a clear domain noun
-- Functions should live where a reader expects to find them
-- The blueprint describes a target architecture, not a grab-bag of fixes
+- Every module should own a clear domain noun.
+- Functions should live where a reader expects to find them.
+- The blueprint describes a target architecture, not a grab-bag of fixes.
 
-**Recommend boldly, implement collaboratively:**
-- The analysis agent should surface every opportunity, even uncertain ones
-- The user reviews, refines, and decides what to implement
-- Architectural decisions are consequential and benefit from human judgment
+**Recommend boldly, decide collaboratively:**
+- The analysis agent surfaces every opportunity, even uncertain ones.
+- In interactive mode, the user reviews, refines, and decides what becomes a ticket.
+- Architectural decisions are consequential and benefit from human judgment.
 
-**Red diffs within modules:**
-- Once code is in the right place, simplify it
-- Less code is better when it doesn't sacrifice comprehensibility
-- But don't let line count override architectural decisions
-
-**Atomic and reversible:**
-- Each item is one commit
-- Easy to review, bisect, or revert
-- Skipped items don't pollute the history
+**Atomic tickets, not atomic commits:**
+- Each blueprint item becomes a ticket (or a cohesive group becomes one ticket).
+- Tickets are individually implementable — one ticket per coherent unit of work.
+- The implementation skills (`/refactor`, `/implement`) handle the commit discipline.

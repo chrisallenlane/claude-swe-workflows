@@ -31,8 +31,7 @@ and autonomy.
 │   ├── /refactor                     ← per-batch cleanup
 │   └── /review-doc                   ← per-batch doc audit
 ├── /refactor (MAXIMUM aggression)    ← project-level cleanup
-├── /review-arch                      ← architectural restructuring
-├── /refactor (conditional)           ← post-restructuring cleanup
+├── /review-arch (advisory)           ← architectural analysis; surfaces recommendations
 ├── /review-test                      ← test suite review
 ├── /review-doc                       ← documentation audit
 └── /review-release                   ← pre-release readiness
@@ -75,7 +74,7 @@ Supporting workflows are available at any level:
 **Quality pipelines:**
 
 - `/test-mutation` — mutation testing
-- `/refactor-deep` — full tactical + architectural + tactical refactoring cycle
+- `/refactor-deep` — tactical cleanup followed by advisory architectural review (with optional ticket creation)
 - `/review-deep` — comprehensive pre-release review pipeline
 
 **Utility:**
@@ -131,6 +130,8 @@ your task:
 
 These workflows manage the lifecycle of tickets — from implementation
 through quality passes to a merge-ready branch.
+
+The orchestrator family shares an autonomy discipline — high-altitude escalation, pre-loaded options, pre-rebutted recommendations, commander's intent, and risk budgets. See [references/autonomy.md](references/autonomy.md) for the discipline that governs `/lead-project`, `/implement-project`, `/implement-batch`, and `/refactor-deep`.
 
 #### /lead-project — Autonomous Technical Lead
 
@@ -226,12 +227,15 @@ within existing architecture — for structural changes, use `/review-arch`.
 
 [Detailed documentation](skills/refactor/SKILL.md)
 
-#### /review-arch — Blueprint-Driven Architectural Improvement
+#### /review-arch — Advisory Architectural Analysis
 
-Analyzes codebase architecture via noun analysis, produces a target
-blueprint, then collaborates with the user to decide what to implement.
-For module boundaries, responsibility overlap, utility grab-bag
-dissolution, and structural rethinking.
+Analyzes codebase architecture via noun analysis and produces a target
+blueprint. **Advisory only** — does not implement changes. In interactive
+standalone mode, collaborates with the user on the plan and offers to cut
+tickets for the recommended work. In autonomous mode (invoked by an
+orchestrator), produces a structured report with concrete next-step
+recommendations. For module boundaries, responsibility overlap, utility
+grab-bag dissolution, and structural rethinking.
 
 [Detailed documentation](skills/review-arch/SKILL.md)
 
