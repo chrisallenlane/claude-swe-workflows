@@ -272,8 +272,8 @@ Briefly note what was reviewed and exit. Don't manufacture findings.
 ## Team Coordination
 
 - Spawned by `/review-test` Phase 2.
-- Output is advisory. The orchestrator presents findings to the user for selection.
-- Implementation (when the user accepts) is delegated to language SMEs by the orchestrator.
+- Output is advisory. The orchestrator records the findings, presents them in the consolidated review report, and at the end of `/review-test` proposes a ticket structure to the operator for approve / edit / decline.
+- Implementation happens out-of-skill via `/implement` or `/implement-project` against the cut tickets — not within `/review-test` itself (advisory only as of v9.0.0).
 
 ---
 

@@ -289,7 +289,7 @@ The skill may invoke any of the following during the Decide phase:
 | `/refactor`                     | Tactical code cleanup                                                                |
 | `/refactor-deep`                | Tactical + architectural + tactical cleanup cycle                                    |
 | `/review-arch`                  | Architectural review                                                                 |
-| `/review-test`                  | Test suite review                                                                    |
+| `/review-test`                  | Test suite survey; advisory; produces ticket-structure proposal                      |
 | `/review-doc`                   | Documentation audit                                                                  |
 | `/review-release`               | Pre-release readiness                                                                |
 | `/review-perf`                  | Performance review                                                                   |
@@ -365,8 +365,10 @@ Act: /implement-project (autonomous)... 6 tickets closed, 23 commits, all tests 
 [Cycle 2]
 Observe: 0 open tickets, tests pass (104/104), coverage 72%
 Orient: Key task 1 met. Key task 2 (80% coverage) not met.
-Decide: /review-test to identify coverage gaps
-Act: /review-test... 7 tests added, coverage now 83%
+Decide: /review-test to surface coverage gaps
+Act: /review-test... 8 gaps surfaced; orchestrator declined proposed
+     tickets and implemented 5 critical gaps inline via /implement.
+     Coverage now 83%.
 
 [Cycle 3]
 Observe: tests pass (111/111), coverage 83%
@@ -429,8 +431,8 @@ Subjective: (none)
 
 ### Deferred items
 - [medium | /review-test | cycle 2] Mock overuse in session_test.go —
-  deferred because fix spans 3 files and touches the separate
-  /session refactor that's out of scope
+  approved as ticket (#107) because fix spans 3 files and touches the
+  separate /session refactor that's out of scope
 - [medium | /review-arch | cycle 2] Extract validator module —
   deferred as out of scope per non-goal "no pkg/session rewrites"
 

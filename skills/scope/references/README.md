@@ -100,10 +100,10 @@ Tickets created by `/scope` are comprehensive and include:
 - **Use /implement later** to actually implement the ticket (or assign to someone else)
 - **Use /scope-project** when the work spans multiple tickets organized into batches
 - **Use /refactor** for autonomous cleanup of existing code (technical debt, code quality)
-- **Use /review-test** for comprehensive test suite review (coverage gaps, fuzz tests, quality audit)
+- **Use /review-test** to survey the test suite and surface gaps as tickets (coverage gaps, fuzz tests, quality audit; advisory only)
 - **Use /test-mutation** to verify tests actually catch bugs (mutation testing)
 
-You can also use `/implement` directly for straightforward changes that don't need extensive exploration, or `/refactor`, `/review-test`, and `/test-mutation` independently when the codebase needs tidying.
+You can also use `/implement` directly for straightforward changes that don't need extensive exploration, or `/refactor` and `/test-mutation` independently when the codebase needs tidying. `/review-test` is advisory — invoke it to surface ticket-shaped work, then feed those tickets to `/implement` or `/implement-project`.
 
 ## Tips
 

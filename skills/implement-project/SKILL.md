@@ -16,7 +16,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
 
 **The project branch is the single integration point.** All work flows into the project branch. Batches merge into it, quality passes commit to it, and the user makes one decision at the end: merge or don't.
 
-**Quality is layered.** Each quality pass builds on the previous one. Refactoring cleans the code so review-arch can focus on structure. Arch-review surfaces structural recommendations (advisory only — `/review-arch` no longer implements changes; see the "Advisory aspiration" section of [`references/autonomy.md`](../../references/autonomy.md)) so review-test can assess coverage of the current form. Doc-review documents what actually shipped. Release-review validates the whole.
+**Quality is layered.** Each quality pass builds on the previous one. Refactoring cleans the code so review-arch can focus on structure. Arch-review surfaces structural recommendations (advisory only — `/review-arch` no longer implements changes; see the "Advisory aspiration" section of [`references/autonomy.md`](../../references/autonomy.md)) so review-test can survey coverage of the current form. Review-test surfaces ticket-shaped test work (advisory only — `/review-test` no longer writes tests in-skill). Doc-review documents what actually shipped. Release-review validates the whole.
 
 **Fresh eyes catch what familiarity misses.** Each quality pass runs its full workflow, including any embedded sub-passes (e.g., `/refactor` runs its own `/review-doc`). Redundancy is intentional — each agent sees the project with fresh context and may catch issues that prior passes normalized.
 
@@ -40,7 +40,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
 │  7. Quality pipeline:                                        │
 │     ├─ 7a. /refactor (MAXIMUM aggression)                    │
 │     ├─ 7b. /review-arch (advisory; ticket proposal)          │
-│     ├─ 7c. /review-test                                      │
+│     ├─ 7c. /review-test (advisory; ticket proposal)          │
 │     ├─ 7d. /review-doc                                       │
 │     └─ 7e. /review-release                                   │
 │  8. Final report                                             │
@@ -230,11 +230,19 @@ For items the orchestrator declines (intending to handle inline), surface them i
 
 The orchestrator should be conservative: cutting a ticket for a finding is always safer than declining it (declining commits the orchestrator to handling it inline, which may not actually happen in the current pipeline).
 
-#### 7c. Test Review
+#### 7c. Test Review (Advisory)
 
-Run the `/review-test` workflow.
+Run the `/review-test` workflow. As of v9.0.0, `/review-test` is advisory only — it surveys all five phases (unit coverage, integration, E2E, fuzz, quality) and produces a ticket-structure proposal rather than implementing test changes in-skill. The orchestrator receives the proposal and applies its own autonomy judgment per `references/autonomy.md`:
 
-The orchestrator handles any interactive steps autonomously, applying the same pattern: implement what's clearly beneficial, `/think-deliberate` for judgment calls, andon cord as last resort.
+- **Approve a ticket** when the work is well-scoped, the implementation requires deliberation (test design, mocking strategy, infrastructure setup), or the orchestrator does not intend to implement it inline within this project.
+- **Edit the structure** to merge, split, drop, or promote items (including refactor-for-testability suggestions) before approval.
+- **Decline a ticket** if the orchestrator intends to implement the work inline within this project — typically the unit-coverage gaps the orchestrator wants to close as part of the current pipeline.
+
+For items the orchestrator declines (intending to handle inline), surface them in the final report (step 8) under "Test Recommendations Acted On" along with what was actually implemented. For items where tickets were cut, surface them under "Deferred Items / Test Recommendations" with their ticket numbers.
+
+Phase 3's journey-classification confirmation step still requires user input even when invoked autonomously — the classification shapes ticket priorities and is the most subjective input in the analysis. The orchestrator should answer based on the project's commander's intent (which user journeys are critical to this project) and surface any uncertainty as an andon-cord pull rather than guessing.
+
+The orchestrator should be conservative: cutting a ticket for a test finding is safer than declining it (declining commits the orchestrator to handling it inline, which may not actually happen in the current pipeline).
 
 #### 7d. Doc Review
 
@@ -273,7 +281,7 @@ Present comprehensive summary to user:
 ### Quality Pipeline Results
 - Refactor (pass 1): N commits, net -XXX lines
 - Arch Review: advisory report produced (no changes made — /review-arch is advisory)
-- Test Review: N tests added, N gaps filled
+- Test Review: advisory report produced; N tickets created / N declined / N approved-inline
 - Doc Review: N documentation updates
 - Release Review: N findings resolved, N deferred
 
@@ -284,10 +292,17 @@ Present comprehensive summary to user:
  "Dead code in src/foo/: /refactor scoped to that directory").
  These are actionable next steps for the user.]
 
+### Deferred Items / Test Recommendations
+[Tickets cut from step 7c that the orchestrator chose not to handle
+ inline, plus any items it implemented inline alongside the ticket
+ numbers. Each ticket names a specific follow-up skill with scope hint.]
+
 ### Statistics
 - Total commits: N
 - Net lines changed: +/-N
-- Tests added/modified: N
+- Tests added during batch implementation: N (this counts tests written
+  by SMEs during ticket implementation in step 5; /review-test does not
+  add tests itself — it surfaces ticket-shaped work)
 - Documentation files updated: N
 
 ### Branch Status

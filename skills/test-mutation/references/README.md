@@ -165,7 +165,7 @@ Unresolved survivors: 3 (see summary above)
 
 2. **Or just test everything.** Press Enter at the scope prompt and let it run. Come back when it's done.
 
-3. **Pair with /review-test.** Run `/review-test` first to fill coverage gaps and clean up bad tests, then `/test-mutation` to find remaining weaknesses. Review builds, mutate strengthens.
+3. **Pair with /review-test.** Run `/review-test` first to surface coverage and quality gaps as tickets, work the tickets via `/implement` or `/implement-project`, then run `/test-mutation` to find remaining weaknesses. Review surfaces, implementation builds, mutation strengthens.
 
 4. **Don't chase 100%.** Some surviving mutations (e.g., constant tweaks, logging removal) may not be worth testing. The final summary lists unresolved survivors so you can decide later.
 
@@ -177,9 +177,9 @@ Unresolved survivors: 3 (see summary above)
 
 `/test-mutation`, `/review-test`, `/implement`, and `/refactor` are complementary:
 
-- **Use /review-test** to fill coverage gaps and audit test quality
+- **Use /review-test** to surface coverage gaps and audit test quality (as tickets)
+- **Use /implement** (or /implement-project) to work the tickets `/review-test` cut
 - **Use /test-mutation** to find tests that run code without verifying behavior
-- **Use /implement** to build features with quality gates
 - **Use /refactor** for code cleanup, then `/test-mutation` to verify tests weren't weakened
 
-Recommended sequence for test improvement: `/review-test` first (fill gaps, clean up), then `/test-mutation` (strengthen).
+Recommended sequence for test improvement: `/review-test` first (surface ticket-shaped work) → `/implement` or `/implement-project` (remediate) → `/test-mutation` (strengthen).

@@ -1,5 +1,25 @@
 # Changelog
 
+## v9.0.0
+
+### Breaking Changes
+
+- **`/review-test` is now advisory only.** The skill previously surveyed test coverage across five phases (unit, integration, E2E, fuzz, quality) and *implemented* the resulting test changes — writing tests via language SMEs, deleting tautological tests, rewriting brittle ones, running the test suite to verify. In v9.0.0 it is strictly advisory: each phase records its findings into a consolidated report, and after the report is presented, a final step proposes a ticket structure tailored to the review's shape (unit-gap distribution, Mode A vs. Mode B starter strategies in Phases 2 and 3, Phase-5 churn, fuzz-tooling absence), presents the proposal to the operator for approve / edit / decline, and on approval cuts tickets via the canonical tracker integration (`references/trackers.md`). It does not implement test changes.
+
+  The five-phase methodology that defines this skill is untouched. The only change is what happens after findings are produced.
+
+  The principle is the same one driving the v8.0.0 transformations of `/review-arch`, `/review-security`, and `/bug-hunt`: review and implementation are different cognitive concerns, and skills that do both make both worse. For tests specifically, the seam between "find a coverage gap" and "design a test for it" is wide — test design requires fresh reasoning about edge cases, mocking strategy, and assertion shape — and the discovery agents shouldn't be biased toward gaps whose fixes are easy. The same logic applies in reverse to test-quality findings (DELETE / REWRITE / SIMPLIFY): the operator should approve removing or rewriting an existing test explicitly, via a ticket, rather than have a workflow do it as a side effect of running a review.
+
+  Like the v8.0.0 advisory skills, `/review-test` offers ticket creation regardless of caller — orchestrators (`/review-deep`, `/lead-project`, `/implement-project`) receive the proposal and apply their own autonomy judgment per `references/autonomy.md` to approve / edit / decline, then decide which of any created tickets to work in the current flow versus defer.
+
+  Operators who relied on `/review-test` writing tests directly should now invoke `/implement` against the cut tickets, or use `/implement-project` to batch them. The DELETE-containing tickets preserve the reviewer's "rewrite-if-still-valuable" caveat so implementers do not blindly remove tests with hidden value.
+
+### Behavior Changes
+
+- **`/review-deep`, `/implement-project`, and `/lead-project` — adapt to advisory `/review-test`.** The orchestrators that compose `/review-test` (`/review-deep` as Phase 6, `/implement-project` as step 7c, `/lead-project` as part of the targeted-review set and the pre-termination review re-run) now receive a ticket-structure proposal instead of an inline implementation outcome. Each orchestrator applies its own autonomy judgment per `references/autonomy.md` to the proposal. `/implement-project`'s "tests added" tallies in the final report are replaced by "test tickets created / declined / approved-inline." `/lead-project`'s pre-termination review re-run still uses `/review-test` to confirm that no new high-severity findings exist — the contract change is that any such findings would now surface as proposed tickets rather than as in-skill test writes.
+
+- **`/test-mutation` and `/review-test` pairing description updated.** The recommended sequence `/review-test` → `/test-mutation` now includes a `/implement` (or `/implement-project`) step in the middle: `/review-test` surfaces ticket-shaped work; implementation skills work the tickets; then `/test-mutation` strengthens. The pairing is unchanged; only the framing reflects that `/review-test` no longer fills gaps in-skill.
+
 ## v8.0.0
 
 ### Breaking Changes

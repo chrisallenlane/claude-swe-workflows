@@ -32,7 +32,7 @@ and autonomy.
 │   └── /review-doc                   ← per-batch doc audit
 ├── /refactor (MAXIMUM aggression)    ← project-level cleanup
 ├── /review-arch (advisory)           ← architectural analysis; surfaces recommendations
-├── /review-test                      ← test suite review
+├── /review-test (advisory)           ← test suite survey; surfaces ticket-shaped work
 ├── /review-doc                       ← documentation audit
 └── /review-release                   ← pre-release readiness
 ```
@@ -106,7 +106,7 @@ your task:
 | Reflect on a completed experience to update beliefs                     | `/think-reflect`     |
 | Clean up code quality (DRY, dead code, naming)                          | `/refactor`          |
 | Rethink module boundaries and architecture                              | `/review-arch`       |
-| Review and strengthen the test suite                                    | `/review-test`       |
+| Survey the test suite and surface gaps as tickets                       | `/review-test`       |
 | Verify test quality via mutation testing                                | `/test-mutation`     |
 | Audit all project documentation                                         | `/review-doc`        |
 | Pre-release readiness check                                             | `/review-release`    |
@@ -239,14 +239,14 @@ dissolution, and structural rethinking.
 
 [Detailed documentation](skills/review-arch/SKILL.md)
 
-#### /review-test — Comprehensive Test Suite Review
+#### /review-test — Comprehensive Test Suite Survey
 
-Five-phase review: fills unit coverage gaps, surveys integration coverage,
-surveys E2E (browser) coverage for webapps, identifies missing fuzz tests,
-and audits test quality. Each phase has its own analysis → present →
-select → implement → verify cycle. Phase 3 (E2E) cleanly skips when the
-project is not a webapp; integration and E2E phases verify by compile-check
-and prompt the user to run the suite ad-hoc rather than auto-running.
+Five-phase survey: surveys unit coverage gaps, integration coverage,
+E2E (browser) coverage for webapps, fuzz coverage, and test quality.
+**Advisory only** — does not implement test changes. After all phases run,
+proposes a ticket structure for the recommended work; the operator (human
+or orchestrator) approves, edits, or declines. Phase 3 (E2E) cleanly skips
+when the project is not a webapp.
 
 [Detailed documentation](skills/review-test/SKILL.md)
 

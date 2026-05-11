@@ -257,7 +257,7 @@ Status as of this document:
  | ------------------ | ----------------------------------------------------------------------- |
  | `/review-arch`     | Advisory as of v8.0.0. First concrete step.                             |
  | `/review-doc`      | Still implements (fixes docs via `doc-maintainer` agent). Future scope. |
- | `/review-test`     | Still implements (fills coverage gaps). Future scope.                   |
+ | `/review-test`     | Advisory as of v9.0.0.                                                  |
  | `/review-a11y`     | Already advisory.                                                       |
  | `/review-health`   | Already advisory.                                                       |
  | `/review-perf`     | Already advisory.                                                       |

@@ -326,8 +326,8 @@ If the project is not a webapp (Step 0 negative), report and exit per the Step 0
 ## Team Coordination
 
 - Spawned by `/review-test` Phase 3.
-- Output is advisory. The orchestrator presents findings to the user, **including an explicit confirmation step on journey classification** before any implementation begins.
-- Implementation (when the user accepts) is delegated to language SMEs by the orchestrator — typically `swe-sme-typescript` for Playwright tests.
+- Output is advisory. The orchestrator records the findings, presents them in the consolidated review report, and at the end of `/review-test` proposes a ticket structure to the operator for approve / edit / decline. **An explicit confirmation step on journey classification happens before findings are finalized** — journey classification is the most subjective input in the analysis and shapes the priority assigned to each gap.
+- Implementation happens out-of-skill via `/implement` or `/implement-project` against the cut tickets — typically `swe-sme-typescript` for Playwright tests once the implementation skill picks up a ticket. `/review-test` itself does not invoke SMEs (advisory only as of v9.0.0).
 
 ---
 

@@ -123,7 +123,7 @@ Present a single report that aggregates the results of every enabled phase. The 
 | /review-security | Complete      | 1 high-severity finding; 4 advisory             |
 | /review-perf     | Complete      | No critical bottlenecks; 2 caching suggestions  |
 | /review-a11y     | Skipped       | No web content                                  |
-| /review-test     | Complete      | +14 tests, -3 brittle tests; coverage 72 → 81%  |
+| /review-test     | Complete      | 5 coverage/quality tickets cut; coverage 72%    |
 | /review-doc      | Complete      | 7 docs updated                                  |
 | /review-release  | Complete      | Release verdict: GO, after 2 advisory items     |
 
