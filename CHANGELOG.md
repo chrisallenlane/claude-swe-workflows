@@ -20,6 +20,16 @@
 
   Operators who relied on `/review-security` routing fixes to SMEs should now invoke `/implement` against the cut tickets, or use `/implement-project` to batch the tickets.
 
+- **`/bug-hunt` is now advisory only.** The skill previously included a Phase 6 "Route to Fixers (Optional)" that spawned language-SME agents to remediate confirmed bugs (using the reproducing tests as acceptance criteria), ran `qa-engineer` to verify, and committed each fix atomically. In v8.0.0 it is strictly advisory: after the hunt produces consolidated findings, Phase 6 proposes a ticket structure tailored to the hunt's shape (severity distribution, systemic patterns, reproducing-test count), commits the reproducing tests in a single commit, then cuts tickets that reference the test paths as acceptance criteria.
+
+  The risk-assessment and focused-investigation methodology that defines this skill is untouched — Phases 1–5 are unchanged. The only change is what happens after findings are produced.
+
+  Phase 7 (commit reproducing tests) is preserved as a fallback for when the operator declines ticket creation — the coverage benefit of the reproducing tests isn't lost.
+
+  Like `/review-security`, `/bug-hunt` offers ticket creation regardless of caller — orchestrators receive the proposal and apply their own autonomy judgment per `references/autonomy.md` to approve / edit / decline, then decide which of any created tickets to work in the current flow versus defer.
+
+  Operators who relied on `/bug-hunt` routing fixes to SMEs should now invoke `/implement` against the cut tickets, or use `/implement-project` to batch them. The reproducing tests still serve as the acceptance criteria for remediation.
+
 ### Behavior Changes
 
 - **`/refactor-deep` — adapts to advisory `/review-arch`; Phase 3 dropped.** The skill previously ran three phases: tactical refactor, advisory architectural review with optional ticket creation, then a re-run of tactical refactor over architectural restructuring. With `/review-arch` no longer implementing changes itself, the third phase has no architectural restructuring to clean up — it is removed. The current shape is Phase 1 (tactical `/refactor`) followed by Phase 2 (`/review-arch` in advisory mode, with the operator deciding what to do with the findings), then a wrap-up `/review-doc` pass. Phase 2 offers to cut tickets when warranted, which can then be fed to `/implement` or `/implement-project`. The ticket-creation preference is collected upfront alongside other Phase-1 inputs so the workflow runs without mid-run interruptions except the one ticket-review pause.

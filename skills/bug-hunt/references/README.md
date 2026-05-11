@@ -4,6 +4,8 @@
 
 The `/bug-hunt` skill systematically hunts for bugs before they reach users. An assessor analyzes the codebase to identify high-risk hotspots by cross-referencing code complexity, test coverage gaps, and structural risk factors. Focused hunters then deep-dive into each hotspot, writing reproducing tests to validate or invalidate suspected bugs.
 
+The skill is **advisory only** as of v8.0.0: it produces findings and proposes tickets but does not implement fixes. After the hunt, Phase 6 proposes a ticket structure tailored to the hunt's shape (severity distribution, systemic patterns, reproducing-test count), commits the reproducing tests, and cuts tickets that reference the tests as acceptance criteria. The reproducing tests serve as concrete acceptance criteria — the fix is done when the test passes. Tickets compose with `/implement` and `/implement-project` for remediation.
+
 **Key benefits:**
 - Multi-signal assessment: cross-references complexity, coverage, structural risk, and git history to find where bugs are most likely to lurk
 - Evidence-based findings: every confirmed bug has a reproducing test — no speculative reports
@@ -43,8 +45,10 @@ The `/bug-hunt` skill systematically hunts for bugs before they reach users. An 
 │     └─ Prior findings passed to subsequent hunters   │
 │  4. Synthesize findings                              │
 │  5. Present consolidated findings to user            │
-│  6. Optionally route findings to fixers              │
-│  7. Optionally commit reproducing tests              │
+│  6. Cut tickets + commit reproducing tests           │
+│     (proposed structure; operator-approved)          │
+│  7. (If tickets declined) commit reproducing tests   │
+│     standalone for the coverage benefit              │
 └──────────────────────────────────────────────────────┘
 ```
 
@@ -71,13 +75,17 @@ Findings are cross-referenced to identify systemic patterns — common root caus
 
 A single report with confirmed bugs (each with reproducing test), coverage improvements, suspected-but-unconfirmed issues, and systemic patterns. Presented interactively — CRITICAL findings first.
 
-### 6. Fix Routing (Optional)
+### 6. Cut Tickets
 
-Confirmed bugs can be routed to language-appropriate SME agents. The reproducing test serves as the acceptance criterion — the fix is done when the test passes. Each fix is verified by `qa-engineer` and committed atomically.
+The skill examines the hunt's shape (severity distribution, systemic patterns, reproducing-test count) and proposes a ticket structure that fits — concentrated bugs typically get one ticket each plus a systemic-pattern ticket plus an optional MEDIUM/LOW batch; systemic-pattern-dominated hunts get one ticket per pattern with finding references; coverage-only hunts cut no tickets. The proposal is presented for approve / edit / decline.
 
-### 7. Test Commit (Optional)
+On approval, reproducing tests land first in a single commit so ticket bodies can reference them by path. Then tickets are cut via the canonical tracker integration (`references/trackers.md`). Each per-bug ticket carries Bug / Root cause / Impact / Reproducing test / Fix guidance sections, with the reproducing test serving as the acceptance criterion — the fix is done when the test passes.
 
-Reproducing tests (both bug-confirming and coverage-improving) can be committed in a single commit, even if the user declines fix routing. The tests document known bugs and improve coverage regardless.
+The skill offers ticket creation regardless of caller. When an orchestrator invokes `/bug-hunt`, the orchestrator receives the proposal and applies its own autonomy judgment per `references/autonomy.md` — approving, editing, or declining the proposal, then deciding which of any created tickets to work in the current flow versus defer. Remediation happens via `/implement` or `/implement-project`, not within this skill.
+
+### 7. Commit Reproducing Tests (Fallback)
+
+Runs only when the operator declined ticket creation in step 6 (or when the hunt found no confirmed bugs but produced coverage-improvement tests). The skill offers to commit the reproducing tests in a single commit so the coverage benefit isn't lost. The tests document known bugs and improve regression coverage regardless of whether the bugs are fixed.
 
 ## Agents Used
 
@@ -85,8 +93,8 @@ Reproducing tests (both bug-confirming and coverage-improving) can be committed 
 | ------------------ | ------------------------------------------------ |
 | `swe-bug-assessor` | Risk assessment and hotspot identification       |
 | `swe-bug-hunter`   | Focused investigation with reproducing tests     |
-| `swe-sme-*`        | Implement bug fixes (optional)                   |
-| `qa-engineer`      | Verify fixes don't break functionality (optional)|
+
+Remediation is handled by `/implement` or `/implement-project` against the tickets this skill cuts, with the reproducing tests serving as acceptance criteria — `swe-sme-*` and `qa-engineer` are no longer invoked from within the bug hunt.
 
 ## Resource Usage
 
