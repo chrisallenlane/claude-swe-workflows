@@ -6,7 +6,7 @@ model: opus
 
 # Arch Review — Advisory Architectural Analysis
 
-Analyzes codebase architecture and produces a target blueprint via noun analysis. **Advisory only.** The skill does not implement changes — it surfaces opportunities and, when run interactively, offers to cut tickets so the work can be picked up by implementation skills.
+Analyzes codebase architecture and produces a target blueprint via noun analysis. **Advisory only.** The skill does not implement changes — it surfaces opportunities and offers to cut tickets so the work can be picked up by implementation skills. The offer goes to the operator (human or orchestrator) regardless of caller; orchestrators apply their own autonomy judgment to approve / edit / decline.
 
 ## Philosophy
 

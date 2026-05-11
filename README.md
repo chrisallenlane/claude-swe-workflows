@@ -230,12 +230,12 @@ within existing architecture — for structural changes, use `/review-arch`.
 #### /review-arch — Advisory Architectural Analysis
 
 Analyzes codebase architecture via noun analysis and produces a target
-blueprint. **Advisory only** — does not implement changes. In interactive
-standalone mode, collaborates with the user on the plan and offers to cut
-tickets for the recommended work. In autonomous mode (invoked by an
-orchestrator), produces a structured report with concrete next-step
-recommendations. For module boundaries, responsibility overlap, utility
-grab-bag dissolution, and structural rethinking.
+blueprint. **Advisory only** — does not implement changes. After the
+analysis, offers to cut tickets for the recommended work; the operator
+(human or orchestrator) approves, edits, or declines. Orchestrators apply
+their own autonomy judgment per `references/autonomy.md` to the offer.
+For module boundaries, responsibility overlap, utility grab-bag
+dissolution, and structural rethinking.
 
 [Detailed documentation](skills/review-arch/SKILL.md)
 
@@ -472,8 +472,10 @@ cross-references code complexity, test coverage gaps, and structural risk
 factors to produce a ranked hotspot list. Dedicated hunters then
 deep-dive into each hotspot, writing reproducing tests to validate or
 invalidate suspected bugs. Every confirmed finding is backed by a
-reproducing test — no speculative reports. Optionally routes confirmed
-bugs to SME agents for fixing.
+reproducing test — no speculative reports. **Advisory only** — proposes
+tickets for confirmed findings (operator-approved) and commits the
+reproducing tests; the tests serve as acceptance criteria for remediation
+via `/implement` or `/implement-project`.
 
 [Detailed documentation](skills/bug-hunt/SKILL.md)
 

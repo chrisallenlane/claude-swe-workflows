@@ -12,7 +12,7 @@ Convenience wrapper that runs every `/review-*` skill in a coordinated sequence.
 
 **Thin orchestrator, not a new process.** This skill composes eight existing `/review-*` skills. It adds sequencing, skip detection, branch safety, and a consolidated final report — nothing else. Each sub-skill retains its normal behavior.
 
-**Interactive throughout.** The user participates in every sub-skill's decision points. This is not fire-and-forget. If you want an autonomous sweep, use the individual skills directly with their autonomous modes (where supported).
+**Interactive throughout.** The user participates in every sub-skill's decision points. This is not fire-and-forget. If you want a less hands-on sweep, invoke the individual skills directly — each manages its own user interaction. Skills that offer tickets (e.g., `/review-arch`, `/review-security`, `/bug-hunt` as of v8.0.0) still present the proposal here; you decide at each prompt.
 
 **Detect-and-confirm skips.** Some phases do not apply to every project (no web content → no a11y; no tests → no test review). The orchestrator detects these conditions, proposes a skip list, and asks the user to confirm before starting.
 
