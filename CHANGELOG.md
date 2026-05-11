@@ -10,6 +10,16 @@
 
   Operators who relied on `/review-arch` making changes should either invoke `/implement` against the cut tickets, or use `/refactor-deep` and `/implement-project` — both updated in this release to consume `/review-arch`'s advisory output and implement the parts the operator approves (see Behavior Changes below).
 
+- **`/review-security` is now advisory only.** The skill previously included a Phase 7 "Route to Fixers (Optional)" that spawned language-SME agents to remediate findings, ran `qa-engineer` to verify, and committed each fix atomically. In v8.0.0 it is strictly advisory: after the audit produces consolidated findings, Phase 7 proposes a ticket structure tailored to the audit's shape (severity distribution, chain count, defense-in-depth findings), presents the proposal to the operator for approve / edit / decline, and on approval cuts tickets via the canonical tracker integration (`references/trackers.md`). It does not implement remediation.
+
+  The parallel-isolated blue/red methodology that defines this skill is untouched — Phases 1–6 are unchanged. The only change is what happens after findings are produced.
+
+  Each cut ticket preserves the `Discovered by:` attribution introduced in v7.1.0, so the empirical signal about whether the parallel-isolated first pass is producing value (especially anchoring-suppressed findings) survives the handoff to the tracker.
+
+  Unlike `/review-arch`, `/review-security` offers ticket creation regardless of caller — orchestrators (`/review-deep`, `/lead-project`, `/implement-project`) receive the proposal and apply their own autonomy judgment per `references/autonomy.md` to approve / edit / decline, then decide which of any created tickets to work in the current flow versus defer. Security findings have natural ticket shape, and the cognitive seam between "find vuln" and "fix vuln" is wide enough that durable handoff is valuable even mid-orchestrator-workflow.
+
+  Operators who relied on `/review-security` routing fixes to SMEs should now invoke `/implement` against the cut tickets, or use `/implement-project` to batch the tickets.
+
 ### Behavior Changes
 
 - **`/refactor-deep` — adapts to advisory `/review-arch`; Phase 3 dropped.** The skill previously ran three phases: tactical refactor, advisory architectural review with optional ticket creation, then a re-run of tactical refactor over architectural restructuring. With `/review-arch` no longer implementing changes itself, the third phase has no architectural restructuring to clean up — it is removed. The current shape is Phase 1 (tactical `/refactor`) followed by Phase 2 (`/review-arch` in advisory mode, with the operator deciding what to do with the findings), then a wrap-up `/review-doc` pass. Phase 2 offers to cut tickets when warranted, which can then be fed to `/implement` or `/implement-project`. The ticket-creation preference is collected upfront alongside other Phase-1 inputs so the workflow runs without mid-run interruptions except the one ticket-review pause.

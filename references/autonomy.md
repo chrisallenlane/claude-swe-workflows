@@ -261,7 +261,7 @@ Status as of this document:
  | `/review-a11y`     | Already advisory.                                                       |
  | `/review-health`   | Already advisory.                                                       |
  | `/review-perf`     | Already advisory.                                                       |
- | `/review-security` | Effectively advisory (categorizes findings; does not auto-remediate).   |
+ | `/review-security` | Advisory as of v8.0.0.                                                  |
  | `/review-release`  | Effectively advisory (presents findings for operator review).           |
 
 The path forward: when a `/review-*` skill becomes advisory, its findings should name specific implementation skills with scope hints so the operator (or a calling orchestrator) can chain the right next step. Example: "Dead code in `src/foo/`: run `/refactor` scoped to that directory."

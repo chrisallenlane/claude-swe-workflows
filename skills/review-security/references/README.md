@@ -4,6 +4,8 @@
 
 The `/review-security` skill orchestrates a comprehensive security assessment of the project's source code using both defensive and offensive analysis. The blue-teamer and lead red-teamer run their first pass **in parallel and in isolation** — neither sees the other's output during reconnaissance. The orchestrator then synthesizes their reports into a unified target list, classifying each target by how it was discovered. Dedicated red-teamers investigate each target in depth. Findings are synthesized, exploit chains are explored, and the process iterates until no new chains emerge.
 
+The skill is **advisory only** as of v8.0.0: it produces findings and proposes tickets but does not implement remediation. After the audit, Phase 7 proposes a ticket structure tailored to the audit's shape (severity distribution, chain count, defense-in-depth findings) and cuts tickets on operator approval. The cognitive seam between "find vulnerability" and "fix vulnerability" is wide; tickets capture findings durably and compose with `/implement` and `/implement-project` for remediation.
+
 **Key benefits:**
 - **NGT discipline** — independent generation followed by synthesis, designed to surface the gaps anchoring would otherwise suppress
 - Deep investigation: each attack vector gets a dedicated agent with full context
@@ -60,7 +62,7 @@ The current design treats anchoring as a specific cognitive failure mode, with *
 │     ├─ If exploit chains found → goto 4 (new vector)      │
 │     └─ If no new chains → proceed                         │
 │  6. Present consolidated findings to user                 │
-│  7. Optionally route findings to fixers                   │
+│  7. Cut tickets (proposed structure, operator-approved)   │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -106,9 +108,13 @@ Findings are cross-referenced to identify exploit chains — combinations of ind
 
 A single report combining the blue team's defensive assessment, the red team's offensive findings, the reconnaissance synthesis (with target categorization), and any exploit chains discovered. Findings carry an expanded `Discovered by:` attribution: *blue team independent*, *red team independent*, *synthesis (anchoring-suppressed)*, *focused agent*, or *chain analysis*. Presented interactively — CRITICAL findings first.
 
-### 7. Remediation Routing (Optional)
+### 7. Cut Tickets
 
-Findings can be routed to appropriate SME agents for implementation. Each fix is verified by `qa-engineer` and committed atomically.
+The skill examines the audit's shape (severity distribution, chain count, defense-in-depth findings) and proposes a ticket structure that fits — concentrated CRITICALs typically get one ticket each plus a chain ticket plus a defense-in-depth batch; defense-in-depth-only audits get a single hardening ticket; empty audits cut nothing. The proposal is presented for approve / edit / decline; on approval, tickets land via the canonical tracker integration (`references/trackers.md`).
+
+Each cut ticket preserves the `Discovered by:` attribution introduced in v7.1.0, so the empirical signal about whether the parallel-isolated first pass is producing value (especially anchoring-suppressed findings) survives the handoff to the tracker.
+
+The skill offers ticket creation regardless of caller. When an orchestrator invokes `/review-security`, the orchestrator receives the proposal and applies its own autonomy judgment per `references/autonomy.md` — approving, editing, or declining the proposal, then deciding which of any created tickets to work in the current flow versus defer. Remediation happens via `/implement` or `/implement-project`, not within this skill.
 
 ## Agents Used
 
@@ -116,8 +122,8 @@ Findings can be routed to appropriate SME agents for implementation. Each fix is
 | ----------------- | ----------------------------------------------------------------------------- |
 | `sec-blue-teamer` | Defensive posture evaluation (independent first pass)                         |
 | `sec-red-teamer`  | Offensive reconnaissance and exploitation (lead first pass + focused targets) |
-| `swe-sme-*`       | Implement remediation fixes (optional)                                        |
-| `qa-engineer`     | Verify fixes don't break functionality (optional)                             |
+
+Remediation is handled by `/implement` or `/implement-project` against the tickets this skill cuts — `swe-sme-*` and `qa-engineer` are no longer invoked from within the security audit.
 
 ## Resource Usage
 
