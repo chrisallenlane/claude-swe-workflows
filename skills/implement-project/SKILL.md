@@ -89,7 +89,7 @@ Beyond the mainline workflow, the orchestrator has access to additional workflow
 
 **If batching is unclear:** Ask. Do not guess at grouping — the user has a reason for the batch structure.
 
-**Fetch all tickets** using the same tracker detection as `/implement-batch` (GitHub → `gh`, Gitea → MCP tools, etc.). Gather title, description, acceptance criteria, labels, and dependencies for each.
+**Fetch all tickets** using the shared tracker detection from [`references/trackers.md`](../../references/trackers.md). Gather title, description, acceptance criteria, labels, and dependencies for each.
 
 ### 2. Discuss Smoke Testing Procedures
 

@@ -71,18 +71,7 @@ Accept tickets from the user in any of these forms:
 
 ### 2. Detect Issue Tracker & Fetch Tickets
 
-**Detect platform:**
-- Run `git remote -v` and inspect the URL
-- GitHub: `github.com` → use `gh` CLI
-- Gitea: other git hosting → use `mcp__gitea__*` MCP tools if available, otherwise API
-- GitLab: `gitlab.com` or GitLab instances → use `glab` CLI if available
-
-**Fetch each ticket:**
-- Title
-- Description/body
-- Acceptance criteria (if explicitly present)
-- Labels/tags
-- Dependencies (referenced issues, "depends on" links)
+Detect the issue tracker and fetch ticket data per [`references/trackers.md`](../../references/trackers.md) (Detection Procedure + "Fetch (read)" operation). Fetch each ticket's title, description, acceptance criteria, labels, and dependencies.
 
 **Andon cord** if tracker is unavailable or tickets can't be fetched.
 

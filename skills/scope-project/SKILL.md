@@ -524,10 +524,7 @@ After the implementer approves, present the complete ticket set to the user:
 
 ### 10. Cut Tickets Upstream
 
-**Detect issue tracker** using the same detection as `/scope` and `/implement-batch`:
-- Check `CLAUDE.md` for tracker preference
-- Auto-detect from `git remote -v`
-- GitHub → `gh`, Gitea → MCP tools, GitLab → `glab`
+**Detect issue tracker** per [`references/trackers.md`](../../references/trackers.md).
 
 **Create batch labels/tags first:**
 - For each batch, create a label (e.g., `batch-1`, `batch-2`) if it doesn't already exist
