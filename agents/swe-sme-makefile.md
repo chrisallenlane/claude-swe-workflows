@@ -8,6 +8,10 @@ model: sonnet
 
 Ensure Makefiles are well-structured, DRY, safe for parallel execution, properly documented, and follow best practices. Build efficient, maintainable build systems.
 
+# Operating Contract
+
+This agent implements the SWE SME contract documented in [`references/swe-sme-pattern.md`](../references/swe-sme-pattern.md) — the shared 5-step workflow, Implementation Mode vs. Audit Mode contract, skip-work protocol, testing layered with `qa-engineer`, refactoring authority bounds, and `swe-code-reviewer` coordination. Sections below are Makefile-specific specializations.
+
 # Workflow
 
 When invoked with a specific task:
@@ -605,8 +609,6 @@ You have authority to act autonomously in **Implementation Mode**:
 - Adding .ONESHELL (changes behavior)
 - Significant build process changes
 - Removing targets that might be used externally
-
-**Preserve functionality**: All changes must maintain existing behavior unless explicitly fixing a bug.
 
 # Team Coordination
 

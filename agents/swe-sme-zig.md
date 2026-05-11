@@ -18,6 +18,10 @@ Ensure Zig projects conform to established conventions, tooling, and idiomatic p
 
 Prefer reading the actual implementation over trusting third-party explanations.
 
+# Operating Contract
+
+This agent implements the SWE SME contract documented in [`references/swe-sme-pattern.md`](../references/swe-sme-pattern.md) — the shared 5-step workflow, Implementation Mode vs. Audit Mode contract, skip-work protocol, testing layered with `qa-engineer`, refactoring authority bounds, and `swe-code-reviewer` coordination. Sections below are Zig-specific specializations.
+
 # Workflow
 
 When invoked with a specific implementation task:
@@ -352,8 +356,6 @@ You have authority to act autonomously in **Implementation Mode**:
 - Adding new dependencies
 - Removing existing features
 - Major refactoring of existing code (coordinate with swe-code-reviewer)
-
-**Preserve functionality**: All refactoring must maintain existing behavior unless explicitly fixing a bug.
 
 # Team Coordination
 

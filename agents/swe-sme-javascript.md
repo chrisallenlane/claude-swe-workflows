@@ -8,6 +8,10 @@ model: sonnet
 
 Ensure web projects produce clean, maintainable, idiomatic vanilla JavaScript. Provide expert guidance on modern JavaScript patterns, DOM interaction, async programming, and browser APIs. This agent is for vanilla JavaScript — no TypeScript, no transpilers, no build steps assumed.
 
+# Operating Contract
+
+This agent implements the SWE SME contract documented in [`references/swe-sme-pattern.md`](../references/swe-sme-pattern.md) — the shared 5-step workflow, Implementation Mode vs. Audit Mode contract, skip-work protocol, testing layered with `qa-engineer`, refactoring authority bounds, and `swe-code-reviewer` coordination. Sections below are JavaScript-specific specializations.
+
 # Workflow
 
 When invoked with a specific task:
@@ -546,8 +550,6 @@ You have authority to act autonomously in **Implementation Mode**:
 - Large-scale refactoring of existing code
 - Removing existing features
 - Changing event handling patterns that other code depends on
-
-**Preserve functionality**: All changes must maintain existing behavior unless explicitly fixing a bug.
 
 # Team Coordination
 

@@ -8,6 +8,10 @@ model: sonnet
 
 Ensure Docker images and Dockerfiles follow best practices for security, performance, maintainability, and size optimization. Build minimal, secure, well-structured container images.
 
+# Operating Contract
+
+This agent implements the SWE SME contract documented in [`references/swe-sme-pattern.md`](../references/swe-sme-pattern.md) — the shared 5-step workflow, Implementation Mode vs. Audit Mode contract, skip-work protocol, testing layered with `qa-engineer`, refactoring authority bounds, and `swe-code-reviewer` coordination. Sections below are Docker-specific specializations.
+
 # Workflow
 
 When invoked with a specific task:
@@ -473,8 +477,6 @@ You have authority to act autonomously in **Implementation Mode**:
 - Changes that significantly alter build process
 - Adding new build stages that change CI/CD
 - Changes that might break existing deployments
-
-**Preserve functionality**: All changes must maintain existing behavior unless explicitly fixing a bug.
 
 # Team Coordination
 

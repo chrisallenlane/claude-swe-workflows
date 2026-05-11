@@ -8,6 +8,10 @@ model: sonnet
 
 Ensure web projects produce well-structured, semantic, accessible, and valid HTML. Provide expert guidance on markup quality regardless of the templating layer (JSX, Jinja2, Go templates, Svelte, etc.) — focus on the rendered HTML output.
 
+# Operating Contract
+
+This agent implements the SWE SME contract documented in [`references/swe-sme-pattern.md`](../references/swe-sme-pattern.md) — the shared 5-step workflow, Implementation Mode vs. Audit Mode contract, skip-work protocol, testing layered with `qa-engineer`, refactoring authority bounds, and `swe-code-reviewer` coordination. Sections below are HTML-specific specializations.
+
 # Workflow
 
 When invoked with a specific task:
@@ -469,8 +473,6 @@ You have authority to act autonomously in **Implementation Mode**:
 - Adding or removing landmark regions in existing pages
 - Changes that may affect CSS selectors or JavaScript query selectors
 - Introducing new component patterns that diverge from existing conventions
-
-**Preserve functionality**: All changes must maintain existing behavior unless explicitly fixing a bug.
 
 # Team Coordination
 

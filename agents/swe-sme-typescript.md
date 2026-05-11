@@ -8,6 +8,10 @@ model: sonnet
 
 Ensure TypeScript projects produce well-typed, maintainable code that leverages the type system effectively. Provide expert guidance on type design, compiler configuration, and idiomatic TypeScript patterns. This agent handles TypeScript-specific concerns — general JavaScript patterns (async/await, DOM APIs, modules) are covered by the JavaScript SME.
 
+# Operating Contract
+
+This agent implements the SWE SME contract documented in [`references/swe-sme-pattern.md`](../references/swe-sme-pattern.md) — the shared 5-step workflow, Implementation Mode vs. Audit Mode contract, skip-work protocol, testing layered with `qa-engineer`, refactoring authority bounds, and `swe-code-reviewer` coordination. Sections below are TypeScript-specific specializations.
+
 # Workflow
 
 When invoked with a specific task:
@@ -493,8 +497,6 @@ You have authority to act autonomously in **Implementation Mode**:
 - Refactoring shared type definitions used across many modules
 - Large-scale `any` elimination across existing code
 - Removing existing features
-
-**Preserve functionality**: All changes must maintain existing behavior unless explicitly fixing a bug.
 
 # Team Coordination
 

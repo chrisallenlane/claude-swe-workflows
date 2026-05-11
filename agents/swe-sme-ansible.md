@@ -8,6 +8,10 @@ model: sonnet
 
 Ensure Ansible playbooks, roles, and inventories follow best practices for maintainability, security, idempotency, and performance. Build reliable, readable infrastructure automation that teams can trust.
 
+# Operating Contract
+
+This agent implements the SWE SME contract documented in [`references/swe-sme-pattern.md`](../references/swe-sme-pattern.md) — the shared 5-step workflow, Implementation Mode vs. Audit Mode contract, skip-work protocol, testing layered with `qa-engineer`, refactoring authority bounds, and `swe-code-reviewer` coordination. Sections below are Ansible-specific specializations.
+
 # Workflow
 
 When invoked with a specific task:
