@@ -1,5 +1,42 @@
 # Changelog
 
+## v8.0.0
+
+### Breaking Changes
+
+- **`/review-arch` is now advisory only.** The skill previously analyzed architecture and *implemented* the resulting blueprint — restructuring modules, moving functions, creating new modules — within the same invocation. In v8.0.0 it is strictly advisory: it produces the target blueprint via noun analysis and either offers to cut tickets (interactive mode) or returns a structured report with concrete next-step recommendations (autonomous mode, used when invoked by orchestrators). It does not modify code.
+
+  The principle is that review and implementation are different cognitive concerns, and skills that do both make both worse — implementation pressure compromises the review, and review pressure compromises the implementation. `/review-arch` is the first plugin skill to commit fully to this split; future releases may extend the pattern (issue #15 captures the planned namespace restructure).
+
+  Operators who relied on `/review-arch` making changes should either invoke `/implement` against the cut tickets, or use `/refactor-deep` and `/implement-project` — both updated in this release to consume `/review-arch`'s advisory output and implement the parts the operator approves (see Behavior Changes below).
+
+### Behavior Changes
+
+- **`/refactor-deep` — adapts to advisory `/review-arch`; Phase 3 dropped.** The skill previously ran three phases: tactical refactor, advisory architectural review with optional ticket creation, then a re-run of tactical refactor over architectural restructuring. With `/review-arch` no longer implementing changes itself, the third phase has no architectural restructuring to clean up — it is removed. The current shape is Phase 1 (tactical `/refactor`) followed by Phase 2 (`/review-arch` in advisory mode, with the operator deciding what to do with the findings), then a wrap-up `/review-doc` pass. Phase 2 offers to cut tickets when warranted, which can then be fed to `/implement` or `/implement-project`. The ticket-creation preference is collected upfront alongside other Phase-1 inputs so the workflow runs without mid-run interruptions except the one ticket-review pause.
+
+- **`/implement-project` — adopts the autonomy discipline; adapts step 7 to advisory `/review-arch`.** Step 7b previously invoked `/review-arch` in autonomous mode and acted on its recommendations as part of the quality pipeline; the orchestrator now reviews the advisory output itself and chooses what to implement, deferring out-of-scope findings to the final report. The skill also gains the commander's-intent header now shared across orchestrator-family skills (purpose, key tasks, end state, constraints, non-goals), per the new `references/autonomy.md` discipline. A conditional second `/refactor` pass was removed from the pipeline as part of the rework.
+
+- **`/implement-batch` and `/lead-project` — adopt the shared autonomy discipline.** Both skills now reference `references/autonomy.md` for the altitude rule, cascade rule, no-unilateral-breaking-changes guardrail, pre-loaded options, pre-rebutted recommendations, and risk-budgeted autonomy. These were editorial alignments to the new discipline doc — neither skill's mainline workflow changed.
+
+### Infrastructure
+
+- **`references/autonomy.md` — shared autonomy discipline for orchestrator-family skills.** New top-level reference doc capturing the discipline that governs how orchestrator-family skills (`/lead-project`, `/implement-project`, `/implement-batch`, `/refactor`, `/refactor-deep`, `/review-deep`) decide between acting autonomously and escalating to the operator. Five levers:
+  - **Altitude rule** — no andon-cord pulls below architectural / intent level; implementation forks below that line get the skill's best judgment plus a log entry, not a user prompt.
+  - **Cascade rule** — when a sub-skill escalates, the parent decides whether the escalation is local to the sub-skill or warrants pulling the cord one level higher.
+  - **Pre-loaded options with tradeoffs** — when escalation does happen, always present 2–3 named options with a recommendation and the one tradeoff that would flip it. Never ask "what should I do?"
+  - **Pre-rebutted recommendation** — the skill argues against its own pick before presenting.
+  - **Risk-budgeted autonomy** — explicit budgets (refactor scope, file count, dep changes) the skill spends before escalating.
+
+  Plus per-skill **commander's-intent schemas** — structured headers (purpose, key tasks, end state, constraints, non-goals) the operator fills at startup so the skill can self-direct.
+
+  Also includes a top-level **no unilateral breaking changes** section as a categorical guardrail: a breaking change to public APIs, function signatures, CLI flags, configuration keys, schemas, wire-protocol fields, or observability fields must be explicitly authorized by the operator. This is a guardrail, not an altitude judgment — the five levers describe how a skill picks among options; this rule constrains the option set itself.
+
+- **`references/trackers.md` — issue-tracker detection convention.** Extracts the detection block (CLAUDE.md > git remote > integration availability) and platform-to-tool map (GitHub → `gh`, Gitea → `mcp__gitea__*`, GitLab → `glab`) that was duplicated across six skills (`/scope`, `/scope-project`, `/implement`, `/implement-batch`, `/implement-project`, `/bug-fix`) into a single shared reference. Per-operation details (fetching, creating, comment-updating, closing tickets) also move to the reference; skill-specific content (which fields each skill fetches, what each skill includes in a close-out comment) stays inline in the citing skill. Adding a new tracker now touches one file instead of six.
+
+- **`references/swe-sme-pattern.md` — SWE SME contract.** Extracts the shared scaffolding that was duplicated across all ten `swe-sme-*` agents (Ansible, CSS, Docker, Go, GraphQL, HTML, JavaScript, Makefile, TypeScript, Zig) into a single canonical reference. Each agent now carries a one-paragraph Operating Contract citation right after `# Purpose` pointing at the canonical doc, with language-specific specializations (best practices, quality checks, idioms) staying inline. The contract covers the 5-step workflow (Understand / Scan / Implement / Test / Verify), Implementation Mode vs. Audit Mode, skip-work protocol, layered testing with `qa-engineer`, refactoring authority bounds, and team coordination with `swe-code-reviewer`. The verbatim `Preserve functionality` line that appeared in eight of ten agents was stripped (CSS and Ansible retain domain-specific variants because their wording specializes the universal rule rather than restating it).
+
+- **README, `CLAUDE.md`, and skill-level documentation updated** to reflect the advisory transformation of `/review-arch`, the revised `/refactor-deep` two-phase shape, the updated `/implement-project` step-7 sequence, and the new reference docs. The `/review-deep` composition description was corrected where it had drifted from current behavior.
+
 ## v7.4.0
 
 ### New Skills
