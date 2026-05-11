@@ -6,7 +6,7 @@
 
 The `/implement-project` skill orchestrates an entire project from tickets to release-ready code. It takes batched tickets, implements each batch via the `/implement-batch` workflow in autonomous mode, runs smoke tests, then executes a comprehensive quality pipeline (refactor, review-arch advisory, review-test, review-doc, review-release). The result is a single project branch ready for human review and merge.
 
-This skill implements the autonomy discipline documented in [`references/autonomy.md`](../../../references/autonomy.md). Its commander's-intent schema is the four-field variant defined there (tickets, acceptance bar, constraints, non-goals); its andon-cord pulls use the shared handoff template; and its quality pipeline invokes `/review-arch` in autonomous mode (advisory report only — `/review-arch` no longer makes changes).
+This skill implements the autonomy discipline documented in [`references/autonomy.md`](../../../references/autonomy.md). Its commander's-intent schema is the four-field variant defined there (tickets, acceptance bar, constraints, non-goals); its andon-cord pulls use the shared handoff template; and its quality pipeline invokes `/review-arch`, which is strictly advisory — it produces an analysis and a ticket-structure proposal that the orchestrator approves / edits / declines per `references/autonomy.md`.
 
 **Key benefits:**
 - Full project lifecycle in a single invocation
@@ -125,7 +125,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
  │  7. QUALITY PIPELINE                         │
  │  ────────────────────────────────────────    │
  │  7a. /refactor (MAXIMUM aggression)          │
- │  7b. /review-arch (autonomous — advisory)    │
+ │  7b. /review-arch (advisory; ticket proposal)│
  │  7c. /review-test                            │
  │  7d. /review-doc                             │
  │  7e. /review-release                         │
@@ -234,7 +234,7 @@ Six sequential quality passes, each running its full workflow:
 | Pass                   | Parameters                                                                        | Notes                                                                                                    |
 |------------------------|-----------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
 | **7a. `/refactor`**    | MAXIMUM aggression, smoke test QA instructions, entire codebase                   | Tactical code cleanup                                                                                    |
-| **7b. `/review-arch`** | Entire codebase, autonomous mode (`interactive: false`)                           | Advisory analysis only. Produces a structured report — no SMEs spawned, no commits, no tickets cut. Recommendations surface in the final report. |
+| **7b. `/review-arch`** | Entire codebase                                                                   | Advisory analysis. Produces ticket-structure proposal; orchestrator approves / edits / declines per autonomy.md. Approved tickets surface in final report; declined items handled inline. |
 | **7c. `/review-test`** | Full test suite review                                                            | Coverage gaps, test quality audit                                                                        |
 | **7d. `/review-doc`**  | Full documentation audit                                                          |                                                                                                          |
 | **7e. `/review-release`** | Autonomous mode (orchestrator triages findings)                                | Pre-release readiness check                                                                              |
@@ -243,7 +243,7 @@ Each pass runs its complete workflow including any embedded sub-passes (e.g., `/
 
 The orchestrator may skip passes for trivial projects. If skipped, the reason is noted in the final report.
 
-**Arch-review autonomous mode:** Since v8.0.0, `/review-arch` produces a structured report only — no implementation, no ticket creation. The orchestrator captures the report and surfaces its recommendations in the final report under "Deferred Items / Architectural Recommendations." Each recommendation names a specific follow-up skill with scope hint (e.g., "Dead code in `src/foo/`: `/refactor` scoped to that directory"), so the operator can chain the right next step after the project ships.
+**Arch review:** Since v8.0.0, `/review-arch` is strictly advisory — it produces an analysis and proposes a ticket structure for the recommended work. The orchestrator receives the proposal, applies its judgment per `references/autonomy.md` to approve / edit / decline, and either cuts tickets for follow-up or commits to handling items inline. Cut tickets surface in the final report under "Deferred Items / Architectural Recommendations" with ticket numbers; declined items that the orchestrator implemented inline surface under "Architectural Recommendations Acted On." Each ticket already names a specific follow-up skill with scope hint so the operator can chain the right next step after the project ships.
 
 The former conditional second `/refactor` (which ran when `/review-arch` had made substantive changes) is removed. `/review-arch` no longer makes changes; the conditional can never fire.
 
@@ -420,10 +420,11 @@ All smoke tests pass
 
 [Quality Pipeline]
 /refactor (MAXIMUM): 5 commits, -89 lines
-/review-arch (autonomous, advisory): report captured. 3 recommendations:
-  - Extract request module (recommends /refactor scoped to server.go + request handling)
-  - Dissolve helpers.go (recommends /scope then /implement-batch — cross-module)
-  - Response module extraction (low priority — recommends /scope when prioritized)
+/review-arch (advisory): ticket-structure proposal received.
+  Orchestrator declined 1 item (extracted request module inline — small
+  enough to handle in pipeline), approved 2 tickets for follow-up:
+  - #248: Dissolve helpers.go (recommends /scope then /implement-batch)
+  - #249: Response module extraction (recommends /scope when prioritized)
 /review-test: 8 tests added, 2 coverage gaps filled
 /review-doc: 3 documentation updates
 /review-release: 2 findings resolved (debug printf removed, version bumped)
@@ -524,7 +525,7 @@ Skipping /review-arch: project scope is trivial (2 small bug fixes,
 | `/implement-batch`           | Runs inside `/implement-project` for each batch. `/implement-project` adds multi-batch coordination, smoke testing, and the quality pipeline. |
 | `/implement`         | Runs inside `/implement-batch` for each ticket. The innermost implementation loop.                            |
 | `/refactor`        | Runs as project-level quality pass (MAXIMUM aggression) and within each batch (SAFE aggression).    |
-| `/review-arch`     | Runs as project-level quality pass in autonomous mode.                                              |
+| `/review-arch`     | Runs as project-level quality pass; orchestrator approves / edits / declines its ticket proposal.   |
 | `/review-test`     | Runs as project-level quality pass.                                                                 |
 | `/review-doc`      | Runs as project-level quality pass and within each batch and within `/refactor` and `/review-arch`. |
 | `/review-release`  | Runs as the final quality pass before reporting.                                                    |
@@ -540,7 +541,7 @@ Skipping /review-arch: project scope is trivial (2 small bug fixes,
     │   ├── /refactor (per-batch quality)
     │   └── /review-doc (per-batch quality)
     ├── /refactor (project-level quality)
-    ├── /review-arch (project-level quality, autonomous — advisory)
+    ├── /review-arch (project-level quality, advisory; ticket proposal)
     ├── /review-test (project-level quality)
     ├── /review-doc (project-level quality)
     └── /review-release (project-level quality)

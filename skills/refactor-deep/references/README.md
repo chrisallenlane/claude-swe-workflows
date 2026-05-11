@@ -21,7 +21,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
 **Don't use `/refactor-deep` for:**
 - Quick tactical cleanup only — use `/refactor` standalone.
 - Architectural analysis only — use `/review-arch` standalone.
-- A fully autonomous run with no user interaction — use `/implement-project`'s quality pipeline (which invokes `/review-arch` in autonomous mode and produces an advisory report instead of cutting tickets).
+- A fully autonomous run with no user interaction — use `/implement-project`'s quality pipeline, which invokes `/review-arch` as part of step 7 and lets the orchestrator decide approve / edit / decline on the ticket proposal per `references/autonomy.md`.
 
 **Rule of thumb:** If you want tactical cleanup *and* an architectural read-out *and* you're willing to spend a few minutes reviewing tickets, this is the skill.
 
@@ -54,7 +54,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  3. PHASE 2 — /review-arch (interactive)     │
+ │  3. PHASE 2 — /review-arch (advisory)        │
  │  ────────────────────────────────────────    │
  │  • Noun analysis + blueprint                 │
  │  • Operator iterates on plan                 │
@@ -107,7 +107,7 @@ Runs `/refactor` with the scope, aggression, and QA instructions from step 1. Th
 
 ### 3. Phase 2 — Architectural Review (Advisory)
 
-Runs `/review-arch` in **interactive mode** so it can offer to cut tickets at the end. `/review-arch` no longer implements changes (advisory as of v8.0.0); its job here is to analyze, surface the plan, and route recommended work into the tracker.
+Runs `/review-arch` so it can offer to cut tickets at the end. `/review-arch` is advisory as of v8.0.0; its job here is to analyze, surface the plan, and route recommended work into the tracker. `/refactor-deep`'s upfront ticket-creation preference (Yes / No / Preview-then-decide from step 1) determines how the offer is handled.
 
 The operator participates in `/review-arch`'s plan-iteration phase (step 4 of `/review-arch`'s workflow) and the ticket-review phase (step 5). Behavior at the ticket-creation step depends on the operator's preference from step 1d:
 
@@ -155,7 +155,7 @@ The skill is largely autonomous. **Ticket review in Phase 2 is a planned interac
 
 `/refactor-deep` is a thin orchestrator. It delegates to:
 - `/refactor` for Phase 1
-- `/review-arch` for Phase 2 (interactive mode)
+- `/review-arch` for Phase 2
 - `/review-doc` for the documentation pass
 
 State maintained between phases is light — phase outcomes are captured for the consolidated summary; otherwise each sub-skill is self-contained.

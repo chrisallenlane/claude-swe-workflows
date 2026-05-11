@@ -10,7 +10,7 @@ Convenience workflow that pairs `/refactor` with `/review-arch`. The tactical pa
 
 ## Philosophy
 
-**Tactical cleanup first, then architectural read-out.** The `/refactor` pass clears noise so `/review-arch` can focus on real structural opportunities. The architectural pass is **advisory** as of `/review-arch`'s v8.0.0 transformation (see the "Advisory aspiration" section of [`references/autonomy.md`](../../references/autonomy.md)) — it surfaces a plan but does not implement. In interactive standalone mode (the default for `/refactor-deep`), `/review-arch` offers to cut tickets so the recommended work is captured for later implementation by `/refactor`, `/implement`, or `/implement-batch`.
+**Tactical cleanup first, then architectural read-out.** The `/refactor` pass clears noise so `/review-arch` can focus on real structural opportunities. The architectural pass is **advisory** as of `/review-arch`'s v8.0.0 transformation (see the "Advisory aspiration" section of [`references/autonomy.md`](../../references/autonomy.md)) — it surfaces a plan but does not implement. `/review-arch` offers to cut tickets so the recommended work is captured for later implementation by `/refactor`, `/implement`, or `/implement-batch`.
 
 **Ask once, then execute — with one ticket-review interruption.** All major user decisions are gathered in a single upfront conversation. The workflow then runs Phase 1 autonomously. In Phase 2, if the operator opted in to ticket creation, the skill pauses once for the operator to review and approve the ticket set before any tickets are created in the tracker. Ticket review is the only mid-run user touchpoint; the andon cord remains the only unplanned escalation path.
 
@@ -102,11 +102,11 @@ Run the `/refactor` workflow with:
 
 ### 3. Phase 2: Architectural Review (Advisory)
 
-Run the `/review-arch` workflow in **interactive mode** so it can offer to cut tickets. `/review-arch` no longer implements changes — it is advisory only as of v8.0.0.
+Run the `/review-arch` workflow. It will offer to cut tickets after presenting the analysis; the operator's upfront ticket-creation preference (from step 1d) determines how the offer is handled. `/review-arch` is advisory as of v8.0.0 — it does not implement changes.
 
 | `/review-arch` Step                     | Behavior in `/refactor-deep` Phase 2                                                                                                                                                                                                                                                       |
 |-----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Step 1** (scope and mode)             | Scope: from step 1a. Mode: **interactive** (so ticket creation is possible).                                                                                                                                                                                                              |
+| **Step 1** (scope)                      | Scope: from step 1a.                                                                                                                                                                                                                                                                       |
 | **Step 2** (analyze)                    | Normal operation.                                                                                                                                                                                                                                                                          |
 | **Step 3** (present analysis to user)   | The operator participates. This is one of the mid-run user touchpoints.                                                                                                                                                                                                                    |
 | **Step 4** (iterate on plan with user)  | The operator participates. They shape the plan.                                                                                                                                                                                                                                            |
@@ -186,15 +186,15 @@ Present a consolidated summary across both phases:
 
 **This skill is a composition of:**
 - `/refactor` — tactical code quality improvements within existing architecture
-- `/review-arch` — advisory architectural analysis (cuts tickets in interactive mode)
+- `/review-arch` — advisory architectural analysis (offers to cut tickets)
 - `/review-doc` — documentation audit and updates
 
 **Relationship to `/lead-project`:**
 - `/lead-project` may invoke `/refactor-deep` during a cleanup phase of its OODA loop. The Phase 2 ticket-review touchpoint may pause the loop briefly; `/lead-project` cascades any blocker via the cascade rule documented in [`references/autonomy.md`](../../references/autonomy.md).
 
 **Relationship to `/implement-project`:**
-- `/implement-project`'s quality pipeline also invokes `/refactor` and `/review-arch` (steps 7a and 7b). It invokes `/review-arch` in **autonomous mode** (no ticket creation, advisory report only), since the pipeline is non-interactive.
-- `/refactor-deep` invokes `/review-arch` in **interactive mode**, so the operator can convert the architectural recommendations into tickets in the same workflow.
+- `/implement-project`'s quality pipeline also invokes `/refactor` and `/review-arch` (steps 7a and 7b). The orchestrator receives `/review-arch`'s ticket-structure proposal and applies its own judgment per `references/autonomy.md` — typically approving items it wants tracked for follow-up and declining items it intends to implement inline.
+- `/refactor-deep` invokes `/review-arch` directly; the operator converts architectural recommendations into tickets via the same offer.
 - Use `/refactor-deep` when you want comprehensive cleanup with the option to capture architectural follow-ups as tickets; use `/implement-project` when you want a once-through pipeline against a known ticket batch.
 
 **Relationship to individual skills:**

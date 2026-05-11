@@ -39,7 +39,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
 │  6. Smoke testing                                            │
 │  7. Quality pipeline:                                        │
 │     ├─ 7a. /refactor (MAXIMUM aggression)                    │
-│     ├─ 7b. /review-arch (autonomous mode — advisory report)  │
+│     ├─ 7b. /review-arch (advisory; ticket proposal)          │
 │     ├─ 7c. /review-test                                      │
 │     ├─ 7d. /review-doc                                       │
 │     └─ 7e. /review-release                                   │
@@ -213,17 +213,22 @@ Run the `/refactor` workflow with:
 - **QA instructions:** The smoke testing procedure from step 2
 - **Scope:** Entire codebase
 
-#### 7b. Arch Review (Autonomous Mode — Advisory)
+#### 7b. Arch Review (Advisory)
 
-Run the `/review-arch` workflow in **autonomous mode**. As of v8.0.0, `/review-arch` no longer makes changes — autonomous mode produces an advisory report only, with recommendations naming specific implementation skills and scope hints.
+Run the `/review-arch` workflow. As of v8.0.0, `/review-arch` no longer makes changes — it produces an analysis and proposes a ticket structure for the recommended work.
 
 Invocation parameters:
 - **Scope:** Entire codebase
-- **Mode:** Autonomous (explicit `interactive: false` parameter)
 
-Capture the report. No SMEs are spawned by `/review-arch`, no commits are made, no tickets are created (ticket creation in `/review-arch` is reserved for interactive mode).
+The orchestrator receives `/review-arch`'s ticket-structure proposal and applies its own judgment per [`references/autonomy.md`](../../references/autonomy.md):
 
-**Surface the report's recommendations in the final report** (step 8) under "Deferred Items / Architectural Recommendations." Each recommendation already names a specific follow-up skill with scope hint; surface those verbatim so the operator can chain the right next step after the project ships.
+- **Approve** items that should be tracked for follow-up (typically items that are out of scope for the current project but worth capturing durably).
+- **Edit** the proposed structure if finer-grained or coarser-grained tickets would compose better with other planned work.
+- **Decline** items that the orchestrator will implement inline as part of the quality pipeline.
+
+For items the orchestrator declines (intending to handle inline), surface them in the final report (step 8) under "Architectural Recommendations Acted On" along with what was actually implemented. For items where tickets were cut, surface them under "Deferred Items / Architectural Recommendations" with their ticket numbers, so the operator knows to follow up after the project ships.
+
+The orchestrator should be conservative: cutting a ticket for a finding is always safer than declining it (declining commits the orchestrator to handling it inline, which may not actually happen in the current pipeline).
 
 #### 7c. Test Review
 
@@ -401,7 +406,7 @@ Status: <current phase>
 │   ├── /refactor (per-batch quality)
 │   └── /review-doc (per-batch quality)
 ├── /refactor (project-level quality)
-├── /review-arch (project-level quality, autonomous mode — advisory)
+├── /review-arch (project-level quality, advisory; ticket proposal)
 ├── /review-test (project-level quality)
 ├── /review-doc (project-level quality)
 └── /review-release (project-level quality)
