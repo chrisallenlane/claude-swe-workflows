@@ -80,6 +80,7 @@ Supporting workflows are available at any level:
 **Utility:**
 
 - `/pre-compact` — pre-compaction housekeeping (memory, git, trash, SBAR, resume prompt)
+- `/tidy-git` — mechanical local repo hygiene (prune stale refs, delete merged branches, report stashes/untracked/unpushed)
 
 ## Choosing a Workflow
 
@@ -116,6 +117,7 @@ your task:
 | Perform a white-box security audit                                      | `/review-security`   |
 | Run every review dimension before a release, in one go                  | `/review-deep`       |
 | Tidy up the session before running `/compact`                           | `/pre-compact`       |
+| Clean up local git state (stale refs, merged branches)                  | `/tidy-git`          |
 
 **Rules of thumb:**
 - Open-ended work where the next step depends on the outcome of the last? `/lead-project`
@@ -498,6 +500,19 @@ the next turn if pending work remains. Does not invoke `/compact`
 itself.
 
 [Detailed documentation](skills/pre-compact/SKILL.md)
+
+#### /tidy-git — Mechanical Repo Hygiene
+
+Cleans up local git state that accumulates over time: prunes stale
+remote-tracking refs, prunes stale worktree refs, deletes merged local
+branches (after a preview-and-confirm step), and reports — without
+acting on — stashes, untracked files, branches with no upstream,
+branches ahead of upstream, and local-only tags. Operates on the
+local repo only; never touches the remote, never force-deletes,
+never drops stashes, never runs `git clean`. Branches deleted by the
+skill are recoverable from `git reflog` for ~90 days.
+
+[Detailed documentation](skills/tidy-git/SKILL.md)
 
 ## Agents
 

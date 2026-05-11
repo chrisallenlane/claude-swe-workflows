@@ -100,3 +100,4 @@ Supporting workflows available at any level:
 **Utility:**
 
 - `/pre-compact` — pre-compaction housekeeping (memory, git, trash, SBAR, resume prompt)
+- `/tidy-git` — mechanical local repo hygiene (prune stale refs, delete merged branches, report stashes/untracked/unpushed)

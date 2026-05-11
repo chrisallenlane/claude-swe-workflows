@@ -2,6 +2,12 @@
 
 ## v9.0.0
 
+### New Skills
+
+- **`/tidy-git` — Mechanical local repo hygiene.** A utility skill in the new `/tidy-*` namespace for cleanup operations where the find→fix seam is small enough that running them in one motion is appropriate. Defaults to acting on safe categories (`git remote prune`, `git worktree prune`) and previews-then-confirms borderline-safe categories (merged-branch deletion with `git branch -d` — never `-D`). Reports — without acting on — informational state where judgment is required: stashes, branches with no upstream, branches ahead of upstream, local-only tags, untracked files. Categorical safety invariants forbid force-delete, remote-touching operations, stash drops, `git clean`, and `git gc`; the skill has no flags to override these. Branches deleted by the skill are recoverable from `git reflog` for ~90 days. The skill's three-tier action model (zero-risk auto, borderline-safe preview-and-confirm, report-only) is the design discipline that separates a tidy skill from the underlying git commands it composes.
+
+  The `/tidy-*` namespace is introduced with this single skill. Issue #15 proposed broader namespace restructuring; the conservative path is to grow the namespace organically as concrete candidates earn their keep, rather than committing to the full proposed migration upfront. `/review-doc` → `/tidy-doc` is a plausible future move but deferred — it remains as `/review-doc` for now.
+
 ### Breaking Changes
 
 - **`/review-test` is now advisory only.** The skill previously surveyed test coverage across five phases (unit, integration, E2E, fuzz, quality) and *implemented* the resulting test changes — writing tests via language SMEs, deleting tautological tests, rewriting brittle ones, running the test suite to verify. In v9.0.0 it is strictly advisory: each phase records its findings into a consolidated report, and after the report is presented, a final step proposes a ticket structure tailored to the review's shape (unit-gap distribution, Mode A vs. Mode B starter strategies in Phases 2 and 3, Phase-5 churn, fuzz-tooling absence), presents the proposal to the operator for approve / edit / decline, and on approval cuts tickets via the canonical tracker integration (`references/trackers.md`). It does not implement test changes.
