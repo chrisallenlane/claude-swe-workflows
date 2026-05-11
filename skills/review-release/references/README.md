@@ -21,7 +21,7 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
 **Don't use `/review-release` for:**
 - Routine development checks (use `/implement` or `/refactor`)
 - Test quality concerns (use `/review-test` or `/test-mutation`)
-- Documentation updates (use `/review-doc`)
+- Documentation updates (use `/tidy-docs`)
 - Security audits (the sec-blue-teamer agent handles that during `/implement`; use `/review-security` for deep audits)
 
 **Key principle:** Releases deserve human review. This workflow surfaces issues — it doesn't silently fix them.
@@ -103,7 +103,7 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
  │  • Test/build failures (investigate)         │
  │  • Changelog gaps (scaffold offered)         │
  │  • License issues (user decides)             │
- │  • Doc staleness (suggest /review-doc)       │
+ │  • Doc staleness (suggest /tidy-docs)       │
  │  • Breaking changes (document or revert)     │
  └──────────────────┬───────────────────────────┘
                     ▼
@@ -211,7 +211,7 @@ Select items to address:
 
 3. **Start from a clean state.** If you know there are obvious blockers (merge conflicts, tracked secrets), fix them before running the review to keep the report focused.
 
-4. **Run `/review-doc` for stale docs.** The release review only flags staleness — it doesn't fix documentation. Run `/review-doc` separately to update docs.
+4. **Run `/tidy-docs` for stale docs.** The release review only flags staleness — it doesn't fix documentation. Run `/tidy-docs` separately to update docs.
 
 5. **Review the changelog manually.** The review can detect that the changelog wasn't updated, and can scaffold entries from git history, but meaningful release notes require human authorship.
 

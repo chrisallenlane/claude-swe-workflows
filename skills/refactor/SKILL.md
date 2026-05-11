@@ -33,7 +33,7 @@ Autonomous refactoring workflow that iteratively improves code quality within th
 │     ├─ PASS → commit, goto 4                        │
 │     └─ FAIL → retry (max 3), then abort batch       │
 │  9. Completion summary                              │
-│ 10. Update documentation (/review-doc)              │
+│ 10. Update documentation (/tidy-docs)              │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -251,11 +251,11 @@ When workflow completes, present summary:
 
 ### 7. Update Documentation
 
-After the refactoring summary, run the `/review-doc` workflow to bring project documentation up to date. Even tactical refactoring can rename functions, move code between files, and change APIs — documentation that references the old state becomes stale.
+After the refactoring summary, run the `/tidy-docs` workflow to bring project documentation up to date. Even tactical refactoring can rename functions, move code between files, and change APIs — documentation that references the old state becomes stale.
 
 Invoke the skill directly:
 ```
-/review-doc
+/tidy-docs
 ```
 
 This spawns a doc-maintainer agent that audits all project documentation and fixes issues it finds. Any changes are committed separately from the refactoring commits.
@@ -379,7 +379,7 @@ No opportunities found at any level.
 - DRY consolidation: 5 instances
 - Lint fixes: 2 instances
 
-Running /review-doc to update documentation...
+Running /tidy-docs to update documentation...
 
 Spawning doc-maintainer agent...
   No documentation changes needed.

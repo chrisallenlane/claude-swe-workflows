@@ -29,11 +29,11 @@ and autonomy.
 │   │   ├── Code review               ← security, refactor, perf
 │   │   └── Documentation             ← targeted doc updates
 │   ├── /refactor                     ← per-batch cleanup
-│   └── /review-doc                   ← per-batch doc audit
+│   └── /tidy-docs                   ← per-batch doc tidy
 ├── /refactor (MAXIMUM aggression)    ← project-level cleanup
 ├── /review-arch (advisory)           ← architectural analysis; surfaces recommendations
 ├── /review-test (advisory)           ← test suite survey; surfaces ticket-shaped work
-├── /review-doc                       ← documentation audit
+├── /tidy-docs                        ← documentation tidy
 └── /review-release                   ← pre-release readiness
 ```
 
@@ -109,7 +109,7 @@ your task:
 | Rethink module boundaries and architecture                              | `/review-arch`       |
 | Survey the test suite and surface gaps as tickets                       | `/review-test`       |
 | Verify test quality via mutation testing                                | `/test-mutation`     |
-| Audit all project documentation                                         | `/review-doc`        |
+| Tidy all project documentation                                          | `/tidy-docs`         |
 | Pre-release readiness check                                             | `/review-release`    |
 | Audit web content for accessibility barriers                            | `/review-a11y`       |
 | First-pass strategic orientation on a repo                              | `/review-health`     |
@@ -157,7 +157,7 @@ to prevent drift or thrash.
 Orchestrates an entire project from tickets to release-ready code. Takes
 batched tickets, implements each batch via `/implement-batch` in autonomous mode,
 runs smoke tests, then executes a comprehensive quality pipeline (refactor,
-review-arch, review-test, review-doc, review-release). The result is a
+review-arch, review-test, tidy-docs, review-release). The result is a
 single project branch ready for human review and merge.
 
 Maximizes autonomy — the andon cord (stop-the-line escalation) is the only
@@ -169,7 +169,7 @@ planned intervention path.
 
 Takes a batch of tickets, plans their execution order, implements each
 sequentially using `/implement` in autonomous mode, runs cross-cutting
-quality passes (`/refactor`, `/review-doc`), and presents results for
+quality passes (`/refactor`, `/tidy-docs`), and presents results for
 final review.
 
 [Detailed documentation](skills/implement-batch/SKILL.md)
@@ -260,13 +260,16 @@ coverage misses. Multi-session with progress tracking.
 
 [Detailed documentation](skills/test-mutation/SKILL.md)
 
-#### /review-doc — Documentation Quality Audit
+#### /tidy-docs — Documentation Hygiene
 
-Comprehensively reviews all project documentation for correctness,
-completeness, and freshness. Fixes issues autonomously within its
-authority.
+Comprehensively audits all project documentation for correctness,
+completeness, and freshness via the `doc-maintainer` agent. Fixes
+issues autonomously within the agent's authority; surfaces anything
+requiring user judgment for approval. In the `/tidy-*` namespace
+because the find→fix seam is small for most documentation issues
+(typos, stale code examples, broken links, freshness drift).
 
-[Detailed documentation](skills/review-doc/SKILL.md)
+[Detailed documentation](skills/tidy-docs/SKILL.md)
 
 #### /review-release — Pre-Release Readiness Check
 
@@ -317,7 +320,7 @@ Advisory only — no changes made.
 
 Thin orchestrator that runs every `/review-*` skill in sequence:
 `/review-health`, `/review-arch`, `/review-security`, `/review-perf`,
-`/review-a11y`, `/review-test`, `/review-doc`, `/review-release`. Each
+`/review-a11y`, `/review-test`, `/tidy-docs`, `/review-release`. Each
 sub-skill keeps its normal interactive behavior — the operator
 participates throughout. Auto-detects phases that don't apply (no web
 content → skip `/review-a11y`; no tests → skip `/review-test`; etc.)

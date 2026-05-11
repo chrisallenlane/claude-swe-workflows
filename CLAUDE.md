@@ -61,14 +61,14 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
 /implement-project
 ├── /implement-batch (per batch)
 │   └── /implement (per ticket)
-└── quality pipeline: /refactor, /review-arch, /review-test, /review-doc, /review-release
+└── quality pipeline: /refactor, /review-arch, /review-test, /tidy-docs, /review-release
 
 /refactor-deep
-└── /refactor → /review-arch (advisory) → /review-doc
+└── /refactor → /review-arch (advisory) → /tidy-docs
 
 /review-deep
 └── /review-health → /review-arch → /review-security → /review-perf
-  → /review-a11y → /review-test → /review-doc → /review-release
+  → /review-a11y → /review-test → /tidy-docs → /review-release
 ```
 
 Planning feeds implementation: `/scope-project` → `/implement-project`, or `/scope` → `/implement`. `/lead-project` sits one level higher — given a commander's intent, it decides which of the below skills to invoke and when.

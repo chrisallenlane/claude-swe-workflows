@@ -1,6 +1,6 @@
 ---
 name: review-deep
-description: Comprehensive pre-release review pipeline. Runs /review-health, /review-arch, /review-security, /review-perf, /review-a11y, /review-test, /review-doc, and /review-release in sequence. Thin orchestrator — each sub-skill keeps its normal interactive behavior. Auto-detects phases that do not apply and asks the user to confirm skipping them. Ends with a consolidated report.
+description: Comprehensive pre-release review pipeline. Runs /review-health, /review-arch, /review-security, /review-perf, /review-a11y, /review-test, /tidy-docs, and /review-release in sequence. Thin orchestrator — each sub-skill keeps its normal interactive behavior. Auto-detects phases that do not apply and asks the user to confirm skipping them. Ends with a consolidated report.
 model: opus
 ---
 
@@ -31,7 +31,7 @@ Convenience wrapper that runs every `/review-*` skill in a coordinated sequence.
 │     4. /review-perf                                  │
 │     5. /review-a11y                                  │
 │     6. /review-test                                  │
-│     7. /review-doc                                   │
+│     7. /tidy-docs                                   │
 │     8. /review-release                               │
 │  3. Consolidated final report                        │
 └──────────────────────────────────────────────────────┘
@@ -77,7 +77,7 @@ Will run:
 - /review-arch
 - /review-security
 - /review-perf
-- /review-doc
+- /tidy-docs
 - /review-release
 
 Confirm, or override (e.g., "also skip /review-perf", "force-run /review-test")?
@@ -124,7 +124,7 @@ Present a single report that aggregates the results of every enabled phase. The 
 | /review-perf     | Complete      | No critical bottlenecks; 2 caching suggestions  |
 | /review-a11y     | Skipped       | No web content                                  |
 | /review-test     | Complete      | 5 coverage/quality tickets cut; coverage 72%    |
-| /review-doc      | Complete      | 7 docs updated                                  |
+| /tidy-docs      | Complete      | 7 docs updated                                  |
 | /review-release  | Complete      | Release verdict: GO, after 2 advisory items     |
 
 ### Changes Made
@@ -179,7 +179,7 @@ Present a single report that aggregates the results of every enabled phase. The 
 - `/review-perf` — performance review (compute and/or web)
 - `/review-a11y` — WCAG accessibility audit
 - `/review-test` — coverage, fuzz, and quality test review
-- `/review-doc` — documentation audit and updates
+- `/tidy-docs` — documentation audit and updates
 - `/review-release` — pre-release readiness check
 
 **When to use `/review-deep` vs. individual skills:**
@@ -187,5 +187,5 @@ Present a single report that aggregates the results of every enabled phase. The 
 - Use an individual `/review-*` skill for targeted single-dimension review, or when a previous `/review-deep` surfaced a specific area to re-examine.
 
 **Relationship to `/refactor-deep`:**
-- `/refactor-deep` composes: `/refactor` (tactical cleanup), `/review-arch` (advisory architectural analysis, with optional ticket creation), `/review-doc`. It is change-oriented.
-- `/review-deep` composes review skills and is evaluation-oriented. It shares `/review-arch` and `/review-doc` with `/refactor-deep`; running both back-to-back in the same session is usually redundant. Prefer `/review-deep` when release readiness is the goal.
+- `/refactor-deep` composes: `/refactor` (tactical cleanup), `/review-arch` (advisory architectural analysis, with optional ticket creation), `/tidy-docs`. It is change-oriented.
+- `/review-deep` composes review skills and is evaluation-oriented. It shares `/review-arch` and `/tidy-docs` with `/refactor-deep`; running both back-to-back in the same session is usually redundant. Prefer `/review-deep` when release readiness is the goal.

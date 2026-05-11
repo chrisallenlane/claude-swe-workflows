@@ -114,7 +114,7 @@ The `/refactor` skill autonomously improves code quality within the existing arc
  ┌──────────────────────────────────────────────┐
  │  8. UPDATE DOCUMENTATION                     │
  │  ────────────────────────────────────────    │
- │  Run /review-doc to fix stale docs           │
+ │  Run /tidy-docs to fix stale docs           │
  └──────────────────────────────────────────────┘
 ```
 
@@ -196,7 +196,7 @@ After the summary, the workflow presents **user-decision items** collected acros
 - **Apparently-unused public APIs:** Exported symbols that appear unused internally but may be consumed by external users of the package. Informational only.
 
 ### 8. Update Documentation
-After the summary, the workflow runs `/review-doc` to bring documentation up to date.
+After the summary, the workflow runs `/tidy-docs` to bring documentation up to date.
 
 ## Examples
 

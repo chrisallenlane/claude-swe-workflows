@@ -107,7 +107,7 @@ The skill is a **for-loop, not an orchestrator** in the autonomy sense — it ha
  │  6. CROSS-CUTTING QUALITY PASSES             │
  │  ────────────────────────────────────────    │
  │  6a. /refactor (SAFE aggression)              │
- │  6b. /review-doc (full audit)                │
+ │  6b. /tidy-docs (full audit)                │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -172,7 +172,7 @@ For each ticket in order:
 ### 6. Cross-Cutting Quality Passes
 After all tickets are implemented:
 - **`/refactor`**: Conservative pass (SAFE aggression ceiling only)
-- **`/review-doc`**: Full documentation audit
+- **`/tidy-docs`**: Full documentation audit
 
 These catch issues that span multiple tickets or emerge from their interaction.
 
@@ -260,7 +260,7 @@ Creating branch: feat/batch-sprint-4
 
 Running cross-cutting quality passes...
 - /refactor: 1 DRY improvement (-12 lines)
-- /review-doc: README updated with auth docs
+- /tidy-docs: README updated with auth docs
 
 ## Batch Complete
 
@@ -311,7 +311,7 @@ Awaiting your guidance.
 | `/implement`     | Runs inside `/implement-batch` for each ticket. `/implement-batch` adds batching, ordering, and branching. |
 | `/bug-fix`      | Not used by `/implement-batch` currently — all tickets go through `/implement`.                      |
 | `/refactor`    | Runs as cross-cutting quality pass (SAFE aggression).                                      |
-| `/review-doc`  | Runs as cross-cutting quality pass.                                                        |
+| `/tidy-docs`  | Runs as cross-cutting quality pass.                                                        |
 
 ## Tips
 

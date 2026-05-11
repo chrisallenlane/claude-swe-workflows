@@ -36,7 +36,7 @@ Orchestrates a batch of tickets as a cohesive unit. Creates a project branch, im
 │     └─ 5e. Delete topic branch                       │
 │  6. Cross-cutting quality passes                     │
 │     ├─ 6a. /refactor (SAFE aggression)               │
-│     └─ 6b. /review-doc                               │
+│     └─ 6b. /tidy-docs                               │
 │  7. Final review (present to user)                   │
 └──────────────────────────────────────────────────────┘
 ```
@@ -165,7 +165,7 @@ Run the `/refactor` workflow with these parameters:
 
 #### 6b. Documentation Review
 
-Run the `/review-doc` workflow:
+Run the `/tidy-docs` workflow:
 - Full documentation audit (not git-diff scoped)
 - Fixes committed separately
 
@@ -236,6 +236,6 @@ The orchestrator maintains:
 - `/scope` creates tickets; `/implement-batch` consumes them
 - Typical flow: `/scope` to plan and create tickets, then `/implement-batch` to implement the batch
 
-**Relationship to `/refactor`, `/review-doc`:**
+**Relationship to `/refactor`, `/tidy-docs`:**
 - These run as cross-cutting quality passes after all tickets are implemented
 - They catch issues that span multiple tickets or emerge from their interaction

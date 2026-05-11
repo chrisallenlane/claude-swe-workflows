@@ -1,12 +1,12 @@
 ---
-name: review-doc
-description: Review all project documentation for correctness, completeness, and freshness. Spawns a doc-maintainer agent to audit and fix docs.
+name: tidy-docs
+description: Mechanical documentation hygiene. Spawns a doc-maintainer agent to audit all project documentation and fix correctness, completeness, freshness, and consistency issues autonomously within its authority. Surfaces anything requiring user judgment for approval.
 model: opus
 ---
 
-# Doc Review - Documentation Quality Audit
+# Tidy-Docs - Documentation Hygiene
 
-Spawns a doc-maintainer agent to comprehensively review all project documentation and fix issues found.
+Spawns a `doc-maintainer` agent to comprehensively audit all project documentation and fix the issues it finds. The find→fix seam is small — typos, stale code examples, broken links, freshness drift — so the skill runs as a tidy rather than a review.
 
 ## Workflow
 
@@ -45,7 +45,7 @@ If changes were made, ask the user if they want to commit. If yes:
 ```bash
 git add [specific files]
 git commit -m "$(cat <<'EOF'
-docs: review and update project documentation
+docs: tidy project documentation
 
 [Brief description of changes made]
 EOF

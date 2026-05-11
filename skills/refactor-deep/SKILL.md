@@ -30,7 +30,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
 │     └─ Ticket-creation preference (Phase 2)         │
 │  2. Phase 1: /refactor (tactical cleanup)           │
 │  3. Phase 2: /review-arch (advisory; may cut tickets)│
-│  4. /review-doc (once, at the end)                  │
+│  4. /tidy-docs (once, at the end)                  │
 │  5. Completion summary                              │
 └─────────────────────────────────────────────────────┘
 ```
@@ -98,7 +98,7 @@ Run the `/refactor` workflow with:
 - **Aggression ceiling:** As specified in step 1b
 - **QA instructions:** As specified in step 1c
 
-**Override:** Suppress `/refactor`'s built-in `/review-doc` pass (step 7 in `/refactor`). Documentation will be updated once at the end.
+**Override:** Suppress `/refactor`'s built-in `/tidy-docs` pass (step 7 in `/refactor`). Documentation will be updated once at the end.
 
 ### 3. Phase 2: Architectural Review (Advisory)
 
@@ -115,7 +115,7 @@ Run the `/review-arch` workflow. It will offer to cut tickets after presenting t
 
 ### 4. Update Documentation
 
-Run the `/review-doc` workflow once. Phase 1's tactical changes may have renamed functions or moved code; documentation is updated to reflect the new state.
+Run the `/tidy-docs` workflow once. Phase 1's tactical changes may have renamed functions or moved code; documentation is updated to reflect the new state.
 
 ### 5. Completion Summary
 
@@ -187,7 +187,7 @@ Present a consolidated summary across both phases:
 **This skill is a composition of:**
 - `/refactor` — tactical code quality improvements within existing architecture
 - `/review-arch` — advisory architectural analysis (offers to cut tickets)
-- `/review-doc` — documentation audit and updates
+- `/tidy-docs` — documentation audit and updates
 
 **`/refactor-deep` vs the parts:** Use `/refactor` alone for quick tactical cleanup; use `/review-arch` alone for an architectural read-out; use `/refactor-deep` when you want both — tactical pass first, then architectural analysis with ticket review.
 

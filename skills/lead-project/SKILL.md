@@ -202,7 +202,7 @@ Available actions (non-exhaustive):
 - `/scope` — draft new tickets when gaps emerge that serve intent
 - `/implement` or `/implement-batch` or `/implement-project` — execute ticketed work
 - `/refactor` or `/refactor-deep` — code quality cleanup
-- `/review-arch`, `/review-test`, `/review-doc`, `/review-release`, `/review-perf`, `/review-a11y`, `/review-security` — targeted reviews
+- `/review-arch`, `/review-test`, `/tidy-docs`, `/review-release`, `/review-perf`, `/review-a11y`, `/review-security` — targeted reviews
 - `/review-deep` — comprehensive review pass
 - `/bug-hunt` — proactive bug discovery
 - `/bug-fix` — diagnosis-first bug fixing
@@ -213,7 +213,7 @@ Available actions (non-exhaustive):
 
 When invoking a sub-skill that supports autonomous mode, use it. When a sub-skill requires interactive input, answer autonomously using engineering judgment anchored to the pinned commander's intent. Only pull the andon cord if the sub-skill itself pulls its andon cord for reasons this skill cannot resolve.
 
-**Reviewer tie-breaker.** If two review skills produce contradictory findings on the same file within the run — e.g., `/refactor` removed a helper that `/review-arch` later recommends restoring, or `/review-test` wants a test split that `/review-doc` flags as harming readability — **do not oscillate**. Pull the andon cord. Contradictory review verdicts are a product judgment call the user should make, not a loop the skill should try to resolve. Include both findings in the handoff.
+**Reviewer tie-breaker.** If two review skills produce contradictory findings on the same file within the run — e.g., `/refactor` removed a helper that `/review-arch` later recommends restoring, or `/review-test` wants a test split that `/tidy-docs` flags as harming readability — **do not oscillate**. Pull the andon cord. Contradictory review verdicts are a product judgment call the user should make, not a loop the skill should try to resolve. Include both findings in the handoff.
 
 **Reviewer invocation cap.** A given review sub-skill (e.g., `/review-arch`) may be re-invoked only if files it previously flagged have been materially modified since. Rerunning a review against unchanged code thrashes. Record each review invocation and its target scope in the state doc; check before re-invoking.
 
@@ -319,7 +319,7 @@ Narrative without an artifact is not evidence. An artifact without narrative is 
  rationale for deferral, pointer to where it's tracked.]
 
 - [medium | /review-test | cycle 14] <description> — deferred because <reason> — tracked in state doc section X
-- [low | /review-doc | cycle 22] <description> — deferred because <reason>
+- [low | /tidy-docs | cycle 22] <description> — deferred because <reason>
 
 ### Constraint/non-goal adherence
 [Confirm no violations. If any close calls occurred, name them with commit SHAs
@@ -547,7 +547,7 @@ Track review sub-skill invocations to enforce the "only re-invoke if flagged fil
 Findings and opportunities the skill chose not to address, with rationale.
 
 - [medium | /review-test] <description> — deferred because <reason>
-- [low | /review-doc] <description> — deferred because <reason>
+- [low | /tidy-docs] <description> — deferred because <reason>
 
 ## Open questions
 
@@ -628,7 +628,7 @@ Ensure `LEAD_PROJECT_STATE.md` is ignored. Commit the `.gitignore` change on the
 │   ├── /scope
 │   ├── /implement | /implement-batch | /implement-project
 │   ├── /refactor | /refactor-deep
-│   ├── /review-arch | /review-test | /review-doc | /review-release
+│   ├── /review-arch | /review-test | /tidy-docs | /review-release
 │   ├── /review-perf | /review-a11y | /review-security
 │   ├── /review-deep
 │   ├── /bug-hunt | /bug-fix

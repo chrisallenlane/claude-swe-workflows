@@ -1,6 +1,6 @@
 ---
 name: implement-project
-description: Full-lifecycle project workflow. Takes batched tickets, implements via /implement-batch, runs smoke tests, then executes a comprehensive quality pipeline (refactor, review-arch, review-test, review-doc, review-release). Maximizes autonomy with andon cord escape.
+description: Full-lifecycle project workflow. Takes batched tickets, implements via /implement-batch, runs smoke tests, then executes a comprehensive quality pipeline (refactor, review-arch, review-test, tidy-docs, review-release). Maximizes autonomy with andon cord escape.
 model: opus
 ---
 
@@ -16,9 +16,9 @@ This skill implements the autonomy discipline documented in [`references/autonom
 
 **The project branch is the single integration point.** All work flows into the project branch. Batches merge into it, quality passes commit to it, and the user makes one decision at the end: merge or don't.
 
-**Quality is layered.** Each quality pass builds on the previous one. Refactoring cleans the code so review-arch can focus on structure. Arch-review surfaces structural recommendations (advisory only — `/review-arch` no longer implements changes; see the "Advisory aspiration" section of [`references/autonomy.md`](../../references/autonomy.md)) so review-test can survey coverage of the current form. Review-test surfaces ticket-shaped test work (advisory only — `/review-test` no longer writes tests in-skill). Doc-review documents what actually shipped. Release-review validates the whole.
+**Quality is layered.** Each quality pass builds on the previous one. Refactoring cleans the code so review-arch can focus on structure. Arch-review surfaces structural recommendations (advisory only — `/review-arch` no longer implements changes; see the "Advisory aspiration" section of [`references/autonomy.md`](../../references/autonomy.md)) so review-test can survey coverage of the current form. Review-test surfaces ticket-shaped test work (advisory only — `/review-test` no longer writes tests in-skill). Tidy-docs documents what actually shipped. Release-review validates the whole.
 
-**Fresh eyes catch what familiarity misses.** Each quality pass runs its full workflow, including any embedded sub-passes (e.g., `/refactor` runs its own `/review-doc`). Redundancy is intentional — each agent sees the project with fresh context and may catch issues that prior passes normalized.
+**Fresh eyes catch what familiarity misses.** Each quality pass runs its full workflow, including any embedded sub-passes (e.g., `/refactor` runs its own `/tidy-docs`). Redundancy is intentional — each agent sees the project with fresh context and may catch issues that prior passes normalized.
 
 ## Workflow Overview
 
@@ -41,7 +41,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
 │     ├─ 7a. /refactor (MAXIMUM aggression)                    │
 │     ├─ 7b. /review-arch (advisory; ticket proposal)          │
 │     ├─ 7c. /review-test (advisory; ticket proposal)          │
-│     ├─ 7d. /review-doc                                       │
+│     ├─ 7d. /tidy-docs                                       │
 │     └─ 7e. /review-release                                   │
 │  8. Final report                                             │
 └──────────────────────────────────────────────────────────────┘
@@ -168,7 +168,7 @@ Invoke the `/implement-batch` workflow with these autonomous overrides:
 | **Step 3** (batch planning)   | **Orchestrator approves the plan autonomously.** Review the proposed execution order. Use `/think-deliberate` if the ordering is unclear or if there are concerning dependency patterns. Only pull the andon cord if tickets are fundamentally incoherent. |
 | **Step 4** (create project branch) | **Skip — already on the batch branch.** The batch branch serves as `/implement-batch`'s "project branch." Topic branches are created from it.                                                                             |
 | **Steps 5a-5e** (per-ticket loop)  | Normal operation. Topic branches are created from the batch branch. Andon cord triggers cascade up to the project orchestrator.                                                                                  |
-| **Step 6** (quality passes)   | Normal operation. Let `/implement-batch` run its own refactor + review-doc.                                                                                                                                                      |
+| **Step 6** (quality passes)   | Normal operation. Let `/implement-batch` run its own refactor + tidy-docs.                                                                                                                                                      |
 | **Step 7** (final review)     | **Orchestrator reviews autonomously.** Log the summary to `PROJECT_PROGRESS.md`. Do not wait for user input.                                                                                                          |
 
 #### 5c. Merge Batch Branch into Project Branch
@@ -244,9 +244,9 @@ Phase 3's journey-classification confirmation step still requires user input eve
 
 The orchestrator should be conservative: cutting a ticket for a test finding is safer than declining it (declining commits the orchestrator to handling it inline, which may not actually happen in the current pipeline).
 
-#### 7d. Doc Review
+#### 7d. Tidy-Docs
 
-Run the `/review-doc` workflow:
+Run the `/tidy-docs` workflow:
 - Full documentation audit
 - Fixes committed separately
 
@@ -282,7 +282,7 @@ Present comprehensive summary to user:
 - Refactor (pass 1): N commits, net -XXX lines
 - Arch Review: advisory report produced (no changes made — /review-arch is advisory)
 - Test Review: advisory report produced; N tickets created / N declined / N approved-inline
-- Doc Review: N documentation updates
+- Tidy-Docs: N documentation updates
 - Release Review: N findings resolved, N deferred
 
 ### Deferred Items / Architectural Recommendations
@@ -346,7 +346,7 @@ Status: <current phase>
 - [x] Refactor
 - [ ] Arch Review (advisory)
 - [ ] Test Review
-- [ ] Doc Review
+- [ ] Tidy-Docs
 - [ ] Release Review
 
 ## Issues Log
@@ -370,7 +370,7 @@ Status: <current phase>
 - Keep per-batch and per-pass summaries brief to avoid context bloat
 
 **Sub-workflow invocation:**
-- Quality passes (`/refactor`, `/review-arch`, `/review-test`, `/review-doc`, `/review-release`): invoke as skills
+- Quality passes (`/refactor`, `/review-arch`, `/review-test`, `/tidy-docs`, `/review-release`): invoke as skills
 - `/implement-batch`: invoke as a skill with autonomous overrides
 - `/think-deliberate`, `/bug-fix`: invoke as skills when needed
 
@@ -419,10 +419,10 @@ Status: <current phase>
 ├── /implement-batch (per batch)
 │   ├── /implement (per ticket)
 │   ├── /refactor (per-batch quality)
-│   └── /review-doc (per-batch quality)
+│   └── /tidy-docs (per-batch quality)
 ├── /refactor (project-level quality)
 ├── /review-arch (project-level quality, advisory; ticket proposal)
 ├── /review-test (project-level quality)
-├── /review-doc (project-level quality)
+├── /tidy-docs (project-level quality)
 └── /review-release (project-level quality)
 ```

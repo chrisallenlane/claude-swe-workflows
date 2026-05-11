@@ -290,7 +290,7 @@ The skill may invoke any of the following during the Decide phase:
 | `/refactor-deep`                | Tactical + architectural + tactical cleanup cycle                                    |
 | `/review-arch`                  | Architectural review                                                                 |
 | `/review-test`                  | Test suite survey; advisory; produces ticket-structure proposal                      |
-| `/review-doc`                   | Documentation audit                                                                  |
+| `/tidy-docs`                   | Documentation audit                                                                  |
 | `/review-release`               | Pre-release readiness                                                                |
 | `/review-perf`                  | Performance review                                                                   |
 | `/review-a11y`                  | Accessibility review                                                                 |
@@ -568,7 +568,7 @@ Awaiting your guidance.
 │   ├── /scope
 │   ├── /implement | /implement-batch | /implement-project
 │   ├── /refactor | /refactor-deep
-│   ├── /review-arch | /review-test | /review-doc | /review-release
+│   ├── /review-arch | /review-test | /tidy-docs | /review-release
 │   │   /review-perf | /review-a11y | /review-security | /review-deep
 │   ├── /bug-hunt | /bug-fix
 │   ├── /test-mutation

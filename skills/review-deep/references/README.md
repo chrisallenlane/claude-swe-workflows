@@ -43,7 +43,7 @@ The `/review-deep` skill runs every `/review-*` skill in the plugin — eight in
 │     d. /review-perf                                  │
 │     e. /review-a11y                                  │
 │     f. /review-test                                  │
-│     g. /review-doc                                   │
+│     g. /tidy-docs                                   │
 │     h. /review-release                               │
 │  3. Consolidated final report                        │
 └──────────────────────────────────────────────────────┘
@@ -64,7 +64,7 @@ The orchestrator scans the project and proposes skipping phases that do not appl
 | `/review-a11y`     | No web content (`.html`, `.jsx`, `.tsx`, `.vue`, `.svelte`, `.css`, templates)          |
 | `/review-test`     | No tests detected (no test directories, no `*_test.go` / `test_*.py` / `*.test.ts` / etc.) |
 
-You can override in either direction — force-run a proposed-skip phase, or skip a phase that was not proposed for skipping. `/review-health`, `/review-arch`, `/review-doc`, and `/review-release` always run unless you explicitly opt out.
+You can override in either direction — force-run a proposed-skip phase, or skip a phase that was not proposed for skipping. `/review-health`, `/review-arch`, `/tidy-docs`, and `/review-release` always run unless you explicitly opt out.
 
 ### 2. Execute Enabled Phases
 
@@ -91,7 +91,7 @@ A single report aggregating every enabled phase:
 | `/review-perf`     | Compute and/or web performance review                             | No             |
 | `/review-a11y`     | WCAG conformance audit on web content                             | No             |
 | `/review-test`     | Coverage gaps, fuzz opportunities, and test quality audit; advisory; offers to cut tickets | No |
-| `/review-doc`      | Comprehensive documentation audit and fixes                       | Yes            |
+| `/tidy-docs`      | Comprehensive documentation audit and fixes                       | Yes            |
 | `/review-release`  | Pre-release readiness check with final verdict                    | Yes            |
 
 Advisory-only phases produce reports you can act on manually or via `/refactor` or `/implement`. Change-making phases have their own interactive decision points — you choose what lands.
@@ -100,7 +100,7 @@ Advisory-only phases produce reports you can act on manually or via `/refactor` 
 
 1. **Set aside time.** Eight phases with interactive decision points is a substantial session. `/review-deep` is meant for when you can stay engaged, not when you need to step away.
 
-2. **Take the branch.** Even if the advisory phases make no changes, `/review-doc` and `/review-release` can. Accepting the `review-deep/<date>` branch keeps `main`/`master` clean while you work.
+2. **Take the branch.** Even if the advisory phases make no changes, `/tidy-docs` and `/review-release` can. Accepting the `review-deep/<date>` branch keeps `main`/`master` clean while you work.
 
 3. **Do not fight the skip detection.** If the orchestrator proposes skipping a phase, it is usually right. Override only when you have a specific reason (e.g., you're about to add tests but want to see what `/review-test` would recommend against the current state).
 
@@ -108,7 +108,7 @@ Advisory-only phases produce reports you can act on manually or via `/refactor` 
 
 5. **Use the cross-cutting observations.** The final report's cross-cutting section is the unique value `/review-deep` adds over running each skill manually. If three phases flag the same concern, that is a project-level signal worth acting on.
 
-6. **Running it back-to-back with `/refactor-deep` is usually redundant.** Both share `/review-arch` and `/review-doc`. Pick one based on the goal — `/refactor-deep` for change-oriented cleanup, `/review-deep` for release-readiness evaluation.
+6. **Running it back-to-back with `/refactor-deep` is usually redundant.** Both share `/review-arch` and `/tidy-docs`. Pick one based on the goal — `/refactor-deep` for change-oriented cleanup, `/review-deep` for release-readiness evaluation.
 
 ## Integration with Other Skills
 
@@ -121,7 +121,7 @@ Advisory-only phases produce reports you can act on manually or via `/refactor` 
 | `/review-perf`     | Phase 4                                                                                                 |
 | `/review-a11y`     | Phase 5                                                                                                 |
 | `/review-test`     | Phase 6                                                                                                 |
-| `/review-doc`      | Phase 7                                                                                                 |
+| `/tidy-docs`      | Phase 7                                                                                                 |
 | `/review-release`  | Phase 8                                                                                                 |
 | `/refactor-deep`   | Sibling workflow — change-oriented cycle (refactor → advisory arch review → doc). Usually one or the other, not both. |
 | `/implement-project` | Contains its own post-batch quality pipeline. `/review-deep` is the standalone equivalent for use outside a ticket-driven project. |

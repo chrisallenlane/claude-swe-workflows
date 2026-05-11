@@ -4,7 +4,7 @@
 
 ## Overview
 
-The `/implement-project` skill orchestrates an entire project from tickets to release-ready code. It takes batched tickets, implements each batch via the `/implement-batch` workflow in autonomous mode, runs smoke tests, then executes a comprehensive quality pipeline (refactor, review-arch advisory, review-test advisory, review-doc, review-release). The result is a single project branch ready for human review and merge.
+The `/implement-project` skill orchestrates an entire project from tickets to release-ready code. It takes batched tickets, implements each batch via the `/implement-batch` workflow in autonomous mode, runs smoke tests, then executes a comprehensive quality pipeline (refactor, review-arch advisory, review-test advisory, tidy-docs, review-release). The result is a single project branch ready for human review and merge.
 
 This skill implements the autonomy discipline documented in [`references/autonomy.md`](../../../references/autonomy.md). Its commander's-intent schema is the four-field variant defined there (tickets, acceptance bar, constraints, non-goals); its andon-cord pulls use the shared handoff template; and its quality pipeline invokes `/review-arch`, which is strictly advisory — it produces an analysis and a ticket-structure proposal that the orchestrator approves / edits / declines per `references/autonomy.md`.
 
@@ -127,7 +127,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
  │  7a. /refactor (MAXIMUM aggression)          │
  │  7b. /review-arch (advisory; ticket proposal)│
  │  7c. /review-test (advisory; ticket proposal)│
- │  7d. /review-doc                             │
+ │  7d. /tidy-docs                             │
  │  7e. /review-release                         │
  │                                              │
  │  /review-arch and /review-test are advisory; │
@@ -207,7 +207,7 @@ For each batch:
 - Tickets are pre-loaded (no user prompting for ticket specification)
 - The batch execution plan is approved by the orchestrator autonomously (using `/think-deliberate` for unclear ordering decisions)
 - Branch creation is skipped — the batch branch is already set up
-- Quality passes (refactor + review-doc) run normally within the batch
+- Quality passes (refactor + tidy-docs) run normally within the batch
 - The final review summary is logged to `PROJECT_PROGRESS.md` instead of waiting for user input
 - Andon cord triggers cascade up to the project orchestrator
 
@@ -236,10 +236,10 @@ Six sequential quality passes, each running its full workflow:
 | **7a. `/refactor`**    | MAXIMUM aggression, smoke test QA instructions, entire codebase                   | Tactical code cleanup                                                                                    |
 | **7b. `/review-arch`** | Entire codebase                                                                   | Advisory analysis. Produces ticket-structure proposal; orchestrator approves / edits / declines per autonomy.md. Approved tickets surface in final report; declined items handled inline. |
 | **7c. `/review-test`** | Full test suite survey                                                            | Advisory analysis (advisory since v9.0.0). Produces ticket-structure proposal; orchestrator approves / edits / declines per autonomy.md. Approved tickets surface in final report; declined items handled inline. |
-| **7d. `/review-doc`**  | Full documentation audit                                                          |                                                                                                          |
+| **7d. `/tidy-docs`**  | Full documentation audit                                                          |                                                                                                          |
 | **7e. `/review-release`** | Autonomous mode (orchestrator triages findings)                                | Pre-release readiness check                                                                              |
 
-Each pass runs its complete workflow including any embedded sub-passes (e.g., `/refactor` runs its own `/review-doc`). This redundancy is intentional — each agent sees the project with fresh context.
+Each pass runs its complete workflow including any embedded sub-passes (e.g., `/refactor` runs its own `/tidy-docs`). This redundancy is intentional — each agent sees the project with fresh context.
 
 The orchestrator may skip passes for trivial projects. If skipped, the reason is noted in the final report.
 
@@ -338,7 +338,7 @@ Status: Quality Pipeline - Arch Review
 - [x] Refactor: 3 commits, -47 lines
 - [ ] Arch Review (advisory)
 - [ ] Test Review
-- [ ] Doc Review
+- [ ] Tidy-Docs
 - [ ] Release Review
 
 ## Issues Log
@@ -401,7 +401,7 @@ Running /implement-batch (autonomous mode)...
   [#18] Implemented metrics — Prometheus endpoint
   [#15] Fixed cache — added RWMutex protection
   /refactor: 1 DRY improvement (-12 lines)
-  /review-doc: README updated
+  /tidy-docs: README updated
 Merging feat/batch-core-features → feat/project-v2-release
 Post-merge verification: all tests pass
 
@@ -411,7 +411,7 @@ Running /implement-batch (autonomous mode)...
   [#22] Implemented dashboard — React components
   [#25] Implemented responsive layout — CSS grid
   /refactor: no changes needed
-  /review-doc: 1 update
+  /tidy-docs: 1 update
 Merging feat/batch-ui-overhaul → feat/project-v2-release
 Post-merge verification: all tests pass
 
@@ -432,7 +432,7 @@ All smoke tests pass
   pipeline), approved 2 tickets for follow-up:
   - #250: Integration test starter strategy (Mode A; recommends /scope)
   - #251: Phase 5 quality cleanup batch (3 brittle test rewrites)
-/review-doc: 3 documentation updates
+/tidy-docs: 3 documentation updates
 /review-release: 2 findings resolved (debug printf removed, version bumped)
 
 ## Project Complete
@@ -453,7 +453,7 @@ All smoke tests pass
 - Refactor: 5 commits, net -89 lines
 - Arch Review: advisory report — 3 recommendations surfaced below
 - Test Review: 8 tests added, 2 gaps filled
-- Doc Review: 3 updates
+- Tidy-Docs: 3 updates
 - Release Review: 2 findings resolved
 
 ### Deferred Items / Architectural Recommendations
@@ -520,7 +520,7 @@ Awaiting your guidance.
 Skipping /review-arch: project scope is trivial (2 small bug fixes,
   no architectural impact). Noted in final report.
 /review-test (advisory): no actionable findings; report stands alone
-/review-doc: no changes needed
+/tidy-docs: no changes needed
 /review-release: no findings
 ```
 
@@ -535,7 +535,7 @@ Skipping /review-arch: project scope is trivial (2 small bug fixes,
 | `/refactor`        | Runs as project-level quality pass (MAXIMUM aggression) and within each batch (SAFE aggression).    |
 | `/review-arch`     | Runs as project-level quality pass; orchestrator approves / edits / declines its ticket proposal.   |
 | `/review-test`     | Runs as project-level quality pass; orchestrator approves / edits / declines its ticket proposal.   |
-| `/review-doc`      | Runs as project-level quality pass and within each batch and within `/refactor` and `/review-arch`. |
+| `/tidy-docs`      | Runs as project-level quality pass and within each batch and within `/refactor` and `/review-arch`. |
 | `/review-release`  | Runs as the final quality pass before reporting.                                                    |
 | `/think-deliberate`      | Available throughout for difficult autonomous decisions.                                            |
 | `/bug-fix`          | Available for complex bugs found during smoke testing or quality passes.                            |
@@ -547,11 +547,11 @@ Skipping /review-arch: project scope is trivial (2 small bug fixes,
     ├── /implement-batch (per batch)
     │   ├── /implement (per ticket)
     │   ├── /refactor (per-batch quality)
-    │   └── /review-doc (per-batch quality)
+    │   └── /tidy-docs (per-batch quality)
     ├── /refactor (project-level quality)
     ├── /review-arch (project-level quality, advisory; ticket proposal)
     ├── /review-test (project-level quality)
-    ├── /review-doc (project-level quality)
+    ├── /tidy-docs (project-level quality)
     └── /review-release (project-level quality)
 ```
 

@@ -49,7 +49,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
  │  2. PHASE 1 — /refactor                      │
  │  ────────────────────────────────────────    │
  │  Tactical cleanup (autonomous).              │
- │  /review-doc pass inside /refactor is        │
+ │  /tidy-docs pass inside /refactor is        │
  │  suppressed; deferred to step 4.             │
  └──────────────────┬───────────────────────────┘
                     ▼
@@ -67,7 +67,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  4. UPDATE DOCUMENTATION (/review-doc)       │
+ │  4. UPDATE DOCUMENTATION (/tidy-docs)       │
  │  ────────────────────────────────────────    │
  │  Catches any stale docs from Phase 1's       │
  │  tactical changes.                           │
@@ -103,7 +103,7 @@ After this step, the only further user interaction is the ticket-review pause in
 
 ### 2. Phase 1 — Tactical Refactoring
 
-Runs `/refactor` with the scope, aggression, and QA instructions from step 1. The `/refactor` skill's built-in `/review-doc` pass is suppressed; documentation is updated once at the end of `/refactor-deep`.
+Runs `/refactor` with the scope, aggression, and QA instructions from step 1. The `/refactor` skill's built-in `/tidy-docs` pass is suppressed; documentation is updated once at the end of `/refactor-deep`.
 
 ### 3. Phase 2 — Architectural Review (Advisory)
 
@@ -117,7 +117,7 @@ The operator participates in `/review-arch`'s plan-iteration phase (step 4 of `/
 
 ### 4. Update Documentation
 
-Runs `/review-doc` once. Phase 1's tactical changes may have renamed functions or moved code; documentation is updated to reflect the current state.
+Runs `/tidy-docs` once. Phase 1's tactical changes may have renamed functions or moved code; documentation is updated to reflect the current state.
 
 ### 5. Completion Summary
 
@@ -156,7 +156,7 @@ The skill is largely autonomous. **Ticket review in Phase 2 is a planned interac
 `/refactor-deep` is a thin orchestrator. It delegates to:
 - `/refactor` for Phase 1
 - `/review-arch` for Phase 2
-- `/review-doc` for the documentation pass
+- `/tidy-docs` for the documentation pass
 
 State maintained between phases is light — phase outcomes are captured for the consolidated summary; otherwise each sub-skill is self-contained.
 

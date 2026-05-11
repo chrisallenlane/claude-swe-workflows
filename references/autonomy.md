@@ -242,7 +242,7 @@ The altitude rule (lever 1) says "implementation-detail forks get the skill's be
  | Refactor reviewer suggests deleting a helper; another invocation argues to keep       | Apply default policy (refactor wins if no caller references and no test fails). | "Removed `unusedHelper`; refactor-reviewer flagged unused; no callers found."                  |
  | Test review surfaces a coverage gap on a non-critical helper, severity low            | Defer to final report. Do not block termination.                                | "Deferred: low-coverage helper `pkg/util/format`; rationale: non-critical, no recent changes." |
  | Two SMEs return functionally equivalent implementations                               | Pick one (the simpler diff).                                                    | "Chose SME A's implementation; SME B's was equivalent but had two more lines."                 |
- | Review-doc says wording is unclear; reviewer didn't propose a rewrite                 | Improve wording with judgment; commit if improvement is clear.                  | "Rewrote intro paragraph; review-doc flagged ambiguity in two sentences."                      |
+ | `/tidy-docs` flags wording as unclear; the agent didn't propose a rewrite             | Improve wording with judgment; commit if improvement is clear.                  | "Rewrote intro paragraph; `/tidy-docs` flagged ambiguity in two sentences."                    |
  | Severity classification of a finding is borderline (medium vs low)                    | Use the lower severity if either is defensible.                                 | "Classified `<finding>` as low; review-arch borderline medium."                                |
 
 The log entry is the contract: the operator can grep the state doc post-run to see what the skill decided unilaterally and why. If the operator disagrees, they can revert the specific commit or revisit the decision. The cost of a log entry is much less than the cost of an interruption.
@@ -256,7 +256,6 @@ Status as of this document:
  | Skill              | Status                                                                  |
  | ------------------ | ----------------------------------------------------------------------- |
  | `/review-arch`     | Advisory as of v8.0.0. First concrete step.                             |
- | `/review-doc`      | Still implements (fixes docs via `doc-maintainer` agent). Future scope. |
  | `/review-test`     | Advisory as of v9.0.0.                                                  |
  | `/review-a11y`     | Already advisory.                                                       |
  | `/review-health`   | Already advisory.                                                       |
@@ -265,6 +264,8 @@ Status as of this document:
  | `/review-release`  | Effectively advisory (presents findings for operator review).           |
 
 The path forward: when a `/review-*` skill becomes advisory, its findings should name specific implementation skills with scope hints so the operator (or a calling orchestrator) can chain the right next step. Example: "Dead code in `src/foo/`: run `/refactor` scoped to that directory."
+
+Skills whose find→fix seam is small enough to keep find-and-fix fused live in the `/tidy-*` namespace instead (e.g., `/tidy-docs`, `/tidy-git`). Those skills are not advisory by design — they default to acting on safe categories. The principled distinction: `/review-*` = produces a report, no mutations; `/tidy-*` = mechanical mutations with operator approval for borderline-safe categories; `/implement-*` = substantive mutations driven by tickets.
 
 ## What this discipline does NOT do
 
