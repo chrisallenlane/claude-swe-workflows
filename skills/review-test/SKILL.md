@@ -511,28 +511,9 @@ The contract change versus pre-v9.0.0 is that test work surfaced by `/review-tes
 
 ## Integration with Other Skills
 
-**Relationship to `/test-mutation`:**
-- Complementary. `/review-test` builds breadth (surfaces gap and quality tickets); `/test-mutation` builds depth (verifies that existing tests actually catch bugs).
-- Recommended sequence for test improvement: `/review-test` → work the cut tickets via `/implement` or `/implement-project` → `/test-mutation` to strengthen.
+**`/review-test` vs `/test-mutation`:** Complementary. `/review-test` builds breadth (surfaces gap and quality tickets); `/test-mutation` builds depth (verifies that existing tests actually catch bugs). Recommended sequence: `/review-test` → work the cut tickets via `/implement` or `/implement-project` → `/test-mutation` to strengthen.
 
-**Relationship to `/implement`:**
-- `/implement` includes QA as part of feature development. `/review-test` is a standalone audit.
-- After `/review-test` cuts tickets, the operator (or an orchestrator) feeds them to `/implement` or `/implement-project` for remediation.
-
-**Relationship to `/refactor`:**
-- Run `/review-test` before refactoring to ensure the test suite is strong enough to catch regressions — but note that gaps surfaced this way will land as tickets, not as immediately-filled tests. If immediate strengthening is needed, work the cut tickets via `/implement` before invoking `/refactor`.
-
-**Relationship to `/review-a11y`:**
-- Phase 3 explicitly defers accessibility to `/review-a11y`. They are complementary.
-
-**Relationship to `/review-perf`:**
-- Phase 3 explicitly defers web performance to `/review-perf` / `swe-web-perf-reviewer`.
-
-**Relationship to `/review-arch`:**
-- `/review-arch` is advisory (architectural analysis). Phase 2 of `/review-test` does its own lightweight survey for integration seams independently of `/review-arch`.
-
-**Relationship to `/review-deep`:**
-- `/review-deep` runs `/review-test` as one phase of a full pre-release sweep. Tickets cut during `/review-deep`'s `/review-test` phase remain durable artifacts after the deep sweep completes.
+**`/review-test` before `/refactor`:** Run `/review-test` first to ensure the test suite is strong enough to catch regressions before refactoring. Note that gaps surfaced this way land as tickets, not as immediately-filled tests — work the cut tickets via `/implement` before invoking `/refactor` if immediate strengthening is needed.
 
 ## Example Session
 

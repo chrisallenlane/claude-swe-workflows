@@ -190,26 +190,9 @@ Capture each ticket's URL or number for the completion summary.
 
 ## Integration with Other Skills
 
-**Relationship to `/refactor`:**
-- `/refactor` is a tactical workflow for code quality improvements within existing architecture (DRY, dead code, naming, complexity).
-- `/review-arch` is the strategic analysis that questions and proposes restructuring of architecture itself (noun analysis, module boundaries, blueprints).
-- Use `/refactor` for routine cleanup; use `/review-arch` when the module structure itself needs rethinking. After `/review-arch`'s tickets are cut, `/refactor` and `/implement` carry them out.
+**`/review-arch` vs `/refactor`:** `/refactor` is tactical cleanup within existing architecture. `/review-arch` is strategic — it questions the architecture and proposes restructuring. Use `/refactor` for routine cleanup; use `/review-arch` when the module structure itself needs rethinking. After `/review-arch`'s tickets are cut, `/refactor` and `/implement` carry them out.
 
-**Relationship to `/refactor-deep`:**
-- `/refactor-deep` Phase 2 invokes `/review-arch` so it can offer ticket creation as part of the deep cycle.
-- See `/refactor-deep`'s SKILL.md for the full sequence.
-
-**Relationship to `/implement-project`:**
-- `/implement-project` step 7b invokes `/review-arch` as part of the quality pipeline. The orchestrator receives the ticket-structure proposal and applies its own autonomy judgment — typically declining items it intends to implement inline and approving items it wants tracked for follow-up.
-- Tickets cut by `/review-arch` surface in `/implement-project`'s final report under "Deferred Items / Architectural Recommendations." Items the orchestrator implements inline surface under a separate "Architectural Recommendations Acted On" section.
-
-**Relationship to `/scope`:**
-- `/scope` creates individual tickets through exploratory dialogue.
-- `/review-arch` cuts a batch of tickets from a blueprint in one go.
-- Use `/scope` for one ticket at a time when you know what you want; use `/review-arch` to *discover* what tickets are needed.
-
-**Relationship to `swe-arch-reviewer` agent:**
-- The agent is the analytical core. It is unchanged by this skill's advisory shift — it produces the same output; the skill just routes that output differently.
+**`/review-arch` vs `/scope`:** `/scope` creates individual tickets through exploratory dialogue when you already know what you want. `/review-arch` *discovers* what tickets are needed by analyzing the codebase as a whole and cuts a coherent batch from one blueprint.
 
 ## Example Session
 

@@ -245,14 +245,4 @@ When `/review-test` is invoked by an orchestrator (`/lead-project`, `/review-dee
 
 ## Integration with Other Skills
 
-| Skill            | Relationship                                                                              |
-|------------------|-------------------------------------------------------------------------------------------|
-| `/test-mutation` | Complementary. `/review-test` builds breadth (surfaces tickets); `/test-mutation` builds depth. |
-| `/implement`     | Pick up tickets cut by `/review-test`. `/implement` includes QA as part of feature development. |
-| `/implement-project` | Batch tickets cut by `/review-test` and work them together.                            |
-| `/refactor`      | Run `/review-test` before refactoring to surface gaps as tickets; work those before refactoring if needed. |
-| `/review-a11y`   | Phase 3 explicitly defers accessibility to `/review-a11y`. Complementary.                  |
-| `/review-perf`   | Phase 3 explicitly defers web performance to `/review-perf` / `swe-web-perf-reviewer`.    |
-| `/review-arch`   | `/review-arch` is advisory (architectural analysis); Phase 2 of `/review-test` does its own lightweight survey for integration seams. |
-
-Recommended sequence for test improvement: `/review-test` first (surface ticket-shaped work) → `/implement` or `/implement-project` (remediate) → `/test-mutation` (strengthen).
+Recommended sequence for test improvement: `/review-test` first (surface ticket-shaped work) → `/implement` or `/implement-project` (remediate) → `/test-mutation` (strengthen). Run `/review-test` before `/refactor` to ensure the test suite is strong enough to catch regressions before restructuring.

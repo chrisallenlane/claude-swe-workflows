@@ -487,7 +487,6 @@ The security loop caught the threat-model gap, the session-storage ambiguity, an
 | `/lead-project`     | May invoke `/scope` to draft new tickets when gaps emerge mid-run. `/scope-project` is typically run by the user before `/lead-project` to establish the initial backlog. |
 | `/implement-batch`       | Can also consume `/scope-project`'s tagged tickets if only one batch needs implementation.                                                         |
 | `/implement`        | Can implement individual tickets from `/scope-project` if full `/implement-project` orchestration isn't needed.                                    |
-| `/think-deliberate` | Available within `/scope-project` for difficult design decisions during planning.                                                                   |
 
 **The full pipeline:**
 ```

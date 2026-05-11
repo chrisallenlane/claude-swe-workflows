@@ -307,25 +307,11 @@ Ask: "Would you like to commit the reproducing tests? They document known bugs a
 
 ## Integration with Other Skills
 
-**Relationship to `/review-security`:**
-- `/review-security` is security-focused — blue team + red team methodology
-- `/bug-hunt` targets correctness bugs — logic errors, edge cases, missing error handling
-- Both can find overlapping issues, but with different lenses. `/review-security` asks "can an attacker exploit this?" while `/bug-hunt` asks "will this fail for a normal user?"
-- Run both for comprehensive pre-release assurance
+**`/bug-hunt` vs `/review-security`:** Different lenses on overlapping territory. `/review-security` asks "can an attacker exploit this?" `/bug-hunt` asks "will this fail for a normal user?" Run both for comprehensive pre-release assurance.
 
-**Relationship to `/bug-fix`:**
-- `/bug-fix` is reactive — fixes a known, reported bug
-- `/bug-hunt` is proactive — finds bugs before they're reported
-- Bug hunt findings can feed into `/bug-fix` for thorough remediation of complex issues
+**`/bug-hunt` vs `/bug-fix`:** `/bug-hunt` is proactive — it finds bugs before they're reported. `/bug-fix` is reactive — it fixes a known, reported bug. Bug-hunt findings can feed into `/bug-fix` for thorough remediation of complex issues.
 
-**Relationship to `/review-test`:**
-- `/review-test` focuses on test quality — coverage gaps, brittle tests, missing fuzz tests
-- `/bug-hunt` uses coverage data as one input signal but focuses on finding actual bugs, not improving test quality
-- The coverage improvements from `/bug-hunt` are a side effect, not the primary goal
-
-**Relationship to `/refactor`:**
-- Systemic patterns identified by `/bug-hunt` (e.g., "inconsistent error handling across 15 modules") may warrant a follow-up `/refactor`
-- `/bug-hunt` identifies the pattern; `/refactor` fixes it systematically
+**`/bug-hunt` → `/refactor`:** Systemic patterns identified by `/bug-hunt` (e.g., "inconsistent error handling across 15 modules") may warrant a follow-up `/refactor` to fix the pattern systematically.
 
 ## Example Session
 

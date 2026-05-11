@@ -189,15 +189,6 @@ Present a consolidated summary across both phases:
 - `/review-arch` — advisory architectural analysis (offers to cut tickets)
 - `/review-doc` — documentation audit and updates
 
-**Relationship to `/lead-project`:**
-- `/lead-project` may invoke `/refactor-deep` during a cleanup phase of its OODA loop. The Phase 2 ticket-review touchpoint may pause the loop briefly; `/lead-project` cascades any blocker via the cascade rule documented in [`references/autonomy.md`](../../references/autonomy.md).
+**`/refactor-deep` vs the parts:** Use `/refactor` alone for quick tactical cleanup; use `/review-arch` alone for an architectural read-out; use `/refactor-deep` when you want both — tactical pass first, then architectural analysis with ticket review.
 
-**Relationship to `/implement-project`:**
-- `/implement-project`'s quality pipeline also invokes `/refactor` and `/review-arch` (steps 7a and 7b). The orchestrator receives `/review-arch`'s ticket-structure proposal and applies its own judgment per `references/autonomy.md` — typically approving items it wants tracked for follow-up and declining items it intends to implement inline.
-- `/refactor-deep` invokes `/review-arch` directly; the operator converts architectural recommendations into tickets via the same offer.
-- Use `/refactor-deep` when you want comprehensive cleanup with the option to capture architectural follow-ups as tickets; use `/implement-project` when you want a once-through pipeline against a known ticket batch.
-
-**Relationship to individual skills:**
-- Use `/refactor` alone for quick tactical cleanup.
-- Use `/review-arch` alone for an architectural read-out (with optional ticket creation).
-- Use `/refactor-deep` to combine the two — tactical pass first, then architectural analysis with ticket review.
+**`/refactor-deep` vs `/implement-project`:** Both run `/refactor` and `/review-arch` as part of their pipelines. Use `/refactor-deep` when you want comprehensive cleanup with the option to capture architectural follow-ups as tickets; use `/implement-project` when you have a known ticket batch and want a once-through pipeline.

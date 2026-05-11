@@ -95,15 +95,7 @@ Tickets created by `/scope` are comprehensive and include:
 
 `/scope` plans a single ticket. For multi-ticket project planning with adversarial review, use [`/scope-project`](../scope-project/references/README.md) instead.
 
-- **Use /scope first** when you need to think through a complex change
-- **Ticket gets created** with all the exploration and decisions documented
-- **Use /implement later** to actually implement the ticket (or assign to someone else)
-- **Use /scope-project** when the work spans multiple tickets organized into batches
-- **Use /refactor** for autonomous cleanup of existing code (technical debt, code quality)
-- **Use /review-test** to survey the test suite and surface gaps as tickets (coverage gaps, fuzz tests, quality audit; advisory only)
-- **Use /test-mutation** to verify tests actually catch bugs (mutation testing)
-
-You can also use `/implement` directly for straightforward changes that don't need extensive exploration, or `/refactor` and `/test-mutation` independently when the codebase needs tidying. `/review-test` is advisory — invoke it to surface ticket-shaped work, then feed those tickets to `/implement` or `/implement-project`.
+A `/scope` ticket is meant to feed `/implement` (or `/implement-project` for a batch). For straightforward changes that don't need extensive exploration, skip `/scope` and invoke `/implement` directly — `/scope`'s value is in the exploration, not the ticket-creation mechanics.
 
 ## Tips
 

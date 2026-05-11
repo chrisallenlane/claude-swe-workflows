@@ -173,13 +173,3 @@ Unresolved survivors: 3 (see summary above)
 
 6. **Re-test after refactoring.** Refactoring can weaken tests (they still pass but catch fewer mutations). Run `/test-mutation` on refactored modules to verify.
 
-## Integration with Other Skills
-
-`/test-mutation`, `/review-test`, `/implement`, and `/refactor` are complementary:
-
-- **Use /review-test** to surface coverage gaps and audit test quality (as tickets)
-- **Use /implement** (or /implement-project) to work the tickets `/review-test` cut
-- **Use /test-mutation** to find tests that run code without verifying behavior
-- **Use /refactor** for code cleanup, then `/test-mutation` to verify tests weren't weakened
-
-Recommended sequence for test improvement: `/review-test` first (surface ticket-shaped work) → `/implement` or `/implement-project` (remediate) → `/test-mutation` (strengthen).

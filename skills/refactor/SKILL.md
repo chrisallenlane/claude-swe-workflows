@@ -302,20 +302,9 @@ This spawns a doc-maintainer agent that audits all project documentation and fix
 
 ## Integration with Other Skills
 
-**Relationship to `/review-arch`:**
-- `/refactor` is a tactical workflow for code quality improvements within existing architecture
-- `/review-arch` is a strategic workflow that questions architecture and proposes restructuring (noun analysis, module boundaries, blueprints — advisory only; offers to cut tickets)
-- Use `/refactor` for routine cleanup; use `/review-arch` when the module structure itself needs rethinking
+**`/refactor` vs `/review-arch`:** `/refactor` is tactical cleanup within existing architecture (DRY, dead code, naming, complexity). `/review-arch` is strategic — it questions the architecture and proposes restructuring (advisory; offers to cut tickets). Use `/refactor` for routine cleanup; use `/review-arch` when the module structure itself needs rethinking.
 
-**Relationship to `/implement`:**
-- `/implement` is a feature development workflow that optionally invokes `swe-code-reviewer` for code review after implementation
-- `/refactor` is a dedicated refactoring workflow that uses `swe-code-reviewer` as its core scanner in an autonomous loop
-- Same agent, different workflows: one-shot review vs. iterative improvement
-
-**Relationship to `/scope`:**
-- `/scope` explores and creates tickets
-- `/refactor` implements improvements autonomously
-- Could use `/scope` first to plan a large refactoring, then `/refactor` to execute
+**`/scope` → `/refactor`:** For a large refactoring effort, use `/scope` first to plan the work, then `/refactor` to execute autonomously.
 
 ## Example Session
 

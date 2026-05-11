@@ -478,22 +478,9 @@ The contract change versus pre-v8.0.0 is that work surfaced by `/review-security
 
 ## Integration with Other Skills
 
-**Relationship to `/bug-fix`:**
-- `/bug-fix` invokes `sec-blue-teamer` for scoped security review of changed code
-- `/review-security` is a dedicated, full-depth security audit
-- Use `/review-security` proactively; `/bug-fix` handles security reactively
+**`/review-security` vs `/bug-fix`:** `/review-security` is proactive — a full-depth audit run before major releases or after significant feature additions. `/bug-fix` is reactive — it invokes `sec-blue-teamer` for scoped review of changed code as part of fixing a specific bug.
 
-**Relationship to `/implement`:**
-- `/implement` may invoke `sec-blue-teamer` as part of its review phase
-- `/review-security` is independent and deeper — run it when security assurance matters, not as part of routine development
-
-**Relationship to `/review-release`:**
-- `/review-release` includes basic security checks (secrets, debug artifacts)
-- `/review-security` is a comprehensive pre-release security audit — run it before major releases or after significant feature additions
-
-**Relationship to `/review-deep`:**
-- `/review-deep` runs `/review-security` as one phase of a full pre-release sweep across every `/review-*` dimension
-- Use `/review-deep` when you want the full sweep; use `/review-security` alone when security assurance is the specific goal
+**`/review-security` vs `/review-release`:** `/review-release` includes basic security checks (secrets, debug artifacts) as part of its pre-release sweep. `/review-security` is the dedicated audit — run it when security assurance is the goal, not as part of routine release prep.
 
 ## Example Session
 

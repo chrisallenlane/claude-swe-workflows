@@ -24,8 +24,7 @@ The plugin is moving `/review-*` skills toward advisory-only over time; `/review
 - Generating a coherent batch of refactoring tickets for `/implement-batch` to work through
 
 **Don't use `/review-arch` for:**
-- Routine code cleanup (use `/refactor` instead)
-- Quick DRY fixes or dead code removal (use `/refactor`)
+- Routine code cleanup or DRY fixes (use `/refactor` instead)
 - Active development where module structure is still in flux
 
 **Rule of thumb:** Use `/review-arch` when the module structure itself needs rethinking — the output is a plan (or a set of tickets), not a set of commits.
