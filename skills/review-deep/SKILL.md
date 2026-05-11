@@ -119,7 +119,7 @@ Present a single report that aggregates the results of every enabled phase. The 
 | Phase            | Status        | Key Outcome                                     |
 |------------------|---------------|-------------------------------------------------|
 | /review-health   | Complete      | Classified as OSS library; 2 Major findings    |
-| /review-arch     | Complete      | 3 blueprint items implemented, 2 deferred       |
+| /review-arch     | Complete      | 5 blueprint recommendations; 3 tickets cut      |
 | /review-security | Complete      | 1 high-severity finding; 4 advisory             |
 | /review-perf     | Complete      | No critical bottlenecks; 2 caching suggestions  |
 | /review-a11y     | Skipped       | No web content                                  |
@@ -134,7 +134,7 @@ Present a single report that aggregates the results of every enabled phase. The 
 ### Cross-Cutting Observations
 [Synthesize across phases. Examples:
  - Multiple phases flagged inconsistent error handling → project-level concern
- - Arch review renamed modules; doc review updated doc references to match
+ - Arch review recommended a module split that doc review's stale-link findings also pointed at
  - Security and perf both pointed at the same hot-path function
  If no cross-cutting themes emerged, say so concisely.]
 
@@ -174,7 +174,7 @@ Present a single report that aggregates the results of every enabled phase. The 
 
 **This skill is a composition of:**
 - `/review-health` — first-pass strategic orientation on the repo
-- `/review-arch` — architectural analysis and restructuring
+- `/review-arch` — architectural analysis (advisory; offers ticket cutting)
 - `/review-security` — white-box security audit
 - `/review-perf` — performance review (compute and/or web)
 - `/review-a11y` — WCAG accessibility audit

@@ -304,7 +304,7 @@ This spawns a doc-maintainer agent that audits all project documentation and fix
 
 **Relationship to `/review-arch`:**
 - `/refactor` is a tactical workflow for code quality improvements within existing architecture
-- `/review-arch` is a strategic workflow that questions and restructures the architecture itself (noun analysis, module boundaries, blueprints)
+- `/review-arch` is a strategic workflow that questions architecture and proposes restructuring (noun analysis, module boundaries, blueprints — advisory only; offers to cut tickets)
 - Use `/refactor` for routine cleanup; use `/review-arch` when the module structure itself needs rethinking
 
 **Relationship to `/implement`:**

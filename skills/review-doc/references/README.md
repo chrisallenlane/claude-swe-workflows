@@ -75,7 +75,7 @@ Committed: "docs: review and update project documentation"
 
 ## Tips
 
-1. **Run after `/refactor` or `/review-arch`.** These skills change code structure, which often makes docs stale.
+1. **Run after `/refactor`, or after acting on `/review-arch`'s recommendations.** Code restructuring — tactical or architectural — often makes docs stale.
 
 2. **Run before releases.** Stale docs in a release are embarrassing. A quick `/review-doc` catches drift. For a full pre-release sweep across every review dimension, `/review-deep` runs `/review-doc` as one of its phases.
 

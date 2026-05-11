@@ -462,6 +462,6 @@ For Phases 2 and 3, the orchestrator prompts the user to run the suite manually 
 | `/refactor`      | Run `/review-test` before refactoring to ensure tests are strong enough to catch regressions. |
 | `/review-a11y`   | Phase 3 explicitly defers accessibility to `/review-a11y`. They are complementary.         |
 | `/review-perf`   | Phase 3 explicitly defers web performance to `/review-perf` / `swe-web-perf-reviewer`.    |
-| `/review-arch`   | `/review-arch` is change-oriented; Phase 2 does its own lightweight survey for integration seams. |
+| `/review-arch`   | `/review-arch` is advisory (architectural analysis); Phase 2 does its own lightweight survey for integration seams. |
 
 Recommended sequence for test improvement: `/review-test` first (fill gaps, clean up), then `/test-mutation` (verify tests catch bugs).

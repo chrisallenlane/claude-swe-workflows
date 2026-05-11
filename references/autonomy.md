@@ -255,7 +255,7 @@ Status as of this document:
 
  | Skill              | Status                                                                  |
  | ------------------ | ----------------------------------------------------------------------- |
- | `/review-arch`     | Becoming advisory in `autonomy-3` batch. First concrete step.           |
+ | `/review-arch`     | Advisory as of v8.0.0. First concrete step.                             |
  | `/review-doc`      | Still implements (fixes docs via `doc-maintainer` agent). Future scope. |
  | `/review-test`     | Still implements (fills coverage gaps). Future scope.                   |
  | `/review-a11y`     | Already advisory.                                                       |

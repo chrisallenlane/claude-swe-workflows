@@ -4,7 +4,7 @@
 
 The `/review-arch` skill analyzes codebase architecture and produces a target blueprint via noun analysis. It is **advisory only** — the skill does not make changes to the codebase. When run interactively by an operator, it offers to convert the planned work into tickets in your issue tracker. When invoked by another skill (autonomous mode), it produces a structured report with concrete next-step recommendations.
 
-The plugin is moving `/review-*` skills toward advisory-only over time; `/review-arch` is the first concrete step in that direction. See [`references/autonomy.md`](../../../references/autonomy.md) section 7 for the broader direction.
+The plugin is moving `/review-*` skills toward advisory-only over time; `/review-arch` is the first concrete step in that direction. See the "Advisory aspiration" section of [`references/autonomy.md`](../../../references/autonomy.md) for the broader direction.
 
 **Key benefits:**
 - Blueprint-driven analysis — surfaces a coherent target architecture, not a grab-bag of independent fixes
@@ -201,7 +201,7 @@ The `/review-arch` workflow embodies several principles:
 **Review and implementation are different concerns.**
 - A skill that does both makes both worse.
 - `/review-arch` surfaces opportunities and routes them to implementation skills via tickets.
-- The plugin's broader direction is for `/review-*` skills to move toward advisory-only (see [`references/autonomy.md`](../../../references/autonomy.md) section 7).
+- The plugin's broader direction is for `/review-*` skills to move toward advisory-only (see the "Advisory aspiration" section of [`references/autonomy.md`](../../../references/autonomy.md)).
 
 **Organization first:**
 - Every module should own a clear domain noun.

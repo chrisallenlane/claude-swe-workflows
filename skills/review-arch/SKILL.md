@@ -10,7 +10,7 @@ Analyzes codebase architecture and produces a target blueprint via noun analysis
 
 ## Philosophy
 
-**Review and implementation are different concerns.** A skill that does both makes both worse — implementation pressure compromises the review, and review pressure compromises the implementation. The plugin is moving `/review-*` skills toward advisory-only over time (see [`references/autonomy.md`](../../references/autonomy.md) section 7); `/review-arch` is the first concrete step in that direction.
+**Review and implementation are different concerns.** A skill that does both makes both worse — implementation pressure compromises the review, and review pressure compromises the implementation. The plugin is moving `/review-*` skills toward advisory-only over time (see the "Advisory aspiration" section of [`references/autonomy.md`](../../references/autonomy.md)); `/review-arch` is the first concrete step in that direction.
 
 **Clarity through organization is the goal.** Every module should have a clear identity — a domain noun it owns. Functions should live where a reader expects to find them. DRY and Prune serve this organizational goal, not the other way around.
 

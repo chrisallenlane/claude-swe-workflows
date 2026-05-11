@@ -243,9 +243,9 @@ Each pass runs its complete workflow including any embedded sub-passes (e.g., `/
 
 The orchestrator may skip passes for trivial projects. If skipped, the reason is noted in the final report.
 
-**Arch-review autonomous mode:** Since the autonomy-3 update, `/review-arch` produces a structured report only — no implementation, no ticket creation. The orchestrator captures the report and surfaces its recommendations in the final report under "Deferred Items / Architectural Recommendations." Each recommendation names a specific follow-up skill with scope hint (e.g., "Dead code in `src/foo/`: `/refactor` scoped to that directory"), so the operator can chain the right next step after the project ships.
+**Arch-review autonomous mode:** Since v8.0.0, `/review-arch` produces a structured report only — no implementation, no ticket creation. The orchestrator captures the report and surfaces its recommendations in the final report under "Deferred Items / Architectural Recommendations." Each recommendation names a specific follow-up skill with scope hint (e.g., "Dead code in `src/foo/`: `/refactor` scoped to that directory"), so the operator can chain the right next step after the project ships.
 
-The pre-autonomy-3 conditional second `/refactor` (which ran when `/review-arch` had made substantive changes) is removed. `/review-arch` no longer makes changes; the conditional can never fire.
+The former conditional second `/refactor` (which ran when `/review-arch` had made substantive changes) is removed. `/review-arch` no longer makes changes; the conditional can never fire.
 
 **Release-review autonomous mode:** The orchestrator triages each finding — auto-fixes mechanical issues, runs `/think-deliberate` for ambiguous findings, defers user-judgment items to the final report, and pulls the andon cord only for genuinely blocking issues.
 

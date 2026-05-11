@@ -16,7 +16,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
 
 **The project branch is the single integration point.** All work flows into the project branch. Batches merge into it, quality passes commit to it, and the user makes one decision at the end: merge or don't.
 
-**Quality is layered.** Each quality pass builds on the previous one. Refactoring cleans the code so review-arch can focus on structure. Arch-review surfaces structural recommendations (advisory only — `/review-arch` no longer implements changes; see [`references/autonomy.md`](../../references/autonomy.md) section 7) so review-test can assess coverage of the current form. Doc-review documents what actually shipped. Release-review validates the whole.
+**Quality is layered.** Each quality pass builds on the previous one. Refactoring cleans the code so review-arch can focus on structure. Arch-review surfaces structural recommendations (advisory only — `/review-arch` no longer implements changes; see the "Advisory aspiration" section of [`references/autonomy.md`](../../references/autonomy.md)) so review-test can assess coverage of the current form. Doc-review documents what actually shipped. Release-review validates the whole.
 
 **Fresh eyes catch what familiarity misses.** Each quality pass runs its full workflow, including any embedded sub-passes (e.g., `/refactor` runs its own `/review-doc`). Redundancy is intentional — each agent sees the project with fresh context and may catch issues that prior passes normalized.
 
@@ -47,7 +47,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
 └──────────────────────────────────────────────────────────────┘
 ```
 
-The pre-autonomy-3 conditional second `/refactor` (formerly step 7c, ran when `/review-arch` made substantive changes) is removed. `/review-arch` is now advisory and does not make changes; the conditional can never fire.
+The former conditional second `/refactor` (previously step 7c, which ran when `/review-arch` made substantive changes) is removed. `/review-arch` is now advisory and does not make changes; the conditional can never fire.
 
 ## Available Tools
 
@@ -215,7 +215,7 @@ Run the `/refactor` workflow with:
 
 #### 7b. Arch Review (Autonomous Mode — Advisory)
 
-Run the `/review-arch` workflow in **autonomous mode**. As of the autonomy-3 update, `/review-arch` no longer makes changes — autonomous mode produces an advisory report only, with recommendations naming specific implementation skills and scope hints.
+Run the `/review-arch` workflow in **autonomous mode**. As of v8.0.0, `/review-arch` no longer makes changes — autonomous mode produces an advisory report only, with recommendations naming specific implementation skills and scope hints.
 
 Invocation parameters:
 - **Scope:** Entire codebase

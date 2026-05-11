@@ -4,7 +4,7 @@
 
 `/review-health` is a first-pass strategic-orientation skill for a repository. It produces an evidence-cited map of the repo's state, calibrated to a reference class, designed to inform strategic decisions about how to engage with the project.
 
-Use it when you want to step back and assess a repo *strategically* — not when you want line-by-line defect analysis (`/refactor`), architectural restructuring (`/review-arch`), or a security audit (`/review-security`).
+Use it when you want to step back and assess a repo *strategically* — not when you want line-by-line defect analysis (`/refactor`), architectural analysis (`/review-arch`), or a security audit (`/review-security`).
 
 ## Core Design
 

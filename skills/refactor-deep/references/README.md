@@ -82,7 +82,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
  └──────────────────────────────────────────────┘
 ```
 
-The pre-autonomy-3 third phase (a second `/refactor` after `/review-arch` implemented changes) is removed. `/review-arch` no longer implements changes, so there is nothing for a post-restructuring tactical cleanup to do.
+The former third phase (a second `/refactor` after `/review-arch` implemented changes) is removed. `/review-arch` no longer implements changes, so there is nothing for a post-restructuring tactical cleanup to do.
 
 ## Workflow Details
 
@@ -107,7 +107,7 @@ Runs `/refactor` with the scope, aggression, and QA instructions from step 1. Th
 
 ### 3. Phase 2 — Architectural Review (Advisory)
 
-Runs `/review-arch` in **interactive mode** so it can offer to cut tickets at the end. `/review-arch` no longer implements changes (as of the autonomy-3 update); its job here is to analyze, surface the plan, and route recommended work into the tracker.
+Runs `/review-arch` in **interactive mode** so it can offer to cut tickets at the end. `/review-arch` no longer implements changes (advisory as of v8.0.0); its job here is to analyze, surface the plan, and route recommended work into the tracker.
 
 The operator participates in `/review-arch`'s plan-iteration phase (step 4 of `/review-arch`'s workflow) and the ticket-review phase (step 5). Behavior at the ticket-creation step depends on the operator's preference from step 1d:
 

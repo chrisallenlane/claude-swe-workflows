@@ -10,7 +10,7 @@ Convenience workflow that pairs `/refactor` with `/review-arch`. The tactical pa
 
 ## Philosophy
 
-**Tactical cleanup first, then architectural read-out.** The `/refactor` pass clears noise so `/review-arch` can focus on real structural opportunities. The architectural pass is **advisory** as of `/review-arch`'s autonomy-3 update (see [`references/autonomy.md`](../../references/autonomy.md) section 7) — it surfaces a plan but does not implement. In interactive standalone mode (the default for `/refactor-deep`), `/review-arch` offers to cut tickets so the recommended work is captured for later implementation by `/refactor`, `/implement`, or `/implement-batch`.
+**Tactical cleanup first, then architectural read-out.** The `/refactor` pass clears noise so `/review-arch` can focus on real structural opportunities. The architectural pass is **advisory** as of `/review-arch`'s v8.0.0 transformation (see the "Advisory aspiration" section of [`references/autonomy.md`](../../references/autonomy.md)) — it surfaces a plan but does not implement. In interactive standalone mode (the default for `/refactor-deep`), `/review-arch` offers to cut tickets so the recommended work is captured for later implementation by `/refactor`, `/implement`, or `/implement-batch`.
 
 **Ask once, then execute — with one ticket-review interruption.** All major user decisions are gathered in a single upfront conversation. The workflow then runs Phase 1 autonomously. In Phase 2, if the operator opted in to ticket creation, the skill pauses once for the operator to review and approve the ticket set before any tickets are created in the tracker. Ticket review is the only mid-run user touchpoint; the andon cord remains the only unplanned escalation path.
 
@@ -35,7 +35,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
 └─────────────────────────────────────────────────────┘
 ```
 
-The pre-autonomy-3 third phase (a second `/refactor` after `/review-arch` implemented changes) is removed. `/review-arch` no longer implements changes (see [`references/autonomy.md`](../../references/autonomy.md) section 7), so there is nothing for a post-restructuring tactical cleanup to do. Any work `/review-arch` surfaces is captured as tickets (operator-approved) and picked up by separate skill invocations afterwards.
+The former third phase (a second `/refactor` after `/review-arch` implemented changes) is removed. `/review-arch` no longer implements changes (see the "Advisory aspiration" section of [`references/autonomy.md`](../../references/autonomy.md)), so there is nothing for a post-restructuring tactical cleanup to do. Any work `/review-arch` surfaces is captured as tickets (operator-approved) and picked up by separate skill invocations afterwards.
 
 ## Workflow Details
 
@@ -102,7 +102,7 @@ Run the `/refactor` workflow with:
 
 ### 3. Phase 2: Architectural Review (Advisory)
 
-Run the `/review-arch` workflow in **interactive mode** so it can offer to cut tickets. `/review-arch` no longer implements changes — see the autonomy-3 update.
+Run the `/review-arch` workflow in **interactive mode** so it can offer to cut tickets. `/review-arch` no longer implements changes — it is advisory only as of v8.0.0.
 
 | `/review-arch` Step                     | Behavior in `/refactor-deep` Phase 2                                                                                                                                                                                                                                                       |
 |-----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

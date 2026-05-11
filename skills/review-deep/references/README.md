@@ -86,7 +86,7 @@ A single report aggregating every enabled phase:
 | Phase              | What it does                                                      | Makes changes? |
 |--------------------|-------------------------------------------------------------------|----------------|
 | `/review-health`   | Strategic-orientation review: classification + per-class rubric   | No             |
-| `/review-arch`     | Noun-analysis architectural review; interactive blueprint         | Yes            |
+| `/review-arch`     | Noun-analysis architectural review; advisory; offers to cut tickets | No           |
 | `/review-security` | White-box security audit (blue team + red team + synthesis)       | No             |
 | `/review-perf`     | Compute and/or web performance review                             | No             |
 | `/review-a11y`     | WCAG conformance audit on web content                             | No             |
@@ -100,7 +100,7 @@ Advisory-only phases produce reports you can act on manually or via `/refactor` 
 
 1. **Set aside time.** Eight phases with interactive decision points is a substantial session. `/review-deep` is meant for when you can stay engaged, not when you need to step away.
 
-2. **Take the branch.** Even if the advisory phases make no changes, `/review-arch`, `/review-test`, `/review-doc`, and `/review-release` all can. Accepting the `review-deep/<date>` branch keeps `main`/`master` clean while you work.
+2. **Take the branch.** Even if the advisory phases make no changes, `/review-test`, `/review-doc`, and `/review-release` all can. Accepting the `review-deep/<date>` branch keeps `main`/`master` clean while you work.
 
 3. **Do not fight the skip detection.** If the orchestrator proposes skipping a phase, it is usually right. Override only when you have a specific reason (e.g., you're about to add tests but want to see what `/review-test` would recommend against the current state).
 
