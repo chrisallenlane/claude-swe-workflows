@@ -63,8 +63,8 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
 │   └── /implement (per ticket)
 └── quality pipeline: /refactor, /review-arch, /review-test, /tidy-docs, /review-release
 
-/refactor-deep
-└── /refactor → /review-arch (advisory) → /tidy-docs
+/lead-refactor
+└── /refactor → loop: /review-arch + /implement-batch (until convergence) → /refactor
 
 /lead-bug-hunt
 └── loop: /bug-hunt → /implement-batch (until convergence)
@@ -99,7 +99,7 @@ Supporting workflows available at any level:
 **Quality pipelines:**
 
 - `/test-mutation` — mutation testing
-- `/refactor-deep` — tactical cleanup followed by advisory architectural review (with optional ticket creation)
+- `/lead-refactor` — autonomous comprehensive refactoring (orchestrator-family; Phase 1 tactical `/refactor` → Phase 2 loop of `/review-arch` + `/implement-batch` until convergence below severity floor → Phase 3 final `/refactor`)
 - `/review-deep` — comprehensive pre-release review pipeline
 
 **Utility:**

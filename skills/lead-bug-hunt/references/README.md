@@ -481,7 +481,7 @@ No commits to pkg/legacy. Go 1.22 compatibility preserved.
 
 **Andon cords are not failures.** Hitting a contested finding or a breaking-change requirement is the skill doing its job — surfacing decisions that need operator judgment. The cost of asking is much smaller than the cost of a silently bad fix.
 
-**Pair with `/refactor-deep` separately if you want comprehensive cleanup.** The optional finisher is a tactical `/refactor`, not the architectural-review pair. For deep cleanup, run `/refactor-deep` after `/lead-bug-hunt` completes.
+**Pair with `/lead-refactor` separately if you want comprehensive cleanup.** The optional finisher is a tactical `/refactor`, not the architectural-review loop. For deep cleanup, run `/lead-refactor` after `/lead-bug-hunt` completes.
 
 ## Integration with Other Skills
 
@@ -493,7 +493,7 @@ No commits to pkg/legacy. Go 1.22 compatibility preserved.
 
 **`/lead-project`:** the broader sibling. Use `/lead-project` when bug-hunting is one of several concerns; use `/lead-bug-hunt` when bug elimination is the sole objective. `/lead-project` may invoke `/lead-bug-hunt` from its Decide phase.
 
-**`/refactor`:** the optional finisher. Not `/refactor-deep` — the architectural-review pair adds scope that isn't on this skill's axis.
+**`/refactor`:** the optional finisher. Not `/lead-refactor` — the architectural-review loop adds scope that isn't on this skill's axis.
 
 ## Agent Coordination
 

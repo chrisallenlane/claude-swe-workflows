@@ -508,9 +508,9 @@ Ensure `LEAD_BUG_HUNT_STATE.md` is ignored. Commit the `.gitignore` change on th
 
 `/lead-project` is the open-ended orchestrator — it takes broad commander's intent and decides which skills to invoke. `/lead-bug-hunt` is a fixed-shape loop for one specific outcome. Use `/lead-project` when bug-hunting is one of several concerns; use `/lead-bug-hunt` when bug elimination is the sole objective. `/lead-project` may invoke `/lead-bug-hunt` as a sub-skill when its Decide phase identifies a bug-sweep as the next move.
 
-**Relationship to `/refactor` and `/refactor-deep`:**
+**Relationship to `/refactor` and `/lead-refactor`:**
 
-The optional finisher invokes `/refactor` (not `/refactor-deep`) — bug-fix cleanup does not benefit from `/refactor-deep`'s architectural-review phase. If you want comprehensive cleanup after bug elimination, run `/refactor-deep` separately after `/lead-bug-hunt` completes.
+The optional finisher invokes `/refactor` (not `/lead-refactor`) — bug-fix cleanup does not benefit from `/lead-refactor`'s architectural-review loop. If you want comprehensive cleanup after bug elimination, run `/lead-refactor` separately after `/lead-bug-hunt` completes.
 
 **Relationship to `/review-test`:**
 

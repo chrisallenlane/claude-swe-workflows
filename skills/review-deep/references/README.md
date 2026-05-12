@@ -24,7 +24,7 @@ The `/review-deep` skill runs every `/review-*` skill in the plugin — eight in
 - Targeted single-dimension review — use the individual `/review-*` skill directly
 - Fire-and-forget automation — this skill is interactive; the operator is expected to participate
 - Bug hunting — use `/bug-hunt` or `/bug-fix`
-- Change-oriented refactoring sweeps — use `/refactor-deep`
+- Change-oriented refactoring sweeps — use `/lead-refactor`
 
 **Rule of thumb:** If the goal is "evaluate the state of the codebase across every dimension before shipping", `/review-deep` is the right entry point. If the goal is targeted (fix one thing, review one area), invoke the relevant skill directly.
 
@@ -108,7 +108,7 @@ Advisory-only phases produce reports you can act on manually or via `/refactor` 
 
 5. **Use the cross-cutting observations.** The final report's cross-cutting section is the unique value `/review-deep` adds over running each skill manually. If three phases flag the same concern, that is a project-level signal worth acting on.
 
-6. **Running it back-to-back with `/refactor-deep` is usually redundant.** Both share `/review-arch` and `/tidy-docs`. Pick one based on the goal — `/refactor-deep` for change-oriented cleanup, `/review-deep` for release-readiness evaluation.
+6. **Running it back-to-back with `/lead-refactor` is somewhat redundant on the architectural dimension.** Both invoke `/review-arch`. Pick one based on the goal — `/lead-refactor` for change-oriented cleanup, `/review-deep` for release-readiness evaluation.
 
 ## Integration with Other Skills
 
@@ -123,7 +123,7 @@ Advisory-only phases produce reports you can act on manually or via `/refactor` 
 | `/review-test`     | Phase 6                                                                                                 |
 | `/tidy-docs`      | Phase 7                                                                                                 |
 | `/review-release`  | Phase 8                                                                                                 |
-| `/refactor-deep`   | Sibling workflow — change-oriented cycle (refactor → advisory arch review → doc). Usually one or the other, not both. |
+| `/lead-refactor`   | Sibling workflow — change-oriented autonomous pipeline (Phase 1 tactical /refactor → Phase 2 architectural loop → Phase 3 tactical /refactor). Usually one or the other, not both. |
 | `/implement-project` | Contains its own post-batch quality pipeline. `/review-deep` is the standalone equivalent for use outside a ticket-driven project. |
 
 ## Resource Usage

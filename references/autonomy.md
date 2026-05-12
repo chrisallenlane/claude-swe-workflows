@@ -1,6 +1,6 @@
 # Autonomy — Design Discipline for Orchestrator-Family Skills
 
-This document states the autonomy discipline that governs the orchestrator-family skills in this plugin: `/lead-project`, `/lead-bug-hunt`, `/implement-project`, `/implement-batch`, `/refactor-deep`. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
+This document states the autonomy discipline that governs the orchestrator-family skills in this plugin: `/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/implement-project`, `/implement-batch`. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
 
 It is opinionated, plugin-wide for the orchestrator family, and cited from each applicable skill. New escalation points or handoff formats invented by a single skill should be reconciled against this document; the goal is a coherent operator experience across the family.
 
@@ -153,16 +153,16 @@ Four fields:
 
 Purpose and end state are implicit: purpose is "ship this project's tickets"; end state is the acceptance bar plus the quality pipeline.
 
-### `/refactor-deep`
+### `/lead-refactor`
 
-Six fields (mostly already elicited today; this formalizes them):
+Four fields:
 
-- **Scope** — entire codebase or user-specified subset.
-- **Aggression ceiling** — for the tactical `/refactor` phase.
-- **QA instructions** — special verification steps beyond the standard test suite.
-- **Ticket-creation preference** — whether `/review-arch` should offer to cut tickets at Phase 2.
-- **Constraints** — paths or patterns not to touch.
-- **Non-goals** — refactoring categories explicitly out of scope.
+- **Scope** — entire codebase or user-specified subset, with exclusions (e.g., generated code, vendored code). Same shape as `/refactor`'s scope.
+- **Severity floor** — the lowest `/review-arch` severity that gates Phase 2 convergence (CRITICAL only / HIGH+ / MEDIUM+ / All). Defaults to HIGH+. Too low and Phase 2 won't converge within the 5-iteration cap; too high and the run ships with HIGH-severity architectural findings deferred.
+- **Constraints** — hard limits beyond the always-on guardrails (no breaking changes, no main/master writes). Examples: don't modify a specific module's public API, must remain compatible with a particular language version.
+- **Refactor aggression** — aggression ceiling for both `/refactor` passes in Phases 1 and 3 (conservative / moderate / aggressive). Defaults to moderate.
+
+Purpose, key tasks, end state, and non-goals are implicit: purpose is "comprehensive refactoring above the floor"; key task is Phase-2 convergence; end state is Phase 3 completion with tests passing; non-goals are anything outside the bounded sub-skill repertoire (`/refactor`, `/review-arch`, `/implement-batch`, `/implement`). The skill drops these fields because the three-phase shape is fixed and the implicit values are stable across runs.
 
 ### `/lead-bug-hunt`
 

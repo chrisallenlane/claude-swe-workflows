@@ -22,7 +22,7 @@ The user states intent once, in structured form, at startup. Every subsequent de
 - **Constraints** — hard limits (what not to touch, what not to use)
 - **Non-goals** — explicit out-of-scope (prevents scope expansion)
 
-This five-field schema is the **canonical implementation** of commander's intent referenced from [`references/autonomy.md`](../../references/autonomy.md). Other orchestrator-family skills (`/implement-project`, `/refactor-deep`) use lighter variants — fewer fields because the work is more bounded — but `/lead-project`'s purpose is the most open-ended, so it elicits the full schema.
+This five-field schema is the **canonical implementation** of commander's intent referenced from [`references/autonomy.md`](../../references/autonomy.md). Other orchestrator-family skills (`/implement-project`, `/lead-refactor`, `/lead-bug-hunt`) use lighter variants — fewer fields because the work is more bounded — but `/lead-project`'s purpose is the most open-ended, so it elicits the full schema.
 
 Without a concrete end state, the loop has no termination condition and will drift into polish. If the user's initial statement is vague, keep asking until intent is crisp — "make it better" is not enough; "all features in backlog.md work end-to-end, `go test ./...` exits 0, and CHANGELOG covers the changes" is. Intent elicitation is the primary human-interaction point; invest the time.
 
@@ -201,7 +201,7 @@ Available actions (non-exhaustive):
 
 - `/scope` — draft new tickets when gaps emerge that serve intent
 - `/implement` or `/implement-batch` or `/implement-project` — execute ticketed work
-- `/refactor` or `/refactor-deep` — code quality cleanup
+- `/refactor` or `/lead-refactor` — code quality cleanup
 - `/review-arch`, `/review-test`, `/tidy-docs`, `/review-release`, `/review-perf`, `/review-a11y`, `/review-security` — targeted reviews
 - `/review-deep` — comprehensive review pass
 - `/bug-hunt` — proactive bug discovery
@@ -627,7 +627,7 @@ Ensure `LEAD_PROJECT_STATE.md` is ignored. Commit the `.gitignore` change on the
 ├── (per cycle, any of:)
 │   ├── /scope
 │   ├── /implement | /implement-batch | /implement-project
-│   ├── /refactor | /refactor-deep
+│   ├── /refactor | /lead-refactor
 │   ├── /review-arch | /review-test | /tidy-docs | /review-release
 │   ├── /review-perf | /review-a11y | /review-security
 │   ├── /review-deep

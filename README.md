@@ -25,6 +25,9 @@ and autonomy.
 └── loop: /bug-hunt → /implement-batch (until convergence below severity floor)
     └── termination: /review-test (on new reproducing tests) + /refactor (optional)
 
+/lead-refactor                                  ← autonomous comprehensive refactoring
+└── /refactor → loop: /review-arch + /implement-batch (until convergence) → /refactor
+
 /implement-project                              ← full project lifecycle
 ├── /implement-batch (per batch)                ← multi-ticket orchestration
 │   ├── /implement (per ticket)         ← single-ticket implementation
@@ -78,7 +81,7 @@ Supporting workflows are available at any level:
 **Quality pipelines:**
 
 - `/test-mutation` — mutation testing
-- `/refactor-deep` — tactical cleanup followed by advisory architectural review (with optional ticket creation)
+- `/lead-refactor` — autonomous comprehensive refactoring (orchestrator-family; Phase 1 tactical `/refactor` → Phase 2 loop of `/review-arch` + `/implement-batch` until convergence below severity floor → Phase 3 final `/refactor`)
 - `/review-deep` — comprehensive pre-release review pipeline
 
 **Utility:**
@@ -102,6 +105,7 @@ your task:
 | Fix a bug with diagnosis and root-cause analysis                        | `/bug-fix`           |
 | Proactively hunt for bugs before they're reported                       | `/bug-hunt`          |
 | Iterate hunt → fix until bugs converge below a severity floor (autonomous) | `/lead-bug-hunt`   |
+| Comprehensively refactor (tactical + architectural + tactical, autonomous) | `/lead-refactor`   |
 | Pressure-test a problem's framing before solving it                     | `/think-reframe`     |
 | Brainstorm approaches to a goal                                         | `/think-brainstorm`  |
 | Reason about why a phenomenon is happening                              | `/think-diagnose`    |
@@ -138,7 +142,7 @@ your task:
 These workflows manage the lifecycle of tickets — from implementation
 through quality passes to a merge-ready branch.
 
-The orchestrator family shares an autonomy discipline — high-altitude escalation, pre-loaded options, pre-rebutted recommendations, commander's intent, and risk budgets. See [references/autonomy.md](references/autonomy.md) for the discipline that governs `/lead-project`, `/lead-bug-hunt`, `/implement-project`, `/implement-batch`, and `/refactor-deep`.
+The orchestrator family shares an autonomy discipline — high-altitude escalation, pre-loaded options, pre-rebutted recommendations, commander's intent, and risk budgets. See [references/autonomy.md](references/autonomy.md) for the discipline that governs `/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/implement-project`, and `/implement-batch`.
 
 #### /lead-project — Autonomous Technical Lead
 
@@ -178,6 +182,29 @@ objective; use `/lead-project` when bug-hunting is one of several
 concerns.
 
 [Detailed documentation](skills/lead-bug-hunt/references/README.md)
+
+#### /lead-refactor — Autonomous Comprehensive Refactoring
+
+Drives a codebase through tactical cleanup, architectural restructuring,
+and a final tactical cleanup pass — all without operator involvement
+between startup and termination. Takes a four-field commander's intent
+(scope, severity floor, constraints, refactor aggression), then runs a
+three-phase pipeline: Phase 1 invokes `/refactor` (loops internally to
+tactical convergence), Phase 2 loops `/review-arch` + `/implement-batch`
+until architectural findings converge below the severity floor (default
+HIGH+, bounded to 5 iterations), and Phase 3 runs `/refactor` again to
+clean up tactical issues introduced by Phase 2's restructuring.
+Auto-approves `/review-arch`'s ticket proposals per the orchestrator-family
+contract. Pulls an andon cord on contested findings, breaking-change
+requirements, repeated implementation failure, or Phase-2 hard-cap
+exhaustion.
+
+Successor to `/refactor-deep`. The v10 move into the `/lead-*` namespace
+makes the autonomy-axis identity explicit; the redesign adds Phase-2
+convergence and restores the Phase-3 final-refactor pass that was dropped
+when `/review-arch` became advisory in v8.
+
+[Detailed documentation](skills/lead-refactor/references/README.md)
 
 #### /implement-project — Full-Lifecycle Project Workflow
 

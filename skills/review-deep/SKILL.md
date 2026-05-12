@@ -102,7 +102,7 @@ For each enabled phase, in the fixed order listed above:
    ## Phase N complete. Moving on to /review-<next>.
    ```
 
-**Branch safety delegation.** The orchestrator has already performed the branch safety check in step 0. If a sub-skill would otherwise ask the same question, inform it: "Branch safety has been handled by /review-deep." (This applies primarily to `/refactor-deep`-style checks; most `/review-*` skills do not check the branch.)
+**Branch safety delegation.** The orchestrator has already performed the branch safety check in step 0. If a sub-skill would otherwise ask the same question, inform it: "Branch safety has been handled by /review-deep." (This applies primarily to orchestrator-style checks like `/lead-refactor`'s; most `/review-*` skills do not check the branch.)
 
 **Mid-phase user abort.** If the user aborts a sub-skill mid-flight, treat that phase as incomplete. Ask whether to continue to the next phase or end the workflow. Do not retry the aborted sub-skill automatically.
 
@@ -186,6 +186,6 @@ Present a single report that aggregates the results of every enabled phase. The 
 - Use `/review-deep` before a release, or for a comprehensive periodic audit.
 - Use an individual `/review-*` skill for targeted single-dimension review, or when a previous `/review-deep` surfaced a specific area to re-examine.
 
-**Relationship to `/refactor-deep`:**
-- `/refactor-deep` composes: `/refactor` (tactical cleanup), `/review-arch` (advisory architectural analysis, with optional ticket creation), `/tidy-docs`. It is change-oriented.
-- `/review-deep` composes review skills and is evaluation-oriented. It shares `/review-arch` and `/tidy-docs` with `/refactor-deep`; running both back-to-back in the same session is usually redundant. Prefer `/review-deep` when release readiness is the goal.
+**Relationship to `/lead-refactor`:**
+- `/lead-refactor` composes: `/refactor` (tactical, Phase 1) → loop of `/review-arch` + `/implement-batch` (Phase 2, until convergence) → `/refactor` (tactical, Phase 3). It is change-oriented and autonomous.
+- `/review-deep` composes review skills and is evaluation-oriented. It shares `/review-arch` with `/lead-refactor`; running both back-to-back in the same session is somewhat redundant on that dimension. Prefer `/review-deep` when release-readiness evaluation is the goal; prefer `/lead-refactor` when comprehensive structural cleanup is the goal.

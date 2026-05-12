@@ -22,7 +22,7 @@ This skill is the highest-level implementation of the **autonomy discipline** do
 - Multi-phase work where the next step depends on the outcome of the last (implement → review → refactor → re-review → …)
 - Projects where you know the desired end state but don't want to orchestrate the path
 - Bringing a feature branch to release-readiness while you focus on product decisions and QA
-- Any time you'd otherwise run `/scope` → `/implement-project` → `/refactor-deep` → `/review-deep` by hand
+- Any time you'd otherwise run `/scope` → `/implement-project` → `/lead-refactor` → `/review-deep` by hand
 
 **Don't use `/lead-project` for:**
 - A single ticket (use `/implement` or `/bug-fix`)
@@ -131,7 +131,7 @@ This skill is the highest-level implementation of the **autonomy discipline** do
 
 Borrowed from military doctrine: the commander states **why** (purpose) and **what success looks like** (end state), not the detailed how. Subordinates have autonomy to adapt to circumstances as long as they preserve intent. In `/lead-project` the user is the commander; the skill is the subordinate.
 
-This five-field schema is the **canonical implementation** of commander's intent referenced from [`references/autonomy.md`](../../../references/autonomy.md). Other orchestrator-family skills (`/implement-project`, `/refactor-deep`) use lighter variants tailored to bounded work; `/lead-project`'s purpose is the most open-ended, so it elicits the full schema.
+This five-field schema is the **canonical implementation** of commander's intent referenced from [`references/autonomy.md`](../../../references/autonomy.md). Other orchestrator-family skills (`/implement-project`, `/lead-refactor`, `/lead-bug-hunt`) use lighter variants tailored to bounded work; `/lead-project`'s purpose is the most open-ended, so it elicits the full schema.
 
 Intent has five fields:
 
@@ -287,7 +287,7 @@ The skill may invoke any of the following during the Decide phase:
 | `/implement-batch`              | Batch of related tickets                                                             |
 | `/implement-project`            | Multi-batch ticket project                                                           |
 | `/refactor`                     | Tactical code cleanup                                                                |
-| `/refactor-deep`                | Tactical + architectural + tactical cleanup cycle                                    |
+| `/lead-refactor`                | Tactical + architectural + tactical cleanup cycle (orchestrator-family)              |
 | `/review-arch`                  | Architectural review                                                                 |
 | `/review-test`                  | Test suite survey; advisory; produces ticket-structure proposal                      |
 | `/tidy-docs`                   | Documentation audit                                                                  |
@@ -550,7 +550,7 @@ Awaiting your guidance.
 | `/implement-project` | Invoked by `/lead-project` when a coherent batch of tickets is ready                                      |
 | `/implement-batch`   | Invoked by `/lead-project` for smaller batches                                                            |
 | `/implement`         | Invoked by `/lead-project` for individual tickets                                                         |
-| `/refactor`, `/refactor-deep`           | Invoked by `/lead-project` during cleanup phases                                    |
+| `/refactor`, `/lead-refactor`           | Invoked by `/lead-project` during cleanup phases                                    |
 | `/review-*`          | Invoked by `/lead-project` for targeted reviews; pre-termination re-run uses `/review-test` and `/review-release` at minimum |
 | `/review-deep`       | May be invoked near the end of a run as a comprehensive validation                                        |
 | `/bug-hunt`, `/bug-fix` | Invoked when bugs are suspected or known                                                              |
@@ -567,7 +567,7 @@ Awaiting your guidance.
 ├── (per cycle, any of:)
 │   ├── /scope
 │   ├── /implement | /implement-batch | /implement-project
-│   ├── /refactor | /refactor-deep
+│   ├── /refactor | /lead-refactor
 │   ├── /review-arch | /review-test | /tidy-docs | /review-release
 │   │   /review-perf | /review-a11y | /review-security | /review-deep
 │   ├── /bug-hunt | /bug-fix

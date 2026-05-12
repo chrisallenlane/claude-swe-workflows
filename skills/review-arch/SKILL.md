@@ -16,7 +16,7 @@ Analyzes codebase architecture and produces a target blueprint via noun analysis
 
 **Recommend boldly.** The analysis agent surfaces every opportunity it finds, even uncertain ones — the operator can always reject a recommendation when reviewing the plan. The skill's job is to *see*, not to *act*.
 
-**Single workflow for everyone.** The skill's workflow is identical whether a human operator or an orchestrator (`/refactor-deep`, `/implement-project`, `/lead-project`) is at the receiving end. After the analysis, the skill presents a proposed ticket structure for the recommended work; the operator (human or orchestrator) approves, edits, or declines. Orchestrators apply their own autonomy judgment per [`references/autonomy.md`](../../references/autonomy.md) — declining items they intend to implement inline, approving items they want tracked for later.
+**Single workflow for everyone.** The skill's workflow is identical whether a human operator or an orchestrator (`/lead-refactor`, `/implement-project`, `/lead-project`) is at the receiving end. After the analysis, the skill presents a proposed ticket structure for the recommended work; the operator (human or orchestrator) approves, edits, or declines. Orchestrators apply their own autonomy judgment per [`references/autonomy.md`](../../references/autonomy.md) — declining items they intend to implement inline, approving items they want tracked for later.
 
 ## Workflow Overview
 

@@ -146,7 +146,7 @@ See SKILL.md for the exact template.
 
 3. **Pay attention to the "Recommended implementation skill" hint in each ticket.** It names the right next move (`/refactor` for mechanical changes; `/scope` then `/implement` for new modules; `/implement-batch` for cohesive groups).
 
-4. **Orchestrators apply their own judgment to the offer.** When invoked from `/implement-project` or `/refactor-deep`, the orchestrator typically declines items it intends to implement inline and approves items it wants tracked for follow-up. Both responses are valid.
+4. **Orchestrators apply their own judgment to the offer.** When invoked from `/implement-project` or `/lead-refactor`, the orchestrator typically declines items it intends to implement inline and approves items it wants tracked for follow-up. Both responses are valid. (Note: `/lead-refactor`'s Phase 2 specifically auto-approves the proposed tickets per its commander's intent — it does not decline-and-implement-inline.)
 
 5. **Consider running `/refactor` first.** Cleaning up dead code and DRY violations with `/refactor` reduces noise in the architectural analysis. The analysis agent can then focus on structural opportunities rather than rediscovering tactical ones.
 
