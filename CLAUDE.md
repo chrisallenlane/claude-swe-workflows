@@ -66,6 +66,10 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
 /refactor-deep
 └── /refactor → /review-arch (advisory) → /tidy-docs
 
+/lead-bug-hunt
+└── loop: /bug-hunt → /implement-batch (until convergence)
+    └── termination: /review-test (new tests) → /refactor (optional)
+
 /review-deep
 └── /review-health → /review-arch → /review-security → /review-perf
   → /review-a11y → /review-test → /tidy-docs → /review-release
@@ -90,6 +94,7 @@ Supporting workflows available at any level:
 
 - `/bug-fix` — diagnosis-first bug fixing
 - `/bug-hunt` — proactive bug discovery
+- `/lead-bug-hunt` — autonomous bug-elimination loop (orchestrator-family; iterates `/bug-hunt` → `/implement-batch` until convergence below a severity floor; always runs `/review-test` on new reproducing tests at termination)
 
 **Quality pipelines:**
 

@@ -1,6 +1,6 @@
 # Autonomy — Design Discipline for Orchestrator-Family Skills
 
-This document states the autonomy discipline that governs the orchestrator-family skills in this plugin: `/lead-project`, `/implement-project`, `/implement-batch`, `/refactor-deep`. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
+This document states the autonomy discipline that governs the orchestrator-family skills in this plugin: `/lead-project`, `/lead-bug-hunt`, `/implement-project`, `/implement-batch`, `/refactor-deep`. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
 
 It is opinionated, plugin-wide for the orchestrator family, and cited from each applicable skill. New escalation points or handoff formats invented by a single skill should be reconciled against this document; the goal is a coherent operator experience across the family.
 
@@ -163,6 +163,17 @@ Six fields (mostly already elicited today; this formalizes them):
 - **Ticket-creation preference** — whether `/review-arch` should offer to cut tickets at Phase 2.
 - **Constraints** — paths or patterns not to touch.
 - **Non-goals** — refactoring categories explicitly out of scope.
+
+### `/lead-bug-hunt`
+
+Four fields:
+
+- **Scope** — entire codebase or user-specified subset, with exclusions (e.g., generated code, vendored code). Same shape as `/bug-hunt`'s scope.
+- **Severity floor** — the lowest severity that gates termination (Critical only / Critical+High / Critical+High+Medium / All). Defaults to Critical+High. This is the dominant judgment call this skill exposes: too low and the loop never converges; too high and the run ships with known bugs.
+- **Constraints** — hard limits beyond the always-on guardrails (no breaking changes, no main/master writes). Examples: don't modify a specific module's public API, must remain compatible with a particular language version.
+- **Refactor finisher** — aggression ceiling for an optional post-convergence `/refactor` pass (no finisher / conservative / moderate / aggressive). Defaults to "no finisher."
+
+Purpose, key tasks, end state, and non-goals are implicit: purpose is "eliminate bugs above the floor"; key task is convergence; end state is two consecutive `/bug-hunt` passes producing no findings above the floor; non-goals are anything outside the bounded sub-skill repertoire (other `/review-*` skills, `/scope-project`, etc.). The skill drops these fields because the work is fixed-shape and the implicit values are stable across runs.
 
 ### `/implement-batch`
 

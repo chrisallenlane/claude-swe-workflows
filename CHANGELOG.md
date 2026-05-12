@@ -1,5 +1,27 @@
 # Changelog
 
+## v9.1.0
+
+### New Skills
+
+- **`/lead-bug-hunt` — Autonomous bug-elimination loop.** A new orchestrator-family skill that drives a codebase toward "no bugs above a stated severity floor" without operator involvement between startup and termination. The operator states scope, severity floor, constraints, and optional refactor-finisher aggression at startup; the skill then loops `/bug-hunt` → triage → `/implement-batch` until two consecutive hunt passes produce no findings above the floor, or until a hard cap (10 hunt-cycles) or andon cord halts the run. Auto-approves `/bug-hunt`'s ticket proposals (a contract shift authorized by commander's intent); reproducing tests committed by `/bug-hunt` serve as durable acceptance criteria. At termination, always runs `/review-test` scoped to the run's new reproducing tests — those tests become permanent regression artifacts and their quality is treated as core, not adjacent — and optionally runs `/refactor` as a finisher to clean up defensive code introduced by fixes.
+
+  The skill is a narrower sibling of `/lead-project`. Where `/lead-project` takes open-ended commander's intent and decides which skills to invoke from a broad repertoire, `/lead-bug-hunt` has a fixed loop shape and a bounded sub-skill repertoire (`/bug-hunt`, `/implement-batch`, `/implement`, `/bug-fix`, `/think-diagnose`, `/refactor`, `/review-test`). Other `/review-*` skills, `/scope-project`, `/test-mutation`, `/tidy-docs`, and `/tidy-git` are explicitly out-of-axis — use `/lead-project` when bug-hunting is one of several concerns. The skill exists because "iterate `/bug-hunt` → fix tickets → re-hunt" was a recurring manual workflow worth canonizing.
+
+  The four-field commander's intent omits `/lead-project`'s purpose, key tasks, end state, and non-goals because the work is fixed-shape: purpose is "eliminate bugs above the floor"; key task is convergence; end state is two consecutive empty passes; non-goals fall out of the bounded sub-skill list. The dominant judgment call the operator makes at startup is the severity floor — too low (e.g., "All severities") and the loop never converges because `/bug-hunt` finds Low-severity opportunities indefinitely; too high (e.g., "Critical only") and the run ships with known High-severity bugs deferred. Default is Critical+High.
+
+  Triage is mechanical, not judgment-based, to forestall rationalization: findings at or above the floor enter the fix-list; findings below the floor go to deferred; findings the skill genuinely believes are wrong on substance pull the andon cord rather than getting silently dismissed. The "no escape hatches" discipline carries through — the skill cannot bargain findings down to make convergence easier.
+
+  The optional `/refactor` finisher is opt-in (default off) because cleanup is adjacent to bug elimination; the `/review-test` step at termination is always-on (no opt-out) because the reproducing tests are this skill's unique durable output and treating their quality as adjacent would be inconsistent with the framing. No re-hunt runs after the finisher or test-review steps — that would risk an infinite loop (re-hunt → find → fix → re-review → re-hunt …). The test suite catches any regressions introduced by termination-phase changes.
+
+  Andon-cord triggers extend `/lead-project`'s set with bug-specific shapes: contested findings (skill disagrees with `/bug-hunt` on substance), breaking-change requirements (per the autonomy-doc guardrail), regression introduced by a batch fix, stale reproducing test (test does not fail on current HEAD when triaged), hunt-with-high-uncertainty (assessment surfaced hotspots but hunters could not confirm findings), hard cap, sub-skill cord cascade, and resume-time HEAD divergence. State lives in `LEAD_BUG_HUNT_STATE.md` at the repo root (gitignored), with a findings ledger (fixed / deferred / contested / breaking-change-required), per-cycle log, and andon-cord history for resume across sessions.
+
+### Infrastructure
+
+- **`references/autonomy.md` — `/lead-bug-hunt` added to the orchestrator-family roster.** The opening paragraph's enumeration of skills governed by the autonomy discipline now includes `/lead-bug-hunt`. A new schema subsection under "Commander's-intent schemas per skill" documents the four-field schema (Scope, Severity floor, Constraints, Refactor finisher) and notes which canonical fields the skill drops and why (purpose, key tasks, end state, non-goals are implicit because the work is fixed-shape and the implicit values are stable across runs). This keeps the autonomy doc's stated invariant intact: every orchestrator-family skill that elicits its own schema has a corresponding entry.
+
+- **README, `CLAUDE.md`, and workflow listings updated** to surface `/lead-bug-hunt` in the layered workflow diagrams, the "Choosing a Workflow" decision table, the Skills→Orchestration section, and the Bug-work supporting-workflows list.
+
 ## v9.0.0
 
 ### New Skills

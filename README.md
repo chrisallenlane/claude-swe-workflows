@@ -21,6 +21,10 @@ and autonomy.
 /lead-project                                   ← autonomous tech lead (OODA loop)
 └── invokes any skill below, driven by commander's intent
 
+/lead-bug-hunt                                  ← autonomous bug-elimination loop
+└── loop: /bug-hunt → /implement-batch (until convergence below severity floor)
+    └── termination: /review-test (on new reproducing tests) + /refactor (optional)
+
 /implement-project                              ← full project lifecycle
 ├── /implement-batch (per batch)                ← multi-ticket orchestration
 │   ├── /implement (per ticket)         ← single-ticket implementation
@@ -97,6 +101,7 @@ your task:
 | Plan a single feature and create a ticket                               | `/scope`             |
 | Fix a bug with diagnosis and root-cause analysis                        | `/bug-fix`           |
 | Proactively hunt for bugs before they're reported                       | `/bug-hunt`          |
+| Iterate hunt → fix until bugs converge below a severity floor (autonomous) | `/lead-bug-hunt`   |
 | Pressure-test a problem's framing before solving it                     | `/think-reframe`     |
 | Brainstorm approaches to a goal                                         | `/think-brainstorm`  |
 | Reason about why a phenomenon is happening                              | `/think-diagnose`    |
@@ -133,7 +138,7 @@ your task:
 These workflows manage the lifecycle of tickets — from implementation
 through quality passes to a merge-ready branch.
 
-The orchestrator family shares an autonomy discipline — high-altitude escalation, pre-loaded options, pre-rebutted recommendations, commander's intent, and risk budgets. See [references/autonomy.md](references/autonomy.md) for the discipline that governs `/lead-project`, `/implement-project`, `/implement-batch`, and `/refactor-deep`.
+The orchestrator family shares an autonomy discipline — high-altitude escalation, pre-loaded options, pre-rebutted recommendations, commander's intent, and risk budgets. See [references/autonomy.md](references/autonomy.md) for the discipline that governs `/lead-project`, `/lead-bug-hunt`, `/implement-project`, `/implement-batch`, and `/refactor-deep`.
 
 #### /lead-project — Autonomous Technical Lead
 
@@ -151,6 +156,28 @@ periodic trajectory audits (every 10 cycles) and a capped run (50 cycles)
 to prevent drift or thrash.
 
 [Detailed documentation](skills/lead-project/references/README.md)
+
+#### /lead-bug-hunt — Autonomous Bug Elimination
+
+Drives a codebase toward "no bugs above a stated severity floor" without
+operator involvement between startup and termination. Takes a four-field
+commander's intent (scope, severity floor, constraints, optional refactor
+finisher), then loops `/bug-hunt` → triage → `/implement-batch` until two
+consecutive hunt passes produce no findings above the floor. Auto-approves
+`/bug-hunt`'s ticket proposals and reproducing tests serve as durable
+acceptance criteria. At termination, always runs `/review-test` scoped to
+the run's new reproducing tests (their quality matters more than typical
+test code because they become permanent regression artifacts), then an
+optional `/refactor` finisher. Pulls an andon cord on contested findings,
+breaking-change requirements, repeated implementation failure, or hard-cap
+exhaustion (10 hunt-cycles).
+
+Narrower than `/lead-project`: fixed loop shape, bounded sub-skill
+repertoire. Use `/lead-bug-hunt` when bug elimination is the sole
+objective; use `/lead-project` when bug-hunting is one of several
+concerns.
+
+[Detailed documentation](skills/lead-bug-hunt/references/README.md)
 
 #### /implement-project — Full-Lifecycle Project Workflow
 
