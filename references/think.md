@@ -119,6 +119,6 @@ Adjacent: the **rationalist / LessWrong** tradition (Yudkowsky, Alexander, et al
 
 ## Evolution
 
-This document changes with the namespace, but deliberately. A change to THINK.md is a meaningful event. `/think-*` skills that no longer pass the five tests are candidates for revision or removal — being already shipped does not exempt them.
+This document changes with the namespace, but deliberately. A change to `references/think.md` is a meaningful event. `/think-*` skills that no longer pass the five tests are candidates for revision or removal — being already shipped does not exempt them.
 
 When a proposed `/think-*` skill seems valuable but cannot meet the five tests, the right response is usually to reformulate it until it can — or to recognize that it belongs as a phase inside an existing skill, in another skill family, or not in the plugin at all.

@@ -104,6 +104,28 @@ Today `/implement-batch` already intercepts `/implement` escalations — when `/
 
 The deepest skill never goes around its caller. The caller has more context about the project than the worker does. Worker escalations are *cause* (something went wrong); caller escalations are *effect* (we couldn't fix it from this altitude).
 
+## Auto-approval of sub-skill ticket proposals
+
+Advisory sub-skills (`/bug-hunt`, `/review-arch`, `/review-security`, `/review-test`, `/review-health`) produce ticket *proposals* that require operator approval in their native contract. Under an orchestrator-family skill, those approvals are answered automatically by the orchestrator rather than escalated to the operator.
+
+This is a deliberate contract shift consistent with the autonomy discipline:
+
+- **Commander's intent authorizes the work.** The operator's startup choices (scope, severity floor, ticket-creation toggle in `/lead-review`'s case) are the standing answer to whatever approval prompts the sub-skills would have asked.
+- **Sub-skill prompts are answered by the orchestrator** per the cascade rule — the operator is not in the loop between cycles or phases.
+- **The completion report lists every ticket action** (created, declined, modified) so the operator can audit the contract shift after the run.
+
+How each orchestrator-family skill handles the contract shift:
+
+| Skill                | Behavior                                                                                                                                                                |
+|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/lead-project`      | Auto-approves with Decide-phase judgment. Severity-threshold handling lives in the loop's Decide phase, not at the approval moment.                                     |
+| `/lead-bug-hunt`     | Auto-approves all `/bug-hunt` and `/review-test` proposals. The commander's-intent severity floor is applied at the triage step, not at the approval moment.            |
+| `/lead-refactor`     | Auto-approves all `/review-arch` proposals. The commander's-intent severity floor is applied at the Phase-2 triage step (2b), not at the approval moment.               |
+| `/lead-review`       | Mode-dependent. Tickets ON → auto-approve at/above the severity floor, decline below. Tickets OFF → auto-decline uniformly. Mode is fixed at startup.                   |
+| `/implement-project` | Auto-approves proposals from quality-pipeline review sub-skills; severity handling is governed by the project acceptance bar rather than a separate floor.              |
+
+Sub-skills surface contested findings and breaking-change requirements as andon-cord triggers rather than auto-approval candidates. The contract shift covers ordinary approval prompts; substantive disagreement still routes through the operator.
+
 ## No unilateral breaking changes
 
 > Breaking changes must be explicitly authorized by the operator.
@@ -255,6 +277,17 @@ that, if true, would change the recommendation.]
 ```
 
 Skills may add fields below "Current state" that are specific to their workflow (e.g., `/lead-project` includes cycle-log pointer; `/implement-project` includes batch progress). They should not add fields *between* "Pre-loaded options" and "Recommendation" — that ordering is load-bearing.
+
+## Per-skill handoff extensions
+
+Each orchestrator-family skill extends the shared template in two predictable ways:
+
+1. **Title** — `## Andon Cord — /<skill> — <phase identifier>` where the phase identifier varies per skill (cycle number for `/lead-project` and `/lead-bug-hunt`; phase name for `/lead-refactor` and `/lead-review`; batch identifier for `/implement-batch` and `/implement-project`). The phase identifier is load-bearing — the same skill may pull the cord at different points and the operator needs to know which one.
+2. **Current-state additions** — skill-specific fields appended after the shared baseline (typically convergence counters, findings-ledger summaries, a state-doc pointer). Skills should not add fields *between* "Pre-loaded options" and "Recommendation" — that ordering is load-bearing.
+
+After pulling the cord, the skill stops. It does not attempt additional cycles or phases. It waits for operator input.
+
+The opening framing in each `/lead-*` skill's "Andon Cord Protocol" section is uniform: *the andon cord is the only planned escalation path; pull sparingly but decisively; use the shared handoff template, with the skill-specific extensions below.* Skills should not re-litigate the autonomy discipline at this point — it has already been established by the citation back to this document at the top of the skill.
 
 ## What to log instead of escalate
 

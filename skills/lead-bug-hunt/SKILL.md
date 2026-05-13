@@ -32,9 +32,9 @@ This skill therefore treats test review as part of its core contract, not as adj
 
 No escape hatches: the skill cannot rationalize bugs away to make the loop converge.
 
-### Auto-approval of ticket proposals is a contract shift
+### Auto-approval is delegated to the autonomy discipline
 
-`/bug-hunt` and `/review-test` are advisory — they produce ticket *proposals* that require operator approval in their native contract. When invoked under `/lead-bug-hunt`, those approvals are granted automatically (the operator has already authorized the broader loop via commander's intent). This is consistent with the autonomy discipline: commander's intent authorizes the work, sub-skill prompts are answered by the orchestrator. The completion report lists every ticket created so the operator can audit.
+`/bug-hunt` and `/review-test` are advisory; their ticket proposals are auto-approved under `/lead-bug-hunt` per the orchestrator-family contract documented in [`references/autonomy.md`](../../references/autonomy.md) § "Auto-approval of sub-skill ticket proposals". The commander's-intent severity floor (field 2) is applied at the triage step (1b), not at the approval moment. The completion report lists every ticket created.
 
 ### Broad authority, narrow gates
 
@@ -75,53 +75,12 @@ The skill may NOT without explicit authorization: push or merge to main/master, 
 
 ### 0. Startup
 
-#### 0a. Branch and working-tree check
+Follow the shared startup protocol in [`references/lead-startup.md`](../../references/lead-startup.md). Skill-specific values:
 
-- Identify the main branch (`main` or `master`).
-- If on `main`/`master`: create `lead-bug-hunt/<date>` (e.g., `lead-bug-hunt/2026-05-12`) from current HEAD and check it out. Confirm the branch name with the user before creating.
-- Check working tree status:
-  - Clean → proceed.
-  - Dirty → **ask the user** how to handle uncommitted work: commit as-is, stash, discard, or abort. Do not guess.
-
-#### 0b. Resume existing run or start fresh
-
-Check for `LEAD_BUG_HUNT_STATE.md` at the repo root:
-
-- **If absent:** proceed to intent elicitation.
-- **If present:** read it. Verify the recorded branch still exists, is currently checked out, and the current HEAD matches `Last cycle HEAD` from the state doc.
-  - **HEAD matches and branch is current** — summarize current cycle, pinned intent, and last action to the user. Offer three options:
-    1. **Resume** as-is (re-run a hunt before forming the next batch).
-    2. **Resume with updated intent** — re-elicit, preserving the cycle log.
-    3. **Start fresh** — archive the existing state doc to `LEAD_BUG_HUNT_STATE.<timestamp>.md` and re-elicit intent.
-  - **HEAD has moved or branch has changed** — do NOT auto-resume. Pull the andon cord with a handoff explaining the divergence and let the operator decide.
-
-#### 0c. Elicit commander's intent (interactive)
-
-Walk the user through four fields, one at a time. Do not accept a single free-form paragraph — the structure is load-bearing.
-
-1. **Scope** — "What is the scope of the hunt? Entire codebase, specific modules, or specific areas of concern? Are there directories or files to explicitly exclude (e.g., generated code, vendored code)?"
-
-2. **Severity floor** — "What is the lowest severity that gates termination? **Critical+High** is the default. Setting this lower (Medium, Low) makes the loop run longer and may not converge — `/bug-hunt` typically finds low-severity opportunities indefinitely. Setting it higher (Critical only) means the run ships with known High-severity bugs deferred."
-
-3. **Constraints** — "Hard limits the skill must not violate. Examples: don't touch module X, don't change the public API of package Y, must remain compatible with library version Z. Breaking changes always escalate; this is for additional constraints."
-
-4. **Refactor finisher** — "After bugs converge below the floor, should the skill run a final `/refactor` pass to clean up any defensive code introduced during fixes? Options: **no finisher** (default), **conservative**, **moderate**, **aggressive**. The finisher's scope matches the bug-hunt scope (field 1)."
-
-**Push back on vague answers.** "Find all the bugs" is not a scope — ask which modules, which areas. "Whatever severity" is not a floor — push for Critical+High at minimum, or ask why broader makes sense. Several rounds of dialogue is normal; do not rush past this step.
-
-Read back the complete intent and ask for confirmation before proceeding.
-
-#### 0d. Seed `LEAD_BUG_HUNT_STATE.md`
-
-Create the state document at the repo root with:
-
-- Pinned intent (all four fields, verbatim)
-- Branch name and base branch
-- Creation timestamp
-- Empty cycle log
-- Empty findings ledger
-
-**Add `LEAD_BUG_HUNT_STATE.md` to `.gitignore`** if not already present. Commit the `.gitignore` change separately.
+- **0a. Branch and working-tree check** — branch-name pattern: `lead-bug-hunt/<date>` (e.g., `lead-bug-hunt/2026-05-12`).
+- **0b. Resume existing run or start fresh** — state-doc filename: `LEAD_BUG_HUNT_STATE.md`. "Resume as-is" semantic: re-run a hunt before forming the next batch.
+- **0c. Elicit commander's intent** — four fields per the schema in [`references/autonomy.md`](../../references/autonomy.md) § "Commander's-intent schemas per skill / `/lead-bug-hunt`". Push-back examples specific to this skill: "Find all the bugs" is not a scope — ask which modules; "Whatever severity" is not a floor — push for Critical+High at minimum, or ask why broader makes sense.
+- **0d. Seed `LEAD_BUG_HUNT_STATE.md`** — include the four pinned intent fields, an empty cycle log, and an empty findings ledger. Gitignore the state doc per the protocol.
 
 ### 1. Hunt Cycle
 
@@ -376,7 +335,13 @@ The skill does NOT:
 
 ## Andon Cord Protocol
 
-The andon cord is the only planned escalation path. Pull sparingly but decisively. Use the **shared handoff template** from `references/autonomy.md` § "Shared handoff template," with the skill-specific extensions below.
+Follow the shared handoff template and per-skill extension protocol in [`references/autonomy.md`](../../references/autonomy.md) § "Shared handoff template" and § "Per-skill handoff extensions". Skill-specific values:
+
+- **Title format** — `## Andon Cord — /lead-bug-hunt — Cycle N`
+- **Current-state additions:**
+  - `Empty-pass counter: <N>`
+  - `Findings ledger: <K fixed, M deferred, L contested>`
+  - `State doc pointer: see LEAD_BUG_HUNT_STATE.md cycles N-2 through N`
 
 ### Andon cord triggers
 
@@ -393,18 +358,6 @@ Pull the cord when:
 - **Hunt produces no actionable findings but has high uncertainty.** `/bug-hunt`'s assessment surfaced high-risk hotspots but hunters could not produce confirmed findings. The skill should not declare convergence in this case; operator should decide whether to deepen the hunt or accept the uncertainty.
 - **Hard cap hit.** 10 hunt-cycles elapsed without convergence. Something is likely structurally wrong (severity floor set too low, codebase has a class of recurring bug the hunters keep finding, etc.).
 - **Resume-time HEAD divergence.** On resume, recorded branch SHA does not match current HEAD.
-
-### Handoff format
-
-Use the shared template from `references/autonomy.md`. Skill-specific extensions:
-
-- **Title** — `## Andon Cord — /lead-bug-hunt — Cycle N`
-- **Current state** must additionally include:
-  - `Empty-pass counter: <N>`
-  - `Findings ledger: <K fixed, M deferred, L contested>`
-  - `State doc pointer: see LEAD_BUG_HUNT_STATE.md cycles N-2 through N`
-
-After pulling the cord: stop. Do not attempt additional cycles. Wait for operator input.
 
 ## State Management
 

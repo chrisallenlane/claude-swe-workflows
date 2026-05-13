@@ -11,127 +11,92 @@ claude plugin marketplace add https://github.com/chrisallenlane/claude-swe-workf
 claude plugin install claude-swe-workflows@claude-swe-workflows
 ```
 
-## How It Works
+## Layered Composition
 
-These workflows form a layered system where higher-level workflows
-orchestrate lower-level ones. Each layer adds coordination, quality gates,
-and autonomy.
-
-```
-/lead-project                                   ← autonomous tech lead (OODA loop)
-└── invokes any skill below, driven by commander's intent
-
-/lead-bug-hunt                                  ← autonomous bug-elimination loop
-└── loop: /bug-hunt → /implement-batch (until convergence below severity floor)
-    └── termination: /review-test (on new reproducing tests) + /refactor (optional)
-
-/lead-refactor                                  ← autonomous comprehensive refactoring
-└── /refactor → loop: /review-arch + /implement-batch (until convergence) → /refactor
-
-/lead-review                                    ← autonomous comprehensive review
-└── /review-health → /review-arch → /review-security → /review-perf
-    → /review-a11y → /review-test → /review-release
-    (tickets ON/OFF chosen at startup)
-
-/implement-project                              ← full project lifecycle
-├── /implement-batch (per batch)                ← multi-ticket orchestration
-│   ├── /implement (per ticket)         ← single-ticket implementation
-│   │   ├── SME implementation        ← language-specific specialist
-│   │   ├── QA verification           ← practical + coverage
-│   │   ├── Code review               ← security, refactor, perf
-│   │   └── Documentation             ← targeted doc updates
-│   ├── /refactor                     ← per-batch cleanup
-│   └── /tidy-docs                   ← per-batch doc tidy
-├── /refactor (MAXIMUM aggression)    ← project-level cleanup
-├── /review-arch (advisory)           ← architectural analysis; surfaces recommendations
-├── /review-test (advisory)           ← test suite survey; surfaces ticket-shaped work
-├── /tidy-docs                        ← documentation tidy
-└── /review-release                   ← pre-release readiness
-```
-
-Planning feeds implementation. `/scope-project` plans a multi-batch
-project with adversarial review, producing tagged tickets that `/implement-project`
-consumes directly:
+The skills are arranged as **layered composition** — higher-level skills invoke
+lower-level ones. Enter at the layer that matches your task. The deepest stack:
 
 ```
-/scope-project  →  /implement-project
-    plan             implement + verify + polish
+/lead-project                              ← autonomous tech lead (decides what to do next)
+└── invokes any skill below
+    /implement-project                     ← full-lifecycle project execution
+    └── /implement-batch                   ← one batch of related tickets
+        └── /implement                     ← one ticket, end-to-end
+            └── SME agents                 ← language-specific specialists
 ```
 
-For single tickets: `/scope` plans, `/implement` implements.
+Three other entry points orchestrate bounded autonomous loops:
 
-For open-ended work where the next step depends on the outcome of the last,
-`/lead-project` runs an OODA loop — observing project state, deciding what
-to work on next, and invoking lower-level skills until commander's intent is
-fulfilled.
+- `/lead-bug-hunt` — loops `/bug-hunt` → `/implement-batch` until bugs converge below a severity floor.
+- `/lead-refactor` — `/refactor` → loops `/review-arch` + `/implement-batch` → `/refactor`.
+- `/lead-review` — runs every `/review-*` sub-skill once.
 
-Supporting workflows are available at any level:
+Planning feeds implementation: `/scope-project` → `/implement-project`, or
+`/scope` → `/implement`. Supporting skills (`/think-*`, `/review-*`, `/bug-*`,
+`/tidy-*`) compose into any of the orchestrators above or run standalone.
 
-**Reasoning and decisions:**
+## Namespaces
 
-- `/think-reframe` — problem redefinition
-- `/think-brainstorm` — divergent idea generation
-- `/think-diagnose` — abductive reasoning about causes
-- `/think-ach` — analysis of competing hypotheses
-- `/think-deliberate` — adversarial decision-making
-- `/think-premortem` — prospective failure imagination
-- `/think-scrutinize` — adversarial idea critique
-- `/think-reflect` — retrospective learning
+Skills are grouped by namespace for discoverability. Each namespace gathers
+skills with a related purpose.
 
-**Bug work:**
+| Namespace      | Purpose                                     | Skills                                                                                                                                                 |
+|----------------|---------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/lead-*`      | Autonomous orchestrators                    | `/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/lead-review`                                                                                    |
+| `/implement-*` | Implement tickets (mutate the working tree) | `/implement`, `/implement-batch`, `/implement-project`                                                                                                 |
+| `/scope-*`     | Plan and produce tickets                    | `/scope`, `/scope-project`                                                                                                                             |
+| `/review-*`    | Advisory audits — no code changes           | `/review-arch`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-health`, `/review-security`, `/review-release`                                |
+| `/think-*`     | Reasoning support — no artifacts            | `/think-reframe`, `/think-brainstorm`, `/think-diagnose`, `/think-ach`, `/think-deliberate`, `/think-premortem`, `/think-scrutinize`, `/think-reflect` |
+| `/tidy-*`      | Mechanical hygiene                          | `/tidy-docs`, `/tidy-git`                                                                                                                              |
+| `/bug-*`       | Find and fix bugs                           | `/bug-fix`, `/bug-hunt`                                                                                                                                |
+| `/test-*`      | Test-quality work                           | `/test-mutation`                                                                                                                                       |
+| (standalone)   | Skills that don't share a namespace         | `/refactor`, `/pre-compact`                                                                                                                            |
 
-- `/bug-fix` — diagnosis-first bug fixing
-- `/bug-hunt` — proactive bug discovery
-
-**Quality pipelines:**
-
-- `/test-mutation` — mutation testing
-- `/lead-refactor` — autonomous comprehensive refactoring (orchestrator-family; Phase 1 tactical `/refactor` → Phase 2 loop of `/review-arch` + `/implement-batch` until convergence below severity floor → Phase 3 final `/refactor`)
-- `/lead-review` — autonomous comprehensive review (orchestrator-family; runs every `/review-*` sub-skill; operator-configurable ticket creation at startup)
-
-**Utility:**
-
-- `/pre-compact` — pre-compaction housekeeping (memory, git, trash, SBAR, resume prompt)
-- `/tidy-git` — mechanical local repo hygiene (prune stale refs, delete merged branches, report stashes/untracked/unpushed)
+The `/lead-*` and `/implement-*` namespaces additionally share an autonomy
+discipline (commander's intent, pre-loaded options, pre-rebutted
+recommendations, risk budgets) — see
+[references/autonomy.md](references/autonomy.md). The `/think-*` namespace
+shares a design discipline (practitioner-sourced countermeasures to specific
+cognitive failure modes) — see [references/think.md](references/think.md).
 
 ## Choosing a Workflow
 
-Not everything needs the full pipeline. Enter at the level that matches
-your task:
+Not everything needs the full pipeline. Enter at the level that matches your
+task:
 
-| You want to...                                                          | Use                  |
-|-------------------------------------------------------------------------|----------------------|
-| Drive a project to completion autonomously, deciding what to work on    | `/lead-project`      |
-| Implement an entire multi-batch project autonomously                    | `/implement-project` |
-| Implement a batch of related tickets                                    | `/implement-batch`   |
-| Implement a single ticket or feature                                    | `/implement`         |
-| Plan a multi-batch project with adversarial review                      | `/scope-project`     |
-| Plan a single feature and create a ticket                               | `/scope`             |
-| Fix a bug with diagnosis and root-cause analysis                        | `/bug-fix`           |
-| Proactively hunt for bugs before they're reported                       | `/bug-hunt`          |
-| Iterate hunt → fix until bugs converge below a severity floor (autonomous) | `/lead-bug-hunt`   |
-| Comprehensively refactor (tactical + architectural + tactical, autonomous) | `/lead-refactor`   |
-| Pressure-test a problem's framing before solving it                     | `/think-reframe`     |
-| Brainstorm approaches to a goal                                         | `/think-brainstorm`  |
-| Reason about why a phenomenon is happening                              | `/think-diagnose`    |
-| Narrow among competing hypotheses against evidence                      | `/think-ach`         |
-| Make a hard decision with adversarial deliberation                      | `/think-deliberate`  |
+| You want to...                                                                              | Use                  |
+|---------------------------------------------------------------------------------------------|----------------------|
+| Drive a project to completion autonomously, deciding what to work on                        | `/lead-project`      |
+| Implement an entire multi-batch project autonomously                                        | `/implement-project` |
+| Implement a batch of related tickets                                                        | `/implement-batch`   |
+| Implement a single ticket or feature                                                        | `/implement`         |
+| Plan a multi-batch project with adversarial review                                          | `/scope-project`     |
+| Plan a single feature and create a ticket                                                   | `/scope`             |
+| Fix a bug with diagnosis and root-cause analysis                                            | `/bug-fix`           |
+| Proactively hunt for bugs before they're reported                                           | `/bug-hunt`          |
+| Iterate hunt → fix until bugs converge below a severity floor (autonomous)                  | `/lead-bug-hunt`     |
+| Comprehensively refactor (tactical + architectural + tactical, autonomous)                  | `/lead-refactor`     |
+| Pressure-test a problem's framing before solving it                                         | `/think-reframe`     |
+| Brainstorm approaches to a goal                                                             | `/think-brainstorm`  |
+| Reason about why a phenomenon is happening                                                  | `/think-diagnose`    |
+| Narrow among competing hypotheses against evidence                                          | `/think-ach`         |
+| Make a hard decision with adversarial deliberation                                          | `/think-deliberate`  |
 | Imagine how a plan could fail, or how a hypothetical catastrophe could hit a running system | `/think-premortem`   |
-| Scrutinize an idea or plan before committing to it                      | `/think-scrutinize`  |
-| Reflect on a completed experience to update beliefs                     | `/think-reflect`     |
-| Clean up code quality (DRY, dead code, naming)                          | `/refactor`          |
-| Rethink module boundaries and architecture                              | `/review-arch`       |
-| Survey the test suite and surface gaps as tickets                       | `/review-test`       |
-| Verify test quality via mutation testing                                | `/test-mutation`     |
-| Tidy all project documentation                                          | `/tidy-docs`         |
-| Pre-release readiness check                                             | `/review-release`    |
-| Audit web content for accessibility barriers                            | `/review-a11y`       |
-| First-pass strategic orientation on a repo                              | `/review-health`     |
-| Review performance (compute and/or web)                                 | `/review-perf`       |
-| Perform a white-box security audit                                      | `/review-security`   |
-| Run every review dimension autonomously (with optional backlog creation) | `/lead-review`       |
-| Tidy up the session before running `/compact`                           | `/pre-compact`       |
-| Clean up local git state (stale refs, merged branches)                  | `/tidy-git`          |
+| Scrutinize an idea or plan before committing to it                                          | `/think-scrutinize`  |
+| Reflect on a completed experience to update beliefs                                         | `/think-reflect`     |
+| Clean up code quality (DRY, dead code, naming)                                              | `/refactor`          |
+| Rethink module boundaries and architecture                                                  | `/review-arch`       |
+| Survey the test suite and surface gaps as tickets                                           | `/review-test`       |
+| Verify test quality via mutation testing                                                    | `/test-mutation`     |
+| Tidy all project documentation                                                              | `/tidy-docs`         |
+| Pre-release readiness check                                                                 | `/review-release`    |
+| Audit web content for accessibility barriers                                                | `/review-a11y`       |
+| First-pass strategic orientation on a repo                                                  | `/review-health`     |
+| Review performance (compute and/or web)                                                     | `/review-perf`       |
+| Perform a white-box security audit                                                          | `/review-security`   |
+| Run every review dimension autonomously (with optional backlog creation)                    | `/lead-review`       |
+| Tidy up the session before running `/compact`                                               | `/pre-compact`       |
+| Clean up local git state (stale refs, merged branches)                                      | `/tidy-git`          |
 
 **Rules of thumb:**
 - Open-ended work where the next step depends on the outcome of the last? `/lead-project`
@@ -142,500 +107,69 @@ your task:
 
 ## Skills
 
-### Orchestration
-
-These workflows manage the lifecycle of tickets — from implementation
-through quality passes to a merge-ready branch.
-
-The orchestrator family shares an autonomy discipline — high-altitude escalation, pre-loaded options, pre-rebutted recommendations, commander's intent, and risk budgets. See [references/autonomy.md](references/autonomy.md) for the discipline that governs `/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/lead-review`, `/implement-project`, and `/implement-batch`.
-
-#### /lead-project — Autonomous Technical Lead
-
-Drives a project from a stated commander's intent to completion with
-minimal user involvement. Takes structured intent from the user at startup
-(purpose, key tasks, end state, constraints, non-goals), then runs an OODA
-loop — observing project state, orienting against intent, deciding what to
-work on next, and acting by invoking other skills (`/scope`, `/implement`,
-`/refactor`, `/review-*`, `/bug-*`, `/think-*`). The user acts as product
-owner; the skill acts as project manager and tech lead.
-
-Stops autonomously when mechanical end-state conditions are met and reviews
-are clean, or pulls an andon cord when it hits a genuine blocker. Includes
-periodic trajectory audits (every 10 cycles) and a capped run (50 cycles)
-to prevent drift or thrash.
-
-[Detailed documentation](skills/lead-project/references/README.md)
-
-#### /lead-bug-hunt — Autonomous Bug Elimination
-
-Drives a codebase toward "no bugs above a stated severity floor" without
-operator involvement between startup and termination. Takes a four-field
-commander's intent (scope, severity floor, constraints, optional refactor
-finisher), then loops `/bug-hunt` → triage → `/implement-batch` until two
-consecutive hunt passes produce no findings above the floor. Auto-approves
-`/bug-hunt`'s ticket proposals and reproducing tests serve as durable
-acceptance criteria. At termination, always runs `/review-test` scoped to
-the run's new reproducing tests (their quality matters more than typical
-test code because they become permanent regression artifacts), then an
-optional `/refactor` finisher. Pulls an andon cord on contested findings,
-breaking-change requirements, repeated implementation failure, or hard-cap
-exhaustion (10 hunt-cycles).
-
-Narrower than `/lead-project`: fixed loop shape, bounded sub-skill
-repertoire. Use `/lead-bug-hunt` when bug elimination is the sole
-objective; use `/lead-project` when bug-hunting is one of several
-concerns.
-
-[Detailed documentation](skills/lead-bug-hunt/references/README.md)
-
-#### /lead-refactor — Autonomous Comprehensive Refactoring
-
-Drives a codebase through tactical cleanup, architectural restructuring,
-and a final tactical cleanup pass — all without operator involvement
-between startup and termination. Takes a four-field commander's intent
-(scope, severity floor, constraints, refactor aggression), then runs a
-three-phase pipeline: Phase 1 invokes `/refactor` (loops internally to
-tactical convergence), Phase 2 loops `/review-arch` + `/implement-batch`
-until architectural findings converge below the severity floor (default
-HIGH+, bounded to 5 iterations), and Phase 3 runs `/refactor` again to
-clean up tactical issues introduced by Phase 2's restructuring.
-Auto-approves `/review-arch`'s ticket proposals per the orchestrator-family
-contract. Pulls an andon cord on contested findings, breaking-change
-requirements, repeated implementation failure, or Phase-2 hard-cap
-exhaustion.
-
-Successor to `/refactor-deep`. The v10 move into the `/lead-*` namespace
-makes the autonomy-axis identity explicit; the redesign adds Phase-2
-convergence and restores the Phase-3 final-refactor pass that was dropped
-when `/review-arch` became advisory in v8.
-
-[Detailed documentation](skills/lead-refactor/references/README.md)
-
-#### /implement-project — Full-Lifecycle Project Workflow
-
-Orchestrates an entire project from tickets to release-ready code. Takes
-batched tickets, implements each batch via `/implement-batch` in autonomous mode,
-runs smoke tests, then executes a comprehensive quality pipeline (refactor,
-review-arch, review-test, tidy-docs, review-release). The result is a
-single project branch ready for human review and merge.
-
-Maximizes autonomy — the andon cord (stop-the-line escalation) is the only
-planned intervention path.
-
-[Detailed documentation](skills/implement-project/SKILL.md)
-
-#### /lead-review — Autonomous Comprehensive Review
+One-line summaries grouped by namespace. Click through to each skill's detailed README.
 
-Runs every `/review-*` sub-skill in sequence (`/review-health`,
-`/review-arch`, `/review-security`, `/review-perf`, `/review-a11y`,
-`/review-test`, `/review-release`) without operator involvement.
-Takes a four-field commander's intent (scope, ticket creation
-yes/no, severity floor, constraints) and serves two modes: **backlog
-generation** auto-approves sub-skill ticket proposals at/above the
-severity floor and writes them to the tracker; **audit report**
-auto-declines all proposals and surfaces findings in the consolidated
-completion report only. Auto-detects sub-skills that do not apply (no
-web content → skip `/review-a11y`; no tests → skip `/review-test`).
-Once-through — termination is structural.
+### `/lead-*` — Autonomous orchestrators
 
-Successor to `/review-deep`. The v10 move into the `/lead-*` namespace
-makes the autonomy-axis identity explicit; the redesign trades
-interactive participation for autonomous execution and adds the
-ticket-creation toggle so the run serves both "produce a backlog"
-and "produce a report" use cases. Operators who want the previous
-interactive walkthrough invoke individual `/review-*` skills directly.
+- **`/lead-project`** — Autonomous tech lead. Runs an OODA loop over project state given a commander's intent, invoking lower-level skills until end-state is met or it pulls an andon cord. ([details](skills/lead-project/references/README.md))
+- **`/lead-bug-hunt`** — Loops `/bug-hunt` → `/implement-batch` until bugs converge below a stated severity floor; runs `/review-test` on the new reproducing tests at termination. ([details](skills/lead-bug-hunt/references/README.md))
+- **`/lead-refactor`** — Three-phase comprehensive refactoring: tactical `/refactor` → loop of `/review-arch` + `/implement-batch` until convergence → final tactical `/refactor`. ([details](skills/lead-refactor/references/README.md))
+- **`/lead-review`** — Runs every `/review-*` sub-skill autonomously with an operator-set toggle for whether sub-skill ticket proposals are written to the tracker. ([details](skills/lead-review/references/README.md))
 
-[Detailed documentation](skills/lead-review/references/README.md)
+### `/implement-*` — Working-tree mutators
 
-#### /implement-batch — Multi-Ticket Orchestration
+- **`/implement-project`** — Full-lifecycle project execution. Implements batched tickets, runs the quality pipeline (refactor, review-arch, review-test, tidy-docs, review-release), produces a review-ready branch. ([details](skills/implement-project/SKILL.md))
+- **`/implement-batch`** — Plans execution order of a batch of tickets, implements each via `/implement` autonomously, runs cross-cutting `/refactor` and `/tidy-docs` passes. ([details](skills/implement-batch/SKILL.md))
+- **`/implement`** — Single-ticket development cycle: requirements → planning → implementation → QA → code review → documentation. Dispatches to language SMEs. ([details](skills/implement/SKILL.md))
 
-Takes a batch of tickets, plans their execution order, implements each
-sequentially using `/implement` in autonomous mode, runs cross-cutting
-quality passes (`/refactor`, `/tidy-docs`), and presents results for
-final review.
+### `/scope-*` — Planning
 
-[Detailed documentation](skills/implement-batch/SKILL.md)
+- **`/scope-project`** — Plans a multi-batch project through layered adversarial review loops (UX, optional security/performance, implementer). Produces batch-tagged tickets ready for `/implement-project`. ([details](skills/scope-project/SKILL.md))
+- **`/scope`** — Iterative problem-space exploration that produces a single detailed ticket. For one feature, bug, or refactor proposal. ([details](skills/scope/SKILL.md))
 
-#### /implement — Single-Ticket Development
+### `/review-*` — Read-only audits
 
-Orchestrates a complete development cycle through specialist agents:
-requirements → planning → implementation → QA → code review →
-documentation. Detects project type and dispatches to language-specific
-SMEs (Go, GraphQL, Docker, Makefile, Ansible, Zig, HTML, CSS,
-JavaScript, TypeScript).
+All `/review-*` skills are advisory — they audit and propose, never mutate.
 
-[Detailed documentation](skills/implement/SKILL.md)
+- **`/review-arch`** — Architectural analysis via noun analysis; produces a target blueprint and proposes tickets for the recommended work. ([details](skills/review-arch/SKILL.md))
+- **`/review-test`** — Five-phase test-suite survey: unit, integration, E2E (browser, webapps only), fuzz, test quality. Proposes a ticket structure for gaps. ([details](skills/review-test/SKILL.md))
+- **`/review-perf`** — Performance review across compute (algorithms, profiling) and web (caching, asset delivery, Core Web Vitals) domains. ([details](skills/review-perf/SKILL.md))
+- **`/review-a11y`** — WCAG 2.2 Level AA audit of detected web content. ([details](skills/review-a11y/SKILL.md))
+- **`/review-health`** — First-pass strategic orientation review. Useful when inheriting a project, evaluating a library, or revisiting your own repo. Evidence-cited map, not a grade. ([details](skills/review-health/SKILL.md))
+- **`/review-security`** — White-box security audit. Blue-teamer evaluates defensive posture first; red-teamers then attack informed by the gaps. Iterates until no new exploit chains emerge. ([details](skills/review-security/SKILL.md))
+- **`/review-release`** — Pre-release readiness check: debug artifacts, version mismatches, changelog gaps, git hygiene, breaking changes, license compliance. ([details](skills/review-release/SKILL.md))
 
-### Planning
+### `/think-*` — Reasoning
 
-These workflows explore problem spaces and produce well-specified tickets
-without doing implementation work.
+All `/think-*` skills produce feedback only — no code, no tickets, no artifacts. See [references/think.md](references/think.md) for the namespace's design discipline.
 
-#### /scope-project — Adversarial Project Planning
+- **`/think-reframe`** — Pressure-tests problem framing before solving. Parallel reframers across lenses (problem-vs-symptom, scope-shift, inversion, etc.). ([details](skills/think-reframe/SKILL.md))
+- **`/think-brainstorm`** — Divergent idea generation across techniques (first-principles, working-backwards, lateral, analogical, etc.). ([details](skills/think-brainstorm/SKILL.md))
+- **`/think-diagnose`** — Abductive reasoning about why a phenomenon is happening. Diagnosticians across lenses (technical, human-factors, process, etc.). ([details](skills/think-diagnose/SKILL.md))
+- **`/think-ach`** — Analysis of Competing Hypotheses (Heuer). Builds a hypothesis-vs-evidence matrix; ranks by least disconfirming evidence. ([details](skills/think-ach/SKILL.md))
+- **`/think-deliberate`** — Adversarial decision-making. Advocates argue and rebut before a judge renders a verdict. ([details](skills/think-deliberate/SKILL.md))
+- **`/think-premortem`** — Treats catastrophic failure as already-happened and reasons backward to causes. Plan mode (not-yet-committed plan) or scenario mode (running system). ([details](skills/think-premortem/SKILL.md))
+- **`/think-scrutinize`** — Stress-tests an idea before commitment. Skeptics across angles paired with an advocate; reports faults that survive cross-examination. ([details](skills/think-scrutinize/SKILL.md))
+- **`/think-reflect`** — Retrospective learning. Updated mental models from a completed experience; observations and recollections gathered separately. ([details](skills/think-reflect/SKILL.md))
 
-Plans an entire project through layered adversarial review loops.
-Explores the problem space, drafts tickets organized into batches, then
-runs a mandatory UX loop ("should we build this?"), zero or more
-discretionary specialist loops (security, performance) for projects with
-architectural implications in those domains, and a mandatory implementer
-loop ("could we build this?") to find gaps, ambiguities, and missing
-work. The architectural filter governs specialist loop invocation,
-preventing checklist behavior on projects where the domain isn't
-load-bearing. Locked elements (UX-locked, security-locked,
-performance-locked) become hard constraints on downstream loops. Only
-when every applicable loop signs off do tickets go upstream — already
-tagged with batch labels ready for `/implement-project` to consume.
+### `/bug-*` — Bug work
 
-[Detailed documentation](skills/scope-project/SKILL.md)
+- **`/bug-fix`** — Diagnosis-first bug fix: reproduce with a failing test, root-cause via git archaeology, targeted fix, verify. Mutates. ([details](skills/bug-fix/SKILL.md))
+- **`/bug-hunt`** — Proactive bug discovery. Risk-ranks hotspots, deep-dives each with reproducing tests. Advisory — proposes tickets for confirmed findings. ([details](skills/bug-hunt/SKILL.md))
 
-#### /scope — Problem Space Exploration
+### `/tidy-*` — Mechanical hygiene
 
-Explores problem spaces through iterative dialogue and codebase analysis,
-then creates a detailed ticket in your issue tracker. For single features,
-bug investigations, or refactoring proposals.
+- **`/tidy-docs`** — Documentation audit and repair via the `doc-maintainer` agent. Fixes within agent authority; surfaces judgment calls. ([details](skills/tidy-docs/SKILL.md))
+- **`/tidy-git`** — Local repo hygiene: prunes stale refs, deletes merged branches (with preview), reports stashes/untracked/unpushed. Never touches the remote. ([details](skills/tidy-git/SKILL.md))
 
-[Detailed documentation](skills/scope/SKILL.md)
+### `/test-*` — Testing utilities
 
-### Quality
+- **`/test-mutation`** — Mutation testing. Introduces mutations, then writes tests to catch survivors — revealing coverage gaps that line coverage misses. Multi-session via a state file. ([details](skills/test-mutation/SKILL.md))
 
-These workflows improve code, tests, architecture, and documentation.
-They run as part of `/implement-project`'s quality pipeline, but each works
-standalone too.
+### Standalone
 
-#### /refactor — Iterative Code Quality Improvement
-
-Autonomously scans for tactical improvements (DRY violations, dead code,
-naming issues, unnecessary complexity), implements through specialist
-agents with QA verification, and loops until no improvements remain. Works
-within existing architecture — for structural changes, use `/review-arch`.
-
-[Detailed documentation](skills/refactor/SKILL.md)
-
-#### /review-arch — Advisory Architectural Analysis
-
-Analyzes codebase architecture via noun analysis and produces a target
-blueprint. **Advisory only** — does not implement changes. After the
-analysis, offers to cut tickets for the recommended work; the operator
-(human or orchestrator) approves, edits, or declines. Orchestrators apply
-their own autonomy judgment per `references/autonomy.md` to the offer.
-For module boundaries, responsibility overlap, utility grab-bag
-dissolution, and structural rethinking.
-
-[Detailed documentation](skills/review-arch/SKILL.md)
-
-#### /review-test — Comprehensive Test Suite Survey
-
-Five-phase survey: surveys unit coverage gaps, integration coverage,
-E2E (browser) coverage for webapps, fuzz coverage, and test quality.
-**Advisory only** — does not implement test changes. After all phases run,
-proposes a ticket structure for the recommended work; the operator (human
-or orchestrator) approves, edits, or declines. Phase 3 (E2E) cleanly skips
-when the project is not a webapp.
-
-[Detailed documentation](skills/review-test/SKILL.md)
-
-#### /test-mutation — Mutation Testing
-
-Systematically introduces mutations into source code and checks if tests
-catch them. Surviving mutations reveal genuine coverage gaps that line
-coverage misses. Multi-session with progress tracking.
-
-[Detailed documentation](skills/test-mutation/SKILL.md)
-
-#### /tidy-docs — Documentation Hygiene
-
-Comprehensively audits all project documentation for correctness,
-completeness, and freshness via the `doc-maintainer` agent. Fixes
-issues autonomously within the agent's authority; surfaces anything
-requiring user judgment for approval. In the `/tidy-*` namespace
-because the find→fix seam is small for most documentation issues
-(typos, stale code examples, broken links, freshness drift).
-
-[Detailed documentation](skills/tidy-docs/SKILL.md)
-
-#### /review-release — Pre-Release Readiness Check
-
-Pre-flight check before cutting a release. Scans for debug artifacts,
-version mismatches, changelog gaps, git hygiene issues, breaking API
-changes, and license compliance. Interactive — presents findings and lets
-you decide what to fix.
-
-[Detailed documentation](skills/review-release/SKILL.md)
-
-#### /review-a11y — Accessibility Audit
-
-Audits web content against WCAG 2.2 Level AA. Detects web content files
-(HTML, JSX/TSX, Vue, Svelte, CSS, templates), dispatches accessibility
-auditor agents to evaluate conformance, and produces a consolidated
-report prioritized by real-world user impact. Advisory only — no
-changes made.
-
-[Detailed documentation](skills/review-a11y/SKILL.md)
-
-#### /review-health — Strategic Orientation Review
-
-First-pass strategic-orientation review of a repository. Use when you want
-to step back and assess a repo strategically — inheriting a work project,
-evaluating a FOSS library, revisiting your own repo, onboarding a
-teammate. Produces an evidence-cited map (not a grade) calibrated to a
-reference class, built to inform decisions about where to engage, where
-to tread carefully, and where to leave alone. OODA-structured workflow
-(Observe → Orient → Decide → Act) with per-class rubrics, ASHI severity
-tiers on individual findings, and an explicit coverage manifest for
-unavailable tooling. Advisory only — no changes made. Routes to sibling
-specialists (`/review-arch`, `/refactor`, `/review-test`, etc.) when
-findings warrant deeper follow-up.
-
-[Detailed documentation](skills/review-health/SKILL.md)
-
-#### /review-perf — Performance Review
-
-Reviews a project for performance issues across two domains: compute
-performance (algorithms, memory, CPU, benchmarking) and web performance
-(caching, asset delivery, loading strategy, Core Web Vitals). Detects the
-project type and dispatches the appropriate specialist(s) in parallel.
-Advisory only — no changes made.
-
-[Detailed documentation](skills/review-perf/SKILL.md)
-
-### Security
-
-#### /review-security — White-Box Security Audit
-
-Orchestrates a comprehensive security assessment of the project's source code
-using both defensive and offensive analysis. A blue-teamer evaluates the
-defensive posture first, then red-teamers attack informed by the defensive
-gaps. Dedicated red-teamers investigate each attack vector in depth. Findings
-are synthesized, exploit chains are explored, and the process iterates until
-no new chains emerge. Heavy and thorough by design.
-
-[Detailed documentation](skills/review-security/SKILL.md)
-
-### Decision and Diagnosis
-
-The `/think-*` skills share a common design discipline — each is a structured countermeasure to a specific cognitive failure mode, sourced from a practitioner tradition (decision research, reflective practice, adversarial proceduralism, NGT, and others). See [THINK.md](THINK.md) for the family's design discipline, the five-test admission gate for new `/think-*` skills, and the intellectual lineage.
-
-#### /think-reframe — Problem Redefinition Before Problem Solving
-
-Pressure-tests how a problem is framed before anyone tries to solve it.
-Extracts the premises embedded in the stated problem, then spawns
-parallel reframers applying different lenses in isolation
-(problem-vs-symptom, scope-shift, stakeholder-shift, level-of-abstraction,
-time-horizon, inversion, category-shift, constraints-shift), and
-synthesizes the alternatives into a report with a clear recommendation:
-keep the original framing, adopt a specific reframing, or explore further.
-Produces feedback only — no code, no tickets, no artifacts. Sits upstream
-of `/think-brainstorm` in the natural pipeline.
-
-[Detailed documentation](skills/think-reframe/SKILL.md)
-
-#### /think-brainstorm — Divergent Idea Generation
-
-Generates candidate approaches for a goal. Validates the assumptions
-embedded in the goal, then spawns parallel brainstormers running
-different techniques in isolation (first-principles, working-backwards,
-lateral, analogical, constraints-shift, etc.), and synthesizes the pool
-into a catalog of standouts, hybrid ideas, and reasonable alternatives.
-Produces feedback only — no code, no tickets, no artifacts. Natural
-handoff to `/think-deliberate` (choose) or `/think-scrutinize`
-(stress-test).
-
-[Detailed documentation](skills/think-brainstorm/SKILL.md)
-
-#### /think-diagnose — Abductive Reasoning About Causes
-
-Figures out *why* something is happening. Takes a phenomenon, separates
-observations from interpretations, then spawns parallel diagnosticians
-applying different reasoning lenses in isolation (technical,
-human-factors, process, incentive-structure, environmental, temporal,
-measurement-artifact, statistical). The orchestrator evaluates candidate
-causes against evidence, calibrates confidence honestly (qualitative
-categories — no fabricated percentages), and reports leading candidates
-with distinguishing tests the user can run. Applicable to non-code
-phenomena. Produces feedback only — no code, no tickets, no artifacts.
-
-[Detailed documentation](skills/think-diagnose/SKILL.md)
-
-#### /think-ach — Analysis of Competing Hypotheses
-
-Systematically narrows among multiple hypotheses against evidence using
-Richards Heuer's Analysis of Competing Hypotheses (ACH) — a CIA-tradition
-technique designed to counter confirmation bias, premature closure,
-anchoring, and cherry-picking. Spawns parallel hypothesizers in isolation
-across angles (leading, alternative, adversarial, null, deceptive,
-surprise) and parallel evidence-gatherers across classes
-(direct-observational, documentary-historical, structural, behavioral,
-absent, anomalous). Builds an explicit hypothesis-vs-evidence matrix.
-**Ranks hypotheses by least disconfirming evidence**, not most confirming
-— the central insight: hypotheses cannot be proven, only failed-to-be-
-disproven. Includes diagnosticity analysis (which evidence actually
-discriminates), sensitivity analysis (what if load-bearing evidence is
-wrong?), and falsification milestones (what future observations would
-distinguish the top candidates). Produces feedback only — no code, no
-tickets, no artifacts. Natural composition: `/think-diagnose` generates
-candidate causes, `/think-ach` rigorously narrows among them.
-
-[Detailed documentation](skills/think-ach/SKILL.md)
-
-#### /think-deliberate — Adversarial Decision Making
-
-Uses adversarial representation to make decisions. Spawns advocate agents
-for each option who argue their cases, rebut each other, and respond to
-probing questions before a judge renders a verdict with reasoning and
-trade-offs.
-
-[Detailed documentation](skills/think-deliberate/SKILL.md)
-
-#### /think-premortem — Prospective Failure Imagination
-
-Treats a catastrophic failure as already-having-happened and reasons backward
-to the causes. Operates in two modes: **plan mode** (a not-yet-committed plan;
-imagine its catastrophic failure broadly across lenses) and **scenario mode**
-(a specific catastrophic scenario posed against an existing system;
-investigate the actual code and architecture for causes that could have
-allowed it). Spawns parallel pre-mortemers in isolation across failure-class
-lenses (technical, operational, estimation, scope, adoption,
-dependency-and-environment, team-and-coordination, incentive, detection,
-reversibility, adversarial). Synthesizes into a prioritized risk register
-with early-warning signals the user can monitor for, calibrated qualitatively
-(*high / moderate / low / uncertain*) rather than with fabricated percentages.
-Produces feedback only — no code, no tickets, no artifacts. Sourced from
-Klein's pre-mortem methodology and the *prospective hindsight* finding from
-decision research.
-
-[Detailed documentation](skills/think-premortem/SKILL.md)
-
-#### /think-scrutinize — Devil's Advocate for Ideas
-
-Stress-tests an idea or plan before you commit to implementing it. Spawns
-critical skeptics from multiple angles (technical, economic,
-operational, etc.), pairs them with an advocate defending the idea in
-good faith, then synthesizes a report of faults that survived
-cross-examination. Produces feedback only — no code, no tickets, no
-artifacts.
-
-[Detailed documentation](skills/think-scrutinize/SKILL.md)
-
-#### /think-reflect — Retrospective Learning
-
-Extracts learnings from a completed experience — a project that shipped,
-an incident that resolved, a decision that played out. Gathers ground
-truth (observations) separately from recollections (memory), actively
-loads external sources (logs, timelines, notes, git history), then spawns
-parallel reflectors applying different lenses in isolation
-(what-worked-vs-got-lucky, what-didn't, what-surprised,
-system-rewards-vs-intent, decisions-that-aged, what-to-tell-past-self,
-patterns-that-recur). The headline output is **updated mental models** —
-changed beliefs — not a findings document. Produces feedback only.
-
-[Detailed documentation](skills/think-reflect/SKILL.md)
-
-#### /bug-fix — Diagnosis-First Bug Fixing
-
-Coordinates specialist agents through a diagnosis-first bug-fixing cycle:
-reproduce with a failing test, perform root-cause analysis with git
-archaeology, implement a targeted fix, and verify. Same review pipeline as
-`/implement`.
-
-[Detailed documentation](skills/bug-fix/SKILL.md)
-
-#### /bug-hunt — Proactive Bug Discovery
-
-Systematically hunts for bugs before they reach users. A risk assessor
-cross-references code complexity, test coverage gaps, and structural risk
-factors to produce a ranked hotspot list. Dedicated hunters then
-deep-dive into each hotspot, writing reproducing tests to validate or
-invalidate suspected bugs. Every confirmed finding is backed by a
-reproducing test — no speculative reports. **Advisory only** — proposes
-tickets for confirmed findings (operator-approved) and commits the
-reproducing tests; the tests serve as acceptance criteria for remediation
-via `/implement` or `/implement-project`.
-
-[Detailed documentation](skills/bug-hunt/SKILL.md)
-
-### Utility
-
-#### /pre-compact — Pre-Compaction Housekeeping
-
-Run this immediately before `/compact`. Compaction destroys
-conversation context, so anything important from the session that
-isn't persisted somewhere durable is lost. Walks a fixed checklist
-as a floor — update persistent memory, audit `git status` and
-optionally commit (with permission), clean up trash files
-conservatively — then uses judgment to spot session-specific
-cleanup the checklist can't anticipate (open threads, undocumented
-decisions, background processes, stashes). Ends with an
-SBAR-formatted handoff with one of three explicit recommendations
-(**safe to compact**, **safe after [X]**, or **do not compact
-yet**), plus a copy-pasteable resume prompt the user can paste into
-the next turn if pending work remains. Does not invoke `/compact`
-itself.
-
-[Detailed documentation](skills/pre-compact/SKILL.md)
-
-#### /tidy-git — Mechanical Repo Hygiene
-
-Cleans up local git state that accumulates over time: prunes stale
-remote-tracking refs, prunes stale worktree refs, deletes merged local
-branches (after a preview-and-confirm step), and reports — without
-acting on — stashes, untracked files, branches with no upstream,
-branches ahead of upstream, and local-only tags. Operates on the
-local repo only; never touches the remote, never force-deletes,
-never drops stashes, never runs `git clean`. Branches deleted by the
-skill are recoverable from `git reflog` for ~90 days.
-
-[Detailed documentation](skills/tidy-git/SKILL.md)
-
-## Agents
-
-Specialist agents spawned by the workflows above:
-
-| Agent                          | Purpose                                                                                                    |
-|--------------------------------|------------------------------------------------------------------------------------------------------------|
-| `thk-ach-evidence-gatherer`    | Good-faith evidence enumerator for ACH proceedings, parameterized by an evidence class                     |
-| `thk-ach-hypothesizer`         | Good-faith hypothesis generator for ACH proceedings, parameterized by a hypothesis-generation angle        |
-| `thk-advocate`                 | Argues for an assigned position in adversarial proceedings                                                 |
-| `thk-brainstormer`             | Good-faith idea generator parameterized by a specific brainstorming technique                              |
-| `thk-diagnostician`            | Good-faith abductive reasoner that generates candidate causes through an assigned reasoning lens           |
-| `thk-premortemer`              | Good-faith failure imaginer that uses prospective hindsight to identify causes through an assigned failure-class lens |
-| `thk-reflector`                | Good-faith reflector that extracts learnings from an experience through an assigned reflection lens        |
-| `thk-reframer`                 | Good-faith reframer that restates a problem through an assigned reframing lens                             |
-| `thk-skeptic`                  | Good-faith skeptic that identifies faults in an idea through an assigned critical lens                     |
-| `swe-planner`                  | Decomposes complex tasks into implementation plans                                                         |
-| `swe-sme-golang`               | Go implementation specialist                                                                               |
-| `swe-sme-graphql`              | GraphQL schema and resolver specialist                                                                     |
-| `swe-sme-docker`               | Dockerfile and container specialist                                                                        |
-| `swe-sme-makefile`             | Makefile and build system specialist                                                                       |
-| `swe-sme-ansible`              | Ansible automation specialist                                                                              |
-| `swe-sme-zig`                  | Zig implementation specialist                                                                              |
-| `swe-sme-html`                 | HTML structure, semantics, and accessibility specialist                                                    |
-| `swe-sme-css`                  | CSS styling, layout, and responsive design specialist                                                      |
-| `swe-sme-javascript`           | Vanilla JavaScript implementation specialist                                                               |
-| `swe-sme-typescript`           | TypeScript implementation and type design specialist                                                       |
-| `swe-code-reviewer`            | Tactical code quality reviewer (DRY, dead code, naming, complexity)                                        |
-| `swe-arch-reviewer`            | Architecture reviewer (noun analysis, module boundaries, blueprints)                                       |
-| `swe-bug-assessor`             | Codebase risk assessor (complexity, coverage, structural risk, git churn — produces ranked hotspot list)   |
-| `swe-bug-hunter`               | Focused bug investigator (deep-dives hotspots, writes reproducing tests, validates findings)               |
-| `swe-bug-investigator`         | Bug root-cause investigator (execution tracing, git archaeology, diagnosis reports)                        |
-| `swe-perf-reviewer`            | Compute performance reviewer (algorithmic complexity, benchmarking, profiling, optimization)               |
-| `swe-web-perf-reviewer`        | Web performance reviewer (caching, asset delivery, loading strategy, Core Web Vitals)                      |
-| `qa-engineer`                  | Practical verification and test coverage                                                                   |
-| `qa-web-a11y-reviewer`         | WCAG accessibility reviewer (keyboard navigation, ARIA, contrast, semantic structure)                      |
-| `qa-test-reviewer`             | Test quality reviewer (brittle, tautological, useless tests)                                               |
-| `qa-test-coverage-reviewer`    | Coverage gap reviewer (coverage reports, risk prioritization, testability suggestions)                     |
-| `qa-test-integration-reviewer` | Integration test gap reviewer (seam survey, Mode A starter strategy, Mode B gaps and strategy expansion)   |
-| `qa-test-e2e-reviewer`         | E2E browser test gap reviewer (webapp detection, journey classification, Playwright-prescriptive Mode A)   |
-| `qa-test-fuzz-reviewer`        | Fuzz testing gap reviewer (fuzz infrastructure detection, candidate identification)                        |
-| `qa-test-mutator`              | Mutation testing worker (applies mutations, records results)                                               |
-| `qa-release-engineer`          | Pre-release scanner (debug artifacts, versioning, changelog, git hygiene, breaking changes, licenses)      |
-| `sec-blue-teamer`              | Defensive security analyst (control inventory, consistency, defense-in-depth, configuration)               |
-| `sec-red-teamer`               | Adversarial security analyst (attack surface mapping, exploitation, trust boundary analysis)               |
-| `ux-reviewer`                  | Methodical UX advocate for `/scope-project`'s pre-implementation review loop (seven-concern spine, target-type detection) |
-| `doc-maintainer`               | Documentation updates and verification                                                                     |
-
-## Development
-
-See [HACKING.md](HACKING.md) for local development and testing instructions. See [CHANGELOG.md](CHANGELOG.md) for release history and [CONTRIBUTING.md](CONTRIBUTING.md) for contribution policy.
+- **`/refactor`** — Tactical code-quality improvement (DRY, dead code, naming, complexity). Loops until no improvements remain. For structural changes, use `/review-arch`. Mutates. ([details](skills/refactor/SKILL.md))
+- **`/pre-compact`** — Pre-compaction housekeeping: persist memory, audit git, clean trash, end with SBAR + resume prompt. Does not invoke `/compact`. ([details](skills/pre-compact/SKILL.md))
 
 ## Versioning
 

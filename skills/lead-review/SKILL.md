@@ -27,9 +27,9 @@ The operator chooses at startup. There is no mid-run switching.
 
 The orchestrator does not paternalize. If the operator runs with **tickets OFF**, a CRITICAL finding does not trigger automatic ticket creation, override, or andon-cord interruption — it is flagged prominently in the completion report and the operator decides what to do. The autonomy contract is "do what was authorized at startup, nothing more, nothing less." Overriding commander's intent silently would violate that contract.
 
-### Auto-approval (or auto-decline) of ticket proposals is a contract shift
+### Auto-approval/decline is delegated to the autonomy discipline
 
-`/review-arch`, `/review-test`, `/review-security`, and `/review-health` are advisory in their native contracts — they produce ticket *proposals* that require operator approval. When invoked under `/lead-review`, those approvals are granted (or declined) automatically per the startup choice. This is consistent with the autonomy discipline: commander's intent authorizes the contract shift; sub-skill prompts are answered by the orchestrator. The completion report lists every ticket action (created or declined) so the operator can audit.
+The advisory `/review-*` sub-skills' ticket proposals are answered by the orchestrator per the contract documented in [`references/autonomy.md`](../../references/autonomy.md) § "Auto-approval of sub-skill ticket proposals". This skill's behavior is mode-dependent: tickets ON → auto-approve at/above the severity floor and decline below; tickets OFF → auto-decline uniformly. The mode is fixed at startup and not changed mid-run. The completion report lists every ticket action.
 
 ### Once-through, not loop
 
@@ -73,43 +73,13 @@ Each enabled sub-skill runs once. Skipped sub-skills are recorded in the cycle l
 
 ### 0. Startup
 
-#### 0a. Branch and working-tree check
+Follow the shared startup protocol in [`references/lead-startup.md`](../../references/lead-startup.md). Skill-specific values:
 
-- Identify the main branch (`main` or `master`).
-- If on `main`/`master`: create `lead-review/<date>` (e.g., `lead-review/2026-05-12`) from current HEAD and check it out. Confirm the branch name with the user before creating.
-- Check working tree status:
-  - Clean → proceed.
-  - Dirty → **ask the user** how to handle uncommitted work: commit as-is, stash, discard, or abort. Do not guess.
-
-Note: `/lead-review` does not itself commit code. The branch is the integration point for any commits sub-skills make (rare — most review sub-skills are advisory) and the boundary for any tickets cut.
-
-#### 0b. Resume existing run or start fresh
-
-Check for `LEAD_REVIEW_STATE.md` at the repo root:
-
-- **If absent:** proceed to intent elicitation.
-- **If present:** read it. Verify the recorded branch still exists, is currently checked out, and the current HEAD matches `Last cycle HEAD` from the state doc.
-  - **HEAD matches and branch is current** — summarize current phase, pinned intent, and completed phases to the user. Offer three options:
-    1. **Resume** as-is (re-check skip-list, continue from the next enabled phase).
-    2. **Resume with updated intent** — re-elicit, preserving the cycle log.
-    3. **Start fresh** — archive the existing state doc to `LEAD_REVIEW_STATE.<timestamp>.md` and re-elicit intent.
-  - **HEAD has moved or branch has changed** — do NOT auto-resume. Pull the andon cord with a handoff explaining the divergence and let the operator decide.
-
-#### 0c. Elicit commander's intent (interactive)
-
-Walk the user through four fields, one at a time. Do not accept a single free-form paragraph — the structure is load-bearing.
-
-1. **Scope** — "What is the scope of the review? Entire codebase, specific modules, or specific areas of concern? Are there directories or files to explicitly exclude (e.g., generated code, vendored code)?"
-
-2. **Ticket creation** — "Should this run cut tickets for findings, or produce a report only? **Yes** — advisory sub-skills' ticket proposals are auto-approved at or above the severity floor; you get a consolidated backlog in the tracker. **No** — all ticket proposals are auto-declined; findings surface in the completion report only, no tracker writes."
-
-3. **Severity floor** — only asked if field 2 = Yes. "What is the lowest severity that gates ticket creation? **Critical+High** is the default. Setting this lower produces a larger backlog including polish-level work; setting this higher means only the most serious findings get tickets and the rest surface as findings in the report."
-
-4. **Constraints** — "Hard limits the skill should pass through to sub-skills. Examples: don't audit `pkg/legacy` (slated for removal), don't propose breaking changes to the public API of package X, must remain compatible with library version Y."
-
-**Push back on vague answers.** "Just check everything" is not a scope — ask about exclusions. "Whatever severity" is not a floor — push for Critical+High as the productive default. Several rounds of dialogue is normal.
-
-Read back the complete intent and ask for confirmation before proceeding.
+- **0a. Branch and working-tree check** — branch-name pattern: `lead-review/<date>` (e.g., `lead-review/2026-05-12`). Note: `/lead-review` does not itself commit code. The branch is the integration point for any commits sub-skills make (rare — most review sub-skills are advisory) and the boundary for any tickets cut.
+- **0b. Resume existing run or start fresh** — state-doc filename: `LEAD_REVIEW_STATE.md`. "Resume as-is" semantic: re-check skip-list, continue from the next enabled phase.
+- **0c. Elicit commander's intent** — four fields per the schema in [`references/autonomy.md`](../../references/autonomy.md) § "Commander's-intent schemas per skill / `/lead-review`". Push-back examples specific to this skill: "Just check everything" is not a scope — ask about exclusions; "Whatever severity" is not a floor — push for Critical+High as the productive default.
+- **0d. Auto-detect skip-list and confirm** — see below (skill-specific step inserted between intent elicitation and state-doc seeding).
+- **0e. Seed `LEAD_REVIEW_STATE.md`** — include the four pinned intent fields, the enabled-list and skip-list (with reasons for skips), `Current phase: phase-1`, an empty cycle log, and an empty findings ledger. Gitignore the state doc per the protocol.
 
 #### 0d. Auto-detect skip-list and confirm
 
@@ -120,20 +90,6 @@ Inspect the codebase to determine which review sub-skills do not apply:
 - **No deployable target** (no Dockerfile, no release tags, no build pipeline config) → consider whether `/review-release` adds value; default is to run it anyway since it scans for debug artifacts and version mismatches even without a deployment
 
 Present the proposed skip-list and the enabled-list to the operator. Confirm before proceeding.
-
-#### 0e. Seed `LEAD_REVIEW_STATE.md`
-
-Create the state document at the repo root with:
-
-- Pinned intent (all four fields, verbatim)
-- Enabled-list and skip-list (with reasons for skips)
-- Branch name and base branch
-- Creation timestamp
-- Current phase: `phase-1`
-- Empty cycle log
-- Empty findings ledger
-
-**Add `LEAD_REVIEW_STATE.md` to `.gitignore`** if not already present. Commit the `.gitignore` change separately.
 
 ### 1–7. Phases — Sub-Skill Invocations
 
@@ -294,7 +250,15 @@ The skill does NOT:
 
 ## Andon Cord Protocol
 
-The andon cord is the only planned escalation path. Pull sparingly but decisively. Use the **shared handoff template** from `references/autonomy.md` § "Shared handoff template," with the skill-specific extensions below.
+Follow the shared handoff template and per-skill extension protocol in [`references/autonomy.md`](../../references/autonomy.md) § "Shared handoff template" and § "Per-skill handoff extensions". Skill-specific values:
+
+- **Title format** — `## Andon Cord — /lead-review — Phase N (<sub-skill>)`
+- **Current-state additions:**
+  - `Current phase: <N of 7> (<sub-skill>)`
+  - `Phases complete: <list>`
+  - `Phases remaining: <list>`
+  - `Findings ledger so far: <N created, M declined, K contested>`
+  - `State doc pointer: see LEAD_REVIEW_STATE.md`
 
 ### Andon cord triggers
 
@@ -304,20 +268,6 @@ Pull the cord when:
 - **Breaking-change required.** A sub-skill's recommended fix would require a breaking change (per `references/autonomy.md` § "No unilateral breaking changes"). Even though `/lead-review` does not implement fixes, the ticket would carry a breaking-change implication; surface it.
 - **Sub-skill cord cascaded up.** A review sub-skill pulled its own cord for a reason this skill cannot resolve.
 - **Resume-time HEAD divergence.** On resume, recorded branch SHA does not match current HEAD.
-
-### Handoff format
-
-Use the shared template from `references/autonomy.md`. Skill-specific extensions:
-
-- **Title** — `## Andon Cord — /lead-review — Phase N (<sub-skill>)`
-- **Current state** must additionally include:
-  - `Current phase: <N of 7> (<sub-skill>)`
-  - `Phases complete: <list>`
-  - `Phases remaining: <list>`
-  - `Findings ledger so far: <N created, M declined, K contested>`
-  - `State doc pointer: see LEAD_REVIEW_STATE.md`
-
-After pulling the cord: stop. Do not advance to the next phase. Wait for operator input.
 
 ## State Management
 

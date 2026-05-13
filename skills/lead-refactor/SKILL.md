@@ -20,9 +20,9 @@ Phase 1 invokes `/refactor`, which loops internally until no more tactical impro
 
 There is no global loop over the macro phases. `/refactor` converging once and then `/review-arch` converging is sufficient — `/refactor`'s tactical scope (DRY, dead code, naming, complexity) does not generate new architectural opportunities, and `/review-arch`'s noun analysis is stable across re-runs. Two `/refactor` invocations and one Phase-2 inner loop is the right shape.
 
-### Auto-approval of ticket proposals is a contract shift
+### Auto-approval is delegated to the autonomy discipline
 
-`/review-arch` is advisory — it produces ticket *proposals* that require operator approval in its native contract. When invoked under `/lead-refactor`, those approvals are granted automatically (the operator has already authorized the broader pipeline via commander's intent at startup). This is consistent with the autonomy discipline: commander's intent authorizes the work; sub-skill prompts are answered by the orchestrator. The completion report lists every ticket created so the operator can audit.
+`/review-arch` is advisory; its ticket proposals are auto-approved under `/lead-refactor` per the orchestrator-family contract documented in [`references/autonomy.md`](../../references/autonomy.md) § "Auto-approval of sub-skill ticket proposals". The commander's-intent severity floor (field 2) is applied at the Phase-2 triage step (2b), not at the approval moment. The completion report lists every ticket created.
 
 ### Trust the analysis, escalate the disagreement
 
@@ -69,54 +69,12 @@ The skill may NOT without explicit authorization: push or merge to main/master, 
 
 ### 0. Startup
 
-#### 0a. Branch and working-tree check
+Follow the shared startup protocol in [`references/lead-startup.md`](../../references/lead-startup.md). Skill-specific values:
 
-- Identify the main branch (`main` or `master`).
-- If on `main`/`master`: create `lead-refactor/<date>` (e.g., `lead-refactor/2026-05-12`) from current HEAD and check it out. Confirm the branch name with the user before creating.
-- Check working tree status:
-  - Clean → proceed.
-  - Dirty → **ask the user** how to handle uncommitted work: commit as-is, stash, discard, or abort. Do not guess.
-
-#### 0b. Resume existing run or start fresh
-
-Check for `LEAD_REFACTOR_STATE.md` at the repo root:
-
-- **If absent:** proceed to intent elicitation.
-- **If present:** read it. Verify the recorded branch still exists, is currently checked out, and the current HEAD matches `Last cycle HEAD` from the state doc.
-  - **HEAD matches and branch is current** — summarize current phase, pinned intent, and last action to the user. Offer three options:
-    1. **Resume** as-is (re-verify the current phase's state, then continue).
-    2. **Resume with updated intent** — re-elicit, preserving the cycle log.
-    3. **Start fresh** — archive the existing state doc to `LEAD_REFACTOR_STATE.<timestamp>.md` and re-elicit intent.
-  - **HEAD has moved or branch has changed** — do NOT auto-resume. Pull the andon cord with a handoff explaining the divergence and let the operator decide.
-
-#### 0c. Elicit commander's intent (interactive)
-
-Walk the user through four fields, one at a time. Do not accept a single free-form paragraph — the structure is load-bearing.
-
-1. **Scope** — "What is the scope? Entire codebase, specific modules, or specific areas of concern? Are there directories or files to explicitly exclude (e.g., generated code, vendored code)?"
-
-2. **Severity floor** — "What is the lowest `/review-arch` severity that gates Phase 2 convergence? **HIGH+** is the default (act on HIGH and CRITICAL architectural findings; defer MEDIUM and LOW to deferred items). Setting this lower makes Phase 2 run longer and risks not converging within the 5-iteration cap. Setting this higher (CRITICAL only) means architectural HIGH findings ship deferred."
-
-3. **Constraints** — "Hard limits the skill must not violate. Examples: don't touch module X, don't change the public API of package Y, must remain compatible with library version Z. Breaking changes always escalate; this is for additional constraints."
-
-4. **Refactor aggression** — "How aggressive should the tactical `/refactor` passes (Phases 1 and 3) be? Options: **conservative** (safest/safe categories only — dead code, formatters, simple DRY), **moderate** (default — adds cross-module DRY, splitting files, removing abstraction layers), **aggressive** (adds removal of legacy code with unclear purpose, consolidating similar-but-not-identical behavior). Applies to both `/refactor` passes."
-
-**Push back on vague answers.** "Clean it all up" is not a scope — ask which modules. "Whatever severity" is not a floor — push for HIGH+ as the productive default. Several rounds of dialogue is normal.
-
-Read back the complete intent and ask for confirmation before proceeding.
-
-#### 0d. Seed `LEAD_REFACTOR_STATE.md`
-
-Create the state document at the repo root with:
-
-- Pinned intent (all four fields, verbatim)
-- Branch name and base branch
-- Creation timestamp
-- Current phase: `phase-1`
-- Empty cycle log
-- Empty findings ledger
-
-**Add `LEAD_REFACTOR_STATE.md` to `.gitignore`** if not already present. Commit the `.gitignore` change separately.
+- **0a. Branch and working-tree check** — branch-name pattern: `lead-refactor/<date>` (e.g., `lead-refactor/2026-05-12`).
+- **0b. Resume existing run or start fresh** — state-doc filename: `LEAD_REFACTOR_STATE.md`. "Resume as-is" semantic: re-verify the current phase's state, then continue.
+- **0c. Elicit commander's intent** — four fields per the schema in [`references/autonomy.md`](../../references/autonomy.md) § "Commander's-intent schemas per skill / `/lead-refactor`". Push-back examples specific to this skill: "Clean it all up" is not a scope — ask which modules; "Whatever severity" is not a floor — push for HIGH+ as the productive default.
+- **0d. Seed `LEAD_REFACTOR_STATE.md`** — include the four pinned intent fields, `Current phase: phase-1`, an empty cycle log, and an empty findings ledger. Gitignore the state doc per the protocol.
 
 ### 1. Phase 1: Tactical Refactor
 
@@ -326,7 +284,14 @@ The skill does NOT:
 
 ## Andon Cord Protocol
 
-The andon cord is the only planned escalation path. Pull sparingly but decisively. Use the **shared handoff template** from `references/autonomy.md` § "Shared handoff template," with the skill-specific extensions below.
+Follow the shared handoff template and per-skill extension protocol in [`references/autonomy.md`](../../references/autonomy.md) § "Shared handoff template" and § "Per-skill handoff extensions". Skill-specific values:
+
+- **Title format** — `## Andon Cord — /lead-refactor — Phase N` (the phase is load-bearing).
+- **Current-state additions:**
+  - `Current phase: <phase-1 | phase-2 | phase-3 | termination>`
+  - `Phase 2 iteration counter: <N>` (if currently in Phase 2)
+  - `Findings ledger: <K fixed, M deferred, L contested>` (if currently in Phase 2)
+  - `State doc pointer: see LEAD_REFACTOR_STATE.md`
 
 ### Andon cord triggers
 
@@ -339,19 +304,6 @@ Pull the cord when:
 - **Phase 2 hard cap hit.** 5 architectural iterations elapsed without convergence. Something is likely structurally wrong (severity floor set too low, or the codebase has a recurring architectural pattern the reviewer keeps flagging).
 - **Repeated batch failure.** `/implement-batch` fails on the same finding 3 times across different approaches.
 - **Resume-time HEAD divergence.** On resume, recorded branch SHA does not match current HEAD.
-
-### Handoff format
-
-Use the shared template from `references/autonomy.md`. Skill-specific extensions:
-
-- **Title** — `## Andon Cord — /lead-refactor — Phase N` (the phase is load-bearing).
-- **Current state** must additionally include:
-  - `Current phase: <phase-1 | phase-2 | phase-3 | termination>`
-  - `Phase 2 iteration counter: <N>` (if currently in Phase 2)
-  - `Findings ledger: <K fixed, M deferred, L contested>` (if currently in Phase 2)
-  - `State doc pointer: see LEAD_REFACTOR_STATE.md`
-
-After pulling the cord: stop. Do not attempt additional phases. Wait for operator input.
 
 ## State Management
 
