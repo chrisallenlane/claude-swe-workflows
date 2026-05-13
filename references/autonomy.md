@@ -144,7 +144,7 @@ This schema is the canonical implementation referenced from the rest of this doc
 
 ### `/implement-project`
 
-Four fields (formerly `/implement-project`, renamed in v10):
+Four fields:
 
 - **Tickets** — already gathered during step 1 (batched, fetched from tracker).
 - **Acceptance bar** — what defines "ready to merge for this project." Defaults to "all tickets implemented, full pipeline passes." Operator may extend (e.g., "and CHANGELOG mentions every user-visible change").

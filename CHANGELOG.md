@@ -1,5 +1,37 @@
 # Changelog
 
+## v10.0.0
+
+### Breaking Changes
+
+- **`/refactor-deep` renamed to `/lead-refactor` and redesigned as a loop-to-convergence orchestrator.** The previous `/refactor-deep` was a once-through pipeline — Phase 1 tactical `/refactor` followed by Phase 2 advisory `/review-arch` (with optional ticket creation) and a `/tidy-docs` wrap-up. The new `/lead-refactor` is a three-phase autonomous pipeline that earns the `/lead-*` namespace by actually orchestrating to convergence: Phase 1 invokes `/refactor` (which loops internally to tactical convergence), Phase 2 loops `/review-arch` + `/implement-batch` until architectural findings converge below an operator-set severity floor (bounded to 5 iterations), and Phase 3 invokes `/refactor` again to clean up tactical issues introduced by Phase 2's restructuring.
+
+  The auto-approval contract from `/lead-bug-hunt` extends here: `/review-arch`'s ticket proposals are auto-approved per commander's intent rather than requiring per-iteration operator confirmation. The skill pulls the andon cord on contested findings, breaking-change requirements, repeated implementation failure, or Phase-2 hard-cap exhaustion.
+
+  Four-field commander's intent (scope, severity floor, constraints, refactor aggression) replaces the previous six-field upfront-input schema. The `/tidy-docs` wrap-up step is dropped — out-of-axis for `/lead-refactor`'s outcome contract; operators run `/tidy-docs` separately if doc cleanup is wanted. State lives in gitignored `LEAD_REFACTOR_STATE.md` with a findings ledger and andon-cord history.
+
+  This restores the Phase-3 final-refactor pass that was dropped when `/review-arch` became advisory in v8 — with `/implement-batch` now doing the architectural work, Phase 3 earns its keep again as a tactical cleanup over the restructured code.
+
+  Operators with muscle memory for `/refactor-deep` should switch to `/lead-refactor`. No deprecation alias — clean break, consistent with how `/review-doc` → `/tidy-docs` was handled in v9.
+
+- **`/review-deep` renamed to `/lead-review` and redesigned as an autonomous orchestrator-family variant.** The previous `/review-deep` was interactive throughout — the operator participated in each sub-skill's decision points. The new `/lead-review` is autonomous from startup to termination, joining the `/lead-*` orchestrator family alongside `/lead-project`, `/lead-bug-hunt`, and `/lead-refactor`. The shape is once-through over the `/review-*` sub-skills: `/review-health` → `/review-arch` → `/review-security` → `/review-perf` → `/review-a11y` (if applicable) → `/review-test` → `/review-release`. Each sub-skill's interactive ticket-proposal prompts are answered uniformly by the orchestrator per a startup choice.
+
+  Four-field commander's intent (scope, ticket creation yes/no, severity floor if tickets ON, constraints). The ticket-creation toggle is the mode-defining field — `yes` enables backlog generation (auto-approve at/above floor, tracker writes), `no` enables audit-report mode (auto-decline uniformly, no tracker writes). This serves both "produce a comprehensive backlog" and "just tell me what's wrong" use cases from one workflow.
+
+  Operator intent is sovereign: a CRITICAL finding in tickets-OFF mode is surfaced prominently in the completion report, not silently overridden into a ticket. The autonomy contract honors what was authorized at startup; no paternalistic exceptions.
+
+  `/tidy-docs` is dropped from the pipeline. It was Phase 7 in `/review-deep` but is `/tidy-*` (mechanical mutations), not `/review-*` (advisory). Including it would muddy the contract — operators in tickets-OFF mode expect "evaluation only" and `/tidy-docs` would commit doc changes regardless. The `/tidy-docs` README's pairing guidance now reflects this; run `/tidy-docs` separately if doc cleanup is wanted.
+
+  State doc: `LEAD_REVIEW_STATE.md` (gitignored), full findings ledger and andon-cord history. Andon protocol with skill-specific extensions (current phase, phases complete/remaining).
+
+  Operators who relied on `/review-deep`'s interactive walkthrough now invoke individual `/review-*` skills directly — that's the same experience without the orchestration glue. The autonomy doc's "What this discipline does NOT do" exclusion for `/review-deep` is removed since `/lead-review` is in the family.
+
+### Infrastructure
+
+- **`references/autonomy.md` — `/lead-refactor` and `/lead-review` added to the orchestrator-family roster.** The opening paragraph's enumeration of skills governed by the autonomy discipline now includes both new members. New schema subsections under "Commander's-intent schemas per skill" document the four-field schemas for each: `/lead-refactor` (scope, severity floor, constraints, refactor aggression) and `/lead-review` (scope, ticket creation, severity floor, constraints). The `/review-deep` exclusion in "What this discipline does NOT do" is removed.
+
+- **README, `CLAUDE.md`, and workflow listings updated** to surface `/lead-refactor` and `/lead-review` in the layered workflow diagrams, the "Choosing a Workflow" decision table, the orchestrator-family description, and the Skills→Orchestration section. The corresponding `/refactor-deep` and `/review-deep` references in cross-skill documentation (`skills/review-arch/`, `skills/review-security/`, `skills/review-test/`, `skills/lead-project/`, `skills/tidy-docs/`) are updated to point at the new skills, with the `/tidy-docs` ↔ `/lead-review` pairing guidance reflecting the `/tidy-docs` drop from the pipeline.
+
 ## v9.1.0
 
 ### New Skills
