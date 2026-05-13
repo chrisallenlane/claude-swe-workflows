@@ -204,7 +204,7 @@ The operator approves / edits / declines:
 
 ## Orchestrator-Invoked Behavior
 
-When `/review-test` is invoked by an orchestrator (`/lead-project`, `/review-deep`, `/implement-project`), the workflow above is unchanged. The orchestrator receives the ticket-structure proposal and applies its own judgment per [`references/autonomy.md`](../../../references/autonomy.md) — typically declining items it intends to implement inline and approving items it wants tracked for follow-up.
+When `/review-test` is invoked by an orchestrator (`/lead-project`, `/lead-review`, `/implement-project`), the workflow above is unchanged. The orchestrator receives the ticket-structure proposal and applies its own judgment per [`references/autonomy.md`](../../../references/autonomy.md) — typically declining items it intends to implement inline and approving items it wants tracked for follow-up.
 
 ## Agent Coordination
 

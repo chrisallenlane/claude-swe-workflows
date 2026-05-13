@@ -70,9 +70,10 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
 └── loop: /bug-hunt → /implement-batch (until convergence)
     └── termination: /review-test (new tests) → /refactor (optional)
 
-/review-deep
+/lead-review
 └── /review-health → /review-arch → /review-security → /review-perf
-  → /review-a11y → /review-test → /tidy-docs → /review-release
+  → /review-a11y → /review-test → /review-release
+  (sub-skill ticket proposals auto-approved or auto-declined per startup choice)
 ```
 
 Planning feeds implementation: `/scope-project` → `/implement-project`, or `/scope` → `/implement`. `/lead-project` sits one level higher — given a commander's intent, it decides which of the below skills to invoke and when.
@@ -100,7 +101,7 @@ Supporting workflows available at any level:
 
 - `/test-mutation` — mutation testing
 - `/lead-refactor` — autonomous comprehensive refactoring (orchestrator-family; Phase 1 tactical `/refactor` → Phase 2 loop of `/review-arch` + `/implement-batch` until convergence below severity floor → Phase 3 final `/refactor`)
-- `/review-deep` — comprehensive pre-release review pipeline
+- `/lead-review` — autonomous comprehensive review (orchestrator-family; runs every `/review-*` sub-skill in sequence; operator-configurable ticket creation at startup)
 
 **Utility:**
 

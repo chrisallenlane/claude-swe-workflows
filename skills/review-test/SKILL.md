@@ -469,7 +469,7 @@ After all tickets are created, report the URLs to the operator and exit.
 
 ### Orchestrator-Invoked Behavior
 
-When `/review-test` is invoked by an orchestrator (`/lead-project`, `/review-deep`, `/implement-project`), the workflow above is unchanged. The skill proposes the ticket structure to the orchestrator, which applies its own judgment per [`references/autonomy.md`](../../references/autonomy.md) — approving, editing, or declining the proposal, then deciding which of any created tickets to work in the current flow versus defer.
+When `/review-test` is invoked by an orchestrator (`/lead-project`, `/lead-review`, `/implement-project`), the workflow above is unchanged. The skill proposes the ticket structure to the orchestrator, which applies its own judgment per [`references/autonomy.md`](../../references/autonomy.md) — approving, editing, or declining the proposal, then deciding which of any created tickets to work in the current flow versus defer.
 
 The contract change versus pre-v9.0.0 is that test work surfaced by `/review-test` is now durably documented in the tracker rather than implemented in-skill via SME routing. The orchestrator's decision-making is otherwise unchanged.
 

@@ -22,14 +22,14 @@ This skill is the highest-level implementation of the **autonomy discipline** do
 - Multi-phase work where the next step depends on the outcome of the last (implement → review → refactor → re-review → …)
 - Projects where you know the desired end state but don't want to orchestrate the path
 - Bringing a feature branch to release-readiness while you focus on product decisions and QA
-- Any time you'd otherwise run `/scope` → `/implement-project` → `/lead-refactor` → `/review-deep` by hand
+- Any time you'd otherwise run `/scope` → `/implement-project` → `/lead-refactor` → `/lead-review` by hand
 
 **Don't use `/lead-project` for:**
 - A single ticket (use `/implement` or `/bug-fix`)
 - A single batch of tickets (use `/implement-batch`)
 - A fixed multi-batch project with a known backlog and no expected feedback loops (use `/implement-project`)
 - Exploratory work where the end state is discoverable rather than declarable (use `/scope-project`, `/think-brainstorm`, or `/review-health`)
-- Pre-release comprehensive audit (use `/review-deep`)
+- Pre-release comprehensive audit (use `/lead-review`)
 
 **Rule of thumb:** if you find yourself repeatedly running "implement something, review it, fix it, review it again" and making the same obvious transitions by hand, `/lead-project` is the right abstraction.
 
@@ -295,7 +295,7 @@ The skill may invoke any of the following during the Decide phase:
 | `/review-perf`                  | Performance review                                                                   |
 | `/review-a11y`                  | Accessibility review                                                                 |
 | `/review-security`              | Security audit                                                                       |
-| `/review-deep`                  | Comprehensive review across all dimensions                                           |
+| `/lead-review`                  | Comprehensive review across all dimensions                                           |
 | `/bug-hunt`                     | Proactive bug discovery                                                              |
 | `/bug-fix`                      | Diagnosis-first bug fixing                                                           |
 | `/test-mutation`                | Mutation testing                                                                     |
@@ -552,7 +552,7 @@ Awaiting your guidance.
 | `/implement`         | Invoked by `/lead-project` for individual tickets                                                         |
 | `/refactor`, `/lead-refactor`           | Invoked by `/lead-project` during cleanup phases                                    |
 | `/review-*`          | Invoked by `/lead-project` for targeted reviews; pre-termination re-run uses `/review-test` and `/review-release` at minimum |
-| `/review-deep`       | May be invoked near the end of a run as a comprehensive validation                                        |
+| `/lead-review`       | May be invoked near the end of a run as a comprehensive validation                                        |
 | `/bug-hunt`, `/bug-fix` | Invoked when bugs are suspected or known                                                              |
 | `/test-mutation`     | Invoked to validate test suite effectiveness                                                              |
 | `/think-*` (except `/think-reflect`) | Invoked in Orient or Decide for ambiguous or high-stakes decisions                        |
@@ -569,7 +569,7 @@ Awaiting your guidance.
 │   ├── /implement | /implement-batch | /implement-project
 │   ├── /refactor | /lead-refactor
 │   ├── /review-arch | /review-test | /tidy-docs | /review-release
-│   │   /review-perf | /review-a11y | /review-security | /review-deep
+│   │   /review-perf | /review-a11y | /review-security | /lead-review
 │   ├── /bug-hunt | /bug-fix
 │   ├── /test-mutation
 │   └── /think-reframe | /think-diagnose | /think-deliberate

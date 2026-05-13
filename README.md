@@ -28,6 +28,11 @@ and autonomy.
 /lead-refactor                                  ← autonomous comprehensive refactoring
 └── /refactor → loop: /review-arch + /implement-batch (until convergence) → /refactor
 
+/lead-review                                    ← autonomous comprehensive review
+└── /review-health → /review-arch → /review-security → /review-perf
+    → /review-a11y → /review-test → /review-release
+    (tickets ON/OFF chosen at startup)
+
 /implement-project                              ← full project lifecycle
 ├── /implement-batch (per batch)                ← multi-ticket orchestration
 │   ├── /implement (per ticket)         ← single-ticket implementation
@@ -82,7 +87,7 @@ Supporting workflows are available at any level:
 
 - `/test-mutation` — mutation testing
 - `/lead-refactor` — autonomous comprehensive refactoring (orchestrator-family; Phase 1 tactical `/refactor` → Phase 2 loop of `/review-arch` + `/implement-batch` until convergence below severity floor → Phase 3 final `/refactor`)
-- `/review-deep` — comprehensive pre-release review pipeline
+- `/lead-review` — autonomous comprehensive review (orchestrator-family; runs every `/review-*` sub-skill; operator-configurable ticket creation at startup)
 
 **Utility:**
 
@@ -124,7 +129,7 @@ your task:
 | First-pass strategic orientation on a repo                              | `/review-health`     |
 | Review performance (compute and/or web)                                 | `/review-perf`       |
 | Perform a white-box security audit                                      | `/review-security`   |
-| Run every review dimension before a release, in one go                  | `/review-deep`       |
+| Run every review dimension autonomously (with optional backlog creation) | `/lead-review`       |
 | Tidy up the session before running `/compact`                           | `/pre-compact`       |
 | Clean up local git state (stale refs, merged branches)                  | `/tidy-git`          |
 
@@ -142,7 +147,7 @@ your task:
 These workflows manage the lifecycle of tickets — from implementation
 through quality passes to a merge-ready branch.
 
-The orchestrator family shares an autonomy discipline — high-altitude escalation, pre-loaded options, pre-rebutted recommendations, commander's intent, and risk budgets. See [references/autonomy.md](references/autonomy.md) for the discipline that governs `/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/implement-project`, and `/implement-batch`.
+The orchestrator family shares an autonomy discipline — high-altitude escalation, pre-loaded options, pre-rebutted recommendations, commander's intent, and risk budgets. See [references/autonomy.md](references/autonomy.md) for the discipline that governs `/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/lead-review`, `/implement-project`, and `/implement-batch`.
 
 #### /lead-project — Autonomous Technical Lead
 
@@ -218,6 +223,29 @@ Maximizes autonomy — the andon cord (stop-the-line escalation) is the only
 planned intervention path.
 
 [Detailed documentation](skills/implement-project/SKILL.md)
+
+#### /lead-review — Autonomous Comprehensive Review
+
+Runs every `/review-*` sub-skill in sequence (`/review-health`,
+`/review-arch`, `/review-security`, `/review-perf`, `/review-a11y`,
+`/review-test`, `/review-release`) without operator involvement.
+Takes a four-field commander's intent (scope, ticket creation
+yes/no, severity floor, constraints) and serves two modes: **backlog
+generation** auto-approves sub-skill ticket proposals at/above the
+severity floor and writes them to the tracker; **audit report**
+auto-declines all proposals and surfaces findings in the consolidated
+completion report only. Auto-detects sub-skills that do not apply (no
+web content → skip `/review-a11y`; no tests → skip `/review-test`).
+Once-through — termination is structural.
+
+Successor to `/review-deep`. The v10 move into the `/lead-*` namespace
+makes the autonomy-axis identity explicit; the redesign trades
+interactive participation for autonomous execution and adds the
+ticket-creation toggle so the run serves both "produce a backlog"
+and "produce a report" use cases. Operators who want the previous
+interactive walkthrough invoke individual `/review-*` skills directly.
+
+[Detailed documentation](skills/lead-review/references/README.md)
 
 #### /implement-batch — Multi-Ticket Orchestration
 
@@ -369,19 +397,6 @@ project type and dispatches the appropriate specialist(s) in parallel.
 Advisory only — no changes made.
 
 [Detailed documentation](skills/review-perf/SKILL.md)
-
-#### /review-deep — Comprehensive Pre-Release Review Pipeline
-
-Thin orchestrator that runs every `/review-*` skill in sequence:
-`/review-health`, `/review-arch`, `/review-security`, `/review-perf`,
-`/review-a11y`, `/review-test`, `/tidy-docs`, `/review-release`. Each
-sub-skill keeps its normal interactive behavior — the operator
-participates throughout. Auto-detects phases that don't apply (no web
-content → skip `/review-a11y`; no tests → skip `/review-test`; etc.)
-and asks for confirmation on the skip list before starting. Ends with
-a consolidated report that synthesizes findings across all phases.
-
-[Detailed documentation](skills/review-deep/SKILL.md)
 
 ### Security
 

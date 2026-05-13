@@ -1,6 +1,6 @@
 # Autonomy — Design Discipline for Orchestrator-Family Skills
 
-This document states the autonomy discipline that governs the orchestrator-family skills in this plugin: `/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/implement-project`, `/implement-batch`. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
+This document states the autonomy discipline that governs the orchestrator-family skills in this plugin: `/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/lead-review`, `/implement-project`, `/implement-batch`. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
 
 It is opinionated, plugin-wide for the orchestrator family, and cited from each applicable skill. New escalation points or handoff formats invented by a single skill should be reconciled against this document; the goal is a coherent operator experience across the family.
 
@@ -144,7 +144,7 @@ This schema is the canonical implementation referenced from the rest of this doc
 
 ### `/implement-project`
 
-Four fields:
+Four fields (formerly `/implement-project`, renamed in v10):
 
 - **Tickets** — already gathered during step 1 (batched, fetched from tracker).
 - **Acceptance bar** — what defines "ready to merge for this project." Defaults to "all tickets implemented, full pipeline passes." Operator may extend (e.g., "and CHANGELOG mentions every user-visible change").
@@ -163,6 +163,19 @@ Four fields:
 - **Refactor aggression** — aggression ceiling for both `/refactor` passes in Phases 1 and 3 (conservative / moderate / aggressive). Defaults to moderate.
 
 Purpose, key tasks, end state, and non-goals are implicit: purpose is "comprehensive refactoring above the floor"; key task is Phase-2 convergence; end state is Phase 3 completion with tests passing; non-goals are anything outside the bounded sub-skill repertoire (`/refactor`, `/review-arch`, `/implement-batch`, `/implement`). The skill drops these fields because the three-phase shape is fixed and the implicit values are stable across runs.
+
+### `/lead-review`
+
+Four fields:
+
+- **Scope** — entire codebase or user-specified subset, with exclusions (e.g., generated code, vendored code). Passed through to all sub-skills.
+- **Ticket creation** — yes or no. The mode-defining field. Yes = auto-approve sub-skill ticket proposals at/above severity floor (backlog-generation mode); no = auto-decline uniformly, surface findings in completion report only (audit-report mode).
+- **Severity floor** — only consulted when ticket creation is yes (CRITICAL only / HIGH+ / MEDIUM+ / All). Defaults to HIGH+. Determines which sub-skill proposed tickets get created versus declined-and-deferred-to-report.
+- **Constraints** — hard limits beyond the always-on guardrails (no breaking changes, no main/master writes). Passed through to sub-skills.
+
+Purpose and end state are implicit: purpose is "comprehensive review across all enabled dimensions"; end state is "every enabled sub-skill ran exactly once and a consolidated report was produced." Non-goals are implicit too: the skill is bounded to the `/review-*` repertoire — `/tidy-docs` and other mutating skills are out of axis.
+
+This schema's binary ticket-creation field is unusual in the family — other orchestrator-family skills always cut tickets (via auto-approval of sub-skill proposals). `/lead-review` honors both modes because operator intents legitimately split: "produce a backlog" and "produce a report" are both valid review outcomes.
 
 ### `/lead-bug-hunt`
 
@@ -282,7 +295,6 @@ Skills whose find→fix seam is small enough to keep find-and-fix fused live in 
 
 - **It does not apply to user-facing exploration skills.** `/scope` and `/scope-project` are intrinsically interactive; the operator is figuring out what to build. The discipline of pre-loaded options and pre-rebutted recommendations may still be valuable in those skills, but the autonomy framing does not.
 - **It does not apply to `/implement`.** `/implement` works well as a directly-invoked skill, often run with the operator at the keyboard. Forcing autonomy discipline on it would change a working skill for marginal gain. When `/implement` is invoked by `/implement-batch` or higher, the autonomy comes from the caller, not from `/implement` itself.
-- **It does not apply to `/review-deep`.** `/review-deep` is deliberately interactive throughout — the operator participates in every sub-skill's decision points. The autonomy alternative is to invoke individual `/review-*` skills directly.
 - **It does not eliminate operator touchpoints.** It eliminates *granular* operator touchpoints. Commander's intent at startup is a touchpoint. The completion report is a touchpoint. Andon-cord pulls are touchpoints — they're just structured to be cheap to answer.
 - **It does not pursue agent-side completeness.** Sub-agents (`swe-sme-*`, `qa-engineer`, etc.) are workers, not orchestrators. They report findings and complete tasks; they do not escalate. Escalation logic lives at the skill layer.
 

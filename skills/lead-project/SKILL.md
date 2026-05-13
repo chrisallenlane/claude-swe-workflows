@@ -203,7 +203,7 @@ Available actions (non-exhaustive):
 - `/implement` or `/implement-batch` or `/implement-project` — execute ticketed work
 - `/refactor` or `/lead-refactor` — code quality cleanup
 - `/review-arch`, `/review-test`, `/tidy-docs`, `/review-release`, `/review-perf`, `/review-a11y`, `/review-security` — targeted reviews
-- `/review-deep` — comprehensive review pass
+- `/lead-review` — comprehensive review pass
 - `/bug-hunt` — proactive bug discovery
 - `/bug-fix` — diagnosis-first bug fixing
 - `/test-mutation` — mutation testing
@@ -604,9 +604,9 @@ Ensure `LEAD_PROJECT_STATE.md` is ignored. Commit the `.gitignore` change on the
 
 `/scope` and `/scope-project` create tickets. `/lead-project` may invoke `/scope` when it identifies a gap worth ticketing. `/scope-project` is typically run by the user before `/lead-project` to establish the initial backlog.
 
-**Relationship to `/review-deep`:**
+**Relationship to `/lead-review`:**
 
-`/review-deep` is a comprehensive review pass. `/lead-project` may invoke it near the end of a run to validate end-state conditions, or invoke individual `/review-*` skills earlier when specific concerns arise.
+`/lead-review` is a comprehensive review pass. `/lead-project` may invoke it near the end of a run to validate end-state conditions, or invoke individual `/review-*` skills earlier when specific concerns arise.
 
 **Relationship to `/think-*` skills:**
 
@@ -630,7 +630,7 @@ Ensure `LEAD_PROJECT_STATE.md` is ignored. Commit the `.gitignore` change on the
 │   ├── /refactor | /lead-refactor
 │   ├── /review-arch | /review-test | /tidy-docs | /review-release
 │   ├── /review-perf | /review-a11y | /review-security
-│   ├── /review-deep
+│   ├── /lead-review
 │   ├── /bug-hunt | /bug-fix
 │   ├── /test-mutation
 │   └── /think-reframe | /think-diagnose | /think-deliberate
