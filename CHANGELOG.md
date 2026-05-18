@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+### New Skills
+
+- **`/release` — Cut a project release.** A new standalone skill for executing the project's release procedure with safety guards appropriate to a high-blast-radius operation. The skill discovers the procedure from the project itself (Makefile target → RELEASING.md → CONTRIBUTING.md release section → CLAUDE.md → package.json scripts → packaging configs → CI workflow → git tag history) rather than dictating one, and offers durable capture (preferring an executable Makefile target over a prose RELEASING.md over a CLAUDE.md note) when no procedure is discoverable. Releases that happen often enough to warrant automation become discoverable on the next run.
+
+  The skill always invokes `/review-release` as preflight — categorically, with no skip flag, no recently-run cache, no force-release override. The asymmetry is intentional: an irreversible action warrants friction proportional to its blast radius. If `/review-release` reports BLOCKERs, `/release` aborts with the suggestion to address them and re-run. WARNINGs are carried forward into the plan presentation so the operator has the full picture at the high-leverage decision point.
+
+  Version-bump proposal reads CHANGELOG and scans conventional-commit markers since the last tag (`feat!:`, `BREAKING CHANGE:`, `feat:`, `fix:`) to propose a semver bump; the operator confirms or overrides. An idempotence check scans for partial prior-run artifacts (local tag, remote tag, GitHub release, registry publication) and offers resume / abort / new-version when found. The skill never undoes existing artifacts.
+
+  Plan presentation is the design's center of gravity. Every step is annotated with a reversibility class — `reversible`, `reversible-locally`, `irreversible-on-publish`, `partially-reversible` — and the boundary between local and remote operations is rendered as a visible divider in the plan. Execution proceeds without intra-step prompts except at that one boundary, where the skill pauses for a final confirmation before any push or publish. Per-step prompts would be friction noise; the boundary pause corresponds to a real semantic transition (before: everything is `git reset`'able; after: anything pushed is in the wild). On failure mid-execution, the skill halts and reports partial state honestly — completed steps, the failed step with exact error, current state by location (local repo / remote / registry / GitHub), and concrete recovery options. No automatic rollback is attempted because recovery is judgment-laden and wrong rollback is worse than no rollback.
+
+  `/release` is a leaf skill, not an orchestrator: it composes `/review-release` linearly and does not iterate or make dynamic decisions across multiple sub-skills. It sits alongside `/refactor` and `/pre-compact` as standalone supporting workflows that don't share a namespace, and pairs with `/review-release` across the act/check seam — `/review-release` is the advisory side, `/release` is the mutator side. Operators do not need to invoke `/review-release` manually before `/release`; the composition is internal.
+
+### Infrastructure
+
+- **README, `CLAUDE.md`, and skill listings updated** to surface `/release` in the namespace table (added to the standalone row alongside `/refactor` and `/pre-compact`), the "Choosing a Workflow" decision table, the Skills→Standalone section, and a new "Releases:" subsection in `CLAUDE.md`'s supporting-workflows listing.
+
 ## v10.0.0
 
 ### Breaking Changes

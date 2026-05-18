@@ -50,7 +50,7 @@ skills with a related purpose.
 | `/tidy-*`      | Mechanical hygiene                          | `/tidy-docs`, `/tidy-git`                                                                                                                              |
 | `/bug-*`       | Find and fix bugs                           | `/bug-fix`, `/bug-hunt`                                                                                                                                |
 | `/test-*`      | Test-quality work                           | `/test-mutation`                                                                                                                                       |
-| (standalone)   | Skills that don't share a namespace         | `/refactor`, `/pre-compact`                                                                                                                            |
+| (standalone)   | Skills that don't share a namespace         | `/refactor`, `/pre-compact`, `/release`                                                                                                                |
 
 The `/lead-*` and `/implement-*` namespaces additionally share an autonomy
 discipline (commander's intent, pre-loaded options, pre-rebutted
@@ -90,6 +90,7 @@ task:
 | Verify test quality via mutation testing                                                    | `/test-mutation`     |
 | Tidy all project documentation                                                              | `/tidy-docs`         |
 | Pre-release readiness check                                                                 | `/review-release`    |
+| Cut a versioned release (preflight + plan + execute)                                        | `/release`           |
 | Audit web content for accessibility barriers                                                | `/review-a11y`       |
 | First-pass strategic orientation on a repo                                                  | `/review-health`     |
 | Review performance (compute and/or web)                                                     | `/review-perf`       |
@@ -170,6 +171,7 @@ All `/think-*` skills produce feedback only — no code, no tickets, no artifact
 
 - **`/refactor`** — Tactical code-quality improvement (DRY, dead code, naming, complexity). Loops until no improvements remain. For structural changes, use `/review-arch`. Mutates. ([details](skills/refactor/SKILL.md))
 - **`/pre-compact`** — Pre-compaction housekeeping: persist memory, audit git, clean trash, end with SBAR + resume prompt. Does not invoke `/compact`. ([details](skills/pre-compact/SKILL.md))
+- **`/release`** — Cuts a project release. Discovers the release procedure, invokes `/review-release` as preflight, plans every step with reversibility annotations, executes step-by-step, halts on first failure. No skip-preflight or force-release flag. ([details](skills/release/references/README.md))
 
 ## Versioning
 

@@ -105,6 +105,10 @@ Supporting workflows available at any level:
 - `/lead-refactor` — autonomous comprehensive refactoring (orchestrator-family; Phase 1 tactical `/refactor` → Phase 2 loop of `/review-arch` + `/implement-batch` until convergence below severity floor → Phase 3 final `/refactor`)
 - `/lead-review` — autonomous comprehensive review (orchestrator-family; runs every `/review-*` sub-skill in sequence; operator-configurable ticket creation at startup)
 
+**Releases:**
+
+- `/release` — cut a project release (discovers release procedure, always invokes `/review-release` as preflight, plans before executing, halts on first failure rather than attempting rollback)
+
 **Utility:**
 
 - `/pre-compact` — pre-compaction housekeeping (memory, git, trash, SBAR, resume prompt)
