@@ -137,7 +137,7 @@ Different projects have different release procedures. Examples from real codebas
 - **npm library:** bump `package.json` → CHANGELOG → commit → tag → push → `npm publish` → `gh release create`.
 - **Rust crate:** bump `Cargo.toml` → commit → tag → push → `cargo publish`.
 - **Python package on PyPI:** bump `pyproject.toml` → CHANGELOG → commit → tag → push → `python -m build` → `twine upload`.
-- **Claude Code plugin (this repo):** bump `.claude-plugin/plugin.json` → CHANGELOG → commit → tag → push.
+- **Claude Code plugin (this repo):** bump **both** `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` → CHANGELOG → commit → tag → push. The two manifests both carry a `version` field and must agree — `marketplace.json` is the distribution artifact for `claude plugin marketplace add` and is easy to forget if `plugin.json` is treated as canonical.
 - **Internal monorepo with custom release scripts:** `make release` or `./scripts/release.sh` orchestrates everything.
 
 A skill that hard-codes any one of these flows will be wrong for the other five. So `/release` searches the project's own artifacts in priority order — preferring executable sources (Makefile targets, npm scripts, CI workflows) over prose (RELEASING.md) over inference (git tag history).

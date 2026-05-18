@@ -188,7 +188,7 @@
 
 ### Infrastructure
 
-- **GitHub release automation removed.** `.github/workflows/release.yml` and the entire `.github/` directory have been deleted. Claude Code plugins are distributed by git ref — consumers pin to a tag or branch and the marketplace files in the repo are the actual distribution mechanism — so the GitHub Releases artifact carried no functional payload. Its presence was also actively confusing on the Gitea side: Gitea Actions scans `.github/workflows/` as a fallback and was queuing phantom jobs against a non-existent runner on every tag push. Existing GitHub releases (v1.0.0 through v7.0.0) were deleted out of band; tags are preserved on both Gitea and the GitHub mirror. `HACKING.md` updated to reflect the simplified procedure.
+- **GitHub release automation removed.** `.github/workflows/release.yml` and the entire `.github/` directory have been deleted. Claude Code plugins are distributed by git ref — consumers pin to a tag or branch and the marketplace files in the repo are the actual distribution mechanism — so the GitHub Releases artifact carried no functional payload. Its presence was also actively confusing on the Gitea side: Gitea Actions scans `.github/workflows/` as a fallback and was queuing phantom jobs against a non-existent runner on every tag push. Existing GitHub releases (v1.0.0 through v7.0.0) were deleted out of band; tags are preserved on both Gitea and the GitHub mirror. `HACKING.md` updated to reflect the simplified procedure. *(`HACKING.md` has since been deleted; release procedure now lives in the `/release` skill.)*
 
 ## v7.1.0
 
@@ -214,9 +214,9 @@
 
 ### Infrastructure
 
-- **`THINK.md` design discipline document.** Repo-root document that captures the design discipline for the `/think-*` skill family. Includes the **five-test admission gate** for new `/think-*` skills (specific failure mode, practitioner tradition, unskippable questions, NGT discipline, honest "didn't apply"), cross-cutting practices (steelmanning, observation/recollection split, process-vs-luck attribution, calibrated qualitative confidence, prospective hindsight), and intellectual lineage (Kahneman, Tetlock, Schön, Klein, Taleb, de Bono, Delbecq & Van de Ven, Peirce). New `/think-*` skills must clear the five tests; existing `/scope`, `/implement`, `/refactor`, etc. are admitted by different criteria. A "spillover" section notes which practices apply across the plugin.
+- **`THINK.md` design discipline document.** Repo-root document that captures the design discipline for the `/think-*` skill family. Includes the **five-test admission gate** for new `/think-*` skills (specific failure mode, practitioner tradition, unskippable questions, NGT discipline, honest "didn't apply"), cross-cutting practices (steelmanning, observation/recollection split, process-vs-luck attribution, calibrated qualitative confidence, prospective hindsight), and intellectual lineage (Kahneman, Tetlock, Schön, Klein, Taleb, de Bono, Delbecq & Van de Ven, Peirce). New `/think-*` skills must clear the five tests; existing `/scope`, `/implement`, `/refactor`, etc. are admitted by different criteria. A "spillover" section notes which practices apply across the plugin. *(File has since been relocated to `references/think.md`.)*
 
-- **`CLAUDE.md` updated** to reference `THINK.md` and require new `/think-*` skills to pass its admission gate.
+- **`CLAUDE.md` updated** to reference `THINK.md` *(later relocated to `references/think.md`)* and require new `/think-*` skills to pass its admission gate.
 
 - **README.md and skill-level documentation updated** to position the new skills, agents, and workflow changes in the catalog and rules-of-thumb table.
 
@@ -248,7 +248,7 @@
 
 ### Infrastructure
 
-- **Release automation moved from `Makefile` to a Claude-assisted procedure.** The top-level `Makefile` has been removed; release cutting is now driven by a procedure documented in `HACKING.md`. This is an internal workflow change — no effect on the public skill interface.
+- **Release automation moved from `Makefile` to a Claude-assisted procedure.** The top-level `Makefile` has been removed; release cutting is now driven by a procedure documented in `HACKING.md`. This is an internal workflow change — no effect on the public skill interface. *(`HACKING.md` has since been deleted; release procedure now lives in the `/release` skill.)*
 
 ## v6.0.0
 

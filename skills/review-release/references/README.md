@@ -13,16 +13,18 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
 ## When to Use
 
 **Use `/review-release` for:**
-- Preparing to tag and release a new version
-- Final quality gate before shipping to users
-- Validating that a codebase is ready for distribution
-- Catching things that development workflows don't focus on
+- Validating that a codebase is ready for distribution, without committing to cut yet
+- A standalone audit pass that catches things development workflows don't focus on
+- Investigating release-readiness ahead of a planned release window
 
 **Don't use `/review-release` for:**
+- Cutting the release itself — use [`/release`](../../release/references/README.md), which invokes `/review-release` as preflight internally. Running `/review-release` manually and then `/release` doubles up on the same check.
 - Routine development checks (use `/implement` or `/refactor`)
 - Test quality concerns (use `/review-test` or `/test-mutation`)
 - Documentation updates (use `/tidy-docs`)
 - Security audits (the sec-blue-teamer agent handles that during `/implement`; use `/review-security` for deep audits)
+
+**Pairing with `/release`:** `/review-release` and `/release` sit on opposite sides of the act/check seam. `/review-release` is advisory — it tells you whether the release is ready. `/release` is the mutator — it actually cuts the release, and always runs `/review-release` as preflight before doing anything irreversible. If your intent is to ship, go directly to `/release`. If your intent is to audit readiness without committing to a cut, run `/review-release` alone.
 
 **Key principle:** Releases deserve human review. This workflow surfaces issues — it doesn't silently fix them.
 

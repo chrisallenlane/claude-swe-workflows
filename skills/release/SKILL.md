@@ -142,7 +142,15 @@ Build an ordered command list from the procedure discovered in step 2 (or record
 
 Typical plan (customized to the discovered procedure):
 
-1. Update version in manifest files (`package.json`, `Cargo.toml`, `pyproject.toml`, version constants in source) — **reversible**
+1. Update version in **every** manifest file that carries a version field — **reversible**. Do not assume a single canonical manifest; multiple manifests routinely co-exist and must stay in lockstep. Common combinations:
+   - npm: `package.json` (plus `package-lock.json` after `npm install`).
+   - Rust: `Cargo.toml` (plus `Cargo.lock` after `cargo build`).
+   - Python: `pyproject.toml` (plus `setup.py` / `setup.cfg` / `__version__` constants).
+   - Go: typically a source-level version constant.
+   - **Claude Code plugins: both `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`** — the latter is the distribution artifact; the two must agree.
+   - Any project: also bump version constants embedded in source code (`VERSION = "X.Y.Z"`), badges in README, and similar.
+
+   Scan for files containing the current version string (`git grep -F "<old-version>"`) to catch occurrences the conventional list misses. Each hit is a potential bump site; include in the plan or explicitly justify excluding.
 2. Update CHANGELOG.md unreleased section with version and date — **reversible**
 3. Commit version bump (`chore: release vX.Y.Z`) — **reversible-locally**
 4. Create annotated tag (`git tag -a vX.Y.Z -m "Release vX.Y.Z"`) — **reversible-locally**
@@ -337,13 +345,14 @@ Preflight:  /review-release passed (2 warnings — see below)
 
 Steps:
   1. [reversible]               Update version in .claude-plugin/plugin.json → 10.1.0
-  2. [reversible]               Update CHANGELOG.md (set date to 2026-05-18)
-  3. [reversible-locally]       git commit -m "chore: release v10.1.0"
-  4. [reversible-locally]       git tag -a v10.1.0 -m "Release v10.1.0"
+  2. [reversible]               Update version in .claude-plugin/marketplace.json → 10.1.0
+  3. [reversible]               Update CHANGELOG.md (set date to 2026-05-18)
+  4. [reversible-locally]       git commit -m "chore: release v10.1.0"
+  5. [reversible-locally]       git tag -a v10.1.0 -m "Release v10.1.0"
   ───── local → remote boundary ─────
-  5. [irreversible-on-publish]  git push origin master
-  6. [irreversible-on-publish]  git push origin v10.1.0
-  7. [partially-reversible]     gh release create v10.1.0 --generate-notes
+  6. [irreversible-on-publish]  git push origin master
+  7. [irreversible-on-publish]  git push origin v10.1.0
+  8. [partially-reversible]     gh release create v10.1.0 --generate-notes
 
 Preflight warnings:
   - CHANGELOG: minor formatting inconsistency in v10.0.0 entry (pre-existing)
@@ -352,29 +361,31 @@ Preflight warnings:
 Proceed?
 > Proceed
 
-Step 1 of 7: Updating .claude-plugin/plugin.json version → 10.1.0... done.
-Step 2 of 7: Updating CHANGELOG.md date → 2026-05-18... done.
-Step 3 of 7: Committing... done (sha 4d5e6f7).
-Step 4 of 7: Tagging v10.1.0... done.
+Step 1 of 8: Updating .claude-plugin/plugin.json version → 10.1.0... done.
+Step 2 of 8: Updating .claude-plugin/marketplace.json version → 10.1.0... done.
+Step 3 of 8: Updating CHANGELOG.md date → 2026-05-18... done.
+Step 4 of 8: Committing... done (sha 4d5e6f7).
+Step 5 of 8: Tagging v10.1.0... done.
 
-Local steps complete (version bumped, committed, tagged).
+Local steps complete (version bumped in both manifests, committed, tagged).
 About to push to remote — final confirmation?
 > Proceed
 
-Step 5 of 7: git push origin master... done.
-Step 6 of 7: git push origin v10.1.0... done.
-Step 7 of 7: gh release create v10.1.0 --generate-notes... done.
+Step 6 of 8: git push origin master... done.
+Step 7 of 8: git push origin v10.1.0... done.
+Step 8 of 8: gh release create v10.1.0 --generate-notes... done.
 
 ## Release Complete: v10.1.0
 
 ### Executed
-  1. Bumped version to 10.1.0
-  2. Updated CHANGELOG.md
-  3. Committed: "chore: release v10.1.0" (sha 4d5e6f7)
-  4. Tagged v10.1.0
-  5. Pushed master
-  6. Pushed tag v10.1.0
-  7. Created GitHub release v10.1.0
+  1. Bumped version to 10.1.0 in .claude-plugin/plugin.json
+  2. Bumped version to 10.1.0 in .claude-plugin/marketplace.json
+  3. Updated CHANGELOG.md
+  4. Committed: "chore: release v10.1.0" (sha 4d5e6f7)
+  5. Tagged v10.1.0
+  6. Pushed master
+  7. Pushed tag v10.1.0
+  8. Created GitHub release v10.1.0
 
 ### Links
   - Tag: https://github.com/chrisallenlane/claude-swe-workflows/releases/tag/v10.1.0
