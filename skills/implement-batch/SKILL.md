@@ -52,6 +52,7 @@ Orchestrates a batch of tickets as a cohesive unit. Creates a project branch, im
 **Andon cord triggers (skill-specific):**
 - Acceptance verification fails 3 times (step 5b, `/implement` step 4)
 - Unresolvable critical/high security findings (step 5b, `/implement` step 5a)
+- Correctness review convergence cap exhausted, or a finding stays contested between reviewer and implementer (step 5b, `/implement` step 9)
 - Post-merge test suite failure (step 5d)
 - Merge conflict (step 5c)
 - Issue tracker unavailable or tickets can't be fetched (step 2)
@@ -127,11 +128,12 @@ Follow the `/implement` workflow with these overrides for autonomous operation:
 | **Step 6** (implement review feedback)      | Follow normal logic.                                                                                                                                                                                             |
 | **Step 7** (peer review)                    | Follow normal logic. Handle deep issues autonomously — trust agents. If peer review breaks tests, revert peer review changes per standard `/implement` logic.                                                      |
 | **Step 8** (coverage/quality verification)  | Follow normal logic. Handle autonomously — if tests pass, proceed. Do not prompt user for approval of minor issues.                                                                                              |
-| **Step 9** (documentation)                  | Follow normal logic.                                                                                                                                                                                             |
-| **Step 10** (final verification)            | Follow normal logic.                                                                                                                                                                                             |
-| **Step 11a** (commit)                       | Auto-commit with ticket reference. Use `Fixes #<number>` in the commit message.                                                                                                                                  |
-| **Step 11b** (ticket update/close)          | Post a comment on the ticket summarizing changes made. **Do not close** the ticket — leave that for the user after final review.                                                                                 |
-| **Step 11c** (rebase on main)               | **Skip entirely.** We're on topic branches off the project branch, not main.                                                                                                                                     |
+| **Step 9** (correctness review)             | Follow normal logic — run-unless, with the degraded-verification override. If the convergence loop exhausts its 3-round cap or stalls on a contested finding, **andon cord**.                                    |
+| **Step 10** (documentation)                 | Follow normal logic.                                                                                                                                                                                             |
+| **Step 11** (final verification)            | Follow normal logic.                                                                                                                                                                                             |
+| **Step 12a** (commit)                       | Auto-commit with ticket reference. Use `Fixes #<number>` in the commit message.                                                                                                                                  |
+| **Step 12b** (ticket update/close)          | Post a comment on the ticket summarizing changes made. **Do not close** the ticket — leave that for the user after final review.                                                                                 |
+| **Step 12c** (rebase on main)               | **Skip entirely.** We're on topic branches off the project branch, not main.                                                                                                                                     |
 
 #### 5c. Merge Topic Branch into Project Branch
 

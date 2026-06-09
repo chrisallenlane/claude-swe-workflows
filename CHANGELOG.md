@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+### New Agents
+
+- **`swe-correctness-reviewer` — adversarial diff-scoped correctness review.** A new internal agent (opus) that fills a structural gap in the `/implement` pipeline: every existing gate was either empirical (run the feature in step 4, run the test suite in step 8) or quality-focused (clarity via `swe-code-reviewer`, security posture via `sec-blue-teamer`, idiom nits via SME peer review) — no agent was ever assigned the question "is this diff *correct*?" The gap was discovered in the field: on a legacy codebase with zero test coverage and no way to run the application locally, both empirical gates silently collapsed, and patches shipped with bugs (unverified import-path assumptions) that an external PR reviewer had to catch.
+
+  The agent borrows two techniques from `/think-premortem`, minus the heavyweight multi-agent machinery. First, prospective hindsight as the review framing: not "does this look right?" but "this diff was merged and caused a production incident — the bug is in there; reconstruct it," which counters the rubber-stamping failure mode of confirmation-oriented review. Second, scenario-mode's evidence discipline: read before claiming, cite file:line, never assert a defect without verifying it against the actual code — paired with calibration honesty ("honest zero is a valid verdict") so the agent doesn't manufacture findings to look thorough.
+
+  The review walks a fixed six-concern spine: (1) **assumptions** — every path, symbol, signature, and config key the diff references, mechanically verified against the repo and recorded in an assumption ledger with per-assumption verdicts; (2) **runtime semantics** — features used must exist in the *target* language/framework version (PHP 5.3, not "PHP"), verified against manifests and local language references rather than recall; (3) **call sites** — every caller of every changed function; (4) **data flow** — traced forward to consumers and backward to producers; (5) **error paths**; (6) **first-principles residual** — whatever is idiosyncratic about this diff that the taxonomy misses. Output classifies findings (blocking, with cited evidence) separately from residual risks (unverifiable-in-repo items, non-blocking, surfaced to a human). The agent receives the diff and the repo only — never the implementation conversation — so the implementing agent's rationalizations can't anchor the review.
+
+### Changed
+
+- **`/implement` — new step 9, the analytical correctness gate.** Runs after all mechanical/empirical gates (steps 4–8) and before documentation, on the reasoning that mechanical verification is cheap and analytical review is expensive — don't spend opus review rounds on code that fails its own test suite. Invocation is **run-unless** at the orchestrator's discretion: the default is to run, with skips reserved for trivial diffs (typo fixes, comment-only changes), plus a **degraded-verification override** that makes the step mandatory regardless of diff size when step 4's practical verification was impossible or the project has no meaningful test suite — exactly the conditions under which the rest of the pipeline silently stops checking correctness.
+
+  Findings are blocking, not advisory: each must be fixed or refuted with cited evidence. Resolution runs as a convergence loop — findings → implementation agent resolves → tests/linters re-run → a *fresh* reviewer instance re-reviews the full diff — until a round reports zero findings, capped at 3 rounds before escalating to the user. This internalizes the converge-with-an-independent-reviewer protocol that previously required an external review tool. Downstream steps renumber 9–11 → 10–12, and the overall agent-spawn safety limit rises from 10 to 15 to accommodate the new gate and its loop rounds.
+
+- **`/implement-batch` — adapts to the new gate.** The autonomous-override table gains a Step 9 row (follow normal logic, run-unless with the degraded-verification override) and renumbers the rest; convergence-cap exhaustion and reviewer-vs-implementer contested findings join the andon-cord triggers, cascading to the batch level per the existing protocol.
+
 ## v10.1.0
 
 ### New Skills

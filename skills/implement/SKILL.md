@@ -218,6 +218,33 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 
 **Expected output:** Coverage metrics, tests added/modified, quality issues found, confirmation that all changes still pass tests.
 
+### 9. Correctness Review (Conditional — Blocking)
+
+**This is the analytical correctness gate.** Every gate before this point is either empirical (step 4 runs the feature; step 8 runs the test suite) or quality-focused (clarity, security posture, idiom nits). None of them reads the diff asking "is this correct?" This step does. It runs last among the review gates deliberately: mechanical verification is cheap and analytical review is expensive — don't spend review rounds on code that fails its own test suite.
+
+**When to run (run-unless):**
+
+The default is to run. Skip only when the diff is trivial — typo fixes, comment- or documentation-only changes, single-line changes whose correctness is obvious by inspection. When in doubt, run it.
+
+**Degraded-verification override (mandatory):** if practical verification in step 4 was impossible (the feature could not actually be run) **or** the project has no meaningful test suite, this step is **mandatory regardless of diff size**. When the empirical gates collapse, analytical review is the only correctness gate left — it must not be skipped quietly.
+
+**Spawn `swe-correctness-reviewer` agent (fresh context):**
+- Provide: the full diff (or branch/commit range), target runtime and framework versions if known, and the round number if looping
+- Do **not** provide: implementation history, rationale for design choices, or prior agents' outputs. The reviewer sees the diff and the repo, nothing else — independence from the implementation context is what makes the review effective
+- The agent assumes a bug already shipped and works backward to find it, walking a six-concern spine (assumptions, runtime semantics, call sites, data flow, error paths, first-principles residual) with mechanical verification of every assumption the diff makes
+
+**Convergence loop (blocking):**
+1. Reviewer reports findings (blocking) and residual risks (non-blocking)
+2. **Zero findings:** proceed to step 10. Carry any residual risks forward to the final summary (step 11) so a human sees them.
+3. **Findings:** re-invoke the implementation agent (same as steps 3/6) to resolve each one — fix it, or refute it with cited evidence
+4. Re-run mechanical verification (test suite, linters) — fixes must not regress the earlier gates
+5. Spawn a **fresh** `swe-correctness-reviewer` instance to re-review the updated diff in full
+6. Repeat until a round reports zero findings
+
+**Iteration cap: 3 rounds.** If findings persist after 3 rounds, escalate to the user with the surviving findings and the implementation agent's responses. (When invoked from `/implement-batch`, this escalation cascades to the batch level per its andon-cord protocol.)
+
+**Expected output:** APPROVE verdict (possibly with residual risks for the final summary), or escalation after cap exhaustion.
+
 ### Feedback Loops
 
 **Acceptance verification failure (step 4):**
@@ -245,7 +272,13 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 - Minor issues (low coverage in non-critical code, style nitpicks): document and proceed
 - User can approve proceeding despite issues if acceptable
 
-### 9. Documentation
+**Correctness review findings (step 9):**
+- All findings are blocking — advisory discretion does not apply
+- Each finding is resolved by fixing it or refuting it with cited evidence; fixes route to the implementation agent, then mechanical re-verification, then a fresh reviewer instance
+- 3 rounds maximum, then escalate to user with surviving findings
+- Residual risks (non-blocking) carry forward to the final summary
+
+### 10. Documentation
 
 **Spawn `doc-maintainer` agent:**
 - Review git diff to identify which files/modules changed
@@ -263,7 +296,7 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 - Skip full codebase documentation scan
 - Report "no documentation changes needed" if changes are purely internal with no doc impact
 
-### 10. Final verification
+### 11. Final verification
 
 **Run comprehensive checks:**
 - Execute full test suite (must pass)
@@ -275,6 +308,7 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 - Files changed
 - Tests added/modified
 - Coverage improvements
+- Residual risks surfaced by the correctness review (step 9), if any
 - Any remaining TODOs or follow-ups
 
 **If verification fails:**
@@ -282,15 +316,15 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 - Return to appropriate step (step 3 for implementation bugs, step 5 for refactoring issues)
 - Report specific failures to user
 
-### 11. Workflow Completion (Optional)
+### 12. Workflow Completion (Optional)
 
-**After presenting summary from step 10, ask user if they want to complete the workflow.**
+**After presenting summary from step 11, ask user if they want to complete the workflow.**
 
-User may also explicitly request workflow completion at any point after step 10 succeeds.
+User may also explicitly request workflow completion at any point after step 11 succeeds.
 
 **If user confirms, perform housekeeping tasks:**
 
-#### 11a. Commit Changes
+#### 12a. Commit Changes
 
 **If uncommitted changes exist:**
 - Review git status to see what changed
@@ -309,7 +343,7 @@ Includes rate limiting and CSRF protection.
 Fixes #123
 ```
 
-#### 11b. Update/Close Issue Tracker Ticket (Conditional)
+#### 12b. Update/Close Issue Tracker Ticket (Conditional)
 
 Detect tracker, recover the ticket number, and post the close-out per [`references/trackers.md`](../../references/trackers.md) (Detection Procedure + "Comment / update (close-out)" + "Close" operations).
 
@@ -319,7 +353,7 @@ Detect tracker, recover the ticket number, and post the close-out per [`referenc
 - Tests added
 - Documentation updated
 
-#### 11c. Sync with Main Branch (Conditional)
+#### 12c. Sync with Main Branch (Conditional)
 
 **Check branch state:**
 - Identify main branch name (master or main)
@@ -354,6 +388,8 @@ Detect tracker, recover the ticket number, and post the close-out per [`referenc
 **State management:**
 - Track current workflow step
 - Track QA iteration count (for acceptance verification failures)
+- Track correctness review round count (step 9 convergence loop)
+- Carry residual risks from step 9 forward to the final summary
 - Accumulate summary information
 - Preserve original requirements for passing to QA acceptance verification
 
@@ -375,7 +411,8 @@ Detect tracker, recover the ticket number, and post the close-out per [`referenc
 
 **Maximum iterations:**
 - Acceptance verification loop (step 4): 3 attempts, then escalate to user
-- Overall workflow: 10 total agent spawns (safety limit)
+- Correctness review convergence loop (step 9): 3 rounds, then escalate to user
+- Overall workflow: 15 total agent spawns (safety limit)
 
 **Escalation to user:**
 - Present current state

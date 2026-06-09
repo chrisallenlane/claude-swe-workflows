@@ -96,11 +96,11 @@ The `/implement` skill orchestrates a complete development workflow through spec
  │  Conditional reviews based on code changes:  │
  │                                              │
  │  5a. Security (if sensitive code)            │
- │      Agent: sec-blue-teamer│
+ │      Agent: sec-blue-teamer                  │
  │      Authority: Can demand changes           │
  │                                              │
  │  5b. Refactoring (if non-trivial)            │
- │      Agent: swe-code-reviewer                     │
+ │      Agent: swe-code-reviewer                │
  │      Authority: Advisory suggestions         │
  │                                              │
  │  5c. Performance (if critical code)          │
@@ -145,7 +145,22 @@ The `/implement` skill orchestrates a complete development workflow through spec
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  9. DOCUMENTATION                            │
+ │  9. CORRECTNESS REVIEW (run-unless)          │
+ │  ────────────────────────────────────────    │
+ │  Agent: swe-correctness-reviewer (fresh)     │
+ │                                              │
+ │  "The bug has already shipped. Find it."     │
+ │  • Verify every diff assumption vs repo      │
+ │  • Findings are blocking, not advisory       │
+ │  • Mandatory if empirical gates degraded     │
+ │                                              │
+ │  Findings? ──┬─ Yes → fix → fresh review     │
+ │              │      (max 3 rounds)           │
+ │              └─ No → APPROVE, continue       │
+ └──────────────────┬───────────────────────────┘
+                    ▼
+ ┌──────────────────────────────────────────────┐
+ │  10. DOCUMENTATION                           │
  │  ────────────────────────────────────────    │
  │  Agent: doc-maintainer                       │
  │                                              │
@@ -155,7 +170,7 @@ The `/implement` skill orchestrates a complete development workflow through spec
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  10. FINAL VERIFICATION                      │
+ │  11. FINAL VERIFICATION                      │
  │  ────────────────────────────────────────    │
  │  • Run full test suite                       │
  │  • Run all linters                           │
@@ -164,7 +179,7 @@ The `/implement` skill orchestrates a complete development workflow through spec
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  11. WORKFLOW COMPLETION (optional)          │
+ │  12. WORKFLOW COMPLETION (optional)          │
  │  ────────────────────────────────────────    │
  │  Ask: "Complete the workflow?"               │
  │                                              │
@@ -294,7 +309,27 @@ General QA assessment of test coverage, linters, and code quality:
 
 If tests are broken by changes from step 6, returns to step 6. If broken by step 7, reverts peer review changes. Minor issues don't block workflow.
 
-### 9. Documentation
+### 9. Correctness Review (Conditional — Blocking)
+
+The analytical correctness gate, and the last review gate in the pipeline. Every earlier gate is either empirical (run the feature, run the tests) or quality-focused (clarity, security posture, nits) — none of them reads the diff asking "is this correct?" The `swe-correctness-reviewer` agent does exactly that, with a deliberately adversarial framing borrowed from `/think-premortem`: *assume the diff already shipped and caused a production incident, then work backward to the bug.*
+
+The reviewer walks a fixed six-concern spine:
+1. **Assumptions** — every path, symbol, signature, and config key the diff references, verified mechanically against the repo
+2. **Runtime semantics** — features used exist in the *target* language/framework version, not the version the model remembers
+3. **Call sites** — every caller of every changed function still holds
+4. **Data flow** — values traced forward to consumers and backward to producers
+5. **Error paths** — failure branches, not just the happy path
+6. **First-principles residual** — whatever is idiosyncratic about this diff that the spine misses
+
+**Run-unless, not run-if:** the default is to run. The orchestrator may skip it only for trivial diffs (typo fixes, comment-only changes, single-line changes that are obviously correct). And if the empirical gates degraded — the feature couldn't actually be run in step 4, or the project has no meaningful test suite — the review is **mandatory regardless of diff size**. That rule exists because degraded environments are exactly where the rest of the pipeline silently stops checking correctness.
+
+**Findings are blocking.** Unlike the advisory reviews in step 5, correctness findings must each be fixed or refuted with cited evidence. The loop runs: findings → implementation agent resolves → tests/linters re-run → a *fresh* reviewer instance re-reviews the full diff. Convergence is a round with zero findings; the cap is 3 rounds, then escalation.
+
+**The reviewer's independence is structural:** it receives the diff and the repo, never the implementation rationale. Fresh eyes each round — the same anchoring-suppression principle as the SME peer review, applied to correctness.
+
+Non-blocking "residual risks" (things unverifiable from the repo alone, like external service behavior) don't loop — they're carried forward and surfaced in the final summary so a human sees them.
+
+### 10. Documentation
 The `doc-maintainer` updates affected documentation:
 - README.md for user-facing changes
 - CLAUDE.md for architectural changes
@@ -303,16 +338,16 @@ The `doc-maintainer` updates affected documentation:
 
 Targeted review (not comprehensive audit).
 
-### 10. Final Verification
+### 11. Final Verification
 Comprehensive checks before presenting to user:
 - Full test suite passes
 - All linters pass
 - No new warnings
 - Git status clean
 
-Presents summary: files changed, tests added, coverage improvements, TODOs.
+Presents summary: files changed, tests added, coverage improvements, residual risks from the correctness review (if any), TODOs.
 
-### 11. Workflow Completion (Optional)
+### 12. Workflow Completion (Optional)
 After presenting the summary, asks if you want to complete the workflow. If yes, performs housekeeping:
 
 **Commit changes:**
@@ -349,9 +384,11 @@ Workflow:
 6. Respond: swe-sme-golang reviews refactoring suggestions, implements extraction
 7. Peer review: Fresh swe-sme-golang reviews, fixes minor naming inconsistency
 8. QA (coverage): Checks coverage, runs linters, verifies changes didn't break tests
-9. Docs: doc-maintainer updates README with --format examples
-10. Verify: All tests pass, present summary
-11. Complete: User confirms, commits changes, skips ticket update, branch already up to date
+9. Correctness: swe-correctness-reviewer verifies flag wiring, formatter call sites,
+                and library versions against go.mod — APPROVE, zero findings
+10. Docs: doc-maintainer updates README with --format examples
+11. Verify: All tests pass, present summary
+12. Complete: User confirms, commits changes, skips ticket update, branch already up to date
 ```
 
 ### Example 2: GraphQL API with Security Concerns
@@ -370,9 +407,12 @@ Workflow:
 6. Respond: swe-sme-graphql addresses security issue (must fix), implements email extraction
 7. Peer review: Fresh swe-sme-graphql reviews, cleans up error message formatting
 8. QA (coverage): Coverage check, linters, verify changes didn't break tests
-9. Docs: Updates API docs with mutation examples
-10. Verify: All checks pass
-11. Complete: User confirms, commits changes with "Fixes #456", updates and closes ticket,
+9. Correctness: Round 1 finds the resolver assumes the email service throws on failure,
+                but it returns null (cited evidence from the service source). Fix applied,
+                tests re-run, fresh reviewer instance approves in round 2.
+10. Docs: Updates API docs with mutation examples
+11. Verify: All checks pass
+12. Complete: User confirms, commits changes with "Fixes #456", updates and closes ticket,
              rebases on main
 ```
 
@@ -389,9 +429,11 @@ Workflow:
 6. Respond: Skip (no feedback to implement)
 7. Peer review: Skip (trivial change)
 8. QA (coverage): Coverage check
-9. Docs: doc-maintainer finds no docs affected
-10. Verify: Tests pass
-11. Complete: User declines, will commit manually later
+9. Correctness: Runs despite small diff — boundary logic is exactly where off-by-ones
+                hide. Reviewer checks all call sites of the pagination function, APPROVE
+10. Docs: doc-maintainer finds no docs affected
+11. Verify: Tests pass
+12. Complete: User declines, will commit manually later
 ```
 
 ## Tips for Effective Use
@@ -410,6 +452,8 @@ Workflow:
 
 7. **Practical verification is key**: The workflow specifically prevents "works in tests but not in reality" - agents actually run the code.
 
+8. **Hostile repos get extra scrutiny automatically**: When the code can't be run locally and no test suite exists, the correctness review (step 9) becomes mandatory rather than discretionary. That's the lesson of legacy codebases - the environments where verification is hardest are the ones that need it most.
+
 ## Agent Coordination
 
 All agents run **sequentially** (never in parallel):
@@ -422,7 +466,8 @@ All agents run **sequentially** (never in parallel):
 
 **Safety limits:**
 - Acceptance verification loop: 3 attempts max
-- Overall workflow: 10 agent spawns max
+- Correctness review convergence loop: 3 rounds max
+- Overall workflow: 15 agent spawns max
 
 If limits reached, workflow escalates to user with current state and specific blockers.
 
@@ -437,6 +482,7 @@ The `/implement` workflow embodies several key principles:
 - Response phase focuses on "how should we address feedback?" - implementation agent uses discretion
 - Peer review focuses on "would I accept this PR?" - fresh eyes catch what accumulated context misses
 - Coverage QA focuses on "did our changes break anything?"
+- Correctness review focuses on "the bug has already shipped - where is it?" - the analytical backstop, and the only correctness gate that survives when the code can't be run and no tests exist
 - Documentation focuses on "can others understand it?"
 
 **Specialists have final say:**
