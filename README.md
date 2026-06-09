@@ -29,7 +29,7 @@ Three other entry points orchestrate bounded autonomous loops:
 
 - `/lead-bug-hunt` — loops `/bug-hunt` → `/implement-batch` until bugs converge below a severity floor.
 - `/lead-refactor` — `/refactor` → loops `/review-arch` + `/implement-batch` → `/refactor`.
-- `/lead-review` — runs every `/review-*` sub-skill once.
+- `/lead-review` — runs every repo-scoped `/review-*` sub-skill once.
 
 Planning feeds implementation: `/scope-project` → `/implement-project`, or
 `/scope` → `/implement`. Supporting skills (`/think-*`, `/review-*`, `/bug-*`,
@@ -45,7 +45,7 @@ skills with a related purpose.
 | `/lead-*`      | Autonomous orchestrators                    | `/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/lead-review`                                                                                    |
 | `/implement-*` | Implement tickets (mutate the working tree) | `/implement`, `/implement-batch`, `/implement-project`                                                                                                 |
 | `/scope-*`     | Plan and produce tickets                    | `/scope`, `/scope-project`                                                                                                                             |
-| `/review-*`    | Advisory audits — no code changes           | `/review-arch`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-health`, `/review-security`, `/review-release`                                |
+| `/review-*`    | Advisory audits — no code changes           | `/review-arch`, `/review-code`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-health`, `/review-security`, `/review-release`                |
 | `/think-*`     | Reasoning support — no artifacts            | `/think-reframe`, `/think-brainstorm`, `/think-diagnose`, `/think-ach`, `/think-deliberate`, `/think-premortem`, `/think-scrutinize`, `/think-reflect` |
 | `/tidy-*`      | Mechanical hygiene                          | `/tidy-docs`, `/tidy-git`                                                                                                                              |
 | `/bug-*`       | Find and fix bugs                           | `/bug-fix`, `/bug-hunt`                                                                                                                                |
@@ -95,6 +95,7 @@ task:
 | First-pass strategic orientation on a repo                                                  | `/review-health`     |
 | Review performance (compute and/or web)                                                     | `/review-perf`       |
 | Perform a white-box security audit                                                          | `/review-security`   |
+| Adversarially review a diff for correctness bugs before merging                             | `/review-code`       |
 | Run every review dimension autonomously (with optional backlog creation)                    | `/lead-review`       |
 | Tidy up the session before running `/compact`                                               | `/pre-compact`       |
 | Clean up local git state (stale refs, merged branches)                                      | `/tidy-git`          |
@@ -115,7 +116,7 @@ One-line summaries grouped by namespace. Click through to each skill's detailed 
 - **`/lead-project`** — Autonomous tech lead. Runs an OODA loop over project state given a commander's intent, invoking lower-level skills until end-state is met or it pulls an andon cord. ([details](skills/lead-project/references/README.md))
 - **`/lead-bug-hunt`** — Loops `/bug-hunt` → `/implement-batch` until bugs converge below a stated severity floor; runs `/review-test` on the new reproducing tests at termination. ([details](skills/lead-bug-hunt/references/README.md))
 - **`/lead-refactor`** — Three-phase comprehensive refactoring: tactical `/refactor` → loop of `/review-arch` + `/implement-batch` until convergence → final tactical `/refactor`. ([details](skills/lead-refactor/references/README.md))
-- **`/lead-review`** — Runs every `/review-*` sub-skill autonomously with an operator-set toggle for whether sub-skill ticket proposals are written to the tracker. ([details](skills/lead-review/references/README.md))
+- **`/lead-review`** — Runs every repo-scoped `/review-*` sub-skill autonomously with an operator-set toggle for whether sub-skill ticket proposals are written to the tracker (diff-scoped `/review-code` is excluded — an audit has no diff under review). ([details](skills/lead-review/references/README.md))
 
 ### `/implement-*` — Working-tree mutators
 
@@ -139,6 +140,7 @@ All `/review-*` skills are advisory — they audit and propose, never mutate.
 - **`/review-health`** — First-pass strategic orientation review. Useful when inheriting a project, evaluating a library, or revisiting your own repo. Evidence-cited map, not a grade. ([details](skills/review-health/SKILL.md))
 - **`/review-security`** — White-box security audit. Blue-teamer evaluates defensive posture first; red-teamers then attack informed by the gaps. Iterates until no new exploit chains emerge. ([details](skills/review-security/SKILL.md))
 - **`/review-release`** — Pre-release readiness check: debug artifacts, version mismatches, changelog gaps, git hygiene, breaking changes, license compliance. ([details](skills/review-release/SKILL.md))
+- **`/review-code`** — Adversarial correctness review of a diff: assumes a bug already shipped and mechanically verifies every assumption the change makes against the repo. The one diff-scoped `/review-*` skill — the rest audit the whole repository. ([details](skills/review-code/SKILL.md))
 
 ### `/think-*` — Reasoning
 

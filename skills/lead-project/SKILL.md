@@ -158,6 +158,7 @@ Available actions (non-exhaustive):
 - `/implement` or `/implement-batch` or `/implement-project` — execute ticketed work
 - `/refactor` or `/lead-refactor` — code quality cleanup
 - `/review-arch`, `/review-test`, `/tidy-docs`, `/review-release`, `/review-perf`, `/review-a11y`, `/review-security` — targeted reviews
+- `/review-code` — adversarial correctness review of a specific diff; useful pre-merge on an integration branch before presenting it as done
 - `/lead-review` — comprehensive review pass
 - `/bug-hunt` — proactive bug discovery
 - `/bug-fix` — diagnosis-first bug fixing

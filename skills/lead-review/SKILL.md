@@ -89,6 +89,8 @@ Inspect the codebase to determine which review sub-skills do not apply:
 - **No test suite detected** → skip `/review-test` (or warn; operator may want to run it anyway to flag the absence)
 - **No deployable target** (no Dockerfile, no release tags, no build pipeline config) → consider whether `/review-release` adds value; default is to run it anyway since it scans for debug artifacts and version mismatches even without a deployment
 
+`/review-code` is structurally excluded, not skip-listed: it is diff-scoped (it reviews a specific change), and a repository audit has no diff under review. It is the one `/review-*` skill outside this pipeline.
+
 Present the proposed skip-list and the enabled-list to the operator. Confirm before proceeding.
 
 ### 1–7. Phases — Sub-Skill Invocations

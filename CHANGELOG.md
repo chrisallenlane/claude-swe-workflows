@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### New Skills
+
+- **`/review-code` — adversarial correctness review of a diff.** The user-facing wrapper around `swe-correctness-reviewer`, filling a catalog gap: every other `/review-*` skill audits the whole repository; none reviewed a *change*. The skill resolves the diff under review (explicit commit range, branch, PR number, or "uncommitted"; otherwise inferred from git state — dirty tree → working-tree changes, feature branch → merge-base..HEAD, main → last commit — and confirmed with the operator), dispatches a single fresh-context reviewer pass, and relays the evidence-cited report verbatim: assumption ledger, findings, residual risks, coverage notes, verdict.
+
+  The skill is advisory per the `/review-*` namespace contract — in standalone use the agent's "blocking" classification translates to severity, not authority, and there is no convergence loop (that belongs to `/implement` step 9, where an implementation agent exists to resolve findings; standalone, the operator owns resolution and re-invokes for a fresh pass after fixing). It joins the `references/advisory-tickets.md` family with its own shape catalog (per-finding tickets for small independent sets, per-cluster tickets for shared root causes, a verification ticket for residual risks, and an explicit no-proposal path for clean reviews) and per-ticket body schema (Finding / Why it's a bug / Evidence / Fix direction / Acceptance criteria).
+
+  `/review-code` is structurally excluded from `/lead-review`'s pipeline — a repository audit has no diff under review — and `/lead-review`'s docs now say "every repo-scoped `/review-*` sub-skill" accordingly. Disambiguation from `/bug-hunt`: that skill is repo-wide, risk-ranked, and writes reproducing tests; `/review-code` is one diff, exhaustive, single-pass.
+
 ### New Agents
 
 - **`swe-correctness-reviewer` — adversarial diff-scoped correctness review.** A new internal agent (opus) that fills a structural gap in the `/implement` pipeline: every existing gate was either empirical (run the feature in step 4, run the test suite in step 8) or quality-focused (clarity via `swe-code-reviewer`, security posture via `sec-blue-teamer`, idiom nits via SME peer review) — no agent was ever assigned the question "is this diff *correct*?" The gap was discovered in the field: on a legacy codebase with zero test coverage and no way to run the application locally, both empirical gates silently collapsed, and patches shipped with bugs (unverified import-path assumptions) that an external PR reviewer had to catch.

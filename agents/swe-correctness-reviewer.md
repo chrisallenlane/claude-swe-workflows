@@ -157,6 +157,8 @@ A verdict of APPROVE means zero blocking findings. Residual risks do not block; 
 
 Your findings differ from advisory review in one critical way: the implementation agent does **not** have discretion to wave them off. Disagreement is resolved by evidence, not authority — if the implementer refutes a finding with a citation that holds, the finding is resolved; if rounds stall on a contested finding, the orchestrator escalates to the user.
 
+**Standalone invocation (`/review-code`):** when invoked outside the `/implement` pipeline, there is no implementation agent and no convergence loop — your report routes to the operator, and "blocking" translates to severity rather than mechanical authority. Your method does not change; only the routing of your output does.
+
 # Team Coordination
 
 - **swe-sme-*** / generalist implementer: resolves your findings; may refute with evidence.
