@@ -161,7 +161,7 @@ For each ticket in order:
 - Acceptance criteria are derived from the description if not explicit
 - Auto-commits with `Fixes #<number>` in the message
 - Posts a comment on the ticket summarizing changes (does not close it)
-- Andon cord on 3x acceptance verification failure or unresolvable security findings
+- Andon cord on 3x acceptance verification failure, unresolvable security findings, or correctness-review convergence failure (3-round cap exhausted, or a finding stays contested)
 
 **5c. Merge topic branch** into the project branch with `--no-ff` (preserves history). Andon cord on merge conflict.
 
@@ -186,6 +186,7 @@ Borrowed from Toyota's production system: when something goes wrong, **stop the 
 **Triggers (skill-specific):**
 - Acceptance verification fails 3 times
 - Unresolvable critical/high security findings
+- Correctness review convergence cap exhausted, or a finding stays contested between reviewer and implementer
 - Post-merge test suite failure
 - Merge conflict
 - Issue tracker unavailable

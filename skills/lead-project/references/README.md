@@ -290,11 +290,12 @@ The skill may invoke any of the following during the Decide phase:
 | `/lead-refactor`                | Tactical + architectural + tactical cleanup cycle (orchestrator-family)              |
 | `/review-arch`                  | Architectural review                                                                 |
 | `/review-test`                  | Test suite survey; advisory; produces ticket-structure proposal                      |
-| `/tidy-docs`                   | Documentation audit                                                                  |
+| `/tidy-docs`                    | Documentation audit                                                                  |
 | `/review-release`               | Pre-release readiness                                                                |
 | `/review-perf`                  | Performance review                                                                   |
 | `/review-a11y`                  | Accessibility review                                                                 |
 | `/review-security`              | Security audit                                                                       |
+| `/review-code`                  | Adversarial correctness review of a specific diff (e.g., pre-merge)                  |
 | `/lead-review`                  | Comprehensive review across all dimensions                                           |
 | `/bug-hunt`                     | Proactive bug discovery                                                              |
 | `/bug-fix`                      | Diagnosis-first bug fixing                                                           |
