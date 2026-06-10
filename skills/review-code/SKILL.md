@@ -14,7 +14,7 @@ Advisory-only correctness review of a change. Resolves what diff is under review
 
 **Diff-scoped, not repo-scoped.** Every sibling `/review-*` skill audits the repository; this one reviews a *change*. For repo-wide proactive bug discovery (risk-ranked, no specific diff in mind), use `/bug-hunt`. For "is this branch safe to merge?", use this skill. Because it is diff-scoped, `/lead-review` does not include it in its pipeline — a repository audit has no diff under review.
 
-**Advisory here, blocking in `/implement`.** The same `swe-correctness-reviewer` agent serves `/implement` step 9 as a blocking gate with a fix-and-re-review convergence loop. Invoked standalone through this skill, there is no pipeline to block: the skill runs a single review pass, presents the report, and proposes tickets. The operator decides what to do with the findings. To re-review after fixing, re-invoke `/review-code` — the fresh pass is the point, not a formality.
+**Advisory here, blocking in `/implement` and `/bug-fix`.** The same `swe-correctness-reviewer` agent serves `/implement` step 9 and `/bug-fix` step 10 as blocking gates with a fix-and-re-review convergence loop. Invoked standalone through this skill, there is no pipeline to block: the skill runs a single review pass, presents the report, and proposes tickets. The operator decides what to do with the findings. To re-review after fixing, re-invoke `/review-code` — the fresh pass is the point, not a formality.
 
 ## Workflow Overview
 
@@ -60,7 +60,7 @@ Spawn a `swe-correctness-reviewer` agent (fresh context):
 - **Do not provide:** any implementation rationale, design-history, or justification present in the conversation. The reviewer sees the diff and the repo, nothing else — context isolation is what makes the review effective. This applies with extra force when `/review-code` is invoked right after writing the code under review.
 - The agent walks its six-concern spine (assumptions, runtime semantics, call sites, data flow, error paths, first-principles residual), maintains an assumption ledger, and classifies output into blocking-grade **findings** and non-blocking **residual risks**
 
-This is a **single pass** — no convergence loop. The loop belongs to `/implement` step 9, where an implementation agent exists to resolve findings. Here the operator owns resolution.
+This is a **single pass** — no convergence loop. The loop belongs to `/implement` step 9 and `/bug-fix` step 10, where an implementation agent exists to resolve findings. Here the operator owns resolution.
 
 ### 3. Present the Report
 

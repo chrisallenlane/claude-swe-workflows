@@ -29,7 +29,7 @@ Each assumption gets a ledger entry: verified (with the evidence), false (a find
 - Security posture review — that's `/review-security`
 - Reviewing code you're about to write — review needs a diff to exist
 
-**Relationship to `/implement`:** the same `swe-correctness-reviewer` agent runs as `/implement`'s step 9, where its findings are blocking and resolved through an automatic fix-and-re-review convergence loop. `/review-code` is the standalone wrapper: one pass, findings routed to you instead of to an implementation agent. If you fix the findings, re-run `/review-code` — the fresh-instance re-review is the part of the protocol that catches bugs introduced by the fixes.
+**Relationship to `/implement` and `/bug-fix`:** the same `swe-correctness-reviewer` agent runs as `/implement`'s step 9 and `/bug-fix`'s step 10, where its findings are blocking and resolved through an automatic fix-and-re-review convergence loop. `/review-code` is the standalone wrapper: one pass, findings routed to you instead of to an implementation agent. If you fix the findings, re-run `/review-code` — the fresh-instance re-review is the part of the protocol that catches bugs introduced by the fixes.
 
 ## Workflow
 
