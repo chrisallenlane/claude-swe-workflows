@@ -10,7 +10,7 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
 - Git archaeology uncovers when and why the bug was introduced
 - Related failure modes are identified and tested, not just the reported bug
 - Practical verification confirms the fix actually works
-- Same review pipeline as `/implement` (security, refactoring, performance, peer review)
+- Same review pipeline as `/implement` (security, refactoring, performance, peer review, correctness gate)
 
 ## When to Use
 
@@ -107,11 +107,11 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
  │  Only review working code!                   │
  │                                              │
  │  6a. Security (if sensitive code)            │
- │      Agent: sec-blue-teamer│
+ │      Agent: sec-blue-teamer                  │
  │      Authority: Can demand changes           │
  │                                              │
  │  6b. Refactoring (if non-trivial)            │
- │      Agent: swe-code-reviewer                     │
+ │      Agent: swe-code-reviewer                │
  │      Authority: Advisory suggestions         │
  │                                              │
  │  6c. Performance (if critical code)          │
@@ -151,7 +151,22 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  10. DOCUMENTATION                           │
+ │  10. CORRECTNESS REVIEW (run-unless)         │
+ │  ────────────────────────────────────────    │
+ │  Agent: swe-correctness-reviewer (fresh)     │
+ │                                              │
+ │  "The bug has already shipped. Find it."     │
+ │  • Gets diff + bug report; NOT diagnosis     │
+ │  • Findings are blocking, not advisory       │
+ │  • Mandatory if empirical gates degraded     │
+ │                                              │
+ │  Findings? ──┬─ Yes → fix → fresh review     │
+ │              │      (max 3 rounds)           │
+ │              └─ No → APPROVE, continue       │
+ └──────────────────┬───────────────────────────┘
+                    ▼
+ ┌──────────────────────────────────────────────┐
+ │  11. DOCUMENTATION                           │
  │  ────────────────────────────────────────    │
  │  Agent: doc-maintainer                       │
  │                                              │
@@ -161,7 +176,7 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  11. FINAL VERIFICATION                      │
+ │  12. FINAL VERIFICATION                      │
  │  ────────────────────────────────────────    │
  │  • Run full test suite                       │
  │  • Run all linters                           │
@@ -169,7 +184,7 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  12. WORKFLOW COMPLETION (optional)          │
+ │  13. WORKFLOW COMPLETION (optional)          │
  │  ────────────────────────────────────────    │
  │  • Commit with root-cause in message         │
  │  • Update/close ticket (if applicable)       │
@@ -181,13 +196,14 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
 
 The `/bug-fix` workflow diverges from `/implement` in steps 2-4, then rejoins for the review pipeline:
 
-| Step | `/implement`             | `/bug-fix`                               |
-|------|------------------------|-----------------------------------------|
-| 1    | Gather requirements    | Clarify bug symptoms                    |
-| 2    | Planning (conditional) | **Write failing test** (SME)            |
-| 3    | Implementation         | **Diagnosis** (swe-bug-investigator)    |
-| 4    | QA acceptance gate     | **Implement fix** (guided by diagnosis) |
-| 5+   | Reviews, docs, commit  | Same as `/implement` steps 5-11           |
+| Step | `/implement`               | `/bug-fix`                                  |
+|------|----------------------------|---------------------------------------------|
+| 1    | Gather requirements        | Clarify bug symptoms                        |
+| 2    | Planning (conditional)     | **Write failing test** (SME)                |
+| 3    | Implementation             | **Diagnosis** (swe-bug-investigator)        |
+| 4    | QA acceptance gate         | **Implement fix** (guided by diagnosis)     |
+| 5+   | Reviews, correctness gate, | Same as `/implement` steps 5-12, offset by  |
+|      | docs, commit               | one (correctness gate is step 10 here vs 9) |
 
 Key differences:
 - **Test first, then fix.** `/implement` implements then tests. `/bug-fix` writes a failing test before any fix attempt.
@@ -254,8 +270,13 @@ The `qa-engineer` performs practical verification:
 
 If verification fails, returns to step 4 (max 3 attempts before escalating).
 
-### 6-12. Reviews, Documentation, Completion
-Identical to `/implement` steps 5-11. See the [/implement guide](../implement/references/README.md) for details.
+### 6-13. Reviews, Correctness Gate, Documentation, Completion
+Structurally identical to `/implement` steps 5-12, offset by one. See the [/implement guide](../implement/references/README.md) for details on the shared pipeline.
+
+One step deserves bug-fix-specific mention — **step 10, the correctness review**. A fresh `swe-correctness-reviewer` reads the diff assuming a bug already shipped and mechanically verifies every assumption the fix makes (paths, signatures, runtime-version semantics, call sites). Its findings are blocking and resolve through a fix-and-fresh-re-review loop (max 3 rounds). Two contracts differ from the rest of the pipeline:
+
+- **The reviewer gets the diff and the original bug report, but not the diagnosis.** The bug report is the user's symptom — ground truth. The diagnosis is the implementing SME's adopted theory; passing it would anchor the reviewer to the frame that produced the fix. The reviewer isn't re-answering "is the bug fixed" (the reproducing test answers that); it's answering "does this fix rest on false assumptions or break anything else."
+- **The gate is mandatory when empirical verification degrades.** In a repo with no test infrastructure, the step-2 reproduction contract itself collapses — there may be no failing test at all — and this gate becomes the only correctness check between the fix and production.
 
 ## Examples
 
@@ -274,7 +295,10 @@ Workflow:
 4. Fix: swe-sme-golang fixes both comparison operators, adds tests for
    cursor pagination boundary too
 5. QA: qa-engineer actually paginates through test data, confirms no dupes
-6-12. Reviews, docs, commit
+6-9. Reviews and coverage QA
+10. Correctness: reviewer checks all call sites of both pagination paths,
+    verifies boundary semantics — APPROVE
+11-13. Docs, verification, commit
 
 Summary:
 - Root cause: < vs <= in boundary check, introduced in refactor abc123
@@ -314,7 +338,7 @@ Workflow:
    → Back to step 1.
    User provides: "Only happens with YAML config, not TOML"
 2. (retry): swe-sme-golang writes TestYAMLConfigParsing — fails! Bug reproduced.
-3-12. Continue with diagnosis and fix...
+3-13. Continue with diagnosis and fix...
 ```
 
 ## Tips
@@ -335,13 +359,14 @@ Workflow:
 
 **SME continuity:** The same SME type is used across steps 2 (failing test), 4 (fix), and 7 (review feedback). Step 8 (peer review) uses a fresh instance for independent perspective.
 
-**Diagnosis pass-through:** The diagnostician's report from step 3 is passed to the SME in step 4. The SME follows the recommended approach and writes tests for each identified related failure mode.
+**Diagnosis pass-through:** The diagnostician's report from step 3 is passed to the SME in step 4. The SME follows the recommended approach and writes tests for each identified related failure mode. The report is deliberately **not** passed to the correctness reviewer in step 10 — see above.
 
 ## Iteration Limits
 
 **Safety limits:**
 - Reproduction loop (step 2): 2 attempts max
 - Fix verification loop (step 5): 3 attempts max
-- Overall workflow: 12 agent spawns max
+- Correctness review convergence loop (step 10): 3 rounds max
+- Overall workflow: 16 agent spawns max
 
 If limits reached, workflow escalates to user with current state and specific blockers.

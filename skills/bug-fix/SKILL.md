@@ -219,6 +219,33 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 
 **Expected output:** Coverage metrics, tests added/modified, quality issues found, confirmation that all changes still pass tests.
 
+### 10. Correctness Review (Conditional — Blocking)
+
+**This is the analytical correctness gate.** Every gate before this point is either empirical (step 2's reproducing test, step 5's practical verification, step 9's test suite) or quality-focused (security posture, clarity, idiom nits). The reproducing test verifies *the bug is gone*; nothing before this step verifies that the fix's assumptions hold or that other call sites survive the behavior change. This step does. It runs last among the review gates deliberately: mechanical verification is cheap and analytical review is expensive — don't spend review rounds on a fix that fails its own reproducing test.
+
+**When to run (run-unless):**
+
+The default is to run. Skip only when the diff is trivial — typo fixes, comment- or documentation-only changes, single-line changes whose correctness is obvious by inspection. When in doubt, run it.
+
+**Degraded-verification override (mandatory):** if practical verification in step 5 was impossible (the original scenario could not actually be exercised) **or** the project has no meaningful test suite, this step is **mandatory regardless of diff size**. Note that in a repo with no test infrastructure, step 2's reproduction contract itself degrades — there may be no failing test at all — making this gate the only correctness check between the fix and production.
+
+**Spawn `swe-correctness-reviewer` agent (fresh context):**
+- Provide: the full diff (or branch/commit range), target runtime and framework versions if known, the **original bug report** (the user's symptom description from step 1), and the round number if looping
+- Do **not** provide: the step-3 diagnosis report, implementation history, or prior agents' outputs. The bug report is user-supplied ground truth — symptom, not rationale. The diagnosis is the implementing SME's adopted theory of the bug; passing it would anchor the reviewer to the same frame that produced the fix. The reviewer's question is not "did we fix the bug" (the reproducing test answers that empirically) but "does this diff rest on false assumptions or break anything else."
+- The agent assumes a bug already shipped and works backward to find it, walking a six-concern spine (assumptions, runtime semantics, call sites, data flow, error paths, first-principles residual) with mechanical verification of every assumption the diff makes
+
+**Convergence loop (blocking):**
+1. Reviewer reports findings (blocking) and residual risks (non-blocking)
+2. **Zero findings:** proceed to step 11. Carry any residual risks forward to the final summary (step 12) so a human sees them.
+3. **Findings:** re-invoke the implementation agent (same SME as steps 2/4) to resolve each one — fix it, or refute it with cited evidence
+4. Re-run mechanical verification — **the step-2 reproducing test explicitly** (it is the contract artifact and must still pass after correctness fixes), plus the full test suite and linters
+5. Spawn a **fresh** `swe-correctness-reviewer` instance to re-review the updated diff in full
+6. Repeat until a round reports zero findings
+
+**Iteration cap: 3 rounds.** If findings persist after 3 rounds, escalate to the user with the surviving findings and the implementation agent's responses.
+
+**Expected output:** APPROVE verdict (possibly with residual risks for the final summary), or escalation after cap exhaustion.
+
 ### Feedback Loops
 
 **Reproduction failure (step 2):**
@@ -250,7 +277,13 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 - Minor issues (low coverage in non-critical code, style nitpicks): document and proceed
 - User can approve proceeding despite issues if acceptable
 
-### 10. Documentation
+**Correctness review findings (step 10):**
+- All findings are blocking — advisory discretion does not apply
+- Each finding is resolved by fixing it or refuting it with cited evidence; fixes route to the implementation SME, then mechanical re-verification (reproducing test, full suite, linters), then a fresh reviewer instance
+- 3 rounds maximum, then escalate to user with surviving findings
+- Residual risks (non-blocking) carry forward to the final summary
+
+### 11. Documentation
 
 **Spawn `doc-maintainer` agent:**
 - Review git diff to identify which files/modules changed
@@ -268,7 +301,7 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 - Skip full codebase documentation scan
 - Report "no documentation changes needed" if changes are purely internal with no doc impact
 
-### 11. Final verification
+### 12. Final verification
 
 **Run comprehensive checks:**
 - Execute full test suite (must pass)
@@ -281,6 +314,7 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 - Root cause identified (from diagnosis)
 - Files changed
 - Tests added/modified (regression tests for the bug + related failure modes)
+- Residual risks surfaced by the correctness review (step 10), if any
 - Any remaining TODOs or follow-ups
 
 **If verification fails:**
@@ -288,15 +322,15 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 - Return to appropriate step (step 4 for implementation bugs, step 7 for refactoring issues)
 - Report specific failures to user
 
-### 12. Workflow Completion (Optional)
+### 13. Workflow Completion (Optional)
 
-**After presenting summary from step 11, ask user if they want to complete the workflow.**
+**After presenting summary from step 12, ask user if they want to complete the workflow.**
 
-User may also explicitly request workflow completion at any point after step 11 succeeds.
+User may also explicitly request workflow completion at any point after step 12 succeeds.
 
 **If user confirms, perform housekeeping tasks:**
 
-#### 12a. Commit Changes
+#### 13a. Commit Changes
 
 **If uncommitted changes exist:**
 - Review git status to see what changed
@@ -317,7 +351,7 @@ diagnosis.
 Fixes #456
 ```
 
-#### 12b. Update/Close Issue Tracker Ticket (Conditional)
+#### 13b. Update/Close Issue Tracker Ticket (Conditional)
 
 Detect tracker, recover the ticket number, and post the close-out per [`references/trackers.md`](../../references/trackers.md) (Detection Procedure + "Comment / update (close-out)" + "Close" operations).
 
@@ -327,7 +361,7 @@ Detect tracker, recover the ticket number, and post the close-out per [`referenc
 - Tests added (regression + related failure modes)
 - Files changed
 
-#### 12c. Sync with Main Branch (Conditional)
+#### 13c. Sync with Main Branch (Conditional)
 
 **Check branch state:**
 - Identify main branch name (master or main)
@@ -363,9 +397,11 @@ Detect tracker, recover the ticket number, and post the close-out per [`referenc
 - Track current workflow step
 - Track reproduction attempt count (for step 2 failures)
 - Track QA iteration count (for fix verification failures)
+- Track correctness review round count (step 10 convergence loop)
+- Carry residual risks from step 10 forward to the final summary
 - Accumulate summary information
-- Preserve original bug report for passing to QA verification
-- Preserve diagnosis report for passing to implementation agent
+- Preserve original bug report for passing to QA verification and the correctness reviewer (step 10)
+- Preserve diagnosis report for passing to implementation agent (but **not** to the correctness reviewer — see step 10)
 
 **Agent self-skipping:**
 - Agents should skip work if not applicable
@@ -386,7 +422,8 @@ Detect tracker, recover the ticket number, and post the close-out per [`referenc
 **Maximum iterations:**
 - Reproduction loop (step 2): 2 attempts, then escalate to user
 - Fix verification loop (step 5): 3 attempts, then escalate to user
-- Overall workflow: 12 total agent spawns (safety limit)
+- Correctness review convergence loop (step 10): 3 rounds, then escalate to user
+- Overall workflow: 16 total agent spawns (safety limit)
 
 **Escalation to user:**
 - Present current state
