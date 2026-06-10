@@ -272,7 +272,7 @@ The `qa-engineer` performs practical verification:
 If verification fails, returns to step 4 (max 3 attempts before escalating).
 
 ### 6-13. Reviews, Correctness Gate, Documentation, Completion
-Structurally identical to `/implement` steps 5-12, offset by one. See the [/implement guide](../implement/references/README.md) for details on the shared pipeline.
+Structurally identical to `/implement` steps 5-12, offset by one. See the [/implement guide](../../implement/references/README.md) for details on the shared pipeline.
 
 One step deserves bug-fix-specific mention — **step 10, the correctness review**. A fresh `swe-correctness-reviewer` reads the diff assuming a bug already shipped and mechanically verifies every assumption the fix makes (paths, signatures, runtime-version semantics, call sites). Its findings are blocking and resolve through a fix-and-fresh-re-review loop (max 3 rounds). Two contracts differ from the rest of the pipeline:
 

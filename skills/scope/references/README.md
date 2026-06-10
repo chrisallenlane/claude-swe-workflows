@@ -93,7 +93,7 @@ Tickets created by `/scope` are comprehensive and include:
 
 ## Integration with Other Skills
 
-`/scope` plans a single ticket. For multi-ticket project planning with adversarial review, use [`/scope-project`](../scope-project/references/README.md) instead.
+`/scope` plans a single ticket. For multi-ticket project planning with adversarial review, use [`/scope-project`](../../scope-project/references/README.md) instead.
 
 A `/scope` ticket is meant to feed `/implement` (or `/implement-project` for a batch). For straightforward changes that don't need extensive exploration, skip `/scope` and invoke `/implement` directly — `/scope`'s value is in the exploration, not the ticket-creation mechanics.
 
