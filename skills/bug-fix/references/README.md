@@ -202,8 +202,9 @@ The `/bug-fix` workflow diverges from `/implement` in steps 2-4, then rejoins fo
 | 2    | Planning (conditional)     | **Write failing test** (SME)                |
 | 3    | Implementation             | **Diagnosis** (swe-bug-investigator)        |
 | 4    | QA acceptance gate         | **Implement fix** (guided by diagnosis)     |
-| 5+   | Reviews, correctness gate, | Same as `/implement` steps 5-12, offset by  |
-|      | docs, commit               | one (correctness gate is step 10 here vs 9) |
+| 5    | Code review                | **QA verify-fix gate** (= `/implement` 4)   |
+| 6+   | Feedback through completion| Same as `/implement` steps 5-12, offset by  |
+|      |                            | one (correctness gate is step 10 here vs 9) |
 
 Key differences:
 - **Test first, then fix.** `/implement` implements then tests. `/bug-fix` writes a failing test before any fix attempt.
