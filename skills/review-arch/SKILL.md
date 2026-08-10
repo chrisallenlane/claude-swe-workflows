@@ -44,6 +44,8 @@ Analyzes codebase architecture and produces a target blueprint via noun analysis
 
 **Scope:** Default is the entire codebase. If the caller specifies a path or module, respect that scope. Pass scope to the analysis agent.
 
+**Auditability ceiling:** Default is 500 lines. If the caller specifies a different ceiling, respect it. Pass the ceiling to the analysis agent — files exceeding it cannot receive a "no change" verdict in the module audit (they must be split, or carry a written cohesion exception).
+
 ### 2. Analyze Codebase
 
 **Spawn fresh `swe-arch-reviewer` agent:**
@@ -59,6 +61,7 @@ The agent performs four sequential analysis steps:
 ```
 Perform a full architectural analysis of this codebase.
 Scope: [entire codebase | user-specified scope]
+Auditability ceiling: [500 | operator-specified] lines
 Produce a comprehensive target architecture blueprint showing where
 everything should live. Cover every module — existing and proposed.
 ```

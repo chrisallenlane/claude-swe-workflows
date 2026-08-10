@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- **`/review-arch` — the auditability ceiling becomes an enforced rule in the module audit.** The `swe-arch-reviewer` agent has long stated the principle that humans cannot audit large files ("You can reason about a 500-line file with ease. A human cannot.") but carried it only as preamble philosophy — nothing in the workflow collected line counts, and a large module could earn a "no change" verdict on the strength of a persuasive cohesion story. Observed in the field: a plugin-built project shipped a 3,702-line module that sailed through architectural review on exactly that failure mode.
+
+  The principle is now a top-level rule with mechanical teeth. A source file exceeding the auditability ceiling (default 500 lines; caller-adjustable) may not receive a "no change" verdict — its only available verdicts are "split files" or a written cohesion exception stating what shared state or invariants a split would shatter and why no facet boundary avoids the damage. The burden of proof sits with the exception, because in a cohesive module everything is related, so "the pieces are related" can never suffice. Mechanically: the survey step now collects `wc -l` for every source file, and every module-audit entry carries a required `lines:` field, so the audit cannot satisfy the rule by philosophy alone.
+
+  The rationale is encoded beside the rule: a human is always the maintainer of last resort, and an agent-driven project whose output its owner cannot audit is asking for trust it hasn't earned — human auditability is an engineering requirement, not a style preference. Only the ceiling's numeric value is taste, which is why it is a parameter. `/review-arch`'s SKILL.md gains the ceiling as a pass-through parameter (step 1 and the agent prompt template), and the skill's references/README.md is synced in the same change.
+
 ## v10.3.0
 
 ### Changed

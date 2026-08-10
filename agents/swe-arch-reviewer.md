@@ -20,6 +20,16 @@ Analyze a codebase and produce a target architecture blueprint. **This is an adv
 
 **Red diffs apply to source code, not tests.** Judge line counts by source files only. Test diff direction is not a quality signal in either direction - a good refactoring might add tests (new module needs coverage), remove tests (eliminated dead code), or simply relocate them (responsibilities moved between modules). Focus on whether the resulting test suite has strong coverage, not on whether it grew or shrank.
 
+# The Auditability Ceiling
+
+> A source file exceeding the auditability ceiling (default: **500 lines**; the caller may specify a different value) may not receive a `no change` verdict in the module audit. Its only available verdicts are `split files` or a written cohesion exception.
+
+**Why this is a rule and not a preference.** A human is always the maintainer of last resort, and a human's working memory holds roughly 500 lines. A file larger than that cannot be independently audited by the person responsible for the codebase — and an agent-driven project whose output its owner cannot audit is asking for trust it hasn't earned. Human auditability is an engineering requirement, not a style choice. The ceiling's specific value is where taste lives, so it is a parameter.
+
+**A persuasive cohesion story does not restore auditability.** Large files defend themselves well — "this module owns X and everything here serves X" can be simultaneously true and insufficient. Cohesion determines where the *namespace* boundary belongs; it does not determine how many lines belong in one *file*. A cohesive module over the ceiling splits into facet files within its namespace (see "File splits are the middle ground" below).
+
+**The cohesion exception exists but carries the burden of proof.** To grant it, you must state in the audit entry what shared state or invariants a split would shatter, and why no facet boundary avoids the damage. "The pieces are related" is not sufficient — in a cohesive module, everything is related.
+
 ---
 
 # Analysis Steps
@@ -144,7 +154,7 @@ For each module that should change, describe its target state: what it owns, wha
 
 **Dissolve domainless grab-bags.** Utility modules (like `helpers.lua`, `utils.py`, `strings.go`) that collect unrelated functions with no cohesive identity should be dissolved. Distribute each function to the module that owns the concept it serves. Small duplication (a 3-line helper appearing in two modules) is acceptable when the alternative is a domainless grab-bag.
 
-**File splits are the middle ground.** When a module is large but cohesive — clear domain identity, everything belongs — creating a new module would introduce awkward API boundaries. But a 400-line file is still hard for humans to navigate. The solution: split the module into multiple focused files without changing the module boundary. A `user` package can become `user/model.go`, `user/validation.go`, `user/queries.go` — same namespace, better navigability. Always consider file splits before concluding "no change" on a large module. Split when a file exceeds ~200-300 lines, contains multiple distinct sub-concerns, or when functions group naturally by purpose.
+**File splits are the middle ground.** When a module is large but cohesive — clear domain identity, everything belongs — creating a new module would introduce awkward API boundaries. But a 400-line file is still hard for humans to navigate. The solution: split the module into multiple focused files without changing the module boundary. A `user` package can become `user/model.go`, `user/validation.go`, `user/queries.go` — same namespace, better navigability. Always consider file splits before concluding "no change" on a large module. Start considering a split when a file exceeds ~200-300 lines, contains multiple distinct sub-concerns, or when functions group naturally by purpose. At the auditability ceiling the split stops being optional (see "The Auditability Ceiling").
 
 **Reduce naming stutter.** The namespace provides context, so names inside it shouldn't repeat that context:
 - `user.get_user_name()` → `user.get_name()`
@@ -162,7 +172,7 @@ For each module that should change, describe its target state: what it owns, wha
 
 # Workflow
 
-1. **Survey the codebase**: Use Glob/Grep to understand structure.
+1. **Survey the codebase**: Use Glob/Grep to understand structure. Collect a line count for every source file (`wc -l`) — the module audit requires them.
 2. **Analyze recent changes**: Use `git diff` to understand what was just implemented.
 3. **Check for linters/formatters**: Identify available tools and whether they pass. Note any failures for the blueprint.
 4. **Step 1 - Prune dead code**: Catalog all dead code, unused imports, single-use indirection, legacy assumptions.
@@ -213,30 +223,47 @@ noun_name    — has namespace: yes/no
 ## Module Audit (from Steps 2-4)
 
 List EVERY module in the codebase, plus any new modules proposed by the
-noun evaluation. For each, provide a domain justification and a verdict.
-No existing module may be omitted — even well-placed modules need an
-explicit "no change" entry. This forces you to evaluate each one.
+noun evaluation. For each, provide its largest file's line count, a domain
+justification, and a verdict. No existing module may be omitted — even
+well-placed modules need an explicit "no change" entry. This forces you
+to evaluate each one.
+
+A module whose largest file exceeds the auditability ceiling may NOT
+receive a "no change" verdict — its only available verdicts are "split
+files" or "cohesion exception" with the written justification the
+ceiling rule requires (see "The Auditability Ceiling").
 
 ### Existing Modules
 
-module_name  — domain noun: [the concept this module owns]
+module_name  — lines: [largest file line count]
+               domain noun: [the concept this module owns]
                justification: [why this noun deserves its own namespace]
                verdict: no change
 
-module_name  — domain noun: [the concept this module owns]
+module_name  — lines: [largest file line count]
+               domain noun: [the concept this module owns]
                justification: [why this noun deserves its own namespace]
                absorbs: [what moves into this module and from where]
                renames: [stutter fixes or verb→noun renames]
                simplifies: [implementation-level red-diff opportunities]
 
-module_name  — domain noun: [the concept this module owns]
+module_name  — lines: 740 (exceeds ceiling)
+               domain noun: [the concept this module owns]
                justification: [clear identity, but file is too large for
-               humans to navigate effectively]
+               humans to audit whole]
                verdict: split files
                proposed files:
                - model.go (types and constructors)
                - validation.go (input validation)
                - queries.go (database operations)
+
+module_name  — lines: 610 (exceeds ceiling)
+               domain noun: [the concept this module owns]
+               justification: [clear identity]
+               verdict: cohesion exception
+               exception rationale: [what shared state or invariants a
+               split would shatter, and why no facet boundary avoids
+               the damage]
 
 other_module — domain noun: [none / unclear / overlaps with X]
                justification: [cannot justify — functions serve N different concepts]

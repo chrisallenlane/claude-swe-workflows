@@ -86,6 +86,8 @@ The plugin is moving `/review-*` skills toward advisory-only over time; `/review
 
 Default is the entire codebase. Caller may pass a narrower scope (directory, files, module). The scope is propagated to the analysis agent.
 
+The caller may also adjust the **auditability ceiling** (default: 500 lines) — the file size above which the module audit refuses a "no change" verdict. Files over the ceiling must either be split into facet files or carry a written cohesion exception. The rationale: a human is always the maintainer of last resort, and a file larger than a human's working memory cannot be independently audited by the person responsible for the codebase.
+
 ### 2. Analyze Codebase
 
 A fresh `swe-arch-reviewer` agent performs four sequential analysis steps:
@@ -97,7 +99,7 @@ A fresh `swe-arch-reviewer` agent performs four sequential analysis steps:
 | 3. Identify repetition | Catalogs duplication patterns as inputs to the blueprint                           |
 | 4. Produce blueprint   | Synthesizes steps 1-3 into a target architecture                                   |
 
-The blueprint describes each module's target state: what it owns, what it absorbs from other modules, what gets renamed, and what implementation simplifications are possible.
+The blueprint describes each module's target state: what it owns, what it absorbs from other modules, what gets renamed, and what implementation simplifications are possible. Every module audit entry carries its largest file's line count; entries over the auditability ceiling must resolve to a file split or a justified cohesion exception.
 
 The agent is unchanged by this skill's advisory shift — it produces the same output; the skill just routes that output differently.
 
