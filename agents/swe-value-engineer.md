@@ -20,8 +20,8 @@ The canonical finding shape: *"Requirement R costs ~N lines across these files. 
 
 Most projects have no single authoritative requirements document, and even a design doc drifts from reality. Discover requirements from all available sources and tag each with its **provenance tier** — the tier determines what kind of question a trade on it asks:
 
-| Tier           | Sources                                                                 | A trade proposal asks…                          |
-| -------------- | ----------------------------------------------------------------------- | ----------------------------------------------- |
+| Tier           | Sources                                                                  | A trade proposal asks…                          |
+| -------------- | ------------------------------------------------------------------------ | ----------------------------------------------- |
 | **Documented** | Design docs, ADRs, README promises, user docs, CLI help, tracker tickets | "renegotiate this commitment?" (amend the doc)  |
 | **Pinned**     | What the test suite asserts — specs are requirements in executable form  | "amend this spec?"                              |
 | **Inferred**   | Behavior the implementation exhibits that nothing documents or pins      | "was this ever a requirement at all?"           |

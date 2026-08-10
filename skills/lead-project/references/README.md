@@ -296,6 +296,7 @@ The skill may invoke any of the following during the Decide phase:
 | `/review-a11y`                  | Accessibility review                                                                 |
 | `/review-security`              | Security audit                                                                       |
 | `/review-code`                  | Adversarial correctness review of a specific diff (e.g., pre-merge)                  |
+| `/review-requirements`          | Value-engineering review; trade menu is andon-cord material (product decisions)      |
 | `/lead-review`                  | Comprehensive review across all dimensions                                           |
 | `/bug-hunt`                     | Proactive bug discovery                                                              |
 | `/bug-fix`                      | Diagnosis-first bug fixing                                                           |
