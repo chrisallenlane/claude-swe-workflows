@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v10.5.0
 
 ### New Skills
 
