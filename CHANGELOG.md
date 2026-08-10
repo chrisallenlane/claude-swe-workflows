@@ -1,5 +1,27 @@
 # Changelog
 
+## Unreleased
+
+### New Skills
+
+- **`/review-requirements` — value-engineering review.** The pipeline's first descoping voice, filling a structural gap: every other skill treats requirements as fixed input — the correctness gate enforces the spec, `/refactor` preserves behavior by definition, and `/review-arch`'s mechanism audit stops at "keep — serves requirement X" and salutes. After scoping ends, requirements only accrete; no skill was permitted to ask whether a requirement is worth what it costs. The skill applies value engineering (Miles, GE, 1947) — attribute cost to function, ask what else would serve — and presents a **trade menu**: each entry names the current commitment, a proposed relaxation, a *concrete* user-visible delta a product owner can rule on, the machinery (or requirement chain) that dissolves, and estimated savings presented as estimates with citations.
+
+  Requirements are **discovered, not assumed** — not every project has a design document, and documents drift. The analysis agent inventories them across three provenance tiers: documented (design docs, ADRs, README promises), pinned (test-suite assertions), and inferred (observed behavior nothing records, presumed intentional per Chesterton's fence). The tier shapes the trade: renegotiate the document, amend the spec, or simply confirm the behavior was ever wanted. Documented-vs-observed drift is itself reported. Approved trades produce tickets whose *first* acceptance criterion amends the requirement's record — otherwise the next agent to read the unamended requirement faithfully rebuilds the machinery.
+
+  The skill is advisory in a stronger sense than its siblings: its findings are product decisions, so it is **excluded from `/lead-review`'s autonomous pipeline**, and orchestrators treat core-requirement/correctness/security-flagged trades as andon-cord material. It chains ahead of `/review-arch` and `/refactor` — deleting a requirement before polishing its implementation.
+
+### New Agents
+
+- **`swe-value-engineer` — value-engineering analyst.** Internal agent (opus) backing `/review-requirements`. Works cost attribution from both ends: requirement-down (what exists to satisfy each commitment) and mass-up (what requirement forces each heavy artifact — anything forced by *none* routes to `/review-arch`'s mechanism audit rather than being priced here). Hunts requirement chains especially — the most expensive requirements are rarely expensive directly, but force a design choice that forces a compensating mechanism that forces defenses of the compensation; the chain is priced back to its root commitment. Catalogs the recurring hiding places of requirement-shaped cost: edge-case absolutism, unshipped futures, uniformity commitments, precision beyond perception, generality beyond use. Consumes `/review-arch` mechanism-audit output as pre-computed attribution when available. Discipline mirrors the plugin's other analysts: estimates presented as estimates, concrete scenario-shaped deltas only, core/correctness/security trades flagged, honest zero valid.
+
+### Changed
+
+- **`/review-arch` — the Proportionality Rule and mechanism audit.** The plugin's pipeline is a complexity ratchet: agents pattern-match to solutions from codebases at scales the project will never reach, and adversarial review rewards machinery that pre-empts hypothetical objections — an implementation with a termination proof survives review more easily than a plain loop, even when the plain loop is sufficient. No discipline anywhere in the plugin caught *used-but-unnecessary* machinery; Step 1's prune only caught dead code. Observed in the field: a binary min-heap scheduling 255 bots at 30 Hz whose own header comment measured the entire scheduling path at 0.47 µs against a 33,333 µs tick budget — machinery justified by a measurement that refutes it.
+
+  `swe-arch-reviewer` gains a top-level Proportionality Rule: every mechanism (custom data structure, cache, pool, ring, event indirection, scheduling scheme, abstraction layer) must cite the requirement it serves and survive comparison against the simplest implementation meeting the same acceptance criteria at actual scale. Step 1 gains the mechanism audit that operationalizes it — requirement served (a design-doc or ticket citation; "performance" without a number is not a requirement, and an unshipped future feature counts only if the design document commits to it), actual n and the simple alternative's cost at that n, and the simplest sufficient implementation — with a required output section rendering keep/downgrade verdicts. Two sharpened sub-rules: a negligible-cost measurement is evidence *for* downgrade, and "it works and is well-built" is not a defense — well-built machinery no requirement demands is dead code one step removed. SKILL.md and references/README.md are synced.
+
+- **`swe-correctness-reviewer` — proportionality counterweight.** The generative half of the same fix: the correctness gate now states explicitly that a finding must cite a concrete failure at the diff's actual scale and inputs — hypothetical-scale objections must name the N, show it reachable, and show the failure — and that a diff replacing machinery with something simpler is not suspect for being simpler. Implementers should never need to armor code with speculative rigor to survive the gate; disproportionate machinery the reviewer notices routes to `/review-arch`'s mechanism audit as an out-of-scope observation rather than padding findings.
+
 ## v10.4.0
 
 ### Changed
