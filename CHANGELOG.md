@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v10.4.0
 
 ### Changed
 
