@@ -30,6 +30,18 @@ Analyze a codebase and produce a target architecture blueprint. **This is an adv
 
 **The cohesion exception exists but carries the burden of proof.** To grant it, you must state in the audit entry what shared state or invariants a split would shatter, and why no facet boundary avoids the damage. "The pieces are related" is not sufficient — in a cohesive module, everything is related.
 
+# The Proportionality Rule
+
+> Every mechanism — a custom data structure, cache, pool, ring buffer, event or message indirection, scheduling scheme, or abstraction layer — must cite the requirement it serves and survive comparison against the simplest implementation that meets the same acceptance criteria at the codebase's actual scale. A mechanism that cannot is a downgrade candidate, no matter how well it is built.
+
+**Why this rule exists.** Two forces push complexity upward, and without this rule nothing pushes back. Agents pattern-match to solutions from codebases operating at scales the project will never reach — reaching for a priority queue because "scheduling" suggests one, not because n demands one. And adversarial review rewards machinery that pre-empts hypothetical objections: an implementation with a termination proof survives review more easily than a plain loop, even when the plain loop is sufficient. The failure mode observed in the field: a binary min-heap scheduling 255 bots at 30 Hz, whose own header comment measured the entire path at 0.47 µs against a 33,333 µs tick budget — machinery justified by a measurement that refutes it.
+
+**The first question is always "what is n?"** A cost argument made without the actual scale is not an argument. Establish n from the code, the config, or the design document, then cost the *simple* alternative at that n. Most machinery dies here: a linear scan over 255 items at 30 Hz is thousands of comparisons per second on a budget of millions.
+
+**A negligible-cost measurement is evidence for downgrade, not against it.** When a comment or benchmark shows the guarded cost is a rounding error, the machinery's own justification argues for the simple implementation.
+
+**"It works and is well-built" is not a defense.** Working, tested, well-documented machinery that no requirement demands is complexity for free — the same category as dead code, one step removed. Simplicity findings are architectural findings.
+
 ---
 
 # Analysis Steps
@@ -54,6 +66,14 @@ Code that doesn't need to exist is complexity for free. Catalog it for removal.
 - Abstractions built for flexibility that was never needed
 
 If the original reason is gone, the code should be too.
+
+**Disproportionate machinery (the mechanism audit):** Enumerate every nontrivial mechanism in scope — custom data structures (heaps, rings, tries, pools), caches, object-reuse schemes, event or message indirection, scheduling machinery, abstraction layers. For each, establish three facts:
+
+1. **The requirement it serves.** Cite the design document, ticket, or spec that demands it. "Performance" without a number is not a requirement. A future feature that has not shipped is a requirement only if the design document commits to it.
+2. **The actual scale.** What is n, and what would the simplest alternative cost at that n?
+3. **The simplest sufficient implementation.** What would meet the same acceptance criteria with the least machinery?
+
+Verdict per the Proportionality Rule: **keep** (name the requirement the simple version fails) or **downgrade** (name the replacement).
 
 **Note:** At this stage, don't evaluate whether a module should be inlined - that depends on the domain model from Step 2. Only flag things that are clearly dead or clearly unnecessary regardless of architecture.
 
@@ -175,7 +195,7 @@ For each module that should change, describe its target state: what it owns, wha
 1. **Survey the codebase**: Use Glob/Grep to understand structure. Collect a line count for every source file (`wc -l`) — the module audit requires them.
 2. **Analyze recent changes**: Use `git diff` to understand what was just implemented.
 3. **Check for linters/formatters**: Identify available tools and whether they pass. Note any failures for the blueprint.
-4. **Step 1 - Prune dead code**: Catalog all dead code, unused imports, single-use indirection, legacy assumptions.
+4. **Step 1 - Prune dead code**: Catalog all dead code, unused imports, single-use indirection, legacy assumptions. Run the mechanism audit on every piece of nontrivial machinery.
 5. **Step 2 - Noun analysis**: Build the noun frequency table (2a), then evaluate each noun for namespace decisions (2b).
 6. **Step 3 - Identify repetition**: Catalog all duplication patterns. Cross-reference with noun analysis to identify where duplication reveals missing abstractions.
 7. **Step 4 - Produce module audit**: Synthesize steps 1-3 into a complete module audit (see Output Format). List every existing module with a domain justification and verdict, and propose new modules for nouns that deserve namespaces but don't have them. The implementing agent will decide sequencing; your job is to describe the full target state.
@@ -196,6 +216,19 @@ Brief assessment of codebase health. What's working well, what needs attention.
 
 ## Dead Code (from Step 1)
 - **[file:line]** Description of dead code to remove
+
+## Mechanism Audit (from Step 1)
+
+Every nontrivial mechanism in scope, with a verdict per the
+Proportionality Rule. If none exist, state that.
+
+mechanism    — where: [file:line]
+               serves: [cited requirement, or "none found"]
+               scale: [actual n; cost of the simple alternative at that n]
+               simplest sufficient: [what would meet the same acceptance
+               criteria with the least machinery]
+               verdict: keep — [the requirement the simple version fails]
+                        / downgrade — [the replacement]
 
 ## Noun Analysis (from Step 2)
 

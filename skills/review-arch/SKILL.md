@@ -52,7 +52,7 @@ Analyzes codebase architecture and produces a target blueprint via noun analysis
 
 The agent performs four sequential analysis steps:
 
-1. Catalogs dead code for removal
+1. Catalogs dead code for removal, and audits every nontrivial mechanism against the simplest implementation that meets the same acceptance criteria at actual scale
 2. Builds a domain model via noun analysis
 3. Catalogs repetition patterns
 4. Produces a target architecture blueprint
@@ -70,6 +70,7 @@ The agent returns:
 - A noun frequency table (the primary analytical artifact)
 - A per-noun namespace evaluation
 - A dead code list
+- A mechanism audit (each nontrivial mechanism vs. the simplest sufficient implementation, with keep/downgrade verdicts)
 - A repetition catalog (DRY candidates, resolved in the blueprint)
 - A target architecture blueprint (existing modules + proposed new modules)
 - Any linter/formatter issues observed
@@ -85,7 +86,7 @@ After the analysis agent returns, present its findings to the operator (human or
 
 **a) Noun analysis.** Show the noun frequency table and the per-noun namespace evaluations. This is the analytical foundation — the user should understand what nouns the agent identified, how frequently they appear, and why they do or don't deserve their own namespace.
 
-**b) Proposed changes.** Show the blueprint items — modules to change, absorb, dissolve, or rename, plus proposed new modules. For each item, include the agent's rationale. Group by category (dead code removal, renames, moves, absorptions, dissolutions, new modules).
+**b) Proposed changes.** Show the blueprint items — modules to change, absorb, dissolve, or rename, plus proposed new modules. For each item, include the agent's rationale. Group by category (dead code removal, mechanism downgrades, renames, moves, absorptions, dissolutions, new modules).
 
 **c) No-change items.** Show the modules the agent evaluated and explicitly decided to leave alone, with their domain justifications. This is important context — the operator may disagree and want to add items, or may spot a module the agent missed entirely.
 

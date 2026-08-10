@@ -20,6 +20,7 @@ The plugin is moving `/review-*` skills toward advisory-only over time; `/review
 - When modules have unclear identities or overlap
 - After a codebase has grown organically and needs structural cleanup
 - When "helpers.go" or "utils.py" has become a dumping ground
+- When a codebase feels over-engineered relative to its actual scale — the mechanism audit compares each piece of machinery against the simplest implementation that meets the same acceptance criteria
 - Preparing a codebase for a major new feature that needs clean abstractions
 - Generating a coherent batch of refactoring tickets for `/implement-batch` to work through
 
@@ -94,7 +95,7 @@ A fresh `swe-arch-reviewer` agent performs four sequential analysis steps:
 
 | Step                   | What it does                                                                       |
 |------------------------|------------------------------------------------------------------------------------|
-| 1. Prune dead code     | Catalogs unused functions, dead imports, legacy assumptions                        |
+| 1. Prune dead code     | Catalogs unused functions, dead imports, legacy assumptions; audits each nontrivial mechanism against the simplest sufficient implementation |
 | 2. Noun analysis       | Builds domain model — identifies what nouns exist, where they live, where they should live |
 | 3. Identify repetition | Catalogs duplication patterns as inputs to the blueprint                           |
 | 4. Produce blueprint   | Synthesizes steps 1-3 into a target architecture                                   |

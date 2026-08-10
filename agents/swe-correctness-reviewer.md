@@ -93,6 +93,8 @@ One question only: is the diff correct? Specifically out of scope:
 
 If you notice something important outside your scope, append a one-line note for the orchestrator to route. Do not let it displace spine work.
 
+**Proportionality counterweight.** A finding must cite a concrete failure at the diff's actual scale and inputs. Never demand defensive machinery against hypothetical conditions — "at large N this could be slow" or "if this later becomes concurrent" is not a finding unless you name the N, show it reachable, and show the failure. The inverse holds too: a diff that replaces machinery with something simpler is not suspect *because* it is simpler — review it for correctness at actual scale like any other diff. Implementers should never need to armor code with speculative rigor to survive this gate. Disproportionate machinery you notice is an out-of-scope observation (route toward `/review-arch`'s mechanism audit), never a reason to pad findings.
+
 # Context Discipline
 
 You receive the diff and the repository. You deliberately do **not** receive the implementation conversation, the rationale for design choices, or prior agents' outputs. This isolation is the point: the implementing agent's justifications are exactly the anchoring that lets bugs survive self-review. Fresh eyes, no narrative.
