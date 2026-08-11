@@ -104,9 +104,10 @@ Supporting workflows available at any level:
 - `/review-code` — adversarial correctness review of a specific diff (advisory; the one diff-scoped `/review-*` skill, excluded from `/lead-review`'s repo-scoped pipeline; wraps the same `swe-correctness-reviewer` agent that `/implement` (step 9) and `/bug-fix` (step 10) run as blocking gates)
 - `/review-value` — value-engineering review (advisory; discovers requirements across provenance tiers — documented, spec-pinned, inferred — attributes implementation cost to them, and presents a behavior-for-simplicity trade menu; excluded from `/lead-review` because its output is product decisions the operator must rule on)
 - `/review-dead` — focused dead-code audit (advisory; per-finding confidence tiers calibrated against the codebase's dynamic-dispatch patterns; runs as `/lead-review`'s phase 2)
+- `/review-namespace` — empirical namespace-legibility review (advisory; cold reader agents probe the file tree by navigation task, misses become evidence-backed findings; optional heavy search mode evolves hypothetical trees to a measured champion; excluded from `/lead-review` — overlaps `/review-arch` in-pipeline, and search mode needs the operator for calibration)
 - `/test-mutation` — mutation testing
 - `/lead-refactor` — autonomous comprehensive refactoring (orchestrator-family; Phase 1 tactical `/refactor` → Phase 2 loop of `/review-arch` + `/implement-batch` until convergence below severity floor → Phase 3 final `/refactor`)
-- `/lead-review` — autonomous comprehensive review (orchestrator-family; runs its eight-phase review pipeline — health, dead code, arch, security, perf, a11y, test, release — in sequence; `/review-code` and `/review-value` are structurally excluded; operator-configurable ticket creation at startup)
+- `/lead-review` — autonomous comprehensive review (orchestrator-family; runs its eight-phase review pipeline — health, dead code, arch, security, perf, a11y, test, release — in sequence; `/review-code`, `/review-value`, and `/review-namespace` are structurally excluded; operator-configurable ticket creation at startup)
 
 **Releases:**
 

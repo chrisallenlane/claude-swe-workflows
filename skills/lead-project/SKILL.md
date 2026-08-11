@@ -161,6 +161,7 @@ Available actions (non-exhaustive):
 - `/review-code` — adversarial correctness review of a specific diff; useful pre-merge on an integration branch before presenting it as done
 - `/review-value` — value-engineering review; its trade menu is product decisions, so surface it to the operator (andon cord) rather than ruling autonomously
 - `/review-dead` — focused dead-code audit; cheap advisory sweep before refactoring work
+- `/review-namespace` — measured tree-legibility audit; search mode is operator-calibration-heavy, so prefer audit mode when invoking autonomously
 - `/lead-review` — comprehensive review pass
 - `/bug-hunt` — proactive bug discovery
 - `/bug-fix` — diagnosis-first bug fixing
