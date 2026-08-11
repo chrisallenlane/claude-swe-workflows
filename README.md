@@ -175,7 +175,7 @@ All `/think-*` skills produce feedback only — no code, no tickets, no artifact
 
 ### Standalone
 
-- **`/refactor`** — Tactical code-quality improvement (DRY, dead code, naming, complexity). Loops until no improvements remain. For structural changes, use `/review-arch`. Mutates. ([details](skills/refactor/SKILL.md))
+- **`/refactor`** — Tactical code-quality improvement (DRY, dead code, naming, complexity). Loops until no improvements remain. At the Maximum ceiling, finishes with a generative simplification stage: eligible modules are regenerated from their contracts by a blind rewriter under a code-line budget. For structural changes, use `/review-arch`. Mutates. ([details](skills/refactor/SKILL.md))
 - **`/pre-compact`** — Pre-compaction housekeeping: persist memory, audit git, clean trash, end with SBAR + resume prompt. Does not invoke `/compact`. ([details](skills/pre-compact/SKILL.md))
 - **`/release`** — Cuts a project release. Discovers the release procedure, invokes `/review-release` as preflight, plans every step with reversibility annotations, executes step-by-step, halts on first failure. No skip-preflight or force-release flag. ([details](skills/release/references/README.md))
 

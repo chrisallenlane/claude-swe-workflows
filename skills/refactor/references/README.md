@@ -48,7 +48,7 @@ The `/refactor` skill autonomously improves code quality within the existing arc
  │  2. SELECT AGGRESSION CEILING                │
  │  ────────────────────────────────────────    │
  │  How far up the ladder to climb:             │
- │  • Maximum: All improvements                 │
+ │  • Maximum: All improvements + generative    │
  │  • High: Up to MODERATE changes              │
  │  • Low: SAFEST and SAFE only                 │
  └──────────────────┬───────────────────────────┘
@@ -136,7 +136,7 @@ The scope is passed to all spawned agents.
 ### 2. Select Aggression Ceiling
 The workflow asks how far up the aggression ladder to climb:
 
-- **Maximum**: All improvements, including aggressive changes (removing legacy code with unclear purpose, consolidating similar-but-not-identical behavior)
+- **Maximum**: All improvements, including aggressive changes (removing legacy code with unclear purpose, consolidating similar-but-not-identical behavior) — and, after the tactical loop converges, the generative simplification stage: eligible modules are regenerated from their contracts by a blind `swe-simplifier` agent under a code-line budget
 - **High**: Up to MODERATE changes (cross-module DRY, removing abstraction layers, splitting files) but skip aggressive changes
 - **Low**: Only SAFEST and SAFE changes (formatters, linters, dead code, simple DRY, stutter reduction)
 - **Let's discuss**: Talk through the situation to determine the right level
@@ -174,7 +174,17 @@ Each iteration:
 
 **For other languages** (Python, Rust, Lua, etc.): The orchestrator implements directly.
 
-### 7. Completion Summary
+### 5. Generative Simplification Stage (Maximum only)
+
+Runs once, after the tactical loop converges, only at the Maximum ceiling. Per nominated module (largest, most-touched-without-shrinking, disproportionate machinery):
+
+1. **Eligibility gate** — dedicated tests exist and pass; weakly-specified modules are skipped and reported, never rewritten on hope.
+2. **Contract harvest** — the orchestrator assembles the public surface (from call sites), the pinning specs, binding ADR/design constraints, house style, and a code-line budget (comments excluded).
+3. **Blind regeneration** — `swe-simplifier` reimplements from the contract without ever seeing the current code. The budget pressures a simpler *design* (fewer concepts > fewer mechanisms > fewer branches > fewer lines); a golfed rendering of the same design is a failure. `REGENERATION DECLINED` (the current design is already minimal) is a respected outcome.
+4. **Three-layer verification** — full suite; failing-spec classification (a rewrite failing only internals-pinning specs is declined and reported with the spec list — the run never amends specs); `swe-correctness-reviewer` on the rewrite diff, which receives the old implementation the simplifier never saw.
+5. **Atomic commit per module**, then one tactical quick-pass scoped to the regenerated modules.
+
+### 6. Completion Summary
 ```
 ## Refactoring Complete
 
@@ -195,7 +205,7 @@ After the summary, the workflow presents **user-decision items** collected acros
 - **Commented-out code:** Locations and descriptions of commented-out code found during scanning. The user decides which (if any) to delete. Commented-out code may be debugging helpers, work-in-progress, or intermittently-used code that is temporarily disabled — it's not treated as dead code.
 - **Apparently-unused public APIs:** Exported symbols that appear unused internally but may be consumed by external users of the package. Informational only.
 
-### 8. Update Documentation
+### 7. Update Documentation
 After the summary, the workflow runs `/tidy-docs` to bring documentation up to date.
 
 ## Examples

@@ -270,7 +270,7 @@ If any check fails, treat as a blocker — return to the loop (cycle counter doe
 - Base: <base branch> (SHA <short>)
 - Commits on branch: N
 - Net lines: +X/-Y
-- Finisher: <none | conservative | moderate | aggressive>
+- Finisher: <none | Low | High | Maximum>
 
 ### Run metadata
 - Hunt cycles: N of 10
@@ -315,9 +315,9 @@ Aggression ceiling for the optional finisher. Options (matching `/refactor`'s vo
 | Setting       | Effect                                                                                                          |
 |---------------|-----------------------------------------------------------------------------------------------------------------|
 | no finisher   | Default. Bug fixes ship as-is. Operator may run `/refactor` separately.                                         |
-| conservative  | Cleanup of obviously-redundant code introduced by fixes. Low diff.                                              |
-| moderate      | Standard `/refactor` aggression. Moderate diff.                                                                 |
-| aggressive    | Maximum aggression — significant restructuring permitted. High diff. The "MAXIMUM aggression" the ad-hoc want. |
+| Low           | Cleanup of obviously-redundant code introduced by fixes. Low diff.                                              |
+| High          | Standard `/refactor` aggression. Moderate diff.                                                                 |
+| Maximum       | Full `/refactor` Maximum — aggressive changes plus the generative simplification stage (blind module rewrites). |
 
 ## Severity & Triage
 
@@ -392,7 +392,7 @@ Status: <active | paused-on-andon | complete>
 - <constraint 1>
 
 ### Refactor finisher
-<no finisher | conservative | moderate | aggressive>
+<no finisher | Low | High | Maximum>
 
 ## Cycle log
 

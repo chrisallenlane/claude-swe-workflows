@@ -82,7 +82,7 @@ Invoke `/refactor` with:
 - **Scope** — from commander's intent field 1.
 - **Aggression ceiling** — from commander's intent field 4.
 
-`/refactor` loops internally until no more tactical improvements remain. Suppress `/refactor`'s built-in `/tidy-docs` pass (step 7 in `/refactor`) — `/lead-refactor` does not include a documentation finisher; the operator can run `/tidy-docs` separately if needed.
+`/refactor` loops internally until no more tactical improvements remain. Suppress `/refactor`'s built-in `/tidy-docs` pass (step 8 in `/refactor`) — `/lead-refactor` does not include a documentation finisher; the operator can run `/tidy-docs` separately if needed.
 
 After `/refactor` concludes:
 - Verify tests pass.
@@ -260,7 +260,7 @@ Examples:
 
 ### Refactor aggression
 
-Aggression ceiling for both `/refactor` passes (Phase 1 and Phase 3). Mirrors `/refactor`'s vocabulary.
+Aggression ceiling for both `/refactor` passes (Phase 1 and Phase 3). Mirrors `/refactor`'s vocabulary (Low / High / Maximum). **Maximum includes `/refactor`'s generative simplification stage** — anchor-free regeneration of eligible modules from their contracts — so the elicitation must state this: choosing Maximum is informed consent to module rewrites in Phases 1 and 3, not just aggressive tactical changes.
 
 | Setting       | Effect                                                                                                                |
 |---------------|-----------------------------------------------------------------------------------------------------------------------|

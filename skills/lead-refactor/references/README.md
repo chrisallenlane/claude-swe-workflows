@@ -155,13 +155,13 @@ Examples:
 
 ### Refactor aggression
 
-Aggression ceiling for both `/refactor` passes (Phase 1 and Phase 3).
+Aggression ceiling for both `/refactor` passes (Phase 1 and Phase 3), in `/refactor`'s vocabulary.
 
-| Setting       | Effect                                                                                                          |
-|---------------|-----------------------------------------------------------------------------------------------------------------|
-| conservative  | Only SAFEST and SAFE categories — dead code, formatters, simple DRY, single-use indirection.                     |
-| moderate      | **Default.** Adds cross-module DRY, splitting files, removing abstraction layers.                                |
-| aggressive    | Adds removal of legacy code with unclear purpose, consolidating similar-but-not-identical behavior.              |
+| Setting | Effect                                                                                                                                             |
+|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| Low     | Only SAFEST and SAFE categories — dead code, formatters, simple DRY, single-use indirection.                                                        |
+| High    | **Default.** Adds cross-module DRY, splitting files, removing abstraction layers.                                                                   |
+| Maximum | Adds removal of legacy code with unclear purpose, consolidating similar-but-not-identical behavior — **and the generative simplification stage**: eligible modules regenerated from their contracts by a blind rewriter under a code-line budget. The elicitation states this; choosing Maximum is informed consent to module rewrites. |
 
 ## The Three Phases
 
@@ -269,7 +269,7 @@ Constraints — hard limits beyond breaking changes and main/master?
   Must remain Go 1.22 compatible.
 
 Refactor aggression — how aggressive should /refactor be?
-> Moderate. Don't want to delete code with unclear purpose right now.
+> High. Don't want to delete code with unclear purpose right now.
 
 Read back:
 [four-field intent]
@@ -281,7 +281,7 @@ Creating branch: lead-refactor/2026-05-12
 Seeding LEAD_REFACTOR_STATE.md
 
 [Phase 1 — Tactical refactor]
-/refactor with moderate aggression, scoped per intent ...
+/refactor with High aggression, scoped per intent ...
   Loops internally — 4 internal cycles, 23 commits, net -412/+187 lines
   Tests pass ✓
 
@@ -312,7 +312,7 @@ Triage: 0 above floor, 2 below
 Decide: CONVERGED (fix-list empty)
 
 [Phase 3 — Final tactical refactor]
-/refactor with moderate aggression ...
+/refactor with High aggression ...
   Loops internally — catches dead imports left from Phase 2 moves,
   redundant nil-checks after pkg/order consolidation
   2 internal cycles, 11 commits, net -167/+42 lines

@@ -150,9 +150,9 @@ Aggression ceiling for the optional post-convergence `/refactor` pass.
 | Setting       | Effect                                                                                          |
 |---------------|-------------------------------------------------------------------------------------------------|
 | no finisher   | **Default.** Bug fixes ship as-is. Operator may run `/refactor` separately.                     |
-| conservative  | Cleanup of obviously-redundant code introduced by fixes. Low diff.                              |
-| moderate      | Standard `/refactor` aggression. Moderate diff.                                                 |
-| aggressive    | Maximum aggression. Significant restructuring permitted. High diff.                             |
+| Low           | Cleanup of obviously-redundant code introduced by fixes. Low diff.                              |
+| High          | Standard `/refactor` aggression. Moderate diff.                                                 |
+| Maximum       | Full `/refactor` Maximum — aggressive changes plus the generative simplification stage.         |
 
 ## The Hunt Cycle
 
@@ -343,7 +343,7 @@ Constraints — hard limits beyond breaking changes and main/master?
   Must remain Go 1.22 compatible.
 
 Refactor finisher — clean up after fixes?
-> Moderate. The bug fixes tend to leave defensive code I'd rather
+> High. The bug fixes tend to leave defensive code I'd rather
   not ship.
 
 Read back:
@@ -387,7 +387,7 @@ Decide: skip to convergence check
 Convergence: 1 → 2 → CONVERGED
 
 [Termination — /refactor finisher]
-/refactor with moderate aggression, scoped to production code ...
+/refactor with High aggression, scoped to production code ...
   18 commits, 412 lines net change, tests pass
 
 [Termination — /review-test on new reproducing tests]

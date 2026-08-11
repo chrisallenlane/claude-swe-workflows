@@ -1,6 +1,6 @@
 ---
 name: refactor
-description: Autonomous iterative refactoring workflow. Scans for tactical code quality improvements (DRY, dead code, naming, complexity), implements through SMEs, verifies with QA, commits atomically, and loops until no improvements remain.
+description: Autonomous iterative refactoring workflow. Scans for tactical code quality improvements (DRY, dead code, naming, complexity), implements through SMEs, verifies with QA, commits atomically, and loops until no improvements remain. At the Maximum aggression ceiling, a final generative-simplification stage regenerates eligible modules from their contracts — anchor-free, under a code-line budget.
 model: opus
 ---
 
@@ -27,7 +27,9 @@ Autonomous refactoring workflow that iteratively improves code quality within th
 │  3. Gather QA instructions                          │
 │  4. Spawn fresh swe-code-reviewer agent (full scan)      │
 │  5. Select least aggressive changes available       │
-│  6. If none remain → exit to summary                │
+│  6. If none remain:                                 │
+│     ├─ Maximum ceiling → generative stage (once)    │
+│     └─ then exit to summary                         │
 │  7. Spawn SME agent (implement batch)               │
 │  8. Spawn QA agent (verify)                         │
 │     ├─ PASS → commit, goto 4                        │
@@ -52,7 +54,7 @@ Autonomous refactoring workflow that iteratively improves code quality within th
 **Ask the user:** "How aggressive should refactoring be?"
 
 Present these options:
-- **Maximum**: Attempt all improvements, including aggressive changes (removing legacy code with unclear purpose, consolidating similar-but-not-identical behavior)
+- **Maximum**: Attempt all improvements, including aggressive changes (removing legacy code with unclear purpose, consolidating similar-but-not-identical behavior) — and, after the tactical loop converges, the **generative simplification stage** (step 6): eligible modules are regenerated from their contracts by a blind rewriter under a code-line budget. Maximum means maximum.
 - **High**: Go up to MODERATE changes (cross-module DRY, removing abstraction layers, splitting files into focused modules) but skip aggressive changes
 - **Low**: Only SAFEST and SAFE changes (formatters, linters, dead code, simple DRY, pruning single-use indirection, reducing stutter)
 - **Let's discuss**: Talk through the situation to determine the right level
@@ -221,7 +223,45 @@ Return to step 5a with fresh agent instance.
 - User interrupts
 - Critical error
 
-### 6. Completion Summary
+### 6. Generative Simplification Stage (Maximum ceiling only)
+
+Runs exactly once, after the tactical loop converges (step 5f finds no remaining opportunities), and only when the operator chose the **Maximum** ceiling. The tactical loop polishes the design it starts from; this stage steps back and asks, per module: **is there a holistically simpler way to achieve this module's purpose?**
+
+The mechanism is **anchor-free regeneration**: a `swe-simplifier` agent reimplements the module from its *contract* — never seeing the current implementation — under a code-line budget. Blindness is the point: the existing shape is the anchor that forecloses the smaller design.
+
+#### 6a. Nominate candidates
+
+Select modules worth the step-back, judged from the tactical loop's vantage: the largest modules in scope, modules the loop repeatedly touched without shrinking, modules whose machinery smells disproportionate to their purpose. Respect the user's scope. Nominating none is valid — the stage then reports "no candidates" and exits.
+
+#### 6b. Eligibility gate (per candidate)
+
+A module qualifies only if **dedicated tests exist and pass**. The specs are the definition of behavior during regeneration; a weakly-specified module is skipped and reported (recommend `/review-test` or `/test-mutation` first), never rewritten on hope.
+
+#### 6c. Harvest the contract
+
+The orchestrator — not the simplifier — assembles the contract packet, so the simplifier stays blind:
+
+- The public surface as callers actually use it (grep the call sites; the callers define the contract)
+- The spec files that pin the module
+- Binding constraints: relevant ADRs, design-doc requirements, deliberate-quirk notes
+- The house style in effect (project conventions, CLAUDE.md, style guide)
+- The budget: the module's current **code-line count** (comments excluded — the budget must not be satisfiable by stripping them)
+
+#### 6d. Spawn `swe-simplifier`
+
+One candidate per agent, fresh instance. The agent returns a design note, the implementation, expected spec results, and line accounting — or `REGENERATION DECLINED`, which is a respected outcome recorded in the summary, not a failure.
+
+#### 6e. Verify (three layers)
+
+1. **Full suite.** All specs, unmodified.
+2. **Failing-spec classification.** A rewrite failing only specs that pin *internals* rather than observable contract is **declined**: revert, and report the rewrite alongside the pinning specs so the operator can decide — outside this run — whether those specs pin behavior or accidents. The run never amends specs; the specs are the safety net, and the run may not touch the net.
+3. **Correctness gate.** Spawn `swe-correctness-reviewer` on the rewrite diff. A regenerated module is the highest-risk diff this workflow produces, and the reviewer receives what the simplifier never saw — the old implementation — to hunt behavior deltas the specs missed. Findings are resolved (SME/simplifier fix, re-verify) or the rewrite is declined. 3-failure retry discipline as in 5d.
+
+#### 6f. Commit and quick-pass
+
+Commit each accepted rewrite atomically (`refactor: regenerate <module> — <N>→<M> code lines`). After all candidates resolve, run **one tactical quick-pass scoped to the regenerated modules** (same reasoning as `/lead-refactor`'s Phase 3 — fresh code has fresh nits), then proceed to the completion summary.
+
+### 7. Completion Summary
 
 When workflow completes, present summary:
 
@@ -241,6 +281,12 @@ When workflow completes, present summary:
 
 ### Aborted Batches (if any)
 - [Batch description]: [reason for failure]
+
+### Generative Stage (Maximum ceiling only)
+- Regenerated: module.lua 710→290 code lines (design note summary)
+- Declined by simplifier: N (already-minimal designs)
+- Declined by verification: N (with the internals-pinning specs listed)
+- Ineligible: N (weak specs — recommend /review-test or /test-mutation)
 ```
 
 **Then present user-decision items** collected across all passes:
@@ -249,7 +295,7 @@ When workflow completes, present summary:
 
 **Apparently-unused public APIs:** List each symbol and location. Note that these may be consumed by external users of the package. These are informational only — do not offer to delete them.
 
-### 7. Update Documentation
+### 8. Update Documentation
 
 After the refactoring summary, run the `/tidy-docs` workflow to bring project documentation up to date. Even tactical refactoring can rename functions, move code between files, and change APIs — documentation that references the old state becomes stale.
 
@@ -264,6 +310,8 @@ This spawns a doc-maintainer agent that audits all project documentation and fix
 
 **Fresh instances for context management:**
 - Spawn NEW `swe-code-reviewer` agent for each scan pass
+- Spawn NEW `swe-simplifier` agent per generative candidate (Maximum ceiling only) — and keep it blind: the orchestrator harvests the contract packet; the simplifier never sees the current implementation
+- `swe-correctness-reviewer` gates each rewrite diff (generative stage only)
 - This prevents context accumulation in the scanner
 - Orchestrator (you) maintains only summary state
 
@@ -305,6 +353,8 @@ This spawns a doc-maintainer agent that audits all project documentation and fix
 **`/refactor` vs `/review-arch`:** `/refactor` is tactical cleanup within existing architecture (DRY, dead code, naming, complexity). `/review-arch` is strategic — it questions the architecture and proposes restructuring (advisory; offers to cut tickets). Use `/refactor` for routine cleanup; use `/review-arch` when the module structure itself needs rethinking.
 
 **`/scope` → `/refactor`:** For a large refactoring effort, use `/scope` first to plan the work, then `/refactor` to execute autonomously.
+
+**The generative stage vs `/review-arch` and `/review-value`:** regeneration is module-scoped with a frozen public contract. Redrawing module boundaries stays `/review-arch`'s jurisdiction; trading behavior for simplicity stays `/review-value`'s. When the simplifier declines because the *contract* is the problem, those are the skills to reach for.
 
 ## Example Session
 
