@@ -106,7 +106,7 @@ The deepest skill never goes around its caller. The caller has more context abou
 
 ## Auto-approval of sub-skill ticket proposals
 
-Advisory sub-skills (`/bug-hunt`, `/review-arch`, `/review-security`, `/review-test`, `/review-health`) produce ticket *proposals* that require operator approval in their native contract. Under an orchestrator-family skill, those approvals are answered automatically by the orchestrator rather than escalated to the operator.
+Advisory sub-skills (`/bug-hunt`, `/review-arch`, `/review-dead`, `/review-security`, `/review-test`, `/review-health`) produce ticket *proposals* that require operator approval in their native contract. Under an orchestrator-family skill, those approvals are answered automatically by the orchestrator rather than escalated to the operator.
 
 This is a deliberate contract shift consistent with the autonomy discipline:
 

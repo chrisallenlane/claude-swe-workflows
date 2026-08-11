@@ -73,7 +73,7 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
     └── termination: /review-test (new tests) → /refactor (optional)
 
 /lead-review
-└── /review-health → /review-arch → /review-security → /review-perf
+└── /review-health → /review-dead → /review-arch → /review-security → /review-perf
   → /review-a11y → /review-test → /review-release
   (sub-skill ticket proposals auto-approved or auto-declined per startup choice)
 ```
@@ -103,9 +103,10 @@ Supporting workflows available at any level:
 
 - `/review-code` — adversarial correctness review of a specific diff (advisory; the one diff-scoped `/review-*` skill, excluded from `/lead-review`'s repo-scoped pipeline; wraps the same `swe-correctness-reviewer` agent that `/implement` (step 9) and `/bug-fix` (step 10) run as blocking gates)
 - `/review-value` — value-engineering review (advisory; discovers requirements across provenance tiers — documented, spec-pinned, inferred — attributes implementation cost to them, and presents a behavior-for-simplicity trade menu; excluded from `/lead-review` because its output is product decisions the operator must rule on)
+- `/review-dead` — focused dead-code audit (advisory; per-finding confidence tiers calibrated against the codebase's dynamic-dispatch patterns; runs as `/lead-review`'s phase 2)
 - `/test-mutation` — mutation testing
 - `/lead-refactor` — autonomous comprehensive refactoring (orchestrator-family; Phase 1 tactical `/refactor` → Phase 2 loop of `/review-arch` + `/implement-batch` until convergence below severity floor → Phase 3 final `/refactor`)
-- `/lead-review` — autonomous comprehensive review (orchestrator-family; runs every repo-scoped `/review-*` sub-skill in sequence; operator-configurable ticket creation at startup)
+- `/lead-review` — autonomous comprehensive review (orchestrator-family; runs its eight-phase review pipeline — health, dead code, arch, security, perf, a11y, test, release — in sequence; `/review-code` and `/review-value` are structurally excluded; operator-configurable ticket creation at startup)
 
 **Releases:**
 

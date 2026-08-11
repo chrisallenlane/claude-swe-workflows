@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `/lead-review` skill drives a codebase through every review dimension — orientation, architecture, security, performance, accessibility, tests, release-readiness — without operator involvement between startup and termination. The operator states **scope, ticket creation (yes/no), severity floor (if tickets), and constraints** at startup; the skill then runs each enabled sub-skill in sequence, auto-approving or auto-declining ticket proposals uniformly per the startup choice. Termination is structural — once all enabled sub-skills have run, the consolidated report is produced.
+The `/lead-review` skill drives a codebase through every review dimension — orientation, dead code, architecture, security, performance, accessibility, tests, release-readiness — without operator involvement between startup and termination. The operator states **scope, ticket creation (yes/no), severity floor (if tickets), and constraints** at startup; the skill then runs each enabled sub-skill in sequence, auto-approving or auto-declining ticket proposals uniformly per the startup choice. Termination is structural — once all enabled sub-skills have run, the consolidated report is produced.
 
 This skill is the successor to `/review-deep`. The v10 move into the `/lead-*` namespace makes the autonomy-axis identity explicit; the redesign trades interactive participation for autonomous execution and adds the ticket-creation toggle so the run can serve both "produce a comprehensive backlog" and "produce a comprehensive audit report" use cases.
 
@@ -23,7 +23,7 @@ This skill is a member of the **orchestrator family** and implements the autonom
 - Periodic codebase health checks
 - Inheriting an unfamiliar codebase (tickets OFF first, then OFF→ON after orientation)
 - Producing a consolidated backlog of review-driven work for follow-up implementation
-- Any time you'd otherwise run `/review-health` → `/review-arch` → `/review-security` → … by hand
+- Any time you'd otherwise run `/review-health` → `/review-dead` → `/review-arch` → `/review-security` → … by hand
 
 **Don't use `/lead-review` for:**
 - Targeted single-dimension review — use the individual `/review-*` skill directly
@@ -88,15 +88,16 @@ If you want the interactive walkthrough that `/review-deep` provided, invoke ind
                       │
                       ▼
  ┌──────────────────────────────────────────────┐
- │  PHASES 1–7 (sequential, once-through)       │
+ │  PHASES 1–8 (sequential, once-through)       │
  │  ────────────────────────────────────────    │
  │  1. /review-health (orientation)             │
- │  2. /review-arch (architecture)              │
- │  3. /review-security (security)              │
- │  4. /review-perf (performance)               │
- │  5. /review-a11y — if web content            │
- │  6. /review-test (test suite)                │
- │  7. /review-release (release readiness)      │
+ │  2. /review-dead (dead code)                 │
+ │  3. /review-arch (architecture)              │
+ │  4. /review-security (security)              │
+ │  5. /review-perf (performance)               │
+ │  6. /review-a11y — if web content            │
+ │  7. /review-test (test suite)                │
+ │  8. /review-release (release readiness)      │
  │                                              │
  │  Each phase:                                 │
  │  - Invoke sub-skill with scope+constraints   │
@@ -206,12 +207,13 @@ The bounded review repertoire:
 | Skill              | Native contract                                                | In /lead-review                                                 |
 |--------------------|----------------------------------------------------------------|-----------------------------------------------------------------|
 | `/review-health`   | Advisory — strategic orientation                               | Phase 1. Tickets auto-approved/declined per startup choice.     |
-| `/review-arch`     | Advisory — noun analysis, target blueprint, ticket proposals   | Phase 2.                                                        |
-| `/review-security` | Advisory — blue/red parallel-isolated audit, ticket proposals  | Phase 3.                                                        |
-| `/review-perf`     | Advisory — compute/web performance                             | Phase 4.                                                        |
-| `/review-a11y`     | Advisory — WCAG audit (skipped if no web content)              | Phase 5 (conditional).                                          |
-| `/review-test`     | Advisory — five-phase test survey, ticket proposals            | Phase 6.                                                        |
-| `/review-release`  | Pre-release scanner — runs tests/build, surfaces findings      | Phase 7.                                                        |
+| `/review-dead`     | Advisory — focused dead-code audit, ticket proposals           | Phase 2.                                                        |
+| `/review-arch`     | Advisory — noun analysis, target blueprint, ticket proposals   | Phase 3.                                                        |
+| `/review-security` | Advisory — blue/red parallel-isolated audit, ticket proposals  | Phase 4.                                                        |
+| `/review-perf`     | Advisory — compute/web performance                             | Phase 5.                                                        |
+| `/review-a11y`     | Advisory — WCAG audit (skipped if no web content)              | Phase 6 (conditional).                                          |
+| `/review-test`     | Advisory — five-phase test survey, ticket proposals            | Phase 7.                                                        |
+| `/review-release`  | Pre-release scanner — runs tests/build, surfaces findings      | Phase 8.                                                        |
 
 Skills explicitly **not** in the repertoire (out-of-axis):
 - `/tidy-docs` — mechanical mutations, not advisory. Run separately if doc cleanup is wanted.
@@ -264,27 +266,31 @@ Seeding LEAD_REVIEW_STATE.md
 2 tickets proposed at/above floor, auto-approved → #501, #502
 3 findings below floor (Medium/Low) deferred
 
-[Phase 2 — /review-arch]
+[Phase 2 — /review-dead]
+5 findings (4 PROVEN, 1 UNVERIFIABLE), all Medium/Low
+Below floor — recorded for report, no tickets
+
+[Phase 3 — /review-arch]
 8 findings (3 High, 4 Medium, 1 Low)
 3 tickets proposed at/above floor, auto-approved → #503, #504, #505
 
-[Phase 3 — /review-security]
+[Phase 4 — /review-security]
 6 findings (2 Critical, 2 High, 1 Medium, 1 Low)
 4 tickets proposed at/above floor, auto-approved → #506-#509
 
-[Phase 4 — /review-perf]
+[Phase 5 — /review-perf]
 4 findings (1 High, 3 Medium)
 1 ticket proposed → #510
 
-[Phase 5 — /review-a11y]
+[Phase 6 — /review-a11y]
 9 findings (2 High, 5 Medium, 2 Low)
 2 tickets proposed → #511, #512
 
-[Phase 6 — /review-test]
+[Phase 7 — /review-test]
 14 findings across 5 phases (coverage + quality)
 6 tickets proposed → #513-#518
 
-[Phase 7 — /review-release]
+[Phase 8 — /review-release]
 5 findings (2 High, 3 Medium)
 2 tickets proposed → #519, #520
 

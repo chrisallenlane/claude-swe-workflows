@@ -297,6 +297,7 @@ The skill may invoke any of the following during the Decide phase:
 | `/review-security`   | Security audit                                                                  |
 | `/review-code`       | Adversarial correctness review of a specific diff (e.g., pre-merge)             |
 | `/review-value`      | Value-engineering review; trade menu is andon-cord material (product decisions) |
+| `/review-dead`       | Focused dead-code audit; cheap advisory sweep before refactoring work           |
 | `/lead-review`       | Comprehensive review across all dimensions                                      |
 | `/bug-hunt`          | Proactive bug discovery                                                         |
 | `/bug-fix`           | Diagnosis-first bug fixing                                                      |

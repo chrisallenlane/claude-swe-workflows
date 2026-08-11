@@ -160,6 +160,7 @@ Available actions (non-exhaustive):
 - `/review-arch`, `/review-test`, `/tidy-docs`, `/review-release`, `/review-perf`, `/review-a11y`, `/review-security` — targeted reviews
 - `/review-code` — adversarial correctness review of a specific diff; useful pre-merge on an integration branch before presenting it as done
 - `/review-value` — value-engineering review; its trade menu is product decisions, so surface it to the operator (andon cord) rather than ruling autonomously
+- `/review-dead` — focused dead-code audit; cheap advisory sweep before refactoring work
 - `/lead-review` — comprehensive review pass
 - `/bug-hunt` — proactive bug discovery
 - `/bug-fix` — diagnosis-first bug fixing

@@ -29,7 +29,7 @@ Three other entry points orchestrate bounded autonomous loops:
 
 - `/lead-bug-hunt` — loops `/bug-hunt` → `/implement-batch` until bugs converge below a severity floor.
 - `/lead-refactor` — `/refactor` → loops `/review-arch` + `/implement-batch` → `/refactor`.
-- `/lead-review` — runs every repo-scoped `/review-*` sub-skill once.
+- `/lead-review` — runs its eight-phase review pipeline once.
 
 Planning feeds implementation: `/scope-project` → `/implement-project`, or
 `/scope` → `/implement`. Supporting skills (`/think-*`, `/review-*`, `/bug-*`,
@@ -40,17 +40,17 @@ Planning feeds implementation: `/scope-project` → `/implement-project`, or
 Skills are grouped by namespace for discoverability. Each namespace gathers
 skills with a related purpose.
 
-| Namespace      | Purpose                                     | Skills                                                                                                                                                   |
-|----------------|---------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/lead-*`      | Autonomous orchestrators                    | `/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/lead-review`                                                                                      |
-| `/implement-*` | Implement tickets (mutate the working tree) | `/implement`, `/implement-batch`, `/implement-project`                                                                                                   |
-| `/scope-*`     | Plan and produce tickets                    | `/scope`, `/scope-project`                                                                                                                               |
-| `/review-*`    | Advisory audits — no code changes           | `/review-arch`, `/review-code`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-health`, `/review-security`, `/review-release`, `/review-value` |
-| `/think-*`     | Reasoning support — no artifacts            | `/think-reframe`, `/think-brainstorm`, `/think-diagnose`, `/think-ach`, `/think-deliberate`, `/think-premortem`, `/think-scrutinize`, `/think-reflect`   |
-| `/tidy-*`      | Mechanical hygiene                          | `/tidy-docs`, `/tidy-git`                                                                                                                                |
-| `/bug-*`       | Find and fix bugs                           | `/bug-fix`, `/bug-hunt`                                                                                                                                  |
-| `/test-*`      | Test-quality work                           | `/test-mutation`                                                                                                                                         |
-| (standalone)   | Skills that don't share a namespace         | `/refactor`, `/pre-compact`, `/release`                                                                                                                  |
+| Namespace      | Purpose                                     | Skills                                                                                                                                                                   |
+|----------------|---------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/lead-*`      | Autonomous orchestrators                    | `/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/lead-review`                                                                                                      |
+| `/implement-*` | Implement tickets (mutate the working tree) | `/implement`, `/implement-batch`, `/implement-project`                                                                                                                   |
+| `/scope-*`     | Plan and produce tickets                    | `/scope`, `/scope-project`                                                                                                                                               |
+| `/review-*`    | Advisory audits — no code changes           | `/review-arch`, `/review-code`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-health`, `/review-security`, `/review-release`, `/review-value`, `/review-dead` |
+| `/think-*`     | Reasoning support — no artifacts            | `/think-reframe`, `/think-brainstorm`, `/think-diagnose`, `/think-ach`, `/think-deliberate`, `/think-premortem`, `/think-scrutinize`, `/think-reflect`                   |
+| `/tidy-*`      | Mechanical hygiene                          | `/tidy-docs`, `/tidy-git`                                                                                                                                                |
+| `/bug-*`       | Find and fix bugs                           | `/bug-fix`, `/bug-hunt`                                                                                                                                                  |
+| `/test-*`      | Test-quality work                           | `/test-mutation`                                                                                                                                                         |
+| (standalone)   | Skills that don't share a namespace         | `/refactor`, `/pre-compact`, `/release`                                                                                                                                  |
 
 The `/lead-*` and `/implement-*` namespaces additionally share an autonomy
 discipline (commander's intent, pre-loaded options, pre-rebutted
@@ -87,6 +87,7 @@ task:
 | Clean up code quality (DRY, dead code, naming)                                              | `/refactor`          |
 | Rethink module boundaries and architecture                                                  | `/review-arch`       |
 | Price the requirements and propose behavior-for-simplicity trades                           | `/review-value`      |
+| Audit for dead code without removing it                                                     | `/review-dead`       |
 | Survey the test suite and surface gaps as tickets                                           | `/review-test`       |
 | Verify test quality via mutation testing                                                    | `/test-mutation`     |
 | Tidy all project documentation                                                              | `/tidy-docs`         |
@@ -143,6 +144,7 @@ All `/review-*` skills are advisory — they audit and propose, never mutate.
 - **`/review-release`** — Pre-release readiness check: debug artifacts, version mismatches, changelog gaps, git hygiene, breaking changes, license compliance. ([details](skills/review-release/SKILL.md))
 - **`/review-code`** — Adversarial correctness review of a diff: assumes a bug already shipped and mechanically verifies every assumption the change makes against the repo. The one diff-scoped `/review-*` skill — the rest audit the whole repository. ([details](skills/review-code/SKILL.md))
 - **`/review-value`** — Value-engineering review: discovers the project's requirements across provenance tiers (documented, spec-pinned, inferred from behavior), attributes implementation cost to the requirements that force it, and presents a trade menu — small concrete behavior relaxations that dissolve disproportionate machinery. Excluded from `/lead-review`: its output is product decisions. ([details](skills/review-value/SKILL.md))
+- **`/review-dead`** — Focused dead-code audit: unreferenced symbols, dead files, unreachable branches, unused imports and dependencies, tests-only code, dead configuration. Per-finding confidence tiers calibrated against the codebase's dynamic-dispatch patterns; leverages language tooling when present. Runs as `/lead-review`'s phase 2. ([details](skills/review-dead/SKILL.md))
 
 ### `/think-*` — Reasoning
 

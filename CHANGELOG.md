@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+### New Skills
+
+- **`/review-dead` — focused dead-code audit.** The cheap way to get *just* a dead-code audit: `/review-arch` also catalogs dead code, but only as step one of a full architectural blueprint, and `/refactor` finds-and-removes rather than reporting. `/review-dead` audits without mutating — unreferenced symbols, dead files, unreachable branches, unused imports and manifest dependencies, commented-out blocks, tests-only code (source whose only references are its own tests), and dead configuration.
+
+  The discipline is calibration, because a false dead-code finding costs more than a missed one. The auditor surveys the codebase's dynamic-dispatch patterns *first* (reflection, string-built names, registries, convention-based loading — the classic ways "no references found" lies), determines the reference roots (an application's entry points vs. a library's exported public API, which is never dead merely for being uncalled in-repo), then tiers every finding PROVEN / LIKELY / UNVERIFIABLE with cited evidence. Language tooling (`deadcode`/`staticcheck`, `knip`, `vulture`, `luacheck`) is leveraged when present, never installed. UNVERIFIABLE findings route to verification tickets, never removal tickets; intentionally-retained code (lint suppressions, ADR-protected) is reported separately, not proposed for removal.
+
+  **`/lead-review` grows from seven phases to eight**: `/review-dead` joins as phase 2 (after orientation, before architecture), rather than the pipeline relying on `/review-arch`'s incidental Step-1 catalog — the pipeline composes the dedicated skill, and `/review-arch`'s later re-findings are treated as confirmations and deduped in the consolidated report. Downstream phases renumber 2–7 → 3–8; the auto-approval contract in `references/autonomy.md` gains `/review-dead`; `advisory-tickets.md` adds it to the family.
+
+### New Agents
+
+- **`swe-dead-code-auditor` — focused dead-code auditor.** Internal agent (opus) backing `/review-dead`. Runs the calibration sequence (dynamic-dispatch survey → roots determination → tooling pass → agent analysis for the categories tools miss), carries the confidence-tier and evidence-citation disciplines, and checks `adr/` before assuming absence of intent. Advisory only; honest zero is a valid result.
+
 ### Changed
 
 - **BREAKING: `/review-requirements` renamed to `/review-value`.** One release after shipping — the cheapest moment a skill rename will ever have. The new name is truer to what the skill audits: value-for-cost, which exists in every codebase, where "requirements" faintly promised a document artifact most projects don't have (the skill's provenance-tier discovery exists precisely because requirements must be excavated, not read). It also aligns with the value-engineering discipline the skill explicitly practices and with its backing `swe-value-engineer` agent. The discoverability cost of the more opaque name is carried by the README capability table and skill description. Per the "skills are user-facing" contract, the rename is a breaking change and gates the next release to a MAJOR bump. Historical changelog entries below retain the original name.

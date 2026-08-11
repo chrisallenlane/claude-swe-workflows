@@ -1,12 +1,12 @@
 ---
 name: lead-review
-description: Autonomous comprehensive review. Once-through pipeline over /review-health, /review-arch, /review-security, /review-perf, /review-a11y, /review-test, /review-release. Operator-configurable ticket creation at startup — when ON, auto-approves sub-skill ticket proposals per the orchestrator-family contract; when OFF, uniformly declines and surfaces findings in the consolidated report. Auto-detects sub-skills that do not apply (no web content → skip /review-a11y; no tests → skip /review-test).
+description: Autonomous comprehensive review. Once-through pipeline over /review-health, /review-dead, /review-arch, /review-security, /review-perf, /review-a11y, /review-test, /review-release. Operator-configurable ticket creation at startup — when ON, auto-approves sub-skill ticket proposals per the orchestrator-family contract; when OFF, uniformly declines and surfaces findings in the consolidated report. Auto-detects sub-skills that do not apply (no web content → skip /review-a11y; no tests → skip /review-test).
 model: opus
 ---
 
 # Lead-Review — Autonomous Comprehensive Review
 
-Drives a codebase through every review dimension — orientation, architecture, security, performance, accessibility, tests, release-readiness — without operator involvement between startup and termination. The operator states scope, whether tickets should be cut, and (if so) the severity floor for ticket creation. The skill then runs each enabled sub-skill in sequence, auto-approving or auto-declining ticket proposals uniformly per the startup choice. Termination is structural — once all enabled sub-skills have run, the consolidated report is produced.
+Drives a codebase through every review dimension — orientation, dead code, architecture, security, performance, accessibility, tests, release-readiness — without operator involvement between startup and termination. The operator states scope, whether tickets should be cut, and (if so) the severity floor for ticket creation. The skill then runs each enabled sub-skill in sequence, auto-approving or auto-declining ticket proposals uniformly per the startup choice. Termination is structural — once all enabled sub-skills have run, the consolidated report is produced.
 
 This skill is the successor to `/review-deep`. The v10 move into the `/lead-*` namespace makes the autonomy-axis identity explicit; the redesign trades interactive participation for autonomous execution and adds the ticket-creation toggle so the run can serve both "produce a comprehensive backlog" and "produce a comprehensive audit report" use cases.
 
@@ -37,7 +37,7 @@ Reviews produce findings; they don't drive toward a converged state. Looping ove
 
 ### Broad authority, narrow gates
 
-The skill may: invoke `/review-health`, `/review-arch`, `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release`; create or decline tickets via auto-approved or auto-declined proposals; create and modify the working branch (no commits expected, but tracker writes are commits-in-spirit).
+The skill may: invoke `/review-health`, `/review-dead`, `/review-arch`, `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release`; create or decline tickets via auto-approved or auto-declined proposals; create and modify the working branch (no commits expected, but tracker writes are commits-in-spirit).
 
 The skill may NOT without explicit authorization: push or merge to main/master, force-push, propose breaking changes (see `references/autonomy.md` § "No unilateral breaking changes"), invoke skills outside the bounded review repertoire, install dependencies, run irreversible destructive operations.
 
@@ -55,14 +55,15 @@ The skill may NOT without explicit authorization: push or merge to main/master, 
 │     └─ 0e. Seed LEAD_REVIEW_STATE.md                             │
 │                                                                  │
 │  1. Phase 1: /review-health (orientation)                        │
-│  2. Phase 2: /review-arch (architecture)                         │
-│  3. Phase 3: /review-security (security)                         │
-│  4. Phase 4: /review-perf (performance)                          │
-│  5. Phase 5: /review-a11y (accessibility) — if applicable        │
-│  6. Phase 6: /review-test (test suite)                           │
-│  7. Phase 7: /review-release (release readiness)                 │
+│  2. Phase 2: /review-dead (dead code)                            │
+│  3. Phase 3: /review-arch (architecture)                         │
+│  4. Phase 4: /review-security (security)                         │
+│  5. Phase 5: /review-perf (performance)                          │
+│  6. Phase 6: /review-a11y (accessibility) — if applicable        │
+│  7. Phase 7: /review-test (test suite)                           │
+│  8. Phase 8: /review-release (release readiness)                 │
 │                                                                  │
-│  8. Termination                                                  │
+│  9. Termination                                                  │
 │     └─ Consolidated report                                       │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -93,15 +94,15 @@ Two `/review-*` skills are structurally excluded, not skip-listed: `/review-code
 
 Present the proposed skip-list and the enabled-list to the operator. Confirm before proceeding.
 
-### 1–7. Phases — Sub-Skill Invocations
+### 1–8. Phases — Sub-Skill Invocations
 
-Each enabled sub-skill runs exactly once. The phases are sequenced so earlier phases inform later ones (orientation → architecture → security → performance → accessibility → tests → release-readiness).
+Each enabled sub-skill runs exactly once. The phases are sequenced so earlier phases inform later ones (orientation → dead code → architecture → security → performance → accessibility → tests → release-readiness). `/review-arch`'s Step 1 re-catalogs dead code incidentally after `/review-dead` has run; treat those re-findings as confirmations and dedupe them in the findings ledger and consolidated report.
 
 For each phase:
 
 1. **Invoke** the sub-skill with the scope and constraints from commander's intent.
 2. **Answer the sub-skill's interactive prompts autonomously** using engineering judgment anchored to commander's intent. Specifically:
-   - For advisory sub-skills (`/review-arch`, `/review-security`, `/review-test`, `/review-health`) that reach a ticket-proposal step:
+   - For advisory sub-skills (`/review-arch`, `/review-dead`, `/review-security`, `/review-test`, `/review-health`) that reach a ticket-proposal step:
      - **Tickets ON** — auto-approve all proposed tickets at or above the severity floor. Below-floor proposed tickets are declined and the findings are recorded for the consolidated report.
      - **Tickets OFF** — auto-decline all proposed tickets uniformly. Findings are recorded for the consolidated report.
    - For non-ticket sub-skills (`/review-perf`, `/review-a11y`, `/review-release`) — accept the produced report and record findings.
@@ -114,11 +115,11 @@ If a sub-skill produces a finding the orchestrator believes is wrong on substanc
 
 If a sub-skill recommends a fix that requires a breaking change (per `references/autonomy.md` § "No unilateral breaking changes"), record it in `## Breaking-change findings` and pull the andon cord. Do not auto-approve such tickets.
 
-### 8. Termination
+### 9. Termination
 
 Termination is structural — every enabled phase completes, no andon cord pulled.
 
-#### 8a. Consolidated report
+#### 9a. Consolidated report
 
 Produce a single report aggregating every enabled phase. The report is ordered by review priority — sections most likely to need operator scrutiny come first.
 
@@ -186,7 +187,7 @@ Produce a single report aggregating every enabled phase. The report is ordered b
 - Tickets created: N (if tickets ON)
 
 ### Run metadata
-- Phases run: K of 7
+- Phases run: K of 8
 - Phases skipped: M (with reasons)
 - Andon-cord pulls during run: N (each with handoff in state doc)
 - Duration (wall-clock, approximate)
@@ -288,7 +289,7 @@ Branch SHA at startup: <short SHA>
 Base branch: <main-branch>
 Base SHA at startup: <short SHA>
 Last cycle HEAD: <short SHA>
-Current phase: <phase-1 .. phase-7 | termination>
+Current phase: <phase-1 .. phase-8 | termination>
 Status: <active | paused-on-andon | complete>
 
 ## Commander's Intent
@@ -324,28 +325,28 @@ Status: <active | paused-on-andon | complete>
 - Duration: ~X min
 - Notes: <anything noteworthy>
 
-### Phase 2 — /review-arch — <timestamp> — HEAD <short SHA>
+### Phase 3 — /review-arch — <timestamp> — HEAD <short SHA>
 - ...
 
 ## Findings ledger
 
 ### Created (if tickets ON)
-- [Phase 2 | ticket #14 | HIGH] <description>
+- [Phase 3 | ticket #14 | HIGH] <description>
 - ...
 
 ### Declined / below floor (if tickets ON)
-- [Phase 2 | MEDIUM] <description>
+- [Phase 3 | MEDIUM] <description>
 - ...
 
 ### Surfaced for operator (if tickets OFF)
-- [Phase 3 | CRITICAL] <description>
+- [Phase 4 | CRITICAL] <description>
 - ...
 
 ### Contested
-- [Phase 3] <description> — andon cord pulled, see § Andon Cord history
+- [Phase 4] <description> — andon cord pulled, see § Andon Cord history
 
 ### Breaking-change-required
-- [Phase 2] <description> — andon cord pulled, see § Andon Cord history
+- [Phase 3] <description> — andon cord pulled, see § Andon Cord history
 
 ## Andon cord history
 
