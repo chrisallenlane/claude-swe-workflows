@@ -1,5 +1,5 @@
 ---
-name: review-requirements
+name: review-value
 description: Value-engineering review. Discovers a project's requirements across provenance tiers (documented, spec-pinned, inferred from behavior), attributes implementation cost to the requirements that force it, and presents a trade menu — small concrete behavior relaxations that dissolve disproportionate machinery. Advisory only — behavior changes are product decisions; proposes document amendments and tickets on operator approval.
 model: opus
 ---
@@ -135,16 +135,16 @@ requirements changes the blueprint. Then /refactor for tactical cleanup."]
 
 ## Integration with Other Skills
 
-**`/review-requirements` vs `/review-arch`:** the mechanism audit prices machinery *within* fixed requirements ("does this heap serve a requirement?"); this skill prices the requirements themselves ("does that requirement earn its cost?"). Chain them: requirements first — compressing or restructuring the implementation of a requirement you're about to delete is wasted work.
+**`/review-value` vs `/review-arch`:** the mechanism audit prices machinery *within* fixed requirements ("does this heap serve a requirement?"); this skill prices the requirements themselves ("does that requirement earn its cost?"). Chain them: requirements first — compressing or restructuring the implementation of a requirement you're about to delete is wasted work.
 
-**`/review-requirements` vs `/scope`:** inverses. `/scope` turns desired behavior into planned cost; this turns observed cost back into behavior options.
+**`/review-value` vs `/scope`:** inverses. `/scope` turns desired behavior into planned cost; this turns observed cost back into behavior options.
 
 **Excluded from `/lead-review`'s pipeline:** its output is product decisions, which an autonomous orchestrator cannot rule on. Run it deliberately, with the product owner present.
 
 ## Example Session
 
 ```
-> /review-requirements
+> /review-value
 
 Scope: entire codebase
 Spawning swe-value-engineer agent...

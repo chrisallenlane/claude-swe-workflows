@@ -102,7 +102,7 @@ Supporting workflows available at any level:
 **Quality pipelines:**
 
 - `/review-code` — adversarial correctness review of a specific diff (advisory; the one diff-scoped `/review-*` skill, excluded from `/lead-review`'s repo-scoped pipeline; wraps the same `swe-correctness-reviewer` agent that `/implement` (step 9) and `/bug-fix` (step 10) run as blocking gates)
-- `/review-requirements` — value-engineering review (advisory; discovers requirements across provenance tiers — documented, spec-pinned, inferred — attributes implementation cost to them, and presents a behavior-for-simplicity trade menu; excluded from `/lead-review` because its output is product decisions the operator must rule on)
+- `/review-value` — value-engineering review (advisory; discovers requirements across provenance tiers — documented, spec-pinned, inferred — attributes implementation cost to them, and presents a behavior-for-simplicity trade menu; excluded from `/lead-review` because its output is product decisions the operator must rule on)
 - `/test-mutation` — mutation testing
 - `/lead-refactor` — autonomous comprehensive refactoring (orchestrator-family; Phase 1 tactical `/refactor` → Phase 2 loop of `/review-arch` + `/implement-batch` until convergence below severity floor → Phase 3 final `/refactor`)
 - `/lead-review` — autonomous comprehensive review (orchestrator-family; runs every repo-scoped `/review-*` sub-skill in sequence; operator-configurable ticket creation at startup)

@@ -1,6 +1,6 @@
 # Advisory Skill Ticket-Proposal Pattern
 
-This document codifies the runtime ticket-proposal pattern shared by the advisory review-shaped skills: `/bug-hunt`, `/review-arch`, `/review-code`, `/review-requirements`, `/review-security`, `/review-test`. Each cites this document and supplies only its bespoke content — the ticket-shape catalog applicable to its findings, the per-ticket body schema, and any skill-specific fallback when the operator declines.
+This document codifies the runtime ticket-proposal pattern shared by the advisory review-shaped skills: `/bug-hunt`, `/review-arch`, `/review-code`, `/review-value`, `/review-security`, `/review-test`. Each cites this document and supplies only its bespoke content — the ticket-shape catalog applicable to its findings, the per-ticket body schema, and any skill-specific fallback when the operator declines.
 
 The pattern exists because review-shaped skills produce findings that need to be durably documented in the tracker for any subsequent fix work — but the operator (or invoking orchestrator) must approve the proposed structure. The skill does not unilaterally cut tickets; it proposes and waits.
 
@@ -35,7 +35,7 @@ Skill-specific behavior on decline:
 
 - `/bug-hunt` — falls through to a reproducing-test commit step. The tests have standalone coverage value regardless of ticket creation, so the skill offers to commit them even after a declined ticket proposal.
 - `/review-arch`, `/review-code`, `/review-security`, `/review-test` — exit cleanly with the analysis report; no further actions.
-- `/review-requirements` — exit cleanly; the priced trade menu stands as a planning artifact (knowing what the commitments cost is itself the product).
+- `/review-value` — exit cleanly; the priced trade menu stands as a planning artifact (knowing what the commitments cost is itself the product).
 
 ## Orchestrator-invoked behavior
 

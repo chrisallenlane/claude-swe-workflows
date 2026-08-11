@@ -40,17 +40,17 @@ Planning feeds implementation: `/scope-project` → `/implement-project`, or
 Skills are grouped by namespace for discoverability. Each namespace gathers
 skills with a related purpose.
 
-| Namespace      | Purpose                                     | Skills                                                                                                                                                          |
-|----------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/lead-*`      | Autonomous orchestrators                    | `/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/lead-review`                                                                                             |
-| `/implement-*` | Implement tickets (mutate the working tree) | `/implement`, `/implement-batch`, `/implement-project`                                                                                                          |
-| `/scope-*`     | Plan and produce tickets                    | `/scope`, `/scope-project`                                                                                                                                      |
-| `/review-*`    | Advisory audits — no code changes           | `/review-arch`, `/review-code`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-health`, `/review-security`, `/review-release`, `/review-requirements` |
-| `/think-*`     | Reasoning support — no artifacts            | `/think-reframe`, `/think-brainstorm`, `/think-diagnose`, `/think-ach`, `/think-deliberate`, `/think-premortem`, `/think-scrutinize`, `/think-reflect`          |
-| `/tidy-*`      | Mechanical hygiene                          | `/tidy-docs`, `/tidy-git`                                                                                                                                       |
-| `/bug-*`       | Find and fix bugs                           | `/bug-fix`, `/bug-hunt`                                                                                                                                         |
-| `/test-*`      | Test-quality work                           | `/test-mutation`                                                                                                                                                |
-| (standalone)   | Skills that don't share a namespace         | `/refactor`, `/pre-compact`, `/release`                                                                                                                         |
+| Namespace      | Purpose                                     | Skills                                                                                                                                                   |
+|----------------|---------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/lead-*`      | Autonomous orchestrators                    | `/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/lead-review`                                                                                      |
+| `/implement-*` | Implement tickets (mutate the working tree) | `/implement`, `/implement-batch`, `/implement-project`                                                                                                   |
+| `/scope-*`     | Plan and produce tickets                    | `/scope`, `/scope-project`                                                                                                                               |
+| `/review-*`    | Advisory audits — no code changes           | `/review-arch`, `/review-code`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-health`, `/review-security`, `/review-release`, `/review-value` |
+| `/think-*`     | Reasoning support — no artifacts            | `/think-reframe`, `/think-brainstorm`, `/think-diagnose`, `/think-ach`, `/think-deliberate`, `/think-premortem`, `/think-scrutinize`, `/think-reflect`   |
+| `/tidy-*`      | Mechanical hygiene                          | `/tidy-docs`, `/tidy-git`                                                                                                                                |
+| `/bug-*`       | Find and fix bugs                           | `/bug-fix`, `/bug-hunt`                                                                                                                                  |
+| `/test-*`      | Test-quality work                           | `/test-mutation`                                                                                                                                         |
+| (standalone)   | Skills that don't share a namespace         | `/refactor`, `/pre-compact`, `/release`                                                                                                                  |
 
 The `/lead-*` and `/implement-*` namespaces additionally share an autonomy
 discipline (commander's intent, pre-loaded options, pre-rebutted
@@ -64,42 +64,42 @@ cognitive failure modes) — see [references/think.md](references/think.md).
 Not everything needs the full pipeline. Enter at the level that matches your
 task:
 
-| You want to...                                                                              | Use                    |
-|---------------------------------------------------------------------------------------------|------------------------|
-| Drive a project to completion autonomously, deciding what to work on                        | `/lead-project`        |
-| Implement an entire multi-batch project autonomously                                        | `/implement-project`   |
-| Implement a batch of related tickets                                                        | `/implement-batch`     |
-| Implement a single ticket or feature                                                        | `/implement`           |
-| Plan a multi-batch project with adversarial review                                          | `/scope-project`       |
-| Plan a single feature and create a ticket                                                   | `/scope`               |
-| Fix a bug with diagnosis and root-cause analysis                                            | `/bug-fix`             |
-| Proactively hunt for bugs before they're reported                                           | `/bug-hunt`            |
-| Iterate hunt → fix until bugs converge below a severity floor (autonomous)                  | `/lead-bug-hunt`       |
-| Comprehensively refactor (tactical + architectural + tactical, autonomous)                  | `/lead-refactor`       |
-| Pressure-test a problem's framing before solving it                                         | `/think-reframe`       |
-| Brainstorm approaches to a goal                                                             | `/think-brainstorm`    |
-| Reason about why a phenomenon is happening                                                  | `/think-diagnose`      |
-| Narrow among competing hypotheses against evidence                                          | `/think-ach`           |
-| Make a hard decision with adversarial deliberation                                          | `/think-deliberate`    |
-| Imagine how a plan could fail, or how a hypothetical catastrophe could hit a running system | `/think-premortem`     |
-| Scrutinize an idea or plan before committing to it                                          | `/think-scrutinize`    |
-| Reflect on a completed experience to update beliefs                                         | `/think-reflect`       |
-| Clean up code quality (DRY, dead code, naming)                                              | `/refactor`            |
-| Rethink module boundaries and architecture                                                  | `/review-arch`         |
-| Price the requirements and propose behavior-for-simplicity trades                           | `/review-requirements` |
-| Survey the test suite and surface gaps as tickets                                           | `/review-test`         |
-| Verify test quality via mutation testing                                                    | `/test-mutation`       |
-| Tidy all project documentation                                                              | `/tidy-docs`           |
-| Pre-release readiness check                                                                 | `/review-release`      |
-| Cut a versioned release (preflight + plan + execute)                                        | `/release`             |
-| Audit web content for accessibility barriers                                                | `/review-a11y`         |
-| First-pass strategic orientation on a repo                                                  | `/review-health`       |
-| Review performance (compute and/or web)                                                     | `/review-perf`         |
-| Perform a white-box security audit                                                          | `/review-security`     |
-| Adversarially review a diff for correctness bugs before merging                             | `/review-code`         |
-| Run every review dimension autonomously (with optional backlog creation)                    | `/lead-review`         |
-| Tidy up the session before running `/compact`                                               | `/pre-compact`         |
-| Clean up local git state (stale refs, merged branches)                                      | `/tidy-git`            |
+| You want to...                                                                              | Use                  |
+|---------------------------------------------------------------------------------------------|----------------------|
+| Drive a project to completion autonomously, deciding what to work on                        | `/lead-project`      |
+| Implement an entire multi-batch project autonomously                                        | `/implement-project` |
+| Implement a batch of related tickets                                                        | `/implement-batch`   |
+| Implement a single ticket or feature                                                        | `/implement`         |
+| Plan a multi-batch project with adversarial review                                          | `/scope-project`     |
+| Plan a single feature and create a ticket                                                   | `/scope`             |
+| Fix a bug with diagnosis and root-cause analysis                                            | `/bug-fix`           |
+| Proactively hunt for bugs before they're reported                                           | `/bug-hunt`          |
+| Iterate hunt → fix until bugs converge below a severity floor (autonomous)                  | `/lead-bug-hunt`     |
+| Comprehensively refactor (tactical + architectural + tactical, autonomous)                  | `/lead-refactor`     |
+| Pressure-test a problem's framing before solving it                                         | `/think-reframe`     |
+| Brainstorm approaches to a goal                                                             | `/think-brainstorm`  |
+| Reason about why a phenomenon is happening                                                  | `/think-diagnose`    |
+| Narrow among competing hypotheses against evidence                                          | `/think-ach`         |
+| Make a hard decision with adversarial deliberation                                          | `/think-deliberate`  |
+| Imagine how a plan could fail, or how a hypothetical catastrophe could hit a running system | `/think-premortem`   |
+| Scrutinize an idea or plan before committing to it                                          | `/think-scrutinize`  |
+| Reflect on a completed experience to update beliefs                                         | `/think-reflect`     |
+| Clean up code quality (DRY, dead code, naming)                                              | `/refactor`          |
+| Rethink module boundaries and architecture                                                  | `/review-arch`       |
+| Price the requirements and propose behavior-for-simplicity trades                           | `/review-value`      |
+| Survey the test suite and surface gaps as tickets                                           | `/review-test`       |
+| Verify test quality via mutation testing                                                    | `/test-mutation`     |
+| Tidy all project documentation                                                              | `/tidy-docs`         |
+| Pre-release readiness check                                                                 | `/review-release`    |
+| Cut a versioned release (preflight + plan + execute)                                        | `/release`           |
+| Audit web content for accessibility barriers                                                | `/review-a11y`       |
+| First-pass strategic orientation on a repo                                                  | `/review-health`     |
+| Review performance (compute and/or web)                                                     | `/review-perf`       |
+| Perform a white-box security audit                                                          | `/review-security`   |
+| Adversarially review a diff for correctness bugs before merging                             | `/review-code`       |
+| Run every review dimension autonomously (with optional backlog creation)                    | `/lead-review`       |
+| Tidy up the session before running `/compact`                                               | `/pre-compact`       |
+| Clean up local git state (stale refs, merged branches)                                      | `/tidy-git`          |
 
 **Rules of thumb:**
 - Open-ended work where the next step depends on the outcome of the last? `/lead-project`
@@ -142,7 +142,7 @@ All `/review-*` skills are advisory — they audit and propose, never mutate.
 - **`/review-security`** — White-box security audit. Blue-teamer evaluates defensive posture first; red-teamers then attack informed by the gaps. Iterates until no new exploit chains emerge. ([details](skills/review-security/SKILL.md))
 - **`/review-release`** — Pre-release readiness check: debug artifacts, version mismatches, changelog gaps, git hygiene, breaking changes, license compliance. ([details](skills/review-release/SKILL.md))
 - **`/review-code`** — Adversarial correctness review of a diff: assumes a bug already shipped and mechanically verifies every assumption the change makes against the repo. The one diff-scoped `/review-*` skill — the rest audit the whole repository. ([details](skills/review-code/SKILL.md))
-- **`/review-requirements`** — Value-engineering review: discovers the project's requirements across provenance tiers (documented, spec-pinned, inferred from behavior), attributes implementation cost to the requirements that force it, and presents a trade menu — small concrete behavior relaxations that dissolve disproportionate machinery. Excluded from `/lead-review`: its output is product decisions. ([details](skills/review-requirements/SKILL.md))
+- **`/review-value`** — Value-engineering review: discovers the project's requirements across provenance tiers (documented, spec-pinned, inferred from behavior), attributes implementation cost to the requirements that force it, and presents a trade menu — small concrete behavior relaxations that dissolve disproportionate machinery. Excluded from `/lead-review`: its output is product decisions. ([details](skills/review-value/SKILL.md))
 
 ### `/think-*` — Reasoning
 

@@ -280,32 +280,32 @@ These are safety ceilings, not targets.
 
 The skill may invoke any of the following during the Decide phase:
 
-| Skill                           | When to use                                                                          |
-|---------------------------------|--------------------------------------------------------------------------------------|
-| `/scope`                        | Draft new tickets when gaps emerge that serve intent                                 |
-| `/implement`                    | Single-ticket implementation                                                         |
-| `/implement-batch`              | Batch of related tickets                                                             |
-| `/implement-project`            | Multi-batch ticket project                                                           |
-| `/refactor`                     | Tactical code cleanup                                                                |
-| `/lead-refactor`                | Tactical + architectural + tactical cleanup cycle (orchestrator-family)              |
-| `/review-arch`                  | Architectural review                                                                 |
-| `/review-test`                  | Test suite survey; advisory; produces ticket-structure proposal                      |
-| `/tidy-docs`                    | Documentation audit                                                                  |
-| `/review-release`               | Pre-release readiness                                                                |
-| `/review-perf`                  | Performance review                                                                   |
-| `/review-a11y`                  | Accessibility review                                                                 |
-| `/review-security`              | Security audit                                                                       |
-| `/review-code`                  | Adversarial correctness review of a specific diff (e.g., pre-merge)                  |
-| `/review-requirements`          | Value-engineering review; trade menu is andon-cord material (product decisions)      |
-| `/lead-review`                  | Comprehensive review across all dimensions                                           |
-| `/bug-hunt`                     | Proactive bug discovery                                                              |
-| `/bug-fix`                      | Diagnosis-first bug fixing                                                           |
-| `/test-mutation`                | Mutation testing                                                                     |
-| `/think-deliberate`             | Adversarial option selection when options are materially different                   |
-| `/think-scrutinize`             | Stress-test a plan before executing it                                               |
-| `/think-reframe`                | Reframe a problem when framing seems wrong                                           |
-| `/think-diagnose`               | Abductive reasoning about causes when a failure is mysterious                        |
-| `/think-brainstorm`             | Divergent idea generation when no obvious next action presents itself                |
+| Skill                | When to use                                                                     |
+|----------------------|---------------------------------------------------------------------------------|
+| `/scope`             | Draft new tickets when gaps emerge that serve intent                            |
+| `/implement`         | Single-ticket implementation                                                    |
+| `/implement-batch`   | Batch of related tickets                                                        |
+| `/implement-project` | Multi-batch ticket project                                                      |
+| `/refactor`          | Tactical code cleanup                                                           |
+| `/lead-refactor`     | Tactical + architectural + tactical cleanup cycle (orchestrator-family)         |
+| `/review-arch`       | Architectural review                                                            |
+| `/review-test`       | Test suite survey; advisory; produces ticket-structure proposal                 |
+| `/tidy-docs`         | Documentation audit                                                             |
+| `/review-release`    | Pre-release readiness                                                           |
+| `/review-perf`       | Performance review                                                              |
+| `/review-a11y`       | Accessibility review                                                            |
+| `/review-security`   | Security audit                                                                  |
+| `/review-code`       | Adversarial correctness review of a specific diff (e.g., pre-merge)             |
+| `/review-value`      | Value-engineering review; trade menu is andon-cord material (product decisions) |
+| `/lead-review`       | Comprehensive review across all dimensions                                      |
+| `/bug-hunt`          | Proactive bug discovery                                                         |
+| `/bug-fix`           | Diagnosis-first bug fixing                                                      |
+| `/test-mutation`     | Mutation testing                                                                |
+| `/think-deliberate`  | Adversarial option selection when options are materially different              |
+| `/think-scrutinize`  | Stress-test a plan before executing it                                          |
+| `/think-reframe`     | Reframe a problem when framing seems wrong                                      |
+| `/think-diagnose`    | Abductive reasoning about causes when a failure is mysterious                   |
+| `/think-brainstorm`  | Divergent idea generation when no obvious next action presents itself           |
 
 `/think-reflect` is intentionally **not** invoked inside the loop — it is calibrated for human consumption. The user may invoke it themselves on the completion report if they want retrospective learning.
 

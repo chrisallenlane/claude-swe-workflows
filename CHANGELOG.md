@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- **BREAKING: `/review-requirements` renamed to `/review-value`.** One release after shipping — the cheapest moment a skill rename will ever have. The new name is truer to what the skill audits: value-for-cost, which exists in every codebase, where "requirements" faintly promised a document artifact most projects don't have (the skill's provenance-tier discovery exists precisely because requirements must be excavated, not read). It also aligns with the value-engineering discipline the skill explicitly practices and with its backing `swe-value-engineer` agent. The discoverability cost of the more opaque name is carried by the README capability table and skill description. Per the "skills are user-facing" contract, the rename is a breaking change and gates the next release to a MAJOR bump. Historical changelog entries below retain the original name.
+
 ## v10.5.0
 
 ### New Skills

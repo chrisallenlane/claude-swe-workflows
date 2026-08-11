@@ -1,8 +1,8 @@
-# /review-requirements - Value-Engineering Review
+# /review-value - Value-Engineering Review
 
 ## Overview
 
-The `/review-requirements` skill applies **value engineering** — the discipline of attributing cost to function and asking whether a cheaper function would serve (Lawrence Miles, General Electric, 1947) — to a codebase. It discovers the project's requirements, attributes implementation cost to the requirements that force it, and presents a **trade menu**: small, concrete behavior relaxations that would dissolve disproportionate machinery.
+The `/review-value` skill applies **value engineering** — the discipline of attributing cost to function and asking whether a cheaper function would serve (Lawrence Miles, General Electric, 1947) — to a codebase. It discovers the project's requirements, attributes implementation cost to the requirements that force it, and presents a **trade menu**: small, concrete behavior relaxations that would dissolve disproportionate machinery.
 
 It is **advisory only**, and more strongly so than the other `/review-*` skills: its findings are *product decisions*. The skill prices behavior; only the product owner may trade it.
 
@@ -15,7 +15,7 @@ It is **advisory only**, and more strongly so than the other `/review-*` skills:
 
 ## When to Use
 
-**Use `/review-requirements` when:**
+**Use `/review-value` when:**
 - A codebase feels far heavier than the product it delivers
 - You suspect edge-case guarantees, unshipped features, or uniformity commitments are carrying disproportionate cost
 - Before a major refactoring campaign — descoping first shrinks the work
@@ -44,7 +44,7 @@ Inferred requirements get Chesterton's-fence respect but are the cheapest trades
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ /review-requirements Workflow (advisory value engineering)      │
+│ /review-value Workflow (advisory value engineering)      │
 └─────────────────────────────────────────────────────────────────┘
 
  ┌──────────────────────────────────────────────┐
@@ -94,7 +94,7 @@ Every trade names:
 
 ## Tips for Effective Use
 
-1. **Run it before refactoring campaigns, not after.** Compressing the implementation of a requirement you then delete is wasted work. The natural chain: `/review-requirements` → approved dissolutions land → `/review-arch` → `/refactor`.
+1. **Run it before refactoring campaigns, not after.** Compressing the implementation of a requirement you then delete is wasted work. The natural chain: `/review-value` → approved dissolutions land → `/review-arch` → `/refactor`.
 
 2. **Feed it a mechanism audit.** A recent `/review-arch` run's mechanism audit ("keep — serves requirement X") is pre-computed cost attribution; pass it in step 1.
 
