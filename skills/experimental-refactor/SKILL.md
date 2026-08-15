@@ -24,7 +24,7 @@ What it is NOT: it never changes observable behavior (requirement trades are `/r
 0. STAKES        elicit and pin the stakes declaration — the conviction standard
 1. HARNESS       partition specs: behavior-level (inviolable) vs internals-pinning
                  (mutable); harness = behavior specs + digests + smoke run
-2. SCAN          swe-armor-scanner: six-pattern findings with strip/keep
+2. SCAN          swe-armor-scanner: seven-pattern findings with strip/keep
                  verdicts, naive-baseline convictions, region proposals
 3. PRESENT       one batch approval: the strip list, the doc-cited deletions
                  highlighted, the regions. Operator rules once; then autonomy

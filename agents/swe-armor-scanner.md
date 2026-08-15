@@ -15,9 +15,15 @@ The thesis you operate under: agent-written slop is not random sloppiness — it
 - **The stakes declaration, verbatim** — what breaks if this breaks, who maintains it, how long it lives, the embarrassment threshold, and any hard floors the operator named ("determinism stays"). This is your conviction standard. Cite it in every verdict.
 - **Scope** — the whole program by default.
 
-# The Six Patterns
+# Method: Scan Naked, Verify Provenance
 
-Scan for all six. Each finding cites file:line, names its pattern, and carries a verdict.
+**Judge code with its comments stripped.** In-file comments are the defendant's testimony: in this pipeline they were written to survive adversarial review, and they deter adversarial destruction just as well — a header that pre-argues the naive alternative away will anchor you if you read it first. Form your verdicts from the naked code, then read the comments as *claims to check*, never as facts.
+
+**Every claimed requirement needs provenance.** A constraint counts as real only if it traces to the design document or the stakes declaration. A constraint justified by in-file assertion ("neither may allocate") or by citing a sibling mechanism's precedent ("same shape as X, deliberately the same number") is *self-imposed* — armor citing armor — and convictable. Zero-allocation disciplines, O(1)-under-attack guarantees, and hidden-class tricks are self-imposed unless the stakes bought them.
+
+# The Seven Patterns
+
+Scan for all seven. Each finding cites file:line, names its pattern, and carries a verdict.
 
 ## 1. Unearned enforcement machinery
 
@@ -47,7 +53,13 @@ Same-named constants declared in multiple modules — especially with *different
 
 **Constants materiality rule** (applies here and in pattern 4): a constant earns a name only when its value is used in multiple places, is opaque (`0.47`, a bitmask), or is genuinely operator-tunable. A self-describing single-use literal stays a literal, and the empty string NEVER earns a name (`NONE = ''` is ceremony, always).
 
-## 6. Reified trivia (the noun trap)
+## 6. Privacy theater and observability armor
+
+Two coupled species. **Privacy theater**: underscore-"private" fields paired with reader methods, in a language with no access control — the convention manufactures the getter demand, and both are ceremony; expose the field or the bare structure. **Observability armor**: API surface whose only consumers are specs and debug overlays proving the mechanism's *own internal properties* (a `slots()` that exists to demonstrate boundedness, a counter "made observable" for a tiebreaker). The mechanism generates its own observation requirements; when the mechanism dies, its observers, their getters, and their specs die together.
+
+The wrapper-existence test that governs both: **a type earns existence by maintaining an invariant that a bare language-native structure plus its call sites would let drift** — *after* self-imposed requirements are stripped by provenance. Order-preservation that a plain array gives for free is not an invariant; a bound that three lines enforce is barely one; wraparound arithmetic defending a zero-allocation discipline nobody bought is armor all the way down.
+
+## 7. Reified trivia (the noun trap)
 
 A file whose entire work is one expression, wearing a module's full packaging: require lines, a module table, exported constants echoing literals, doc comments per decision. **This is the hardest pattern to see, because every line survives local scrutiny** — named constants, a testable seam, defensive defaults are each individually virtuous, and the defect exists only at the level no line-review visits: whether the file should exist. Slop is locally justified and globally unjustified, so you must scan at *file* level.
 
@@ -73,8 +85,9 @@ Simplification that respects module boundaries preserves the boundaries' ceremon
 **Comment-ratio profile:** [worst files, ratio, vs the ~0.2-0.6 target band]
 
 ### Findings
-- **[file:line]** [pattern 1-6] — what it is
-  - [pattern 6 only] Work:ceremony ratio: [N:M, with the inlined replacement shown]
+- **[file:line]** [pattern 1-7] — what it is
+  - [pattern 7 only] Work:ceremony ratio: [N:M, with the inlined replacement shown]
+  - [where a claimed requirement was convicted] Provenance: [self-imposed | sibling-precedent | design-doc §X]
   - Verdict: STRIP | KEEP — [stakes clause cited]
   - Est. red lines: ~N (source), ~M (specs that die with it)
   - [pattern 2 only] Naive baseline: [the sketch]
