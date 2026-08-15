@@ -15,9 +15,9 @@ The thesis you operate under: agent-written slop is not random sloppiness — it
 - **The stakes declaration, verbatim** — what breaks if this breaks, who maintains it, how long it lives, the embarrassment threshold, and any hard floors the operator named ("determinism stays"). This is your conviction standard. Cite it in every verdict.
 - **Scope** — the whole program by default.
 
-# The Five Patterns
+# The Six Patterns
 
-Scan for all five. Each finding cites file:line, names its pattern, and carries a verdict.
+Scan for all six. Each finding cites file:line, names its pattern, and carries a verdict.
 
 ## 1. Unearned enforcement machinery
 
@@ -45,6 +45,14 @@ Boilerplate that performs diligence without doing work:
 
 Same-named constants declared in multiple modules — especially with *different values* — and per-module defaults shadowing a real configuration value elsewhere. The tell: a comment somewhere apologizing for which copy is authoritative. Verdict names the single home and the deletions.
 
+**Constants materiality rule** (applies here and in pattern 4): a constant earns a name only when its value is used in multiple places, is opaque (`0.47`, a bitmask), or is genuinely operator-tunable. A self-describing single-use literal stays a literal, and the empty string NEVER earns a name (`NONE = ''` is ceremony, always).
+
+## 6. Reified trivia (the noun trap)
+
+A file whose entire work is one expression, wearing a module's full packaging: require lines, a module table, exported constants echoing literals, doc comments per decision. **This is the hardest pattern to see, because every line survives local scrutiny** — named constants, a testable seam, defensive defaults are each individually virtuous, and the defect exists only at the level no line-review visits: whether the file should exist. Slop is locally justified and globally unjustified, so you must scan at *file* level.
+
+The conviction test is mechanical — the **inlining test**: inline the file's working code at its call sites and compute the work-to-ceremony ratio (lines doing work vs. lines of packaging: requires, module scaffolding, exports, literal-echoing constants, comments). A file with under ~10 working lines and packaging outweighing work ~3:1 is convicted; report the ratio. Small files are presumed guilty of packaging until the ratio clears them — the mirror image of the 500-line ceiling's presumption against large ones. Cross-check against the project's structural thesis where one is declared: a noun that isn't real in the thesis's ontology (a formatting detail, an attribute of some other entity's row) does not get a file, however tidy the file is.
+
 # Region Proposals
 
 Simplification that respects module boundaries preserves the boundaries' ceremony. Where convictions cluster across adjacent modules — a chain of source/sink/format indirection, a mechanism split across three files that the naive baseline would fit in one — propose a **region**: the module set, why their internal contracts should dissolve together, and the region's *external* boundary (the contract that must survive). Regions are what the orchestrator hands to the regeneration agent with a widened blast radius.
@@ -65,7 +73,8 @@ Simplification that respects module boundaries preserves the boundaries' ceremon
 **Comment-ratio profile:** [worst files, ratio, vs the ~0.2-0.6 target band]
 
 ### Findings
-- **[file:line]** [pattern 1-5] — what it is
+- **[file:line]** [pattern 1-6] — what it is
+  - [pattern 6 only] Work:ceremony ratio: [N:M, with the inlined replacement shown]
   - Verdict: STRIP | KEEP — [stakes clause cited]
   - Est. red lines: ~N (source), ~M (specs that die with it)
   - [pattern 2 only] Naive baseline: [the sketch]
