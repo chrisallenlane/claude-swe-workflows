@@ -32,12 +32,18 @@ What it is NOT: it never changes observable behavior (requirement trades are `/r
                    a. STRIKES — mechanical removals (ceremony, comments,
                       constants) implemented directly or via SME
                    b. REGENERATION — regions rebuilt by swe-simplifier with
-                      widened blast radius
+                      widened blast radius; constraint packets carry only
+                      provenance-verified constraints
+                 every stripped mechanism that guarded a real-but-free
+                 invariant bequeaths ONE behavior-level test
 5. VERIFY        harness green → spec-failure classification → correctness
                  gate → net-red check (scc code lines; not red ⇒ revert)
 6. COMMIT        atomic, per strike/region, with a deletions ledger
-7. LOOP          rescan until nothing above the stakes line remains
-8. REPORT        sloc + comment-ratio before/after; the ledger; doc amendments
+7. LOOP          rescan until the CURRENT taxonomy finds nothing above the
+                 stakes line — then STOP; reruns under an unchanged taxonomy
+                 saturate and find nothing new
+8. REPORT        sloc + comment-ratio before/after; the ledger; doc
+                 amendments; invitation to the specimen autopsy
 ```
 
 ### 0. Stakes Declaration
@@ -57,13 +63,17 @@ Classify every spec file before any destruction: **behavior-level** (asserts obs
 
 ### 2-3. Scan, then One Batch Approval
 
-Spawn `swe-armor-scanner` with the stakes declaration and full scope. Present its report to the operator **once**: every STRIP verdict, the naive-baseline convictions with their sketches, the region proposals, and — highlighted — every deletion that touches a design-doc- or ADR-cited mechanism, since those documents made promises the deletion unmakes. The operator strikes items from the list or approves the batch; after approval the skill runs autonomously to completion. (Behavior-priced complexity the scanner routed to `/review-value` is reported, not acted on.)
+Spawn `swe-armor-scanner` with the stakes declaration and full scope. Present its report to the operator **once**: every STRIP verdict *with its provenance column* (design-doc §, stakes clause, or self-imposed — rulings are fast when the operator can see that a constraint was never bought), the naive-baseline convictions with their sketches, the region proposals, and — highlighted — every deletion that touches a design-doc- or ADR-cited mechanism, since those documents made promises the deletion unmakes. The operator strikes items from the list or approves the batch; after approval the skill runs autonomously to completion. (Behavior-priced complexity the scanner routed to `/review-value` is reported, not acted on.)
 
 ### 4. Destroy
 
 **Strikes** (mechanical): alias blocks, re-export mirrors, defensive defaults with no callers, impossible-input validation, comment-register violations (rationale worth keeping → `adr/` with a one-line pointer; the rest deleted), constant consolidation to a single home. Direct implementation or SME per `/refactor`'s dispatch table.
 
 **Regenerations** (design-level): each region goes to `swe-simplifier` with a *region packet* — the region's external boundary as the frozen "public surface," the behavior-level specs that pin it, the scanner's naive-baseline sketch as a design seed, the stakes declaration, house style, and the region's total code-line count as the budget. Internal contracts between the region's modules are explicitly dissolvable; the simplifier may return fewer files than it was conceptually handed.
+
+**Constraint packets are provenance-filtered.** When harvesting "binding constraints" for a packet, the orchestrator applies the scanner's provenance rule: only design-doc, stakes, and decision-recording-ADR constraints enter the packet. In-file assertions and sibling-precedent constraints ("mirrors X", "neither may allocate") are laundering — pass them into a packet and the simplifier faithfully rebuilds the armor they defend.
+
+**The test bequest.** When a stripped mechanism guarded an invariant that is *real but free* (satisfied by the null implementation — ingest order in an array, say), the mechanism dies and bequeaths exactly **one behavior-level test** asserting the invariant. Importance licenses a test; only expense licenses machinery. Tests may grow — this is the red-diff identity's designed exception, and it converts every dead tower of armor into a single line of durable vigilance.
 
 **Doc amendments ride along:** every stripped doc-cited mechanism updates its citing document in the same commit — one line, past tense ("enforcement dropped at stakes ruling <date>; behavior unchanged") — so no document keeps promising machinery that no longer exists, and no future agent faithfully rebuilds it.
 
@@ -87,6 +97,18 @@ Spawn `swe-armor-scanner` with the stakes declaration and full scope. Present it
 ### Declined: [what survived and the stakes clause or gate that saved it]
 ### Routed to /review-value: [behavior-priced complexity beyond this skill's authority]
 ```
+
+## The Specimen Autopsy — how this skill actually converges
+
+Reruns under an unchanged taxonomy saturate: the same scanner reaches the same verdicts. The loop that converges is **specimen → autopsy → new pattern → rerun**, with the operator as the fault oracle. After each run, the report closes by inviting specimens: any surviving code that still offends the operator. For each specimen, run the autopsy discipline in order:
+
+1. Strip the comments; judge the naked code.
+2. Provenance-check every claimed requirement (design-doc / stakes / self-imposed).
+3. Price the survivors with the free-invariant test — does the null implementation satisfy it?
+4. Sketch the naive baseline against the declared stakes.
+5. Trace each defended failure mode to its origin — is it a self-created hazard?
+
+Two outcomes only: the code is *defended from the ledger* (cite the stakes clause or hard floor that saves it — a legitimate KEEP the operator can now see), or a **taxonomy gap is exposed** — in which case draft the new scanner pattern, commit it to this branch, and rerun. The scanner's taxonomy is the learned artifact; the target codebase is its training set; convergence is the operator failing to find a specimen.
 
 ## Guardrails
 
