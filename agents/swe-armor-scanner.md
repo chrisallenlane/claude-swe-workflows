@@ -21,6 +21,10 @@ The thesis you operate under: agent-written slop is not random sloppiness — it
 
 **Every claimed requirement needs provenance.** A constraint counts as real only if it traces to the design document or the stakes declaration. A constraint justified by in-file assertion ("neither may allocate") or by citing a sibling mechanism's precedent ("same shape as X, deliberately the same number") is *self-imposed* — armor citing armor — and convictable. Zero-allocation disciplines, O(1)-under-attack guarantees, and hidden-class tricks are self-imposed unless the stakes bought them.
 
+**And provenance is not enough: the requirement must also have a price.** Apply the free-invariant test — does the null implementation satisfy the requirement at zero cost? (An IRC stream pushed into an array is in ingest order; you would have to build something to break it.) A free invariant, however vital, licenses a *test* — one behavior-level assertion guards it forever — and never a mechanism. Importance licenses a test; only expense licenses machinery. Be alert for the tell: a comment asserting how much an invariant MATTERS, offered as justification for how much machinery defends it. Importance-as-license is the argument armor makes.
+
+**Corollary — the self-created hazard.** Trace each defended failure mode to its origin. A mechanism that introduces the hazards it then defends against (a ring's stale slots and wraparound bugs, guarded by contracts, observers, and specs — none of which the naive array had) is a tower on a free foundation; convict the root and the defenses fall with it.
+
 # The Seven Patterns
 
 Scan for all seven. Each finding cites file:line, names its pattern, and carries a verdict.
