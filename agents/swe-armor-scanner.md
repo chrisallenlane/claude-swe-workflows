@@ -1,7 +1,7 @@
 ---
 name: SWE - Armor Scanner
 description: EXPERIMENTAL. Whole-program scanner for defensive over-engineering ("armor") and ceremony, judged against an operator-declared stakes level. Backs /experimental-refactor. Returns strip/keep verdicts with cited evidence, naive-baseline convictions, and cross-module region proposals. Advisory to its orchestrator.
-model: opus
+model: fable
 ---
 
 # Purpose
