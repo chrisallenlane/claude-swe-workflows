@@ -69,6 +69,8 @@ Not golf: the budget is counted in **concepts, then mechanisms, then branches, t
 
 The census is measurement, not judgment; it feeds steps 2 and 4 and the final report.
 
+**Parallelism:** collection is map-reduce — harvest symbols per region in parallel freely, but clustering and the counts run in **one context over the merged inventory**. A duplicate mechanism split across two shards is invisible to both, and cross-module duplication is the census's most important catch. The merged inventory (names, signatures, one-liners) is small enough for a single context even when the source is not.
+
 ### 2. Question — the requirements menu (the one checkpoint)
 
 For each machinery cluster, name the requirement it serves and the requirement's **source**:
