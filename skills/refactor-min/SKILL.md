@@ -55,9 +55,12 @@ Not golf: the budget is counted in **concepts, then mechanisms, then branches, t
                 tidying only — no structural or cross-file remedies
 6. AUTOMATE     [step 5] bequeath: oracle compiled into a standing
                 conformance suite; behavior-level tests ported; docs amended
-7. REPORT       per-generation series of concepts / mechanisms / lines;
+7. APPRAISE     swe-value-engineer, review-only, on the champion: a priced
+                trade menu — which behaviors force the remaining machinery,
+                and what each would free if the operator gave it up
+8. REPORT       per-generation series of concepts / mechanisms / lines;
                 add-back ratios; requirements killed, relaxed, kept;
-                finish-pass findings
+                finish-pass findings; the trade menu
 ```
 
 ### 1. Census — what the machine actually contains
@@ -120,7 +123,15 @@ Findings whose remedy would be structural go to the report, not the diff. After 
 - Port or rewrite the behavior-level tests worth keeping against the new design; retire internals suites with the machine they pinned (logged).
 - Amend docs that promised the dead machinery — one line each, past tense — so nothing invites a faithful rebuild.
 
-### 7. Report
+### 7. Appraise — the price menu for going further
+
+The run's floor is the pinned behavior; the only simplification left below the champion is *behavioral*. Spawn `swe-value-engineer` (shipped; the `/review-value` agent), review-only, on the champion. Its job here is unusually clean: minimization has already stripped everything the requirements did not force, so every remaining expense attributes to a requirement that survived step 2 — and the appraisal prices exactly those. The menu it returns, per line: the behavior, its source, the machinery it forces (concepts / mechanisms / lines), and what deleting it would free.
+
+Fold in the trades already accumulated — step 2's declined "sourced but priced" items and the generations' design-note proposals — deduplicated, so the operator sees one menu.
+
+**Nothing on the menu is executed.** Taking a trade is a product decision: the operator relaxes the behavior in a future run's step-2 menu (where the oracle is rebuilt without it), or routes it through `/review-value` proper. This run's diff stays behavior-preserving to the end.
+
+### 8. Report
 
 ```
 ## Refactor Min Complete
@@ -134,6 +145,7 @@ Findings whose remedy would be structural go to the report, not the diff. After 
 ### Oracle: N inputs, boundary [what was diffed], final state green
 ### Finish pass: F findings — L applied locally, R reported (structural, not taken)
 ### Bequest: conformance suite [location]; tests ported P, retired Q; docs amended
+### Trade menu: [behavior — source — machinery it forces — what its removal frees]
 ### Merge: the operator's call
 ```
 
