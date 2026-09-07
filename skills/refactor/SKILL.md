@@ -42,7 +42,7 @@ Not golf: the machine is counted in **concepts, then mechanisms, then branches, 
                                 and trades accumulate to the report
                  c. STRIP ⇄ REGENERATE — an inner loop, not a sequence:
                                 strip until stripping stalls; regenerate
-                                (fresh blind swe-minimizer) while design-
+                                (fresh blind swe-refactor-minimizer) while design-
                                 level work remains; strip again after any
                                 regeneration. A strip that breaks pinned
                                 behavior is repaired by restoring the old
@@ -50,7 +50,7 @@ Not golf: the machine is counted in **concepts, then mechanisms, then branches, 
                                 — whichever measures smaller. Every
                                 candidate faces the gates; adopt iff they
                                 pass and the machine shrank — no court
-3. FINISH      dx-reviewer, one pass: local, human-facing tidying only
+3. FINISH      swe-refactor-dx, one pass: local, human-facing tidying only
 4. AUTOMATE    bequeath: oracle compiled into a standing conformance suite;
                behavior-level tests ported; docs amended
 5. REPORT      per-iteration series; strips; requirements verdicts; trade
@@ -82,9 +82,9 @@ Each iteration is one turn of the crank on the current champion (iteration 1's c
 
 **c–d. Strip ⇄ Regenerate — the inner loop.** Stripping and regeneration are two moves in one game, not two stages: stripping often exposes design-level work only regeneration can do, and an aggressive strip sometimes takes a pinned behavior with it — in which case the repair is **either restoring the old part or regenerating a minimal replacement for just that hole, whichever measures smaller**. Restore-versus-rebuild is a gate question like everything else, not a discussion. Alternate the moves freely — strip until stripping stalls, regenerate while design-level work remains, always strip again after a regeneration lands — and end the iteration when neither move produces an adoptable candidate.
 
-**The strip move.** **Never regenerate what you can simply remove.** Spawn `swe-stripper` — fresh instance, assigned stance, removal-only jurisdiction — and apply its proposals in batches, highest-confidence first. Each batch is adjudicated by the gates like any candidate: pass → dead; fail → repaired (restore or minimal rebuild, as above), no discussion. The hunt is safe from anchoring for a structural reason — **anchoring poisons designers, not deleters**: an examiner that may only remove makes no design decisions for the incumbent to bias. Behavior-touching finds route to the trade menu; add-shaped finds to the side memo.
+**The strip move.** **Never regenerate what you can simply remove.** Spawn `swe-refactor-deleter` — fresh instance, assigned stance, removal-only jurisdiction — and apply its proposals in batches, highest-confidence first. Each batch is adjudicated by the gates like any candidate: pass → dead; fail → repaired (restore or minimal rebuild, as above), no discussion. The hunt is safe from anchoring for a structural reason — **anchoring poisons designers, not deleters**: an examiner that may only remove makes no design decisions for the incumbent to bias. Behavior-touching finds route to the trade menu; add-shaped finds to the side memo.
 
-**The regenerate move.** Spawn a **new `swe-minimizer` instance** — empty context, blind — with: the pinned behavior (oracle boundary, surviving requirements with sources, relaxations), the stripped champion's census **numbers** as budget, platform constraints, house style. **Never any machine's source, tests, or history** — not the original's, not the champion's; census shapes stay behind; no design, note, or rationale from any earlier iteration crosses. It designs first (a concept inventory naming its omissions checkably), then builds whole-target. Converge via add-backs: run the oracle; classify each divergence — **the corpus defines behavior**: a difference no realistic input can produce is a **discovered kill** (log it, accept it; the same law governs differences found by reading); a real divergence gets the smallest repairing add-back. Track the add-back ratio (~10% calibrated; ≫25% means a missed requirement class — recheck the verdicts; ~0% read against the structure numbers, a precise spec legitimately needs few). Then the gates. For targets too large for one context: regions with frozen boundaries, but prefer the largest region a context carries — parallel-machinery dissolution happens only inside one designer's view.
+**The regenerate move.** Spawn a **new `swe-refactor-minimizer` instance** — empty context, blind — with: the pinned behavior (oracle boundary, surviving requirements with sources, relaxations), the stripped champion's census **numbers** as budget, platform constraints, house style. **Never any machine's source, tests, or history** — not the original's, not the champion's; census shapes stay behind; no design, note, or rationale from any earlier iteration crosses. It designs first (a concept inventory naming its omissions checkably), then builds whole-target. Converge via add-backs: run the oracle; classify each divergence — **the corpus defines behavior**: a difference no realistic input can produce is a **discovered kill** (log it, accept it; the same law governs differences found by reading); a real divergence gets the smallest repairing add-back. Track the add-back ratio (~10% calibrated; ≫25% means a missed requirement class — recheck the verdicts; ~0% read against the structure numbers, a precise spec legitimately needs few). Then the gates. For targets too large for one context: regions with frozen boundaries, but prefer the largest region a context carries — parallel-machinery dissolution happens only inside one designer's view.
 
 ### The Gates — mechanical, all of them
 
@@ -98,7 +98,7 @@ Gates pass and the machine shrank → adopt. Anything else → the champion stan
 
 ### 3. Finish — one pass for the human reader
 
-The champion is a machine no human has yet read. Spawn `dx-reviewer` (the reader advocate) for **a single finalizing pass**: think-aloud plus concern spine, but remedies executed here are **local only** — a rename, a module header, a comment brought to house register, a file split at the ceiling, a magic value named. No structural moves, no rewrites: the machine's shape was settled by the loop. Structural findings go to the report, untaken. After the edits, run the gates once — tidying is behavior-safe by intent, not by assumption.
+The champion is a machine no human has yet read. Spawn `swe-refactor-dx` (the reader advocate) for **a single finalizing pass**: think-aloud plus concern spine, but remedies executed here are **local only** — a rename, a module header, a comment brought to house register, a file split at the ceiling, a magic value named. No structural moves, no rewrites: the machine's shape was settled by the loop. Structural findings go to the report, untaken. After the edits, run the gates once — tidying is behavior-safe by intent, not by assumption.
 
 ### 4. Automate — last, and only for the survivor
 

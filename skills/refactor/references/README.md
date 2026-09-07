@@ -35,7 +35,7 @@ cycle, automate last.
                MECHANICAL gates — behavior, correctness, structure — and
                nobody argues: the orchestrator is a clerk, not a judge.
                Fresh eyes every pass; stop when a pass changes ~nothing.
-3. FINISH      dx-reviewer tidies the result for human readers — local
+3. FINISH      swe-refactor-dx tidies the result for human readers — local
                edits only.
 4. AUTOMATE    the oracle becomes a standing conformance suite; docs are
                amended so nothing promises dead machinery.
@@ -78,7 +78,7 @@ cycle, automate last.
 
 ## Agents used
 
-- `swe-stripper` — the deletion hunter; fresh instance per strip pass
-- `swe-minimizer` — the blind designer; fresh instance per iteration
-- `dx-reviewer` — the reader advocate for the finishing pass
+- `swe-refactor-deleter` — the deletion hunter; fresh instance per strip pass
+- `swe-refactor-minimizer` — the blind designer; fresh instance per iteration
+- `swe-refactor-dx` — the reader advocate for the finishing pass
 - `swe-correctness-reviewer` — the correctness gate on every candidate
