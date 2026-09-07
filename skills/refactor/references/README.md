@@ -44,9 +44,14 @@ simplify what survives, accelerate the cycle, automate last.
 
 ## What to expect
 
-- **A requirements menu, once, near the start.** This is where you have
-  power: everything you kill takes its machinery with it. Bulk rulings
-  ("keep all documented") are fine.
+- **A requirements menu, once, near the start.** It opens with two stakes
+  questions (what happens if this breaks? who maintains it?) and collects
+  any custom verification probes you can name — then the verdicts. This
+  is where you have power: everything you kill takes its machinery with
+  it. Bulk rulings ("keep all documented") are fine.
+- **A side memo in the report**: bugs and missing capabilities the run
+  found but did not touch — fixing a bug would change behavior, and the
+  oracle pins behavior, bugs included.
 - **Deletion-biased behavior by design.** The run is calibrated so that
   roughly 10% of what it deletes gets restored when the oracle objects —
   if nothing ever needs restoring, it wasn't cutting hard enough.
