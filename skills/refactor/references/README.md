@@ -1,6 +1,6 @@
 # Refactor — Human Guide
 
-`/refactor` does not clean code up; it redesigns the machine downward. The
+`/refactor` does not clean code up; it deletes machine. Reduction is the goal — regeneration, stripping, and appraisal are three instruments pointed at it. The
 mental model is the Raptor engine line: each generation more capable, less
 machine. The skill's spine is the five-step design algorithm from that
 program, in strict order — question the requirements, delete the part,
@@ -24,7 +24,12 @@ simplify what survives, accelerate the cycle, automate last.
                 side by side with each candidate and diffing user-visible
                 output only. The old test suite does not constrain the new
                 design; it is demoted to a diagnostic.
-4. GENERATIONS  the core loop. Each pass, a brand-new blind designer
+4. STRIP        before anything is rebuilt, a deletion-stance hunter
+                (swe-stripper) deletes everything the oracle and gates
+                permit from the incumbent — never regenerate what you can
+                simply remove. The stripped incumbent is the baseline the
+                regeneration loop must beat.
+5. GENERATIONS  the core loop. Each pass, a brand-new blind designer
                 (swe-minimizer) — which never sees any existing source, only
                 behavior, requirements, and size numbers — builds the
                 minimum machine. The orchestrator measures structure
@@ -32,18 +37,16 @@ simplify what survives, accelerate the cycle, automate last.
                 objection, and adopts unless a grounded objection stands.
                 Fresh eyes every pass; loop ends when a generation finds
                 nothing more to remove.
-5. STRIP        a deletion-stance hunter (swe-stripper) examines the
-                settled champion for removable parts — the look back the
-                blind designer never takes. Strips are judged empirically:
-                the oracle and gates vote, rejects are restored. Fresh
-                hunter per pass until a pass finds nothing.
-6. FINISH       dx-reviewer tidies the result for human readers — local
+6. STRIP AGAIN  the same hunt on the final champion — the look back the
+                blind designer never takes; the designer ships bloat of
+                its own. Empirical as before: the oracle and gates vote.
+7. FINISH       dx-reviewer tidies the result for human readers — local
                 edits only.
-7. AUTOMATE     the oracle is compiled into a standing conformance suite;
+8. AUTOMATE     the oracle is compiled into a standing conformance suite;
                 docs amended so nothing promises dead machinery.
-8. APPRAISE     a value-engineering pass prices what remains: a menu of
+9. APPRAISE     a value-engineering pass prices what remains: a menu of
                 behavior-for-simplicity trades you may take in a future run.
-9. REPORT       the per-generation series (concepts / mechanisms / lines),
+10. REPORT       the per-generation series (concepts / mechanisms / lines),
                 requirements killed and kept, add-back ratios, trade menu.
 ```
 

@@ -22,7 +22,7 @@ Steps 1–3 are the design work. Steps 4–5 are how the run itself operates.
 
 ## Identity
 
-**This skill redesigns downward.** Three rules:
+**This skill redesigns downward, and its end is deletion.** The goal is the reduction of the machine — fewer parts, held to at most today's behavior. Stripping is the primary act; regeneration is the most effective *instrument* of stripping we have found (it deletes parallel machinery and invented requirements wholesale, by never rebuilding them), but it is means, not end. Three rules:
 
 1. **Behavior is pinned by the incumbent, not by the tests.** "Tests green" locks the refactor into the shape the tests assumed — the wrong shape, or there would be nothing to refactor. The oracle is the incumbent implementation itself, run side by side with the replacement and diffed **only at the user-visible boundary** (frames, digests, stdout, responses, files written). The existing suite is demoted to a *diagnostic* — useful for localizing a divergence, never a constraint on the new design.
 2. **The unit of work is the design.** The minimizer does not edit the incumbent; it designs the minimum machine for the surviving requirements and builds it blind. Parallel machinery — the same problem solved twice in different modules because each was generated without knowledge of the other — is not hunted and unified; it dissolves, because the fresh design never knew there were two.
@@ -40,7 +40,15 @@ Not golf: the budget is counted in **concepts, then mechanisms, then branches, t
 3. ORACLE       [step 4 built early] differential harness: the ORIGINAL
                 incumbent as oracle at the user-visible boundary, for all
                 non-relaxed behavior; built once, reused by every generation
-4. GENERATIONS  loop until convergence — one FRESH minimizer per pass:
+4. STRIP        [step 2 — delete the part] swe-stripper hunts the
+                INCUMBENT: delete everything the oracle and gates permit
+                before anything is rebuilt — never regenerate what you
+                can simply remove. Batches judged EMPIRICALLY (oracle +
+                measure + gate — no briefs, no court); fresh hunter per
+                pass until a pass finds nothing. The stripped incumbent
+                becomes generation 0's champion
+5. GENERATIONS  [step 3 — simplify what survives] loop until
+                convergence — one FRESH minimizer per pass:
                   a. re-census the current champion → new budget numbers
                   b. spawn a NEW swe-minimizer instance (empty context,
                      blind): pinned behavior + requirements + budget only —
@@ -56,18 +64,16 @@ Not golf: the budget is counted in **concepts, then mechanisms, then branches, t
                      no seniority); batch decline reserved for golf;
                      stop on the series' shape (structural win →
                      cosmetic win), or at the generation cap
-5. STRIP        [step 2 again, by hand] swe-stripper hunts the champion
-                for removable parts; strips applied in batches and judged
-                EMPIRICALLY (oracle + measure + gate — no briefs, no
-                court); fresh hunter per pass until a pass finds nothing
-6. FINISH       dx-reviewer, one pass on the champion: local, human-facing
+6. STRIP AGAIN  the look back: same hunt, same adjudication, on the
+                final champion — the minimizer ships bloat of its own
+7. FINISH       dx-reviewer, one pass on the champion: local, human-facing
                 tidying only — no structural or cross-file remedies
-7. AUTOMATE     [step 5] bequeath: oracle compiled into a standing
+8. AUTOMATE     [step 5] bequeath: oracle compiled into a standing
                 conformance suite; behavior-level tests ported; docs amended
-8. APPRAISE     swe-value-engineer, review-only, on the champion: a priced
+9. APPRAISE     swe-value-engineer, review-only, on the champion: a priced
                 trade menu — which behaviors force the remaining machinery,
                 and what each would free if the operator gave it up
-9. REPORT       per-generation series of concepts / mechanisms / lines;
+10. REPORT       per-generation series of concepts / mechanisms / lines;
                 add-back ratios; requirements killed, relaxed, kept;
                 strip and finish results; the trade menu
 ```
@@ -109,7 +115,15 @@ Build the differential harness for everything not relaxed in step 2:
 
 Where the "user" is a program (a library's published API), the boundary is that API's documented surface — the oracle diffs observable results of published calls, and internals remain fair game.
 
-### 4. Generations — fresh eyes per pass
+### 4. Strip — delete first
+
+**Never regenerate what you can simply remove.** Before anything is rebuilt, hunt the incumbent: spawn `swe-stripper` — fresh instance, assigned stance, removal-only jurisdiction — and apply its proposals in batches, highest-confidence first. Adjudication is **empirical, not argumentative**: run the oracle, the structural measurements, and the correctness gate; a strip they pass is dead, a strip they reject is restored without discussion. No defense, no briefs — this is the old docket's one good organ (the biased hunt) with the part that failed (the court) replaced by the harness. Behavior-touching finds route to the trade menu; add-shaped finds to the side memo.
+
+Loop with a fresh hunter until a pass proposes nothing that survives. Then **the stripped incumbent becomes generation 0's champion**: the minimizer's budget comes from a machine already free of junk, the tokens that would have rebuilt it are never spent — and if the generations loop never beats this champion, the stripped incumbent stands, because deletion alone is a valid outcome of this skill.
+
+The hunt is safe from the anchoring problem for a structural reason: **anchoring poisons designers, not deleters.** An examiner that may only remove makes no design decisions for the incumbent to bias.
+
+### 5. Generations — fresh eyes per pass
 
 A single minimization pass under-strips, reliably: a designer who has just produced a design defends it, and an orchestrator that has watched the design form inherits its justifications. Field observation confirms it — re-running this skill on its own output kept finding machine to remove. So the loop is structural, and its law is: **every generation is designed by a minimizer that has never seen this project before.**
 
@@ -131,27 +145,23 @@ What crosses generations: the pinned behavior, the requirements verdicts (includ
 
 New behavior-for-simplicity trades proposed in any generation's design note accumulate into the report for the operator — no generation may take them itself.
 
-### 5. Strip — the look back
+### 6. Strip, again — the look back
 
-Regeneration removes by never rebuilding; it does not *look* for removals, and the minimizer ships bloat of its own — its model prior rides along, and it never re-reads what it wrote. This phase is the missing hunt, and it is safe from the anchoring problem for a structural reason: **anchoring poisons designers, not deleters.** The design is settled; an examiner that may only remove has no design decision left for the incumbent to bias.
+Regeneration removes by never rebuilding, but it does not *look*, and the minimizer ships bloat of its own — its model prior rides along, and it never re-reads what it wrote. Run the step-4 hunt again, unchanged, on the final champion: fresh stripper, empirical adjudication, loop to a clean pass. Expect it to be quick and still not empty — a machine assembled by a generator that never looked back always has a layer only looking finds.
 
-Spawn `swe-stripper` on the champion — fresh instance, assigned stance, removal-only jurisdiction. Apply its proposals in batches, highest-confidence first, and adjudicate **empirically, not argumentatively**: run the oracle, the structural measurements, and the correctness gate; a strip they pass is dead, a strip they reject is restored without discussion. No defense, no briefs — this is the part of the old docket that worked (the biased hunt) with the part that failed (the court) replaced by the harness. Behavior-touching finds route to the trade menu; add-shaped finds to the side memo.
-
-Loop with a fresh hunter until a pass proposes nothing that survives. Expect the first pass to be rich — a machine assembled by a generator that never looked back always has a layer only looking finds.
-
-### 6. Finish — one pass for the human reader
+### 7. Finish — one pass for the human reader
 
 The champion is a machine no human has yet read. Spawn `dx-reviewer` (the reader advocate) for **a single finalizing pass**: it runs its think-aloud and concern spine over the champion and files findings, but the remedies executed here are **local only** — a rename, a module header, a comment brought to house register, a file split at the ceiling, a magic value named. No structural moves, no rewrites, no cross-file redesign: the machine's shape was settled by the generations loop and is not re-litigated by the finisher.
 
 Findings whose remedy would be structural go to the report, not the diff. After the local edits, run the oracle and the correctness gate once — tidying is behavior-safe by intent, not by assumption. One pass, no re-review loop.
 
-### 7. Automate — last, and only for the survivor
+### 8. Automate — last, and only for the survivor
 
 - Compile the differential harness into a standing conformance suite that outlives the incumbent (golden outputs, digests, transcripts committed).
 - Port or rewrite the behavior-level tests worth keeping against the new design; retire internals suites with the machine they pinned (logged).
 - Amend docs that promised the dead machinery — one line each, past tense — so nothing invites a faithful rebuild.
 
-### 8. Appraise — the price menu for going further
+### 9. Appraise — the price menu for going further
 
 The run's floor is the pinned behavior; the only simplification left below the champion is *behavioral*. Spawn `swe-value-engineer` (shipped; the `/review-value` agent), review-only, on the champion. Its job here is unusually clean: minimization has already stripped everything the requirements did not force, so every remaining expense attributes to a requirement that survived step 2 — and the appraisal prices exactly those. The menu it returns, per line: the behavior, its source, the machinery it forces (concepts / mechanisms / lines), and what deleting it would free.
 
@@ -159,19 +169,20 @@ Fold in the trades already accumulated — step 2's declined "sourced but priced
 
 **Nothing on the menu is executed.** Taking a trade is a product decision: the operator relaxes the behavior in a future run's step-2 menu (where the oracle is rebuilt without it), or routes it through `/review-value` proper. This run's diff stays behavior-preserving to the end.
 
-### 9. Report
+### 10. Report
 
 ```
 ## Refactor Complete
 ### Isolation: branch refactor/<slug> @ <sha> (base <sha>)
-### The machine, by generation (gen 0 = incumbent):
+### The machine, by stage (raw incumbent → stripped gen-0 → generations):
 ###   concepts  C0 → C1 → … → Cn | mechanisms M0 → … → Mn | code lines L0 → … → Ln
 ### Generations: N run, champion = gen K | terminated by: convergence | cap
 ### Requirements: K killed (invented) / T traded (operator) / S kept — each with source
 ### Parallel machinery dissolved: [cluster → the one mechanism that remains]
 ### Add-back ratio per generation: [g1: X% … gn: Z%] — [calibrated | under-aggressive | over-aggressive]
 ### Oracle: N inputs, boundary [what was diffed], final state green
-### Strip: P proposed / A applied / R restored by the harness — red lines removed: ~N
+### Strip I (incumbent): P proposed / A applied / R restored — red lines: ~N
+### Strip II (champion):  P proposed / A applied / R restored — red lines: ~N
 ### Finish pass: F findings — L applied locally, R reported (structural, not taken)
 ### Bequest: conformance suite [location]; tests ported P, retired Q; docs amended
 ### Trade menu: [behavior — source — machinery it forces — what its removal frees]
