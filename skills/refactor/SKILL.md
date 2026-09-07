@@ -56,16 +56,20 @@ Not golf: the budget is counted in **concepts, then mechanisms, then branches, t
                      no seniority); batch decline reserved for golf;
                      stop on the series' shape (structural win →
                      cosmetic win), or at the generation cap
-5. FINISH       dx-reviewer, one pass on the champion: local, human-facing
+5. STRIP        [step 2 again, by hand] swe-stripper hunts the champion
+                for removable parts; strips applied in batches and judged
+                EMPIRICALLY (oracle + measure + gate — no briefs, no
+                court); fresh hunter per pass until a pass finds nothing
+6. FINISH       dx-reviewer, one pass on the champion: local, human-facing
                 tidying only — no structural or cross-file remedies
-6. AUTOMATE     [step 5] bequeath: oracle compiled into a standing
+7. AUTOMATE     [step 5] bequeath: oracle compiled into a standing
                 conformance suite; behavior-level tests ported; docs amended
-7. APPRAISE     swe-value-engineer, review-only, on the champion: a priced
+8. APPRAISE     swe-value-engineer, review-only, on the champion: a priced
                 trade menu — which behaviors force the remaining machinery,
                 and what each would free if the operator gave it up
-8. REPORT       per-generation series of concepts / mechanisms / lines;
+9. REPORT       per-generation series of concepts / mechanisms / lines;
                 add-back ratios; requirements killed, relaxed, kept;
-                finish-pass findings; the trade menu
+                strip and finish results; the trade menu
 ```
 
 ### 1. Census — what the machine actually contains
@@ -127,19 +131,27 @@ What crosses generations: the pinned behavior, the requirements verdicts (includ
 
 New behavior-for-simplicity trades proposed in any generation's design note accumulate into the report for the operator — no generation may take them itself.
 
-### 5. Finish — one pass for the human reader
+### 5. Strip — the look back
+
+Regeneration removes by never rebuilding; it does not *look* for removals, and the minimizer ships bloat of its own — its model prior rides along, and it never re-reads what it wrote. This phase is the missing hunt, and it is safe from the anchoring problem for a structural reason: **anchoring poisons designers, not deleters.** The design is settled; an examiner that may only remove has no design decision left for the incumbent to bias.
+
+Spawn `swe-stripper` on the champion — fresh instance, assigned stance, removal-only jurisdiction. Apply its proposals in batches, highest-confidence first, and adjudicate **empirically, not argumentatively**: run the oracle, the structural measurements, and the correctness gate; a strip they pass is dead, a strip they reject is restored without discussion. No defense, no briefs — this is the part of the old docket that worked (the biased hunt) with the part that failed (the court) replaced by the harness. Behavior-touching finds route to the trade menu; add-shaped finds to the side memo.
+
+Loop with a fresh hunter until a pass proposes nothing that survives. Expect the first pass to be rich — a machine assembled by a generator that never looked back always has a layer only looking finds.
+
+### 6. Finish — one pass for the human reader
 
 The champion is a machine no human has yet read. Spawn `dx-reviewer` (the reader advocate) for **a single finalizing pass**: it runs its think-aloud and concern spine over the champion and files findings, but the remedies executed here are **local only** — a rename, a module header, a comment brought to house register, a file split at the ceiling, a magic value named. No structural moves, no rewrites, no cross-file redesign: the machine's shape was settled by the generations loop and is not re-litigated by the finisher.
 
 Findings whose remedy would be structural go to the report, not the diff. After the local edits, run the oracle and the correctness gate once — tidying is behavior-safe by intent, not by assumption. One pass, no re-review loop.
 
-### 6. Automate — last, and only for the survivor
+### 7. Automate — last, and only for the survivor
 
 - Compile the differential harness into a standing conformance suite that outlives the incumbent (golden outputs, digests, transcripts committed).
 - Port or rewrite the behavior-level tests worth keeping against the new design; retire internals suites with the machine they pinned (logged).
 - Amend docs that promised the dead machinery — one line each, past tense — so nothing invites a faithful rebuild.
 
-### 7. Appraise — the price menu for going further
+### 8. Appraise — the price menu for going further
 
 The run's floor is the pinned behavior; the only simplification left below the champion is *behavioral*. Spawn `swe-value-engineer` (shipped; the `/review-value` agent), review-only, on the champion. Its job here is unusually clean: minimization has already stripped everything the requirements did not force, so every remaining expense attributes to a requirement that survived step 2 — and the appraisal prices exactly those. The menu it returns, per line: the behavior, its source, the machinery it forces (concepts / mechanisms / lines), and what deleting it would free.
 
@@ -147,7 +159,7 @@ Fold in the trades already accumulated — step 2's declined "sourced but priced
 
 **Nothing on the menu is executed.** Taking a trade is a product decision: the operator relaxes the behavior in a future run's step-2 menu (where the oracle is rebuilt without it), or routes it through `/review-value` proper. This run's diff stays behavior-preserving to the end.
 
-### 8. Report
+### 9. Report
 
 ```
 ## Refactor Complete
@@ -159,6 +171,7 @@ Fold in the trades already accumulated — step 2's declined "sourced but priced
 ### Parallel machinery dissolved: [cluster → the one mechanism that remains]
 ### Add-back ratio per generation: [g1: X% … gn: Z%] — [calibrated | under-aggressive | over-aggressive]
 ### Oracle: N inputs, boundary [what was diffed], final state green
+### Strip: P proposed / A applied / R restored by the harness — red lines removed: ~N
 ### Finish pass: F findings — L applied locally, R reported (structural, not taken)
 ### Bequest: conformance suite [location]; tests ported P, retired Q; docs amended
 ### Trade menu: [behavior — source — machinery it forces — what its removal frees]
