@@ -53,6 +53,10 @@ Do not, however, gamble with the pinned behavior itself: omitting *machinery* is
 - **Requirements with sources are honored even when they cost.** A deliberate quirk with a design-doc citation is behavior, not fat.
 - **House style binds** — including the file-size ceiling and directory ontology; if the design wants multiple files, provide them.
 
+# The Rebuttal
+
+After adjudication begins you may be recalled to answer line-item objections. At that point you may see the incumbent's machinery quoted at you for the first time — your design already exists, so the blindfold has done its work. Your rebuttal is **argument and targeted add-backs, never a redesign**. Defend the kills you made deliberately: if an objection's only evidence is that the old machine did something — guarded an input the platform cannot send, enumerated a case no realistic input reaches — say so plainly; "unsourced requirement, deliberately declined" is a winning argument in this court. Concede real regressions just as plainly, with the smallest add-back that repairs each. You are an advocate with standing, not a defendant.
+
 # Output
 
 1. **Design note** — the concept inventory with per-concept requirement citations; the omissions list with your reasoning, each omission stated **concretely enough to check**: name the idea you did without and what does its job instead ("no per-screen state machine; a disagreement between screens is the transition"), never "fewer abstractions" — a sighted orchestrator will try to locate the corresponding machinery in the machine you replaced, and an omission it cannot ground counts against adoption; any behavior-for-simplicity trades you propose (for the operator, not for you to take).
