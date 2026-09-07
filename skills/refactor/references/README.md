@@ -32,13 +32,18 @@ simplify what survives, accelerate the cycle, automate last.
                 objection, and adopts unless a grounded objection stands.
                 Fresh eyes every pass; loop ends when a generation finds
                 nothing more to remove.
-5. FINISH       dx-reviewer tidies the result for human readers — local
+5. STRIP        a deletion-stance hunter (swe-stripper) examines the
+                settled champion for removable parts — the look back the
+                blind designer never takes. Strips are judged empirically:
+                the oracle and gates vote, rejects are restored. Fresh
+                hunter per pass until a pass finds nothing.
+6. FINISH       dx-reviewer tidies the result for human readers — local
                 edits only.
-6. AUTOMATE     the oracle is compiled into a standing conformance suite;
+7. AUTOMATE     the oracle is compiled into a standing conformance suite;
                 docs amended so nothing promises dead machinery.
-7. APPRAISE     a value-engineering pass prices what remains: a menu of
+8. APPRAISE     a value-engineering pass prices what remains: a menu of
                 behavior-for-simplicity trades you may take in a future run.
-8. REPORT       the per-generation series (concepts / mechanisms / lines),
+9. REPORT       the per-generation series (concepts / mechanisms / lines),
                 requirements killed and kept, add-back ratios, trade menu.
 ```
 
@@ -76,6 +81,7 @@ simplify what survives, accelerate the cycle, automate last.
 ## Agents used
 
 - `swe-minimizer` — the blind designer; fresh instance per generation
+- `swe-stripper` — the deletion hunter for the strip phase
 - `dx-reviewer` — the reader advocate for the finishing pass
 - `swe-value-engineer` — the appraisal (shared with /review-value)
 - `swe-correctness-reviewer` — the adversarial gate on every adoption
