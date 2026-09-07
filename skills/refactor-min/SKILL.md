@@ -45,12 +45,16 @@ Not golf: the budget is counted in **concepts, then mechanisms, then branches, t
                   b. spawn a NEW swe-minimizer instance (empty context,
                      blind): pinned behavior + requirements + budget only —
                      never a prior generation's design, notes, or rationale
-                  c. converge vs the ORIGINAL oracle (add-backs tracked;
-                     ~10% is calibrated; 0% means under-aggressive)
-                  d. verify: correctness gate on the generation's diff
-                  e. champion = the new build if it shrank the machine;
-                     stop when a fresh pass yields no meaningful reduction
-                     (or declines), or at the generation cap
+                  c. converge vs the ORIGINAL oracle (add-backs tracked)
+                  d. measure: orchestrator computes the structural diff
+                     ITSELF — declarations, public symbols, function
+                     lengths, branches; the minimizer's numbers are
+                     claims, never adjudication inputs
+                  e. verify: correctness gate on the generation's diff
+                  f. rule on the orchestrator's numbers; lines falling
+                     together with function count is inlining, presumed
+                     DECLINE; stop on the series' shape (structural win
+                     → cosmetic win), or at the generation cap
 5. FINISH       dx-reviewer, one pass on the champion: local, human-facing
                 tidying only — no structural or cross-file remedies
 6. AUTOMATE     [step 5] bequeath: oracle compiled into a standing
@@ -103,9 +107,10 @@ Each generation, until convergence:
 
 1. **Re-census the champion** (the current smallest build) → fresh budget numbers.
 2. **Spawn a new `swe-minimizer` instance** — empty context, blind — with the packet: the pinned behavior (oracle boundary description, surviving requirements with sources, operator relaxations), the champion's census **numbers** (budget), platform constraints (language, engine, dependencies), and house style. **Never any generation's source, tests, or history** — not the original's, not the champion's. The census's shapes stay behind too; the minimizer gets counts, not designs, so no machine ever anchors its successor. It designs first — a concept inventory naming what it *omitted* against the budget — then builds, one shot, whole target. If the packet is insufficient it says what is missing rather than peeking. (For targets too large for one context: regions with frozen external boundaries, but prefer the largest region the context carries — parallel-machinery dissolution only happens inside one designer's view.)
-3. **Converge against the original oracle.** For each divergence: restore the *smallest* mechanism that repairs it (add-back), then ask whether the repaired design can shrink again. Track the **add-back ratio** per generation: ~10% says the aggression was calibrated; 0% means margin was left on the table; far above ~25% says a real requirement class was missed — check step 2's menu before grinding.
-4. **Verify.** `swe-correctness-reviewer` on the generation's diff, with the design note and oracle results in hand. Findings resolved or the generation is discarded (the champion stands). The oracle passing is necessary, not sufficient — the gate hunts what the input corpus missed.
-5. **Rule.** The new build becomes champion if it shrank the machine (concepts first, per the ladder). Stop when a fresh generation produces no meaningful reduction or declines outright — that is convergence, and the champion is the deliverable — or at the generation cap (elicit at startup; default 4).
+3. **Converge against the original oracle.** For each divergence: restore the *smallest* mechanism that repairs it (add-back), then ask whether the repaired design can shrink again. Track the **add-back ratio** per generation: ~10% says the aggression was calibrated; far above ~25% says a real requirement class was missed — check step 2's menu before grinding. A near-zero ratio *invites suspicion* of margin left on the table, but read it against step-4's structural diff before concluding that — a precise behavior spec legitimately needs few add-backs.
+4. **Measure — the orchestrator's own numbers.** Compute a structural diff of champion vs. candidate yourself (grep, LSP, scc — thirty seconds of tooling): top-level declarations and functions per file, public symbol count, max and median function length, branch count, code lines. The minimizer's accounting and concept inventory are **claims produced by the agent arguing for its own adoption** — treat them as leads to verify, never as adjudication inputs. For each concept the candidate claims to have dissolved, locate the machinery in the champion that the candidate genuinely lacks; a claimed dissolution you cannot ground in champion machinery is a phantom.
+5. **Verify.** `swe-correctness-reviewer` on the generation's diff, with the design note and oracle results in hand. Findings resolved or the generation is discarded (the champion stands). The oracle passing is necessary, not sufficient — the gate hunts what the input corpus missed. Exhaustiveness demoted to a default case, and deleted compile-time assertions, are regressions even when behavior matches today.
+6. **Rule — on the measurements, never the report.** The new build becomes champion if the machine shrank by the orchestrator's numbers, concepts first per the ladder. One signature is adjudicated mechanically: **line count falling together with function count is inlining, not simplifying — presume decline.** The presumption is overcome only by a verified dissolution from step 4 (real machinery the champion has and the candidate does not). The tell in the body: a merged function that needs a comment to introduce each part had load-bearing names — density bought the lines. The shape of a real win is lines falling while declarations hold or rise. Stop on the **shape of the series**, which is a more reliable convergence signal than any threshold: a large structural win followed by a small cosmetic one means the structure is done — stop there, or at the generation cap (elicit at startup; default 4).
 
 What crosses generations: the pinned behavior, the requirements verdicts (including the dead list, so nothing is re-invented or re-litigated), the oracle, and the budget numbers. What never crosses: designs, design notes, rationales, divergence forecasts, add-back histories. Fresh eyes are the mechanism; inherited justification is the disease.
 
@@ -155,6 +160,6 @@ Fold in the trades already accumulated — step 2's declined "sourced but priced
 - **The oracle is never weakened** — no shrinking the input corpus or coarsening the diff to get to green.
 - **The minimizer stays blind, every generation.** No source, tests, or history — the original's or any champion's — ever enters a packet; census shapes stay out; numbers only.
 - **Nothing but behavior, requirements verdicts, the oracle, and budget numbers crosses generations.** A design note handed to the next designer is anchoring smuggled past the blindfold.
-- **Not golf.** Concepts before mechanisms before branches before lines; house-style density; comments free. Illegibility is not simplicity.
+- **Not golf — and adjudicated, not just declared.** Concepts before mechanisms before branches before lines; house-style density; comments free. The champion rule enforces this mechanically (step 4's structural diff and the inlining presumption); a guardrail that exists only as prose fires only by luck.
 - **Optimize nothing in step-2's kill pile.** Simplification passes run only on machinery that survived questioning.
 - **The report is the conscience**: every killed requirement names the machinery it took with it; every kept one names its source.
