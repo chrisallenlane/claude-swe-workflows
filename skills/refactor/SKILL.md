@@ -77,6 +77,8 @@ Not golf: the budget is counted in **concepts, then mechanisms, then branches, t
 
 The census is measurement, not judgment; it feeds steps 2 and 4 and the final report.
 
+**The side memo.** Any pass that trips over a genuine bug or a missing capability — census, measure, verify, any of them — records it in the **side memo** and moves on. These defects are outside a behavior-preserving run's jurisdiction: the oracle pins today's behavior, bugs included, so a silent fix is a divergence and a dropped finding is a loss. The memo lands in the report for the operator.
+
 **Parallelism:** collection is map-reduce — harvest symbols per region in parallel freely, but clustering and the counts run in **one context over the merged inventory**. A duplicate mechanism split across two shards is invisible to both, and cross-module duplication is the census's most important catch. The merged inventory (names, signatures, one-liners) is small enough for a single context even when the source is not.
 
 ### 2. Question — the requirements menu (the one checkpoint)
@@ -88,6 +90,8 @@ For each machinery cluster, name the requirement it serves and the requirement's
 - **Invented** — witnessed only by the incumbent implementation (its own comments, assertions, sibling precedent, or tests included). Presumed dumb; dies with its machinery unless the operator rescues it.
 - **Priced** — real under either heading above, but worth trading: a behavior whose relaxation would dissolve disproportionate machinery.
 
+**The menu opens with stakes.** Two questions, answered once and recorded verbatim in the ledger: *what happens if this breaks?* and *who maintains it, for how long?* Stakes calibrate the whole run — how hard questioning presumes death, how deep the oracle corpus must go, what an add-back is worth. **Operator probes ride along:** any custom verification steps the operator can name ("run `make demo` and check the output," "hit `/health`," "the CLI's `--help` must render") are collected here and become oracle corpus in step 3 — probes the differential harness could not invent. Stakes, probes, and verdicts in a single interaction, so the one-checkpoint rule holds.
+
 Present one menu: kills (invented, with the machinery each drags down), nominations (documented — keep or kill), trades (priced, with the machinery each would free), keeps (ratified, listed for the record). The operator rules — this is the "named person" the algorithm demands; a requirement nobody will put their name to is deleted. After the menu, the run is autonomous.
 
 ### 3. Oracle — pin behavior, not shape
@@ -95,7 +99,7 @@ Present one menu: kills (invented, with the machinery each drags down), nominati
 Build the differential harness for everything not relaxed in step 2:
 
 - **Boundary only.** Diff what a user could observe: rendered frames or digests, stdout/stderr, exit codes, responses, files written, save formats. Never internal state, module APIs, or call patterns.
-- **Inputs**: recorded/replayed command logs, CLI transcripts, seeded generated input streams — enough breadth that the incumbent's observable behavior is covered, per the target's determinism story.
+- **Inputs**: recorded/replayed command logs, CLI transcripts, seeded generated input streams, and the operator's step-2 probes verbatim — enough breadth that the incumbent's observable behavior is covered, per the target's determinism story.
 - **The original incumbent runs live** as the reference implementation for the whole run — every generation is diffed against it, never against the previous generation, so behavior cannot drift by degrees. Keep it runnable on the base commit.
 - Divergence localization: bisect by input prefix; use the old suite as a diagnostic map, not a gate.
 
@@ -158,6 +162,7 @@ Fold in the trades already accumulated — step 2's declined "sourced but priced
 ### Finish pass: F findings — L applied locally, R reported (structural, not taken)
 ### Bequest: conformance suite [location]; tests ported P, retired Q; docs amended
 ### Trade menu: [behavior — source — machinery it forces — what its removal frees]
+### Side memo: [bugs and missing capabilities found and not touched — for the operator]
 ### Merge: the operator's call
 ```
 
@@ -168,6 +173,7 @@ Fold in the trades already accumulated — step 2's declined "sourced but priced
 - **The minimizer stays blind, every generation.** No source, tests, or history — the original's or any champion's — ever enters a packet; census shapes stay out; numbers only.
 - **Nothing but behavior, requirements verdicts, the oracle, and budget numbers crosses generations.** A design note handed to the next designer is anchoring smuggled past the blindfold.
 - **Not golf — and adjudicated, not just declared.** Concepts before mechanisms before branches before lines; house-style density; comments free. The champion rule enforces this mechanically (step 4's structural diff and the inlining presumption); a guardrail that exists only as prose fires only by luck.
+- **Commit discipline.** One atomic commit per adopted generation, per finish pass, and per bequest — stage the specific files, verify the staged diff, `refactor:` prefix. The branch history is the run's audit trail.
 - **Version-controlled files only.** The run modifies nothing untracked by git — untracked work could be irreversible to lose. Non-negotiable regardless of scope.
 - **No seniority for the champion.** Deference to an existing design — original or generated — is the failure mode this skill exists to correct, and the bench is not exempt: adoption is the default, and a decline carries the burden of proof as grounded line-items that survived rebuttal.
 - **After the menu, documents are dead law.** No agent in this run may decline or soften a simplification by citing DESIGN.md, an ADR, a README, a comment, or "how it was done before." The pinned behavior and the operator's requirement verdicts are the *entire* law of the run; a document matters only as the nominator of a requirement the operator kept. Precedent is testimony, not authority — an agent caught ruling from a document is re-run with the citation struck.
