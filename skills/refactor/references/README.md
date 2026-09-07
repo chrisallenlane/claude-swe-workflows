@@ -1,329 +1,76 @@
-# /refactor - Iterative Code Quality Improvement
+# Refactor — Human Guide
 
-## Overview
+`/refactor` does not clean code up; it redesigns the machine downward. The
+mental model is the Raptor engine line: each generation more capable, less
+machine. The skill's spine is the five-step design algorithm from that
+program, in strict order — question the requirements, delete the part,
+simplify what survives, accelerate the cycle, automate last.
 
-The `/refactor` skill autonomously improves code quality within the existing architecture. It iteratively scans for tactical improvements (DRY violations, dead code, naming issues, unnecessary complexity), implements them through specialist agents with QA verification, and loops until no further opportunities remain.
-
-**Key benefits:**
-- Autonomous operation - set it loose and let it work
-- Gradient aggression - always makes the least aggressive change available first
-- Fresh agent instances each pass (prevents context accumulation)
-- Atomic commits per batch (easy to review, bisect, or revert)
-- Built-in quality gates with QA verification
-- Cascading improvements - rescans catch what previous changes unlocked
-
-## When to Use
-
-**Use `/refactor` for:**
-- Cleaning up accumulated technical debt
-- After a major feature is complete and you want to tidy up
-- Routine code quality improvement
-- DRY violations, dead code, naming stutter, unnecessary complexity
-- When you want a quick, low-risk cleanup pass
-
-**Don't use `/refactor` for:**
-- Rethinking module boundaries or system architecture (use `/review-arch`)
-- Module dissolution, creation, or reorganization (use `/review-arch`)
-- Quick one-off fixes (just do them directly)
-- Codebases without tests (refactoring needs verification)
-
-**Rule of thumb:** Use `/refactor` when the code within modules needs cleaning up. Use `/review-arch` when the module structure itself needs rethinking.
-
-## Workflow Diagram
+## What happens when you run it
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│ /refactor Workflow                                              │
-└─────────────────────────────────────────────────────────────────┘
-
- ┌──────────────────────────────────────────────┐
- │  1. DETERMINE SCOPE                          │
- │  ────────────────────────────────────────    │
- │  • Default: Entire codebase                  │
- │  • Or: User-specified path/module            │
- │  • Boundary: git-tracked files only          │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  2. SELECT AGGRESSION CEILING                │
- │  ────────────────────────────────────────    │
- │  How far up the ladder to climb:             │
- │  • Maximum: All improvements + generative    │
- │  • High: Up to MODERATE changes              │
- │  • Low: SAFEST and SAFE only                 │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  3. GATHER QA INSTRUCTIONS                   │
- │  ────────────────────────────────────────    │
- │  Custom verification steps (optional)        │
- └──────────────────┬───────────────────────────┘
-                    ▼
-        ┌───────────────────────┐
-        │  REFACTORING LOOP     │◄──────────────────┐
-        └───────────┬───────────┘                   │
-                    ▼                               │
- ┌──────────────────────────────────────────────┐   │
- │  4. SCAN FOR OPPORTUNITIES                   │   │
- │  ────────────────────────────────────────    │   │
- │  Agent: swe-code-reviewer (fresh instance)        │   │
- │                                              │   │
- │  Returns recommendations by risk level:      │   │
- │  SAFEST → SAFE → MODERATE → AGGRESSIVE       │   │
- │                                              │   │
- │  No opportunities? → EXIT ──────────────► DONE   │
- └──────────────────┬───────────────────────────┘   │
-                    ▼                               │
- ┌──────────────────────────────────────────────┐   │
- │  5. SELECT & IMPLEMENT                       │   │
- │  ────────────────────────────────────────    │   │
- │  Pick least aggressive changes available     │   │
- │  Batch related changes together              │   │
- │  Agent: Language-specific SME or generalist  │   │
- └──────────────────┬───────────────────────────┘   │
-                    ▼                               │
- ┌──────────────────────────────────────────────┐   │
- │  6. VERIFY CHANGES                           │   │
- │  ────────────────────────────────────────    │   │
- │  Agent: qa-engineer                          │   │
- │                                              │   │
- │  Passes? ──┬─ Yes → Commit ──────────────────┤   │
- │            └─ No  → Return to SME ──┐        │   │
- │                     (max 3 attempts)│        │   │
- │                                     ▼        │   │
- │                     ┌────────────────────┐   │   │
- │                     │ Still failing?     │   │   │
- │                     │ → Revert batch     │   │   │
- │                     │ → Log failure      │   │   │
- │                     └──────────┬─────────┘   │   │
- │                                │             │   │
- └────────────────────────────────┼─────────────┘   │
-                                  ▼                 │
-                     Rescan with fresh agent ───────┘
-
- ┌──────────────────────────────────────────────┐
- │  7. COMPLETION SUMMARY                       │
- │  ────────────────────────────────────────    │
- │  • Total commits, net lines changed          │
- │  • Batches completed vs aborted              │
- │  • Changes by category                       │
- │  • User-decision items (commented-out code,  │
- │    unused public APIs)                       │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  8. UPDATE DOCUMENTATION                     │
- │  ────────────────────────────────────────    │
- │  Run /tidy-docs to fix stale docs           │
- └──────────────────────────────────────────────┘
+0. ISOLATE      a fresh branch (refactor/<slug>) or worktree; your tree is
+                never touched — merging the result is always your call
+1. CENSUS       symbol inventory of what the code actually contains
+                (filenames lie); parallel machinery clustered; the machine
+                counted in concepts / mechanisms / lines
+2. QUESTION     THE ONE INTERACTIVE STEP. Every requirement the machinery
+                serves is put on a menu: ratified (you, or user-visible
+                behavior), documented (docs nominate; you ratify), invented
+                (only the code itself vouches for it — presumed dead),
+                priced (real, but expensive — offered as a trade). You rule
+                once; the run is autonomous after.
+3. ORACLE       behavior is pinned by running the ORIGINAL implementation
+                side by side with each candidate and diffing user-visible
+                output only. The old test suite does not constrain the new
+                design; it is demoted to a diagnostic.
+4. GENERATIONS  the core loop. Each pass, a brand-new blind designer
+                (swe-minimizer) — which never sees any existing source, only
+                behavior, requirements, and size numbers — builds the
+                minimum machine. The orchestrator measures structure
+                independently, hears the designer's rebuttal on any
+                objection, and adopts unless a grounded objection stands.
+                Fresh eyes every pass; loop ends when a generation finds
+                nothing more to remove.
+5. FINISH       dx-reviewer tidies the result for human readers — local
+                edits only.
+6. AUTOMATE     the oracle is compiled into a standing conformance suite;
+                docs amended so nothing promises dead machinery.
+7. APPRAISE     a value-engineering pass prices what remains: a menu of
+                behavior-for-simplicity trades you may take in a future run.
+8. REPORT       the per-generation series (concepts / mechanisms / lines),
+                requirements killed and kept, add-back ratios, trade menu.
 ```
 
-## Workflow Details
+## What to expect
 
-### 1. Determine Scope
-By default, the workflow operates on the entire codebase. You can specify a narrower scope:
+- **A requirements menu, once, near the start.** This is where you have
+  power: everything you kill takes its machinery with it. Bulk rulings
+  ("keep all documented") are fine.
+- **Deletion-biased behavior by design.** The run is calibrated so that
+  roughly 10% of what it deletes gets restored when the oracle objects —
+  if nothing ever needs restoring, it wasn't cutting hard enough.
+- **Behavior preservation at the user-visible boundary**, not test-suite
+  preservation. Internal tests pinned to the old structure are retired
+  with it; behavior-level tests are ported; the differential harness
+  becomes the durable regression suite.
+- **A branch, not a merged result.** Read the report and the ledger, then
+  merge or delete.
 
-```
-/refactor                     # Entire codebase
-/refactor src/handlers/       # Just the handlers
-/refactor *.go                # Just Go files
-```
+## Key rules that make it safe
 
-The scope is passed to all spawned agents.
+- The original implementation stays runnable and is the reference for
+  every generation — behavior cannot drift by degrees.
+- After the menu, documents are dead law: no agent may defend machinery by
+  citing DESIGN.md or precedent. Only your verdicts and the pinned
+  behavior govern.
+- The bench defends no incumbent: candidates are adopted unless a
+  grounded, evidence-cited objection survives the designer's rebuttal.
+- Nothing untracked by git is ever modified.
 
-**Important:** The workflow operates exclusively on files tracked by git. Untracked files and directories are never modified or deleted — their loss could be irreversible.
+## Agents used
 
-### 2. Select Aggression Ceiling
-The workflow asks how far up the aggression ladder to climb:
-
-- **Maximum**: All improvements, including aggressive changes (removing legacy code with unclear purpose, consolidating similar-but-not-identical behavior) — and, after the tactical loop converges, the generative simplification stage: eligible modules are regenerated from their contracts by a blind `swe-simplifier` agent under a code-line budget
-- **High**: Up to MODERATE changes (cross-module DRY, removing abstraction layers, splitting files) but skip aggressive changes
-- **Low**: Only SAFEST and SAFE changes (formatters, linters, dead code, simple DRY, stutter reduction)
-- **Let's discuss**: Talk through the situation to determine the right level
-
-The workflow always starts with the least aggressive changes and works upward.
-
-### 3. Gather QA Instructions
-Before starting, the workflow asks if you have custom verification steps beyond the standard test suite. Examples:
-
-- "After each change, start the app and take a screenshot to verify rendering"
-- "Run `make demo` and check the output"
-- "Verify the CLI `--help` output is still valid"
-
-### 4. Scan and Implement (Loop)
-Each iteration:
-
-1. **Fresh `swe-code-reviewer` agent** scans the codebase and returns recommendations organized by risk level (SAFEST → AGGRESSIVE)
-2. **Orchestrator selects** the least aggressive changes available (up to the ceiling)
-3. **SME implements** the batch (language-specific specialist or orchestrator directly)
-4. **QA verifies** - on failure, SME gets up to 3 repair attempts before the batch is reverted
-5. **Atomic commit** on success
-6. **Loop** - fresh scan catches cascading improvements
-
-**Available specialists:**
-- `swe-sme-golang` - Go projects
-- `swe-sme-makefile` - Makefiles
-- `swe-sme-docker` - Dockerfiles
-- `swe-sme-graphql` - GraphQL schemas
-- `swe-sme-ansible` - Ansible playbooks
-- `swe-sme-zig` - Zig projects
-- `swe-sme-html` - HTML/markup
-- `swe-sme-css` - CSS/styling
-- `swe-sme-javascript` - Vanilla JavaScript
-- `swe-sme-typescript` - TypeScript
-
-**For other languages** (Python, Rust, Lua, etc.): The orchestrator implements directly.
-
-### 5. Generative Simplification Stage (Maximum only)
-
-Runs once, after the tactical loop converges, only at the Maximum ceiling. Per nominated module (largest, most-touched-without-shrinking, disproportionate machinery):
-
-1. **Eligibility gate** — dedicated tests exist and pass; weakly-specified modules are skipped and reported, never rewritten on hope.
-2. **Contract harvest** — the orchestrator assembles the public surface (from call sites), the pinning specs, binding ADR/design constraints, house style, and a code-line budget (comments excluded).
-3. **Blind regeneration** — `swe-simplifier` reimplements from the contract without ever seeing the current code. The budget pressures a simpler *design* (fewer concepts > fewer mechanisms > fewer branches > fewer lines); a golfed rendering of the same design is a failure. `REGENERATION DECLINED` (the current design is already minimal) is a respected outcome.
-4. **Three-layer verification** — full suite; failing-spec classification (a rewrite failing only internals-pinning specs is declined and reported with the spec list — the run never amends specs); `swe-correctness-reviewer` on the rewrite diff, which receives the old implementation the simplifier never saw.
-5. **Atomic commit per module**, then one tactical quick-pass scoped to the regenerated modules.
-
-### 6. Completion Summary
-```
-## Refactoring Complete
-
-### Statistics
-- Commits made: 7
-- Net lines changed: -312
-- Batches completed: 7
-- Batches aborted: 0
-
-### Changes by Category
-- Prune (dead code, unused indirection): 11 instances
-- DRY consolidation: 5 instances
-- Lint fixes: 2 instances
-```
-
-After the summary, the workflow presents **user-decision items** collected across all passes:
-
-- **Commented-out code:** Locations and descriptions of commented-out code found during scanning. The user decides which (if any) to delete. Commented-out code may be debugging helpers, work-in-progress, or intermittently-used code that is temporarily disabled — it's not treated as dead code.
-- **Apparently-unused public APIs:** Exported symbols that appear unused internally but may be consumed by external users of the package. Informational only.
-
-### 7. Update Documentation
-After the summary, the workflow runs `/tidy-docs` to bring documentation up to date.
-
-## Examples
-
-### Example 1: Full Codebase Cleanup
-```
-User: /refactor
-
-Scope: entire codebase
-
-How aggressive should refactoring be?
-> High (up to MODERATE changes)
-
-Any special QA instructions?
-> Run `make test && make lint` after each change
-
-[Pass 1] Dead code + lint fixes (SAFEST)
-  Committed: "refactor: remove dead code and fix lint issues"
-
-[Pass 2] DRY + prune (SAFE)
-  Committed: "refactor: consolidate duplicate parsing logic"
-
-[Pass 3] New dead code exposed by consolidation (SAFEST)
-  Committed: "refactor: remove dead code exposed by consolidation"
-
-[Passes 4-7...]
-
-[Pass 8] No opportunities found.
-
-## Refactoring Complete
-- 7 commits, -312 net lines
-- 7/7 batches completed
-```
-
-### Example 2: Quick Conservative Pass
-```
-User: /refactor src/api/
-
-How aggressive?
-> Low (SAFEST and SAFE only)
-
-Any special QA instructions?
-> (none)
-
-[Pass 1] Remove 3 unused imports, 1 dead function (SAFEST)
-  Committed: "refactor: remove dead code in api/"
-
-[Pass 2] Fix naming stutter in route handlers (SAFE)
-  Committed: "refactor: reduce stutter in api route handlers"
-
-[Pass 3] No opportunities found.
-
-## Refactoring Complete
-- 2 commits, -28 net lines
-```
-
-### Example 3: Handling Failures
-```
-[Pass 4] Consolidate similar validation logic (MODERATE)
-  QA verification: FAIL - TestValidateEmail broken
-  Repair attempt 1/3... still failing
-  Repair attempt 2/3... still failing
-  Repair attempt 3/3... still failing
-  Reverting batch, logging failure, continuing...
-
-[Pass 5] No other opportunities found.
-
-## Refactoring Complete
-- 3 commits, -89 net lines
-- 3 completed, 1 aborted
-
-### Aborted Batches
-- Consolidate validation logic: Could not resolve TestValidateEmail failure
-```
-
-## Tips for Effective Use
-
-1. **Ensure tests exist first.** Refactoring without tests is dangerous. The workflow relies on QA verification to catch regressions.
-
-2. **Start with a clean working tree.** The workflow makes commits. Uncommitted changes will complicate things.
-
-3. **Review the commits afterward.** Each batch is an atomic commit. You can review, amend, squash, or revert as needed.
-
-4. **Start with Low aggression.** You can always run again with a higher ceiling. Low-risk passes build confidence.
-
-5. **Scope aggressively for large codebases.** Target specific modules: `/refactor src/core/` rather than everything.
-
-6. **Run it periodically.** Like tidying a room, regular small sessions beat occasional massive cleanups.
-
-7. **Follow up with `/review-arch` if needed.** If the tactical pass reveals that the module structure itself is the problem, escalate to `/review-arch`.
-
-## Philosophy
-
-**Clarity is the goal:**
-- Less code almost always means clearer code
-- Red diffs are the strongest signal
-- But comprehensibility trumps line count
-
-**Gradient aggression:**
-- Always make the least aggressive change available
-- More aggressive changes bubble up naturally as gentle ones are exhausted
-- The user controls how far up the ladder to climb
-
-**Work within existing architecture:**
-- Improve code quality without questioning module boundaries
-- No module dissolution, creation, or reorganization
-- For architectural changes, use `/review-arch`
-
-**Err on the side of trying:**
-- Git makes failed experiments free
-- The workflow reverts on failure automatically
-- Missed opportunities are invisible
-
-**Respect boundaries:**
-- Only touch git-tracked files (untracked files may be irreversible to recover)
-- Never delete public/exported APIs (external consumers are invisible to the scanner)
-- Defer to the user on commented-out code (it may be intentionally disabled)
-
-**Atomic and reversible:**
-- Each batch is one commit
-- Easy to review, bisect, or revert
+- `swe-minimizer` — the blind designer; fresh instance per generation
+- `dx-reviewer` — the reader advocate for the finishing pass
+- `swe-value-engineer` — the appraisal (shared with /review-value)
+- `swe-correctness-reviewer` — the adversarial gate on every adoption

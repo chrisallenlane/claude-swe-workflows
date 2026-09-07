@@ -1,436 +1,175 @@
 ---
 name: refactor
-description: Autonomous iterative refactoring workflow. Scans for tactical code quality improvements (DRY, dead code, naming, complexity), implements through SMEs, verifies with QA, commits atomically, and loops until no improvements remain. At the Maximum aggression ceiling, a final generative-simplification stage regenerates eligible modules from their contracts — anchor-free, under a code-line budget.
+description: "Redesigns a codebase with simplification as the end goal, running Musk's five-step algorithm as its spine: question the requirements, delete the part, simplify what survives, accelerate the cycle, automate last. Behavior is pinned by a differential oracle — the incumbent implementation itself, observed at the user-visible boundary — not by the existing test suite. A blind minimizer designs and builds the minimum machine for the surviving requirements; convergence is measured in concepts and mechanisms, with an add-back ratio guarding against under-aggression. Runs on an isolated branch; one operator checkpoint (the requirements menu), autonomous after."
 model: opus
 ---
 
-# Refactor - Iterative Code Quality Improvement
+# Refactor — Redesign the Machine
 
-Autonomous refactoring workflow that iteratively improves code quality within the existing architecture, always preferring the least aggressive change available, until no further opportunities exist.
+> A conventional refactor of the Gen-1 engine produces the Gen-1 engine with better cable management. This skill's mandate is different: **redesign the machine with simplification as the end goal** — the Gen-3 engine that is more capable *and* has visibly less machine. It refactors *design*, not implementation; implementation falls out of the smaller design.
 
-## Philosophy
+## The Algorithm
 
-**Clarity is the goal.** Every iteration should make the codebase easier to form a correct mental model of. Red diffs are the strongest signal - less code almost always means clearer code, and every iteration should delete more than it adds. But when reducing lines would hurt comprehensibility, clarity wins.
+The spine of this skill is the five-step design algorithm Musk describes from the Raptor program (Starbase interview, 2021), in its strict order:
 
-**Err on the side of trying.** When uncertain whether a refactoring is worthwhile, attempt it anyway. Git makes failed experiments free - the workflow will revert changes that don't pass QA. Missed opportunities are invisible; failed attempts teach you something. Be bold, knowing that version control provides the safety net.
+1. **Make the requirements less dumb.** Every requirement must trace to a *person* — the operator — or to behavior a user would notice losing. "The old code did it" is not a source; a requirement whose only witness is the machinery that serves it was invented by that machinery. Neither is "the old docs say so": in an LLM-written repository, DESIGN.md and the ADRs were written by the same confident author as the code — usually *after* it — and are the incumbent's testimony in better dress. Documents **nominate** requirements for the menu; only the operator ratifies them. Requirements from smart authors are the most dangerous, because nobody questions them — and every line of LLM-written code and docs was written by a confident author.
+2. **Delete the part.** The bias is deletion, and it is calibrated: **if you are not adding back ~10% of what you delete, you are not deleting enough.** A deletion the oracle catches costs a revert; a part that should not exist survives forever.
+3. **Simplify.** Only what survived steps 1–2. The most common error of a smart engineer is to optimize a thing that should not exist.
+4. **Accelerate the cycle.** Verification must be cheap enough that aggressive attempts are rational — that is what the differential oracle is for.
+5. **Automate.** Last. Durable harness and docs are bequeathed at the end, never built for machinery that steps 1–3 might kill.
 
-**Work within the existing architecture.** This workflow improves code quality - DRY, dead code, naming, complexity - without questioning module boundaries or reorganizing the system. For architectural analysis (noun extraction, module dissolution, blueprint-driven restructuring), use `/review-arch` instead.
+Steps 1–3 are the design work. Steps 4–5 are how the run itself operates.
 
-## Workflow Overview
+## Identity
+
+**This skill redesigns downward.** Three rules:
+
+1. **Behavior is pinned by the incumbent, not by the tests.** "Tests green" locks the refactor into the shape the tests assumed — the wrong shape, or there would be nothing to refactor. The oracle is the incumbent implementation itself, run side by side with the replacement and diffed **only at the user-visible boundary** (frames, digests, stdout, responses, files written). The existing suite is demoted to a *diagnostic* — useful for localizing a divergence, never a constraint on the new design.
+2. **The unit of work is the design.** The minimizer does not edit the incumbent; it designs the minimum machine for the surviving requirements and builds it blind. Parallel machinery — the same problem solved twice in different modules because each was generated without knowledge of the other — is not hunted and unified; it dissolves, because the fresh design never knew there were two.
+3. **Isolation is the safety.** Fresh branch `refactor/<slug>` (worktree when asked or conventional). One operator checkpoint — the requirements menu — then autonomous to completion. The deliverable is the branch, its metrics, and its report; merging is the operator's call.
+
+Not golf: the budget is counted in **concepts, then mechanisms, then branches, then lines — in that order**. Comments and whitespace are free and written at house density. A version that is smaller because the same design got denser is a failure.
+
+## Workflow
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                  REFACTORING LOOP                   │
-├─────────────────────────────────────────────────────┤
-│  1. Determine scope                                 │
-│  2. Select aggression ceiling                       │
-│  3. Gather QA instructions                          │
-│  4. Spawn fresh swe-code-reviewer agent (full scan)      │
-│  5. Select least aggressive changes available       │
-│  6. If none remain:                                 │
-│     ├─ Maximum ceiling → generative stage (once)    │
-│     └─ then exit to summary                         │
-│  7. Spawn SME agent (implement batch)               │
-│  8. Spawn QA agent (verify)                         │
-│     ├─ PASS → commit, goto 4                        │
-│     └─ FAIL → retry (max 3), then abort batch       │
-│  9. Completion summary                              │
-│ 10. Update documentation (/tidy-docs)              │
-└─────────────────────────────────────────────────────┘
+0. ISOLATE      branch refactor/<slug> from HEAD
+1. CENSUS       symbol inventory + machinery clustering — the truth `ls` hides
+2. QUESTION     [step 1] attribute machinery to requirements; source or
+                invented; keep/kill/relax menu → the ONE operator checkpoint
+3. ORACLE       [step 4 built early] differential harness: the ORIGINAL
+                incumbent as oracle at the user-visible boundary, for all
+                non-relaxed behavior; built once, reused by every generation
+4. GENERATIONS  loop until convergence — one FRESH minimizer per pass:
+                  a. re-census the current champion → new budget numbers
+                  b. spawn a NEW swe-minimizer instance (empty context,
+                     blind): pinned behavior + requirements + budget only —
+                     never a prior generation's design, notes, or rationale
+                  c. converge vs the ORIGINAL oracle (add-backs tracked)
+                  d. measure: orchestrator computes the structural diff
+                     ITSELF — declarations, public symbols, function
+                     lengths, branches; the minimizer's numbers are
+                     claims, never adjudication inputs
+                  e. verify: correctness gate on the generation's diff
+                  f. rule: ADOPT unless a grounded line-item objection
+                     survives the minimizer's rebuttal (the champion has
+                     no seniority); batch decline reserved for golf;
+                     stop on the series' shape (structural win →
+                     cosmetic win), or at the generation cap
+5. FINISH       dx-reviewer, one pass on the champion: local, human-facing
+                tidying only — no structural or cross-file remedies
+6. AUTOMATE     [step 5] bequeath: oracle compiled into a standing
+                conformance suite; behavior-level tests ported; docs amended
+7. APPRAISE     swe-value-engineer, review-only, on the champion: a priced
+                trade menu — which behaviors force the remaining machinery,
+                and what each would free if the operator gave it up
+8. REPORT       per-generation series of concepts / mechanisms / lines;
+                add-back ratios; requirements killed, relaxed, kept;
+                finish-pass findings; the trade menu
 ```
 
-## Workflow Details
+### 1. Census — what the machine actually contains
 
-### 1. Determine Scope
+`ls` describes the intended architecture; the census describes the real one. Using language tooling where present (LSP document-symbols, ctags) and reading where not, inventory every declared type, function, table, and mechanism **regardless of which file it hides in** — `foo.lang` quietly implementing a `Bar` is exactly what this pass exists to catch. Then:
 
-**Default:** Entire codebase.
+- **Cluster parallel machinery**: mechanisms that solve the same problem (two queues, two clamp helpers, two config readers, two "manager" shapes). Each cluster is one design concept the incumbent pays for N times.
+- **Count the incumbent**: concepts (distinct ideas a reader must hold), mechanisms (moving parts), code lines. These numbers are the budget the minimizer must beat and the "before" column of the report.
 
-**Boundary: version-controlled files only.** The refactoring workflow operates exclusively on files tracked by git. Untracked files and directories must never be modified or deleted — their loss could be irreversible. This boundary is non-negotiable regardless of scope setting.
+The census is measurement, not judgment; it feeds steps 2 and 4 and the final report.
 
-**If user specifies scope:** Respect that scope (directory, files, module). Pass scope constraint to all spawned agents.
+**Parallelism:** collection is map-reduce — harvest symbols per region in parallel freely, but clustering and the counts run in **one context over the merged inventory**. A duplicate mechanism split across two shards is invisible to both, and cross-module duplication is the census's most important catch. The merged inventory (names, signatures, one-liners) is small enough for a single context even when the source is not.
 
-### 2. Select Aggression Ceiling
+### 2. Question — the requirements menu (the one checkpoint)
 
-**Ask the user:** "How aggressive should refactoring be?"
+For each machinery cluster, name the requirement it serves and the requirement's **source**:
 
-Present these options:
-- **Maximum**: Attempt all improvements, including aggressive changes (removing legacy code with unclear purpose, consolidating similar-but-not-identical behavior) — and, after the tactical loop converges, the **generative simplification stage** (step 6): eligible modules are regenerated from their contracts by a blind rewriter under a code-line budget. Maximum means maximum.
-- **High**: Go up to MODERATE changes (cross-module DRY, removing abstraction layers, splitting files into focused modules) but skip aggressive changes
-- **Low**: Only SAFEST and SAFE changes (formatters, linters, dead code, simple DRY, pruning single-use indirection, reducing stutter)
-- **Let's discuss**: Talk through the situation to determine the right level
+- **Ratified** — an operator declaration, or user-facing behavior a user would notice losing. Survives to the oracle.
+- **Documented** — cited by a design doc, ADR, or README, but not independently user-visible. **A citation is a nomination, not a verdict** — the docs are part of the incumbent, not above it. These go on the menu with their citation and the machinery they force; the operator's keep is what ratifies them, and bulk rulings ("keep all documented") are a fine answer.
+- **Invented** — witnessed only by the incumbent implementation (its own comments, assertions, sibling precedent, or tests included). Presumed dumb; dies with its machinery unless the operator rescues it.
+- **Priced** — real under either heading above, but worth trading: a behavior whose relaxation would dissolve disproportionate machinery.
 
-The workflow still proceeds from least aggressive to more aggressive - this setting determines how far up the ladder to climb before stopping.
+Present one menu: kills (invented, with the machinery each drags down), nominations (documented — keep or kill), trades (priced, with the machinery each would free), keeps (ratified, listed for the record). The operator rules — this is the "named person" the algorithm demands; a requirement nobody will put their name to is deleted. After the menu, the run is autonomous.
 
-### 3. Gather QA Instructions
+### 3. Oracle — pin behavior, not shape
 
-**Ask the user:** "Are there any special verification steps for the QA agent? For example: visual checks, manual testing commands, specific scenarios to validate."
+Build the differential harness for everything not relaxed in step 2:
 
-**If provided:** Pass these instructions to the QA agent on every verification cycle, in addition to standard test suite execution.
+- **Boundary only.** Diff what a user could observe: rendered frames or digests, stdout/stderr, exit codes, responses, files written, save formats. Never internal state, module APIs, or call patterns.
+- **Inputs**: recorded/replayed command logs, CLI transcripts, seeded generated input streams — enough breadth that the incumbent's observable behavior is covered, per the target's determinism story.
+- **The original incumbent runs live** as the reference implementation for the whole run — every generation is diffed against it, never against the previous generation, so behavior cannot drift by degrees. Keep it runnable on the base commit.
+- Divergence localization: bisect by input prefix; use the old suite as a diagnostic map, not a gate.
 
-**Examples of custom QA instructions:**
-- "After each change, start the app, take a screenshot, and verify it renders correctly"
-- "Run `make demo` and check that output matches expected behavior"
-- "Hit the `/health` endpoint and verify 200 response"
-- "Verify the CLI still produces valid output for `./tool --help`"
+Where the "user" is a program (a library's published API), the boundary is that API's documented surface — the oracle diffs observable results of published calls, and internals remain fair game.
 
-**If none provided:** QA agent runs standard verification (test suite, linters, formatters).
+### 4. Generations — fresh eyes per pass
 
-### 4. Aggression Philosophy
+A single minimization pass under-strips, reliably: a designer who has just produced a design defends it, and an orchestrator that has watched the design form inherits its justifications. Field observation confirms it — re-running this skill on its own output kept finding machine to remove. So the loop is structural, and its law is: **every generation is designed by a minimizer that has never seen this project before.**
 
-**Always make the least aggressive change available, up to the user's chosen ceiling (step 2).**
+Each generation, until convergence:
 
-The `swe-code-reviewer` agent returns recommendations organized by risk level: **SAFEST → SAFE → MODERATE → AGGRESSIVE**. These aren't gates to pass through sequentially. Instead:
-- Each pass, prefer the least aggressive changes available
-- More aggressive changes naturally "bubble up" as gentler options are exhausted
-- Stop when reaching the user's ceiling (e.g., if ceiling is High/MODERATE, skip AGGRESSIVE recommendations)
-- Earlier refactorings may unlock new gentle changes (rescan catches these)
+1. **Re-census the champion** (the current smallest build) → fresh budget numbers.
+2. **Spawn a new `swe-minimizer` instance** — empty context, blind — with the packet: the pinned behavior (oracle boundary description, surviving requirements with sources, operator relaxations), the champion's census **numbers** (budget), platform constraints (language, engine, dependencies), and house style. **Never any generation's source, tests, or history** — not the original's, not the champion's. The census's shapes stay behind too; the minimizer gets counts, not designs, so no machine ever anchors its successor. It designs first — a concept inventory naming what it *omitted* against the budget — then builds, one shot, whole target. If the packet is insufficient it says what is missing rather than peeking. (For targets too large for one context: regions with frozen external boundaries, but prefer the largest region the context carries — parallel-machinery dissolution only happens inside one designer's view.)
+3. **Converge against the original oracle.** First classify, then repair: **the corpus defines behavior.** A difference only reachable by inputs the platform cannot send or the user cannot produce is not a divergence — it is a **discovered kill**: an unsourced micro-requirement the menu was too coarse to list, killed late; log it in the ledger and accept it. (The same law governs differences found by *reading* rather than by the oracle.) For each real divergence: restore the *smallest* mechanism that repairs it (add-back), then ask whether the repaired design can shrink again. Track the **add-back ratio** per generation: ~10% says the aggression was calibrated; far above ~25% says a real requirement class was missed — check step 2's menu before grinding. A near-zero ratio *invites suspicion* of margin left on the table, but read it against step-4's structural diff before concluding that — a precise behavior spec legitimately needs few add-backs.
+4. **Measure — the orchestrator's own numbers.** Compute a structural diff of champion vs. candidate yourself (grep, LSP, scc — thirty seconds of tooling): top-level declarations and functions per file, public symbol count, max and median function length, branch count, code lines. The minimizer's accounting and concept inventory are **claims produced by the agent arguing for its own adoption** — treat them as leads to verify, never as adjudication inputs. For each concept the candidate claims to have dissolved, locate the machinery in the champion that the candidate genuinely lacks; a claimed dissolution you cannot ground in champion machinery is a phantom. While here, sweep the candidate's **public surface**: every public symbol either shows an external reference (grep/LSP — mechanical, no argument) or is demoted to private / removed before the rule. Blind designers export generously "in case"; no caller, no export. Below the public surface, symbol hygiene belongs to the compiler and linters, not to agents.
+5. **Verify.** `swe-correctness-reviewer` on the generation's diff, with the design note and oracle results in hand. Findings resolved or the generation is discarded (the champion stands). The oracle passing is necessary, not sufficient — the gate hunts what the input corpus missed. Exhaustiveness demoted to a default case, and deleted compile-time assertions, are regressions even when behavior matches today.
+6. **Rule — adopt unless a grounded objection stands.** The champion has no seniority: it is the previous generation's output, not a design anyone ratified, and a bench that defends it has caught the disease this skill treats. The question is never "did the candidate prove itself against the champion?" — it is **"does adopting this cause a regression, in pinned behavior or in structure?"** If no objection survives the process below, adopt. Full stop.
+   - **Objections are line-items, never batch verdicts.** Each names its evidence: a reachable divergence (step 3), a structural regression (step 4), a correctness finding (step 5). "The champion does it" is not evidence — that is the incumbent testifying for itself.
+   - **The minimizer gets a rebuttal.** Put the line-items to the minimizer instance before ruling. Its design already exists, so quoting champion machinery in an objection can no longer anchor it — but the rebuttal is argument and targeted add-backs, never a redesign. Expect it to argue that a "shortfall" is an unsourced requirement it deliberately declined to implement; that argument has standing and frequently wins.
+   - **Rule per item.** Real regression → add-back. Unsourced requirement → discovered kill, to the ledger. Density → fix that spot. Then **adopt the candidate with its add-backs**. Batch decline is reserved for exactly one case: the design itself is the defect — the claimed wins are phantom and the diff is golf.
+   - **The inlining tripwire.** Line count falling together with function count *triggers inspection*, never a verdict: diff the function inventories by name and read the merged bodies. Helpers re-cut under new names is a redesign; the tell of density is a merged function that needs a comment to introduce each part. The count fires the check; only the tell convicts.
+   - Stop on the **shape of the series**, which is a more reliable convergence signal than any threshold: a large structural win followed by a small cosmetic one means the structure is done — stop there, or at the generation cap (elicit at startup; default 4).
 
-### 5. Iterative Refactoring Loop
+What crosses generations: the pinned behavior, the requirements verdicts (including the dead list, so nothing is re-invented or re-litigated), the oracle, and the budget numbers. What never crosses: designs, design notes, rationales, divergence forecasts, add-back histories. Fresh eyes are the mechanism; inherited justification is the disease.
 
-For each iteration:
+New behavior-for-simplicity trades proposed in any generation's design note accumulate into the report for the operator — no generation may take them itself.
 
-#### 5a. Scan for Opportunities
+### 5. Finish — one pass for the human reader
 
-**Spawn fresh `swe-code-reviewer` agent:**
-- Agent performs FULL scan across all aggression levels
-- Pass scope if user specified one
-- Agent returns structured recommendations organized by risk level
-- Fresh instance each pass (context management)
+The champion is a machine no human has yet read. Spawn `dx-reviewer` (the reader advocate) for **a single finalizing pass**: it runs its think-aloud and concern spine over the champion and files findings, but the remedies executed here are **local only** — a rename, a module header, a comment brought to house register, a file split at the ceiling, a magic value named. No structural moves, no rewrites, no cross-file redesign: the machine's shape was settled by the generations loop and is not re-litigated by the finisher.
 
-**Why full scan every time:**
-- Refactoring creates new opportunities (consolidating duplicates may reveal higher-order patterns)
-- Cascading improvements are the goal
-- Fresh scan catches what previous changes unlocked
+Findings whose remedy would be structural go to the report, not the diff. After the local edits, run the oracle and the correctness gate once — tidying is behavior-safe by intent, not by assumption. One pass, no re-review loop.
 
-**Prompt the agent with:**
-```
-Scan for ALL refactoring opportunities across all aggression levels.
-Scope: [entire codebase | user-specified scope]
-Return recommendations organized by risk level (SAFEST → AGGRESSIVE).
-Prioritize changes that produce RED diffs (net code reduction) while improving clarity.
-```
+### 6. Automate — last, and only for the survivor
 
-**Orchestrator selects least aggressive changes:**
-- From the full scan, select the LEAST aggressive recommendations available
-- Batch and implement those
-- Rescan - previous changes may have unlocked new gentle options
-- Aggressive changes naturally surface as gentler ones are exhausted
-- If no recommendations at any level: workflow complete
+- Compile the differential harness into a standing conformance suite that outlives the incumbent (golden outputs, digests, transcripts committed).
+- Port or rewrite the behavior-level tests worth keeping against the new design; retire internals suites with the machine they pinned (logged).
+- Amend docs that promised the dead machinery — one line each, past tense — so nothing invites a faithful rebuild.
 
-**Set aside user-decision items:**
-- **Commented-out code**: Do not implement. Collect findings across all passes.
-- **Informational findings** (unused public APIs): Do not implement. Collect across all passes.
-- Present both to the user in the completion summary (step 6).
+### 7. Appraise — the price menu for going further
 
-#### 5b. Plan Implementation
+The run's floor is the pinned behavior; the only simplification left below the champion is *behavioral*. Spawn `swe-value-engineer` (shipped; the `/review-value` agent), review-only, on the champion. Its job here is unusually clean: minimization has already stripped everything the requirements did not force, so every remaining expense attributes to a requirement that survived step 2 — and the appraisal prices exactly those. The menu it returns, per line: the behavior, its source, the machinery it forces (concepts / mechanisms / lines), and what deleting it would free.
 
-Review recommendations from scan. Group related changes into atomic batches.
+Fold in the trades already accumulated — step 2's declined "sourced but priced" items and the generations' design-note proposals — deduplicated, so the operator sees one menu.
 
-**Batching criteria:**
-- Changes to the same module/package
-- Logically related refactorings (e.g., all DRY violations of the same pattern)
-- Changes that must be done together to maintain consistency
+**Nothing on the menu is executed.** Taking a trade is a product decision: the operator relaxes the behavior in a future run's step-2 menu (where the oracle is rebuilt without it), or routes it through `/review-value` proper. This run's diff stays behavior-preserving to the end.
 
-**For each batch, prepare:**
-- Clear list of changes to make
-- Files affected
-- Expected outcome (lines removed, patterns eliminated)
-- Which SME agent is appropriate (based on language/framework)
-
-#### 5c. Implement Changes
-
-**Detect appropriate SME and spawn based on primary file type in batch:**
-- Go: `swe-sme-golang`
-- Dockerfile: `swe-sme-docker`
-- Makefile: `swe-sme-makefile`
-- GraphQL: `swe-sme-graphql`
-- Ansible: `swe-sme-ansible`
-- Zig: `swe-sme-zig`
-- TypeScript: `swe-sme-typescript`
-- JavaScript: `swe-sme-javascript`
-- HTML: `swe-sme-html`
-- CSS: `swe-sme-css`
-
-**For languages without a dedicated SME** (Python, Rust, etc.): implement directly as orchestrator, following language idioms and project conventions.
-
-**For mixed-language batches**: split into per-language batches, or implement directly if changes are mechanical (e.g., dead code removal across file types).
-
-**Prompt the SME with:**
-```
-Implement the following refactorings:
-[List of specific changes from batch]
-
-These changes should:
-- Follow existing project conventions
-- Maintain all existing behavior
-- Result in net code reduction where possible
-
-Report when complete.
-```
-
-**SME implements and reports back.**
-
-#### 5d. Verify Changes
-
-**Spawn `qa-engineer` agent:**
-- Run test suite
-- Run linters/formatters
-- Execute any custom QA instructions gathered in step 3
-- Verify no regressions introduced
-- Report pass/fail with specifics
-
-**On PASS:** Proceed to commit.
-
-**On FAIL:**
-1. Return failure details to SME for repair
-2. SME attempts fix
-3. Re-verify with QA
-4. Track failure count for this batch
-
-**After 3 consecutive failures for a batch:**
-- Revert all changes for that batch (`git checkout -- .`)
-- Log the failure (what was attempted, why it failed)
-- Continue with next batch
-- Include in final summary as "aborted batch"
-
-#### 5e. Commit Changes
-
-**Create atomic commit for successful batch:**
-
-```bash
-git add [specific files modified in this batch]
-git diff --staged  # verify only intended changes
-git commit -m "$(cat <<'EOF'
-refactor: [brief description of changes]
-
-[Details of what was refactored and why]
-EOF
-)"
-```
-
-**Commit guidelines:**
-- Stage only files modified by the current batch (not `git add -A`)
-- Verify staged changes before committing
-- Use `refactor:` prefix in commit message
-- Keep batches atomic (one logical change per commit)
-
-#### 5f. Loop
-
-Return to step 5a with fresh agent instance.
-
-**Loop continues until:**
-- No opportunities found at any aggression level (success)
-- User interrupts
-- Critical error
-
-### 6. Generative Simplification Stage (Maximum ceiling only)
-
-Runs exactly once, after the tactical loop converges (step 5f finds no remaining opportunities), and only when the operator chose the **Maximum** ceiling. The tactical loop polishes the design it starts from; this stage steps back and asks, per module: **is there a holistically simpler way to achieve this module's purpose?**
-
-The mechanism is **anchor-free regeneration**: a `swe-simplifier` agent reimplements the module from its *contract* — never seeing the current implementation — under a code-line budget. Blindness is the point: the existing shape is the anchor that forecloses the smaller design.
-
-#### 6a. Nominate candidates
-
-Select modules worth the step-back, judged from the tactical loop's vantage: the largest modules in scope, modules the loop repeatedly touched without shrinking, modules whose machinery smells disproportionate to their purpose. Respect the user's scope. Nominating none is valid — the stage then reports "no candidates" and exits.
-
-#### 6b. Eligibility gate (per candidate)
-
-A module qualifies only if **dedicated tests exist and pass**. The specs are the definition of behavior during regeneration; a weakly-specified module is skipped and reported (recommend `/review-test` or `/test-mutation` first), never rewritten on hope.
-
-#### 6c. Harvest the contract
-
-The orchestrator — not the simplifier — assembles the contract packet, so the simplifier stays blind:
-
-- The public surface as callers actually use it (grep the call sites; the callers define the contract)
-- The spec files that pin the module
-- Binding constraints: relevant ADRs, design-doc requirements, deliberate-quirk notes
-- The house style in effect (project conventions, CLAUDE.md, style guide)
-- The budget: the module's current **code-line count** (comments excluded — the budget must not be satisfiable by stripping them)
-
-#### 6d. Spawn `swe-simplifier`
-
-One candidate per agent, fresh instance. The agent returns a design note, the implementation, expected spec results, and line accounting — or `REGENERATION DECLINED`, which is a respected outcome recorded in the summary, not a failure.
-
-#### 6e. Verify (three layers)
-
-1. **Full suite.** All specs, unmodified.
-2. **Failing-spec classification.** A rewrite failing only specs that pin *internals* rather than observable contract is **declined**: revert, and report the rewrite alongside the pinning specs so the operator can decide — outside this run — whether those specs pin behavior or accidents. The run never amends specs; the specs are the safety net, and the run may not touch the net.
-3. **Correctness gate.** Spawn `swe-correctness-reviewer` on the rewrite diff. A regenerated module is the highest-risk diff this workflow produces, and the reviewer receives what the simplifier never saw — the old implementation — to hunt behavior deltas the specs missed. Findings are resolved (SME/simplifier fix, re-verify) or the rewrite is declined. 3-failure retry discipline as in 5d.
-
-#### 6f. Commit and quick-pass
-
-Commit each accepted rewrite atomically (`refactor: regenerate <module> — <N>→<M> code lines`). After all candidates resolve, run **one tactical quick-pass scoped to the regenerated modules** (same reasoning as `/lead-refactor`'s Phase 3 — fresh code has fresh nits), then proceed to the completion summary.
-
-### 7. Completion Summary
-
-When workflow completes, present summary:
+### 8. Report
 
 ```
-## Refactoring Complete
-
-### Statistics
-- Commits made: N
-- Net lines changed: -XXX (target: negative)
-- Batches completed: N
-- Batches aborted: N
-
-### Changes by Category
-- Dead code removal: N instances
-- DRY consolidation: N instances
-- [etc.]
-
-### Aborted Batches (if any)
-- [Batch description]: [reason for failure]
-
-### Generative Stage (Maximum ceiling only)
-- Regenerated: module.lua 710→290 code lines (design note summary)
-- Declined by simplifier: N (already-minimal designs)
-- Declined by verification: N (with the internals-pinning specs listed)
-- Ineligible: N (weak specs — recommend /review-test or /test-mutation)
+## Refactor Complete
+### Isolation: branch refactor/<slug> @ <sha> (base <sha>)
+### The machine, by generation (gen 0 = incumbent):
+###   concepts  C0 → C1 → … → Cn | mechanisms M0 → … → Mn | code lines L0 → … → Ln
+### Generations: N run, champion = gen K | terminated by: convergence | cap
+### Requirements: K killed (invented) / T traded (operator) / S kept — each with source
+### Parallel machinery dissolved: [cluster → the one mechanism that remains]
+### Add-back ratio per generation: [g1: X% … gn: Z%] — [calibrated | under-aggressive | over-aggressive]
+### Oracle: N inputs, boundary [what was diffed], final state green
+### Finish pass: F findings — L applied locally, R reported (structural, not taken)
+### Bequest: conformance suite [location]; tests ported P, retired Q; docs amended
+### Trade menu: [behavior — source — machinery it forces — what its removal frees]
+### Merge: the operator's call
 ```
 
-**Then present user-decision items** collected across all passes:
+## Guardrails
 
-**Commented-out code:** List each location and what the code appears to be (debugging helper, disabled feature, TODO, etc.). Ask the user which, if any, should be deleted. Implement deletions for the items the user selects.
-
-**Apparently-unused public APIs:** List each symbol and location. Note that these may be consumed by external users of the package. These are informational only — do not offer to delete them.
-
-### 8. Update Documentation
-
-After the refactoring summary, run the `/tidy-docs` workflow to bring project documentation up to date. Even tactical refactoring can rename functions, move code between files, and change APIs — documentation that references the old state becomes stale.
-
-Invoke the skill directly:
-```
-/tidy-docs
-```
-
-This spawns a doc-maintainer agent that audits all project documentation and fixes issues it finds. Any changes are committed separately from the refactoring commits.
-
-## Agent Coordination
-
-**Fresh instances for context management:**
-- Spawn NEW `swe-code-reviewer` agent for each scan pass
-- Spawn NEW `swe-simplifier` agent per generative candidate (Maximum ceiling only) — and keep it blind: the orchestrator harvests the contract packet; the simplifier never sees the current implementation
-- `swe-correctness-reviewer` gates each rewrite diff (generative stage only)
-- This prevents context accumulation in the scanner
-- Orchestrator (you) maintains only summary state
-
-**Sequential execution:**
-- One agent at a time
-- Wait for completion before spawning next
-- No parallel agent execution
-
-**State to maintain (as orchestrator):**
-- Completed batches (brief log)
-- Aborted batches (with reasons)
-- Failure count per active batch
-- Running totals for summary
-- Commented-out code findings (accumulated across passes, for user review)
-- Informational findings (unused public APIs, accumulated across passes)
-
-## Abort Conditions
-
-**Abort current batch:**
-- 3 consecutive QA failures
-- Revert changes, log failure, continue with next batch
-
-**Abort entire workflow:**
-- User interrupts
-- Git repository in unclean state that can't be resolved
-- Critical system error
-
-**Agent failures:**
-- Spawn failure: retry once, then abort workflow with error
-- Malformed output: log issue, skip batch, continue
-- Timeout: treat as failure, apply retry logic
-
-**Do NOT abort for:**
-- Individual batch failures (skip and continue)
-- Warnings from linters (fix or note, don't abort)
-
-## Integration with Other Skills
-
-**`/refactor` vs `/review-arch`:** `/refactor` is tactical cleanup within existing architecture (DRY, dead code, naming, complexity). `/review-arch` is strategic — it questions the architecture and proposes restructuring (advisory; offers to cut tickets). Use `/refactor` for routine cleanup; use `/review-arch` when the module structure itself needs rethinking.
-
-**`/scope` → `/refactor`:** For a large refactoring effort, use `/scope` first to plan the work, then `/refactor` to execute autonomously.
-
-**The generative stage vs `/review-arch` and `/review-value`:** regeneration is module-scoped with a frozen public contract. Redrawing module boundaries stays `/review-arch`'s jurisdiction; trading behavior for simplicity stays `/review-value`'s. When the simplifier declines because the *contract* is the problem, those are the skills to reach for.
-
-## Example Session
-
-```
-> /refactor
-
-Scope: entire codebase
-
-How aggressive should refactoring be?
-> High (up to MODERATE changes)
-
-Any special QA instructions?
-> Run `make test && make lint` after each change
-
-Starting iterative refactoring...
-
-[Pass 1]
-Spawning swe-code-reviewer agent for scan...
-Found opportunities across levels:
-  SAFEST: 8 dead code blocks (Prune), 2 lint failures
-  SAFE: 3 DRY violations
-  MODERATE: 1 cross-module DRY opportunity
-Selecting least aggressive: dead code + lint (SAFEST)
-Spawning swe-sme-golang for implementation...
-Implementation complete.
-Spawning qa-engineer for verification...
-All tests pass.
-Committed: "refactor: remove dead code and fix lint issues"
-
-[Pass 2]
-Spawning swe-code-reviewer agent for scan...
-Found opportunities across levels:
-  SAFEST: (none)
-  SAFE: 3 DRY violations, 1 single-use wrapper (Prune)
-  MODERATE: 1 cross-module DRY opportunity
-Selecting least aggressive: DRY + prune (SAFE)
-Spawning swe-sme-golang for implementation...
-Implementation complete.
-Spawning qa-engineer for verification...
-Test failure: TestParseConfig
-Returning to swe-sme-golang for repair (attempt 1/3)...
-Repair complete.
-Spawning qa-engineer for verification...
-All tests pass.
-Committed: "refactor: consolidate duplicate parsing logic"
-
-[Pass 3]
-Spawning swe-code-reviewer agent for scan...
-Found opportunities across levels:
-  SAFEST: 1 new dead code block exposed by DRY consolidation (Prune)
-  SAFE: (none)
-  MODERATE: 1 cross-module DRY opportunity
-Selecting least aggressive: dead code (SAFEST)
-...
-
-[Passes 4-7...]
-
-[Pass 8]
-Spawning swe-code-reviewer agent for scan...
-No opportunities found at any level.
-
-## Refactoring Complete
-
-### Statistics
-- Commits made: 7
-- Net lines changed: -312
-- Batches completed: 7
-- Batches aborted: 0
-
-### Changes by Category
-- Prune (dead code, unused indirection): 11 instances
-- DRY consolidation: 5 instances
-- Lint fixes: 2 instances
-
-Running /tidy-docs to update documentation...
-
-Spawning doc-maintainer agent...
-  No documentation changes needed.
-```
+- **Behavior at the boundary is inviolable** after step 2. Only the step-2 menu can relax a behavior, and only the operator can approve it; nothing is relaxed mid-run to rescue a design.
+- **The oracle is never weakened** — no shrinking the input corpus or coarsening the diff to get to green.
+- **The minimizer stays blind, every generation.** No source, tests, or history — the original's or any champion's — ever enters a packet; census shapes stay out; numbers only.
+- **Nothing but behavior, requirements verdicts, the oracle, and budget numbers crosses generations.** A design note handed to the next designer is anchoring smuggled past the blindfold.
+- **Not golf — and adjudicated, not just declared.** Concepts before mechanisms before branches before lines; house-style density; comments free. The champion rule enforces this mechanically (step 4's structural diff and the inlining presumption); a guardrail that exists only as prose fires only by luck.
+- **Version-controlled files only.** The run modifies nothing untracked by git — untracked work could be irreversible to lose. Non-negotiable regardless of scope.
+- **No seniority for the champion.** Deference to an existing design — original or generated — is the failure mode this skill exists to correct, and the bench is not exempt: adoption is the default, and a decline carries the burden of proof as grounded line-items that survived rebuttal.
+- **After the menu, documents are dead law.** No agent in this run may decline or soften a simplification by citing DESIGN.md, an ADR, a README, a comment, or "how it was done before." The pinned behavior and the operator's requirement verdicts are the *entire* law of the run; a document matters only as the nominator of a requirement the operator kept. Precedent is testimony, not authority — an agent caught ruling from a document is re-run with the citation struck.
+- **Optimize nothing in step-2's kill pile.** Simplification passes run only on machinery that survived questioning.
+- **The report is the conscience**: every killed requirement names the machinery it took with it; every kept one names its source.
