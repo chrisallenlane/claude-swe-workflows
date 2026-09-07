@@ -12,7 +12,7 @@ model: opus
 
 The spine of this skill is the five-step design algorithm Musk describes from the Raptor program (Starbase interview, 2021), in its strict order:
 
-1. **Make the requirements less dumb.** Every requirement must carry a named source — a document section, an operator declaration, an observed user-facing behavior. "The old code did it" is not a source; a requirement whose only witness is the machinery that serves it was invented by that machinery. Requirements from smart authors are the most dangerous, because nobody questions them — and every line of LLM-written code was written by a confident author.
+1. **Make the requirements less dumb.** Every requirement must trace to a *person* — the operator — or to behavior a user would notice losing. "The old code did it" is not a source; a requirement whose only witness is the machinery that serves it was invented by that machinery. Neither is "the old docs say so": in an LLM-written repository, DESIGN.md and the ADRs were written by the same confident author as the code — usually *after* it — and are the incumbent's testimony in better dress. Documents **nominate** requirements for the menu; only the operator ratifies them. Requirements from smart authors are the most dangerous, because nobody questions them — and every line of LLM-written code and docs was written by a confident author.
 2. **Delete the part.** The bias is deletion, and it is calibrated: **if you are not adding back ~10% of what you delete, you are not deleting enough.** A deletion the oracle catches costs a revert; a part that should not exist survives forever.
 3. **Simplify.** Only what survived steps 1–2. The most common error of a smart engineer is to optimize a thing that should not exist.
 4. **Accelerate the cycle.** Verification must be cheap enough that aggressive attempts are rational — that is what the differential oracle is for.
@@ -82,11 +82,12 @@ The census is measurement, not judgment; it feeds steps 2 and 4 and the final re
 
 For each machinery cluster, name the requirement it serves and the requirement's **source**:
 
-- **Sourced** — traces to a design-doc section, an operator declaration, or user-facing behavior a user would notice losing. Survives to the oracle.
+- **Ratified** — an operator declaration, or user-facing behavior a user would notice losing. Survives to the oracle.
+- **Documented** — cited by a design doc, ADR, or README, but not independently user-visible. **A citation is a nomination, not a verdict** — the docs are part of the incumbent, not above it. These go on the menu with their citation and the machinery they force; the operator's keep is what ratifies them, and bulk rulings ("keep all documented") are a fine answer.
 - **Invented** — witnessed only by the incumbent implementation (its own comments, assertions, sibling precedent, or tests included). Presumed dumb; dies with its machinery unless the operator rescues it.
-- **Sourced but priced** — real, but the operator might trade it: a behavior whose relaxation would dissolve disproportionate machinery.
+- **Priced** — real under either heading above, but worth trading: a behavior whose relaxation would dissolve disproportionate machinery.
 
-Present one menu: kills (invented, with the machinery each drags down), trades (priced, with the machinery each would free), keeps. The operator rules — this is the "named person" the algorithm demands; a requirement nobody will put their name to is deleted. After the menu, the run is autonomous.
+Present one menu: kills (invented, with the machinery each drags down), nominations (documented — keep or kill), trades (priced, with the machinery each would free), keeps (ratified, listed for the record). The operator rules — this is the "named person" the algorithm demands; a requirement nobody will put their name to is deleted. After the menu, the run is autonomous.
 
 ### 3. Oracle — pin behavior, not shape
 
@@ -161,5 +162,6 @@ Fold in the trades already accumulated — step 2's declined "sourced but priced
 - **The minimizer stays blind, every generation.** No source, tests, or history — the original's or any champion's — ever enters a packet; census shapes stay out; numbers only.
 - **Nothing but behavior, requirements verdicts, the oracle, and budget numbers crosses generations.** A design note handed to the next designer is anchoring smuggled past the blindfold.
 - **Not golf — and adjudicated, not just declared.** Concepts before mechanisms before branches before lines; house-style density; comments free. The champion rule enforces this mechanically (step 4's structural diff and the inlining presumption); a guardrail that exists only as prose fires only by luck.
+- **After the menu, documents are dead law.** No agent in this run may decline or soften a simplification by citing DESIGN.md, an ADR, a README, a comment, or "how it was done before." The pinned behavior and the operator's requirement verdicts are the *entire* law of the run; a document matters only as the nominator of a requirement the operator kept. Precedent is testimony, not authority — an agent caught ruling from a document is re-run with the citation struck.
 - **Optimize nothing in step-2's kill pile.** Simplification passes run only on machinery that survived questioning.
 - **The report is the conscience**: every killed requirement names the machinery it took with it; every kept one names its source.
