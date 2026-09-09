@@ -24,9 +24,12 @@ cycle, automate last.
                live as a differential oracle, diffing user-visible output
                only. The old test suite never constrains the new design.
 2. ITERATE     each pass: recount → re-attribute → then an inner loop of
-               STRIP (a deletion-stance hunter deletes everything the
-               gates permit — never regenerate what you can simply
-               remove) interleaved with REGENERATE (a brand-new blind
+               STRIP (a deletion-stance hunter runs the classic
+               optimizer passes — DCE, copy propagation, inlining,
+               constant folding, CSE, branch simplification — as
+               mechanical detectors cascading to a fixpoint, and deletes
+               everything the gates permit — never regenerate what you
+               can simply remove) interleaved with REGENERATE (a brand-new blind
                designer builds the minimum machine for the surviving
                requirements); a strip that breaks pinned behavior is
                repaired by restoring the old part or regenerating a
