@@ -82,7 +82,3 @@ The **handoff list is a first-class deliverable**, not an apology: it is `/refac
 - **Not golf**: density is policed by the structure gate; inlining is confined to trivial bodies.
 - **Version-controlled files only**; one concept per atomic commit; the side memo catches bugs (the harness pins today's behavior, bugs included — a silent fix is a divergence).
 - **The report is the conscience**: every kill names its pass and evidence; every restoration names its gate.
-
-## Relationship to /refactor
-
-Same deleter, same excision protocol, same gates — minus the requirements menu, the differential-oracle default, the minimizer, the finish pass, and the bequest. The dividing line is anchor, not authorship: this skill edits the design it can see, always downward; `/refactor` adds the blind whole-target rebuild that can reach a *different* design. If field runs show deletion capturing most of the value, `/refactor`'s scheduled regeneration should become a triggered one (fired by this skill's handoff list); if deletion alone plateaus well above `/refactor`'s results, the regeneration organ has earned its cost and this skill retires into being `/refactor`'s cheap first phase.
