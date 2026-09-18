@@ -1,19 +1,17 @@
 ---
 name: refactor-delete
-description: "EXPERIMENTAL — unshipped, unregistered, may be promoted or killed. Reduction-only refactoring: runs /refactor's strip machinery — the optimizer pass catalog, the excision protocol, the mechanical gates — with no whole-target regeneration. Behavior never changes; every remedy must remove or simplify — code may be written only in service of a measured net reduction (a smaller in-place replacement, a general path dissolving special cases). Cheap by design: an abbreviated checkpoint (stakes, floors, probes — no requirements docket), the existing behavior-level suite as the default harness, and a fixpoint strip loop. What deletion cannot reach is reported as /refactor's regeneration priority list, not attempted. Exists to test whether deletion alone captures most of the redesign skill's value at a fraction of its cost."
+description: "EXPERIMENTAL — unshipped, unregistered, may be promoted or killed. Reduction-only refactoring: a fixpoint strip loop — the classic optimizer passes as mechanical detectors, an excision protocol, and mechanical adjudication gates. Behavior never changes; every remedy must remove or simplify — code may be written only in service of a measured net reduction (a smaller in-place replacement, a general path dissolving special cases). Cheap by design: one abbreviated checkpoint (stakes, floors, probes), the existing behavior-level suite as the default harness. What reduction-in-place cannot reach is reported as sketched redesign candidates for the operator, never attempted."
 model: opus
 ---
 
 # Refactor Delete — Reduction Only
 
-> **EXPERIMENTAL.** Lives on a branch, appears in no catalog. A controlled amputation of `/refactor`: the same strip machinery, the whole-target regeneration organ removed — every remedy must remove or simplify, and code is written only as a means to a measured reduction. Field observation motivated it — a bare deletion pass on a live project was hugely productive with no generative step at all. The open question this skill exists to answer: **how much of the redesign skill's value does deletion alone capture, at what fraction of its cost?** Run it, compare, and let the results decide what `/refactor` should schedule.
-
 ## Identity
 
 **This skill only reduces.** Three rules:
 
-1. **Behavior never changes.** There is no requirements docket because no behavior is ever relaxed — every change must be invisible at the user-visible boundary. The one nuance is inherited law: **the corpus defines behavior** — a guard on inputs the platform cannot send defends nothing observable, and removing it changes no behavior a realistic input can witness.
-2. **Reduction is the only remedy** — the old net-red jurisdiction: every remedy must remove or simplify. Fewer concepts, fewer mechanisms, fewer branches, fewer lines, in that order, measured by the structure gate. Writing code is permitted *as a means*: the two-line replacement of a fourteen-line mechanism, the one general path that dissolves three special cases, the smaller closure of an excision's hole. What is out of scope: anything net-additive (new capability, new abstraction, provisions for the future), and the whole-design blind rebuild — that is `/refactor`'s organ, and rebuild-sized gaps go on the handoff list, sketched.
+1. **Behavior never changes.** Every change must be invisible at the user-visible boundary. The one nuance is inherited law: **the corpus defines behavior** — a guard on inputs the platform cannot send defends nothing observable, and removing it changes no behavior a realistic input can witness.
+2. **Reduction is the only remedy** — the net-red jurisdiction: every remedy must remove or simplify. Fewer concepts, fewer mechanisms, fewer branches, fewer lines, in that order, measured by the structure gate. Writing code is permitted *as a means*: the two-line replacement of a fourteen-line mechanism, the one general path that dissolves three special cases, the smaller closure of an excision's hole. What is out of scope: anything net-additive (new capability, new abstraction, provisions for the future), and whole-design rebuilds — rebuild-sized gaps are reported on the handoff list as sketched redesign candidates for the operator, never attempted.
 3. **Isolation is the safety.** Fresh branch `refactor-delete/<slug>` (worktree when asked or conventional). One abbreviated checkpoint, then autonomous. The deliverable is the branch and its report; merging is the operator's call.
 
 ## Workflow
@@ -36,7 +34,7 @@ model: opus
 
 **The abbreviated checkpoint.** Three questions, one interaction: *what happens if this breaks?* and *who maintains it?* (stakes, recorded verbatim — they calibrate aggression and harness depth); **hard floors** — mechanisms that survive regardless, no argument; **probes** — custom verification steps that join the harness. There is no requirements docket: nothing will be rebuilt, so nothing needs ratifying.
 
-**The harness.** Default: the existing behavior-level tests (partition them from structure-pinning tests as `/refactor` does; ambiguous is behavior-level), a headless smoke run, and the operator's probes. Escalate to a full differential oracle (original implementation as reference, diffed at the user-visible boundary) only when the stakes answer demands it or the strip docket turns out residue-heavy — deletions in the pass tier carry evidence that rarely needs an oracle to check. The harness, once chosen, is never weakened.
+**The harness.** Default: the existing behavior-level tests — partition the suite first: *behavior-level* exercises what a user observes (outputs, flows, digests); *structure-pinning* imports a module path, asserts an internal API, or checks a directory rule; ambiguous is behavior-level — plus a headless smoke run and the operator's probes. Escalate to a full differential oracle (original implementation as reference, diffed at the user-visible boundary) only when the stakes answer demands it or the strip docket turns out residue-heavy — deletions in the pass tier carry evidence that rarely needs an oracle to check. The harness, once chosen, is never weakened.
 
 ### 2. Strip — to fixpoint
 
@@ -65,7 +63,7 @@ The orchestrator is a clerk, not a judge: batches pass gates or are restored; ne
 ### Restored by the gates: n (each with the gate that fired)
 ### Passes run: N (terminated by clean pass | cap)
 ### Harness: [suite+smoke+probes | full oracle] — final state green
-### Handoff list — what deletion could not reach, for /refactor:
+### Handoff list — what reduction-in-place could not reach (redesign candidates):
 ###   [mechanism — naive-baseline delta — the sketch, in one line]
 ###   [withdrawn sutures — holes that needed new machinery]
 ### Side memo: [bugs and missing capabilities found and not touched]
@@ -73,7 +71,7 @@ The orchestrator is a clerk, not a judge: batches pass gates or are restored; ne
 ### Merge: the operator's call
 ```
 
-The **handoff list is a first-class deliverable**, not an apology: it is `/refactor`'s regeneration priority list, pre-computed. A run that strips 15% and hands over three well-sketched rebuild targets has done both skills' reconnaissance.
+The **handoff list is a first-class deliverable**, not an apology: each entry is a sketched redesign candidate — the mechanism, its distance from the dumbest adequate design, the sketch in a line — for the operator to pursue by whatever means they choose. A run that strips 15% and reports three well-sketched candidates has also done the reconnaissance for whatever comes next.
 
 ## Guardrails
 
