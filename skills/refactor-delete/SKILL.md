@@ -1,19 +1,19 @@
 ---
 name: refactor-delete
-description: "EXPERIMENTAL — unshipped, unregistered, may be promoted or killed. Deletion-only refactoring: runs /refactor's strip machinery — the optimizer pass catalog, the excision protocol, the mechanical gates — with no regeneration at all. Behavior is never changed, only machinery removed. Cheap by design: an abbreviated checkpoint (stakes, floors, probes — no requirements docket), the existing behavior-level suite as the default harness, and a fixpoint strip loop. What deletion cannot reach is reported as /refactor's regeneration priority list, not attempted. Exists to test whether deletion alone captures most of the redesign skill's value at a fraction of its cost."
+description: "EXPERIMENTAL — unshipped, unregistered, may be promoted or killed. Reduction-only refactoring: runs /refactor's strip machinery — the optimizer pass catalog, the excision protocol, the mechanical gates — with no whole-target regeneration. Behavior never changes; every remedy must remove or simplify — code may be written only in service of a measured net reduction (a smaller in-place replacement, a general path dissolving special cases). Cheap by design: an abbreviated checkpoint (stakes, floors, probes — no requirements docket), the existing behavior-level suite as the default harness, and a fixpoint strip loop. What deletion cannot reach is reported as /refactor's regeneration priority list, not attempted. Exists to test whether deletion alone captures most of the redesign skill's value at a fraction of its cost."
 model: opus
 ---
 
-# Refactor Delete — Deletion Only
+# Refactor Delete — Reduction Only
 
-> **EXPERIMENTAL.** Lives on a branch, appears in no catalog. A controlled amputation of `/refactor`: the same strip machinery, the regeneration organ removed entirely. Field observation motivated it — a bare deletion pass on a live project was hugely productive with no generative step at all. The open question this skill exists to answer: **how much of the redesign skill's value does deletion alone capture, at what fraction of its cost?** Run it, compare, and let the results decide what `/refactor` should schedule.
+> **EXPERIMENTAL.** Lives on a branch, appears in no catalog. A controlled amputation of `/refactor`: the same strip machinery, the whole-target regeneration organ removed — every remedy must remove or simplify, and code is written only as a means to a measured reduction. Field observation motivated it — a bare deletion pass on a live project was hugely productive with no generative step at all. The open question this skill exists to answer: **how much of the redesign skill's value does deletion alone capture, at what fraction of its cost?** Run it, compare, and let the results decide what `/refactor` should schedule.
 
 ## Identity
 
 **This skill only removes.** Three rules:
 
-1. **Behavior never changes.** There is no requirements docket because nothing is ever rebuilt and no behavior is ever relaxed — every deletion must be invisible at the user-visible boundary. The one nuance is inherited law: **the corpus defines behavior** — a guard on inputs the platform cannot send defends nothing observable, and removing it changes no behavior a realistic input can witness.
-2. **Deletion is the only remedy.** No redesign, no restructuring, no new abstractions — a hole that needs new machinery to close is out of scope and goes on the handoff list for `/refactor`. Distance-to-minimum that only a rebuild can close is *reported*, never attempted.
+1. **Behavior never changes.** There is no requirements docket because no behavior is ever relaxed — every change must be invisible at the user-visible boundary. The one nuance is inherited law: **the corpus defines behavior** — a guard on inputs the platform cannot send defends nothing observable, and removing it changes no behavior a realistic input can witness.
+2. **Reduction is the only remedy** — the old net-red jurisdiction: every remedy must remove or simplify. Fewer concepts, fewer mechanisms, fewer branches, fewer lines, in that order, measured by the structure gate. Writing code is permitted *as a means*: the two-line replacement of a fourteen-line mechanism, the one general path that dissolves three special cases, the smaller closure of an excision's hole. What is out of scope: anything net-additive (new capability, new abstraction, provisions for the future), and the whole-design blind rebuild — that is `/refactor`'s organ, and rebuild-sized gaps go on the handoff list, sketched.
 3. **Isolation is the safety.** Fresh branch `refactor-delete/<slug>` (worktree when asked or conventional). One abbreviated checkpoint, then autonomous. The deliverable is the branch and its report; merging is the operator's call.
 
 ## Workflow
@@ -40,9 +40,11 @@ model: opus
 
 ### 2. Strip — to fixpoint
 
-Spawn `swe-refactor-deleter` — fresh instance per pass, assigned stance, removal-only jurisdiction. It sweeps **pass-major** with tool-derived evidence: dead-code elimination (references; coverage where instrumented), copy propagation (forwarding bodies, aliases, mirrors), inlining (trivial pipe nodes only), constant folding (single-valued parameters and config), CSE (census clusters — only where a copy dies and callers repoint without new abstraction), branch simplification (arms never taken; conditions that never vary); judgment spent on the residue (unreachable-input guards, write-only state, speculative generality, self-created hazards). Passes cascade — a folded constant decides a branch, the dead arm orphans a function — so loop with a fresh hunter until a pass proposes nothing that survives.
+Spawn `swe-refactor-deleter` — fresh instance per pass, assigned stance, net-red jurisdiction (strips, plus REPLACE proposals where a strictly smaller in-place substitute is sketchable). It sweeps **pass-major** with tool-derived evidence: dead-code elimination (references; coverage where instrumented), copy propagation (forwarding bodies, aliases, mirrors), inlining (trivial pipe nodes only), constant folding (single-valued parameters and config), CSE (census clusters — only where a copy dies and callers repoint without new abstraction), branch simplification (arms never taken; conditions that never vary); judgment spent on the residue (unreachable-input guards, write-only state, speculative generality, self-created hazards). Passes cascade — a folded constant decides a branch, the dead arm orphans a function — so loop with a fresh hunter until a pass proposes nothing that survives.
 
-**Excision protocol**, per strip: root first, compiler-guided — delete the declaration and let diagnostics enumerate the cascade (orphans are bonus kills, same batch). **The suture rule**: every hole closes with *less* machine — the constant returned, the expression forwarded, nothing; a hole needing **new** machinery to close means this strip is out of this skill's scope — withdraw it to the handoff list. **The part dies whole**: its structure-pinning tests, comments, config knobs, observers, and one-line doc amendments ride the same atomic commit (`refactor:` prefix, one concept and its cascade per batch).
+**Excision protocol**, per strip: root first, compiler-guided — delete the declaration and let diagnostics enumerate the cascade (orphans are bonus kills, same batch). **The suture rule, net-red form**: every hole closes with *less* machine than died — the constant returned, the expression forwarded, nothing, or a strictly smaller written closure; a hole whose smallest closure is not smaller than what it replaces means this strip is out of scope — withdraw it to the handoff list. **The part dies whole**: its structure-pinning tests, comments, config knobs, observers, and one-line doc amendments ride the same atomic commit (`refactor:` prefix, one concept and its cascade per batch).
+
+**Replacements.** The hunter's naive-baseline sketches are executable here when small: a mechanism whose sketched substitute is a few lines is **replaced in place** — install the sketch, run the gates, one atomic commit like any strip. The structure gate is the arbiter of "smaller" (concepts and declarations before lines; density never degrades), and behavior holds as ever. Sketches beyond in-place scale — a design change, a data-structure change, anything touching multiple mechanisms at once — go to the handoff list; the line between a replacement and a rebuild is whether the surrounding design absorbs it unchanged.
 
 **The gates — mechanical, per batch:**
 
@@ -59,6 +61,7 @@ The orchestrator is a clerk, not a judge: batches pass gates or are restored; ne
 ### Isolation: branch refactor-delete/<slug> @ <sha> (base <sha>)
 ### The machine: concepts C0 → C1 | mechanisms M0 → M1 | code lines L0 → L1
 ### Kills by pass: DCE n / copy-prop n / inline n / const-fold n / CSE n / branch n / residue n
+### Replacements installed: n (net −L lines, −M mechanisms)
 ### Restored by the gates: n (each with the gate that fired)
 ### Passes run: N (terminated by clean pass | cap)
 ### Harness: [suite+smoke+probes | full oracle] — final state green
@@ -75,11 +78,11 @@ The **handoff list is a first-class deliverable**, not an apology: it is `/refac
 ## Guardrails
 
 - **Hard floors are never stripped.** The harness is never weakened. Behavior at the boundary never changes.
-- **No new machinery, ever** — not to close a hole, not to unify a cluster, not to "improve" anything. The moment a remedy adds, it belongs to `/refactor`.
+- **No net additions, ever.** Code is written only in service of a measured reduction, and the structure gate verifies the reduction per batch. The moment a remedy grows the machine — or exists for the future — it belongs elsewhere.
 - **Not golf**: density is policed by the structure gate; inlining is confined to trivial bodies.
 - **Version-controlled files only**; one concept per atomic commit; the side memo catches bugs (the harness pins today's behavior, bugs included — a silent fix is a divergence).
 - **The report is the conscience**: every kill names its pass and evidence; every restoration names its gate.
 
 ## Relationship to /refactor
 
-Same deleter, same excision protocol, same gates — minus the requirements menu, the differential-oracle default, the minimizer, the finish pass, and the bequest. If field runs show deletion capturing most of the value, `/refactor`'s scheduled regeneration should become a triggered one (fired by this skill's handoff list); if deletion alone plateaus well above `/refactor`'s results, the regeneration organ has earned its cost and this skill retires into being `/refactor`'s cheap first phase.
+Same deleter, same excision protocol, same gates — minus the requirements menu, the differential-oracle default, the minimizer, the finish pass, and the bequest. The dividing line is anchor, not authorship: this skill edits the design it can see, always downward; `/refactor` adds the blind whole-target rebuild that can reach a *different* design. If field runs show deletion capturing most of the value, `/refactor`'s scheduled regeneration should become a triggered one (fired by this skill's handoff list); if deletion alone plateaus well above `/refactor`'s results, the regeneration organ has earned its cost and this skill retires into being `/refactor`'s cheap first phase.
