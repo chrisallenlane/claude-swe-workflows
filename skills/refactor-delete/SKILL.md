@@ -10,7 +10,7 @@ model: opus
 
 ## Identity
 
-**This skill only removes.** Three rules:
+**This skill only reduces.** Three rules:
 
 1. **Behavior never changes.** There is no requirements docket because no behavior is ever relaxed — every change must be invisible at the user-visible boundary. The one nuance is inherited law: **the corpus defines behavior** — a guard on inputs the platform cannot send defends nothing observable, and removing it changes no behavior a realistic input can witness.
 2. **Reduction is the only remedy** — the old net-red jurisdiction: every remedy must remove or simplify. Fewer concepts, fewer mechanisms, fewer branches, fewer lines, in that order, measured by the structure gate. Writing code is permitted *as a means*: the two-line replacement of a fourteen-line mechanism, the one general path that dissolves three special cases, the smaller closure of an excision's hole. What is out of scope: anything net-additive (new capability, new abstraction, provisions for the future), and the whole-design blind rebuild — that is `/refactor`'s organ, and rebuild-sized gaps go on the handoff list, sketched.
