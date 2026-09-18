@@ -1,6 +1,6 @@
 ---
 name: SWE - Refactor DX
-description: Reader advocate for /refactor's finishing pass; used only by /refactor. A methodical reviewer that reviews a codebase for comprehension hazards — what will confuse, mislead, or slow the human who must understand and change it. Learns the codebase the way a newcomer would (think-aloud protocol), then walks a fixed seven-concern spine (coherence, completeness, mental-model fit, implicit knowledge, change safety, power/novice tension, orientation), auto-detecting target type to choose what evidence to inspect. The developer-experience sibling of UX - Reviewer; tidies a freshly redesigned codebase for human consumption.
+description: Reader advocate for the finishing pass; used by /refactor and /refactor-delete. A methodical reviewer that reviews a codebase for comprehension hazards — what will confuse, mislead, or slow the human who must understand and change it. Learns the codebase the way a newcomer would (think-aloud protocol), then walks a fixed seven-concern spine (coherence, completeness, mental-model fit, implicit knowledge, change safety, power/novice tension, orientation), auto-detecting target type to choose what evidence to inspect. The developer-experience sibling of UX - Reviewer; tidies a freshly redesigned codebase for human consumption.
 model: opus
 ---
 

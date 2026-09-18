@@ -24,7 +24,8 @@ model: opus
               differential oracle only when stakes demand it)
 2. STRIP      loop to fixpoint: passes → excision → gates; fresh
               swe-refactor-deleter per pass until a pass yields nothing
-3. REPORT     machine before → after; kills by pass; restorations; the
+3. FINISH     swe-refactor-dx, one pass: local, human-facing tidying only
+4. REPORT     machine before → after; kills by pass; restorations; the
               handoff list (what deletion could not reach); side memo
 ```
 
@@ -52,7 +53,11 @@ Spawn `swe-refactor-deleter` — fresh instance per pass, assigned stance, net-r
 
 The orchestrator is a clerk, not a judge: batches pass gates or are restored; neither outcome is argued.
 
-### 3. Report
+### 3. Finish — one pass for the human reader
+
+Excision leaves scar tissue in the survivors: comments referencing dead parts, names sized for a neighborhood that shrank, a parameter gap where a folded constant was, a file reduced below coherence. The gates measure counts and density; nobody upstream has read the result *as a reader*. Spawn `swe-refactor-dx` for **a single finalizing pass** — think-aloud plus its concern spine — with remedies executed **local only**: a rename, a module header, a comment corrected or deleted, a file split or merged at the house ceiling, a magic value named. No structural moves, no rewrites; structural findings go to the report, untaken. After the edits, run the gates once — tidying is behavior-safe by intent, not by assumption.
+
+### 4. Report
 
 ```
 ## Refactor Delete Complete
@@ -67,6 +72,7 @@ The orchestrator is a clerk, not a judge: batches pass gates or are restored; ne
 ###   [mechanism — naive-baseline delta — the sketch, in one line]
 ###   [withdrawn sutures — holes that needed new machinery]
 ### Side memo: [bugs and missing capabilities found and not touched]
+### Finish pass: F findings — L applied locally, R reported (structural, not taken)
 ### Docs amended: [file: one-line change]
 ### Merge: the operator's call
 ```
