@@ -17,12 +17,10 @@ The skills are arranged as **layered composition** — higher-level skills invok
 lower-level ones. Enter at the layer that matches your task. The deepest stack:
 
 ```
-/lead-project                              ← autonomous tech lead (decides what to do next)
-└── invokes any skill below
-    /implement-project                     ← full-lifecycle project execution
-    └── /implement-batch                   ← one batch of related tickets
-        └── /implement                     ← one ticket, end-to-end
-            └── SME agents                 ← language-specific specialists
+/implement-project                         ← autonomous project lead (decides what to do next)
+└── /implement-batch                       ← one batch of related tickets
+    └── /implement                         ← one ticket, end-to-end
+        └── SME agents                     ← language-specific specialists
 ```
 
 Two other entry points orchestrate bounded autonomous loops:
@@ -41,7 +39,7 @@ skills with a related purpose.
 
 | Namespace      | Purpose                                     | Skills                                                                                                                                                                                        |
 |----------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/lead-*`      | Autonomous orchestrators                    | `/lead-project`, `/lead-bug-hunt`, `/lead-review`                                                                                                                                             |
+| `/lead-*`      | Autonomous orchestrators                    | `/lead-bug-hunt`, `/lead-review`                                                                                                                                                              |
 | `/implement-*` | Implement tickets (mutate the working tree) | `/implement`, `/implement-batch`, `/implement-project`                                                                                                                                        |
 | `/scope-*`     | Plan and produce tickets                    | `/scope`, `/scope-project`                                                                                                                                                                    |
 | `/review-*`    | Advisory audits — no code changes           | `/review-arch`, `/review-code`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-health`, `/review-security`, `/review-release`, `/review-value`, `/review-dead`, `/review-namespace` |
@@ -65,8 +63,7 @@ task:
 
 | You want to...                                                                              | Use                  |
 |---------------------------------------------------------------------------------------------|----------------------|
-| Drive a project to completion autonomously, deciding what to work on                        | `/lead-project`      |
-| Implement an entire multi-batch project autonomously                                        | `/implement-project` |
+| Drive a project to completion autonomously — a ticket set or an open-ended goal             | `/implement-project` |
 | Implement a batch of related tickets                                                        | `/implement-batch`   |
 | Implement a single ticket or feature                                                        | `/implement`         |
 | Plan a multi-batch project with adversarial review                                          | `/scope-project`     |
@@ -102,8 +99,7 @@ task:
 | Clean up local git state (stale refs, merged branches)                                      | `/tidy-git`          |
 
 **Rules of thumb:**
-- Open-ended work where the next step depends on the outcome of the last? `/lead-project`
-- Multiple batches of tickets forming a project? `/implement-project`
+- A project — multiple batches of tickets, or open-ended work where the next step depends on the last? `/implement-project`
 - One batch of 2+ related tickets? `/implement-batch`
 - One ticket? `/implement` (or `/bug-fix` if it's a bug)
 - Not sure what to build yet? Start with `/scope` or `/scope-project`
@@ -114,13 +110,12 @@ One-line summaries grouped by namespace. Click through to each skill's detailed 
 
 ### `/lead-*` — Autonomous orchestrators
 
-- **`/lead-project`** — Autonomous tech lead. Runs an OODA loop over project state given a commander's intent, invoking lower-level skills until end-state is met or it pulls an andon cord. ([details](skills/lead-project/references/README.md))
 - **`/lead-bug-hunt`** — Loops `/bug-hunt` → `/implement-batch` until bugs converge below a stated severity floor; runs `/review-test` on the new reproducing tests at termination. ([details](skills/lead-bug-hunt/references/README.md))
 - **`/lead-review`** — Runs every repo-scoped `/review-*` sub-skill autonomously with an operator-set toggle for whether sub-skill ticket proposals are written to the tracker (diff-scoped `/review-code` is excluded — an audit has no diff under review). ([details](skills/lead-review/references/README.md))
 
 ### `/implement-*` — Working-tree mutators
 
-- **`/implement-project`** — Full-lifecycle project execution. Implements batched tickets, runs the quality pipeline (refactor, review-arch, review-test, tidy-docs, review-release), produces a review-ready branch. ([details](skills/implement-project/SKILL.md))
+- **`/implement-project`** — Autonomous project lead. Takes commander's intent — usually a batch of tickets, sometimes an open-ended goal — and drives it to a review-ready branch, choosing by judgment which implementation, refactoring, review, and bug-hunting skills to run. A small fixed floor holds regardless (tests green at every merge, smoke test, `/review-release` last), and every pass not run is accounted for in the report. ([details](skills/implement-project/references/README.md))
 - **`/implement-batch`** — Plans execution order of a batch of tickets, implements each via `/implement` autonomously, runs a cross-cutting `/tidy-docs` pass. ([details](skills/implement-batch/SKILL.md))
 - **`/implement`** — Single-ticket development cycle: requirements → planning → implementation → QA → code review → documentation. Dispatches to language SMEs. ([details](skills/implement/SKILL.md))
 

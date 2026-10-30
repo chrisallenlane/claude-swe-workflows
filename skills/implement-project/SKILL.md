@@ -1,442 +1,290 @@
 ---
 name: implement-project
-description: Full-lifecycle project workflow. Takes batched tickets, implements via /implement-batch, runs smoke tests, then executes a comprehensive quality pipeline (refactor, review-arch, review-test, tidy-docs, review-release). Maximizes autonomy with andon cord escape.
+description: Autonomous project lead. Takes commander's intent — usually a batch of scoped tickets, sometimes an open-ended goal — and drives the project to a review-ready branch, choosing by judgment which implementation, refactoring, review, and bug-hunting skills to run and when. A small fixed floor (tests green at every merge, smoke test, release review last, mechanical end-state checks) holds regardless; every quality pass not run is accounted for in the final report. Escalates via andon cord only for irreversible actions or genuinely blocking decisions.
 model: opus
 ---
 
-# Implement-Project - Full-Lifecycle Project Workflow
+# Implement-Project — Autonomous Project Lead
 
-Orchestrates an entire project from tickets to release-ready code. Implements batched tickets via `/implement-batch`, runs smoke tests, then executes a comprehensive quality pipeline. Maximizes autonomy — the andon cord is the only planned escalation path.
+Takes the project from commander's intent to a single branch the user can review and merge. The user states intent at startup and reads the report at the end; between those points the skill decides what to do next and does it.
+
+Most runs start from a batch of tickets, typically drafted by `/scope-project`. The skill also accepts an open-ended goal ("make the CLI's config handling work end-to-end") and scopes its own tickets. The workflow is the same either way: the tickets are simply the key tasks of the intent.
 
 ## Philosophy
 
-This skill implements the autonomy discipline documented in [`references/autonomy.md`](../../references/autonomy.md): the five levers (altitude rule, pre-loaded options, pre-rebutted recommendation, commander's intent, risk budgets), the cascade rule, the shared handoff template, and the "log instead of escalate" pattern. Its commander's-intent schema is the five-field variant defined there (tickets, acceptance bar, constraints, non-goals, stakes).
+This skill implements the autonomy discipline in [`references/autonomy.md`](../../references/autonomy.md): the five levers, the cascade rule, the shared handoff template, and "log instead of escalate." Its commander's-intent schema is the canonical one defined there.
 
-**Autonomy is the default; escalation is the exception.** The goal is to complete an entire project — multiple batches of tickets, quality passes, and verification — without user intervention. When stuck, try `/think-deliberate` first. Only pull the andon cord when autonomous resolution has failed or is clearly futile.
+**Judgment over checklists.** The skill has no fixed quality pipeline. It holds a repertoire of skills and chooses among them the way a capable tech lead would: what does *this* project, at *this* point, need next? A two-ticket bug-fix project may need nothing past its tickets; a twelve-ticket feature may need `/refactor`, `/review-arch`, and `/review-test`. Running a pass because a list says so wastes the run; skipping one the project needed is a judgment error the report must make visible.
 
-**The project branch is the single integration point.** All work flows into the project branch. Batches merge into it, quality passes commit to it, and the user makes one decision at the end: merge or don't.
+**A small floor is fixed.** These hold on every run, regardless of judgment, because they are cheap and they carry the safety:
 
-**Quality is layered.** Each quality pass builds on the previous one. Refactor shrinks the machine first, so the reviews that follow examine the reduced design rather than the one the batches accreted. Arch-review surfaces structural recommendations (advisory only — `/review-arch` no longer implements changes; see the "Advisory aspiration" section of [`references/autonomy.md`](../../references/autonomy.md)) so review-test can survey coverage of the current form. Review-test surfaces ticket-shaped test work (advisory only — `/review-test` no longer writes tests in-skill). Tidy-docs documents what actually shipped. Release-review validates the whole.
+1. **Tests and linters green at every merge** into the project branch.
+2. **The smoke-testing procedure** passes before the run declares done.
+3. **Mechanical end-state conditions** are executed and observed to pass — never inferred.
+4. **`/review-release` runs last**, after all code changes.
+5. **The irreversible-action gates** (see Andon Cord) are never crossed autonomously.
 
-**Fresh eyes catch what familiarity misses.** Each quality pass runs its full workflow. Redundancy is intentional — each agent sees the project with fresh context and may catch issues that prior passes normalized.
+**Judgment is accountable.** Every repertoire pass the skill chose not to run gets a one-line reason in the final report. That record is what lets the user audit the run's judgment without having supervised it.
+
+**The project branch is the single integration point.** All work lands there; the user makes one decision at the end: merge or don't.
 
 ## Workflow Overview
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│                     PROJECT WORKFLOW                         │
+│                  IMPLEMENT-PROJECT WORKFLOW                  │
 ├──────────────────────────────────────────────────────────────┤
-│  1. Gather tickets and batching strategy                     │
-│  2. Discuss smoke testing procedures                         │
-│  3. Plan execution + elicit commander's intent               │
-│  4. Create project branch                                    │
-│  5. Per-batch loop:                                          │
-│     ├─ 5a. Create batch branch from project branch           │
-│     ├─ 5b. Run /implement-batch workflow (autonomous mode)   │
-│     ├─ 5c. Merge batch branch → project branch               │
-│     ├─ 5d. Post-merge verification                           │
-│     └─ 5e. Clean up and checkpoint                           │
-│  6. Smoke testing                                            │
-│  7. Quality pipeline:                                        │
-│     ├─ 7a. /refactor (menu answered from intent)             │
-│     ├─ 7b. /review-arch (advisory; ticket proposal)          │
-│     ├─ 7c. /review-test (advisory; ticket proposal)          │
-│     ├─ 7d. /tidy-docs                                        │
-│     └─ 7e. /review-release                                   │
-│  8. Final report                                             │
+│  1. Startup                                                  │
+│     ├─ 1a. Branch, working tree, resume check                │
+│     ├─ 1b. Elicit commander's intent (six fields)            │
+│     ├─ 1c. Agree the smoke-testing procedure                 │
+│     └─ 1d. Plan, present, seed PROJECT_STATE.md              │
+│  2. Work loop (judgment; repeat until done or andon cord)    │
+│     ├─ Decide — the next action that best serves intent      │
+│     ├─ Act — invoke the skill, verify, commit                │
+│     └─ Record — state doc: action, rationale, outcome        │
+│  3. Termination (fixed floor)                                │
+│     ├─ 3a. Smoke test + mechanical end-state checks          │
+│     ├─ 3b. /review-release                                   │
+│     └─ 3c. Final report                                      │
 └──────────────────────────────────────────────────────────────┘
 ```
 
-## Available Tools
+## 1. Startup
 
-Beyond the mainline workflow, the orchestrator has access to additional workflows:
+### 1a. Branch, working tree, resume check
 
-- **`/think-deliberate`**: Adversarial deliberation for difficult autonomous decisions. Spawns advocates to argue options before rendering a verdict. Prefer this over gut-feel decisions when stakes are high or trade-offs are unclear.
-- **`/bug-fix`**: Coordinated bug-fixing for challenging issues encountered during any phase. Handles diagnosis, reproduction, and targeted fixes.
+Follow the shared startup protocol in [`references/lead-startup.md`](../../references/lead-startup.md) with these values:
 
-## Andon Cord Protocol
+- **Branch pattern:** `feat/project-<descriptive-name>`, from the operator or derived from the purpose.
+- **State doc:** `PROJECT_STATE.md`.
+- **"Resume as-is":** re-observe the project state (tests, branch, open tickets) before the next decision.
 
-**This protocol applies throughout the entire workflow.** The andon cord is the escape valve for problems that cannot be resolved autonomously.
+### 1b. Elicit commander's intent
 
-**Before pulling the andon cord:**
-1. Attempt autonomous resolution first.
-2. For judgment calls, run `/think-deliberate` to reason through options.
-3. Only escalate if autonomous resolution has failed or is clearly futile.
+Six fields, per [`references/autonomy.md`](../../references/autonomy.md) § "Commander's-intent schemas per skill":
 
-**When the andon cord is pulled:**
-1. **Stop all work immediately** — do not attempt to continue with other batches or steps.
-2. Produce a handoff using the **shared handoff template** in [`references/autonomy.md`](../../references/autonomy.md). The escalation must include pre-loaded options (2–3 named choices), an explicit recommendation, the one tradeoff that would flip the recommendation, and a pre-rebutted counterargument. Include the skill-specific state: current phase and step, what `/think-deliberate` was already considered, current state of all branches (what's merged into the project branch, what's in-progress), and how far through the per-batch loop or quality pipeline the run is.
-3. Wait for user guidance before resuming.
+| Field        | Ticket-driven run (the common case)                                                | Open-ended run                                                                  |
+|--------------|------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
+| Purpose      | One line, derived from the tickets; operator confirms                              | Elicited — why this iteration exists                                            |
+| Key tasks    | The tickets, fetched per [`references/trackers.md`](../../references/trackers.md)  | Elicited as observable state (2–10 items); the skill scopes tickets for them    |
+| End state    | Default: every ticket's acceptance criteria met; tests, linters, smoke test pass   | Elicited — what command proves it is done?                                      |
+| Constraints  | Default: none                                                                      | Elicited                                                                        |
+| Non-goals    | Default: none                                                                      | Elicited                                                                        |
+| Stakes       | Always asked: *what happens if this breaks?* and *who maintains it, for how long?* | Same                                                                            |
 
-**Andon cord triggers (skill-specific):**
-- Batch workflow pulls its own andon cord (cascades up)
-- Merge conflict between batch branch and project branch
-- Smoke testing reveals fundamental design issues that can't be fixed locally
-- Quality pass reveals blocking issues the orchestrator can't resolve
-- Project branch already exists (step 4)
-- Any situation where continuing would compound errors rather than resolve them
+In a ticket-driven run, pre-fill everything the tickets imply and ask only for what they can't supply: confirmation, stakes, and any constraints or non-goals. Don't make the operator walk six fields to restate their tickets. In an open-ended run, walk the fields one at a time and push back on vague answers ("works well" → "what command would I run to verify?").
 
-## Workflow Details
+Classify each end-state condition as **mechanical** (a check the skill can run) or **subjective** (needs human judgment). Mechanical conditions gate termination; subjective ones go to the report for sign-off.
 
-### 1. Gather Tickets and Batching Strategy
+If batching is unclear for a ticket set, ask — do not guess at grouping the operator chose deliberately.
 
-**Ask the user:**
-- Which tickets belong to this project? (IDs, tags, milestones, etc.)
-- How are they batched? (e.g., tagged `batch-1`, `batch-2`; or user specifies explicit grouping)
-- What's the batch execution order?
+### 1c. Agree the smoke-testing procedure
 
-**If batching is unclear:** Ask. Do not guess at grouping — the user has a reason for the batch structure.
+Ask what smoke testing should prove the project works, with examples by project type if needed: a CLI run with representative commands, JSON-RPC calls to an MCP server, Playwright against a web app, an end-to-end exercise of a library's public API. Record it verbatim. It is fixed-floor item 2, and the probe set for any `/refactor` run.
 
-**Fetch all tickets** using the shared tracker detection from [`references/trackers.md`](../../references/trackers.md). Gather title, description, acceptance criteria, labels, and dependencies for each.
+### 1d. Plan, present, seed the state doc
 
-### 2. Discuss Smoke Testing Procedures
+Sketch an initial plan: batch order and dependencies for ticketed work, the scoping needed for open-ended key tasks, and which repertoire passes the project looks likely to need. The plan is a starting hypothesis, not a contract — the loop revises it.
 
-**Ask the user:** "What smoke testing should be performed after implementation? This varies by project type."
+**Present intent, smoke procedure, and plan together, and wait for approval.** This is the run's one planned interaction. Then seed `PROJECT_STATE.md` (gitignored) per the startup protocol: the pinned intent verbatim, the plan, and an empty action log.
 
-**Offer examples if the user needs prompts:**
-- CLI tool: run the binary with representative commands, verify output
-- MCP server: build the binary, send JSON-RPC commands, verify responses
-- Web app: use Playwright MCP for browser testing
-- Library: run integration tests, verify public API works end-to-end
-- API server: hit key endpoints, verify responses
+## 2. Work Loop
 
-**Record the procedure.** It will be used for step 6 (smoke testing) and passed to `/refactor` as its verification probes (step 7a).
+Repeat: decide the next action, take it, verify, record. Stop when the termination conditions hold (section 3) or the andon cord is pulled.
 
-### 3. Plan Execution Across Batches + Elicit Commander's Intent
+### Deciding
 
-Analyze all tickets across all batches and produce an execution plan, and elicit the commander's-intent fields beyond the tickets themselves.
+Priorities, in order:
 
-**Per-batch analysis:**
-- Tickets in this batch and their dependencies
-- Estimated scope (qualitative)
-- Any concerns about ambiguous or under-specified tickets
+1. **Blockers.** Broken tests, build, or lint on the project branch.
+2. **Key tasks.** Unfinished tickets and key-task outcomes before anything else.
+3. **High-severity findings** from any review already run.
+4. **Quality passes** the project needs, once the key tasks are done.
 
-**Cross-batch analysis:**
-- Dependencies between batches (batch 2 might depend on batch 1's changes)
-- Optimal batch ordering
-- Risk areas where batches might conflict
+Re-read the pinned intent before each decision. Work that does not trace to it — scope creep, non-goals, polish on code the project didn't touch — is drift; course-correct, or pull the cord if the right path is unclear. When a choice is genuinely close, `/think-deliberate` it; when the framing seems wrong, `/think-reframe`.
 
-**Elicit commander's intent** (the five-field schema from [`references/autonomy.md`](../../references/autonomy.md)):
+### The repertoire
 
-| Field           | Default                                                            | Notes                                                                               |
-|-----------------|--------------------------------------------------------------------|-------------------------------------------------------------------------------------|
-| Tickets         | Already gathered in step 1                                         | Pre-filled; operator confirms.                                                      |
-| Acceptance bar  | "All tickets implemented, full pipeline passes"                    | Operator may extend (e.g., "and CHANGELOG mentions every user-visible change").     |
-| Constraints     | None                                                               | Cross-cutting limits not encoded in individual tickets (e.g., "must remain compatible with library version X"). |
-| Non-goals       | None                                                               | Explicit out-of-scope items. The orchestrator will not touch these even if it sees opportunity. |
-| Stakes          | None — must be answered                                            | `/refactor`'s two stakes questions, answered once: *what happens if this breaks?* and *who maintains it, for how long?* Recorded verbatim; they calibrate the step-7a run. |
+**Orientation:**
+- `/review-health` — at the start of an open-ended run on an unfamiliar codebase.
 
-Acceptance bar, constraints, and non-goals frame the orchestrator's judgment for the rest of the run. When the quality pipeline surfaces opportunities outside these bounds, they are deferred to the final report rather than acted on.
+**Implementation:**
+- `/implement-batch` — a batch of tickets (overrides below). The usual workhorse.
+- `/implement` — a single ticket, or a fix too small to batch.
+- `/scope` — draft a ticket for a gap that serves intent; `/scope-project` for a whole open-ended key task.
+- `/bug-fix` — a bug that resists a direct fix.
 
-**Present the plan to the user.** This is the primary planned user interaction point. Include:
-- Proposed batch execution order with rationale
-- Per-batch ticket listing with brief scope assessment
-- Any concerns about ticket specifications
-- Smoke testing procedure (confirmed)
-- Commander's intent (the five fields above)
-- Branch naming: `feat/project-<name>`, with `feat/batch-<name>` per batch
+**Quality (each chosen by judgment, each accounted for in the report):**
+- `/refactor` — shrinks the machine with behavior pinned. Best once the key tasks are done and before the reviews, so they examine the reduced design. Menu answered from intent (below).
+- `/review-arch` — structural recommendations as a ticket proposal.
+- `/review-test` — test-suite gaps as a ticket proposal.
+- `/review-dead`, `/review-security`, `/review-perf`, `/review-a11y` — when the project's changes touch their territory.
+- `/review-code` — adversarial correctness review of the project diff before declaring done.
+- `/bug-hunt` — when the project added substantial untested surface.
+- `/tidy-docs` — documentation for what actually shipped.
 
-**Wait for user approval before proceeding.**
+**Only when intent asks:** `/review-value` — its trade menu is product decisions, so the run surfaces the menu rather than acting on it.
 
-### 4. Create Project Branch
+**Never autonomously:** `/release` (publishing is andon territory); `/review-namespace` search mode (needs operator calibration).
 
-- Identify the main branch (`main` or `master`)
-- Create project branch from current HEAD: `feat/project-<descriptive-name>`
-- **Andon cord** if branch already exists — ask user whether to resume or start fresh
-- Initialize `PROJECT_PROGRESS.md` with project metadata and batch plan
+### Acting
 
-### 5. Per-Batch Execution Loop
+Invoke the chosen skill with autonomous overrides where it supports them; where it asks for interactive input, answer from the pinned intent. After it completes: tests, linters, and build still pass (fixed-floor item 1 — fix before continuing); its work is committed; the action, a one-sentence rationale, and the outcome are in the state doc.
 
-For each batch in the planned order:
+**Severity handling for findings.** Critical/High: address before termination. Medium: address if bounded and local, else defer with a note. Low/Info: defer with a note. For review skills that propose tickets (`/review-arch`, `/review-test`, `/review-dead`, `/bug-hunt`), apply [`references/autonomy.md`](../../references/autonomy.md)'s orchestrator judgment: approve items worth tracking, decline items you will handle inline — and then actually handle them — and prefer cutting a ticket when in doubt, since a decline commits the run to doing the work.
 
-#### 5a. Create Batch Branch
+**Don't thrash.** Re-run a review only if files it flagged have changed since. If two reviews contradict each other on the same file, pull the cord rather than oscillate.
 
-- Checkout project branch (ensure it's current)
-- Create batch branch: `feat/batch-<descriptive-name>`
+### `/implement-batch` overrides
 
-#### 5b. Run `/implement-batch` Workflow (Autonomous Mode)
+| `/implement-batch` step            | Override                                                                         |
+|------------------------------------|----------------------------------------------------------------------------------|
+| **Step 1** (receive tickets)       | Pre-loaded with the batch's tickets.                                             |
+| **Step 3** (batch planning)        | Approve the plan autonomously; pull the cord only if the tickets are incoherent. |
+| **Step 4** (create project branch) | Skip — run on the project branch; its topic branches merge there.                |
+| **Step 7** (final review)          | Review autonomously and log the summary to the state doc.                        |
 
-Invoke the `/implement-batch` workflow with these autonomous overrides:
+Andon cords inside the batch cascade up to this skill.
 
-| `/implement-batch` Step                 | Autonomous Override                                                                                                                                                                                                    |
-|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Step 1** (receive tickets)  | Pre-loaded — pass the batch's ticket list directly                                                                                                                                                                     |
-| **Step 2** (detect tracker & fetch) | Normal operation                                                                                                                                                                                                 |
-| **Step 3** (batch planning)   | **Orchestrator approves the plan autonomously.** Review the proposed execution order. Use `/think-deliberate` if the ordering is unclear or if there are concerning dependency patterns. Only pull the andon cord if tickets are fundamentally incoherent. |
-| **Step 4** (create project branch) | **Skip — already on the batch branch.** The batch branch serves as `/implement-batch`'s "project branch." Topic branches are created from it.                                                                             |
-| **Steps 5a-5e** (per-ticket loop)  | Normal operation. Topic branches are created from the batch branch. Andon cord triggers cascade up to the project orchestrator.                                                                                  |
-| **Step 6** (quality passes)   | Normal operation. Let `/implement-batch` run its own `/tidy-docs` pass.                                                                                                                                                         |
-| **Step 7** (final review)     | **Orchestrator reviews autonomously.** Log the summary to `PROJECT_PROGRESS.md`. Do not wait for user input.                                                                                                          |
+### `/refactor` overrides — the menu answered from intent
 
-#### 5c. Merge Batch Branch into Project Branch
+`/refactor` has one operator checkpoint, its requirements menu. Answer it from intent; everything after the menu runs as `/refactor` defines it.
 
-- Checkout project branch
-- Merge: `git merge --no-ff feat/batch-<name>`
-- The `--no-ff` preserves batch branch history for clarity
-- **Andon cord** on merge conflict — do not attempt auto-resolution
+| `/refactor` step                | Override                                                                                                                                                                    |
+|---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Step 0** (isolate)            | Branch `refactor/<slug>` from the project branch's HEAD.                                                                                                                    |
+| **Menu — stakes**               | The Stakes field, verbatim.                                                                                                                                                 |
+| **Menu — probes**               | The smoke-testing procedure, verbatim, plus every ticket's acceptance criteria — the operator's contribution to the oracle corpus.                                           |
+| **Menu — verdicts**             | **Ratified:** behavior the tickets or key tasks specify, plus Constraints. **Documented:** keep all. **Invented:** presumed dead. **Priced:** take no trades; report them. |
+| **Non-goals**                   | `/refactor` works on the whole target and takes no exclusions. If Non-goals name code the run must not touch, don't run `/refactor`; say why in the report.               |
+| **Merge** (the operator's call) | Merge `refactor/<slug>` into the project branch (`--no-ff`) once the oracle is green; re-run tests and the smoke procedure. Andon cord on conflict or failure.               |
 
-#### 5d. Post-Merge Verification
+The skill stands in for the operator at the menu and the merge, and nowhere else: it never rescues an invented requirement, takes a trade, or overrides a gate. Record the answered menu in the state doc. If the project has no user-visible boundary to build an oracle against, don't run `/refactor` — its safety rests entirely on that oracle — and say so in the report.
 
-- Run the full test suite on the project branch
-- Run linters/formatters
-- **Andon cord** if tests fail — the merge introduced a regression
+## 3. Termination
 
-#### 5e. Clean Up and Checkpoint
+Termination is a judgment — the key tasks are done and the project needs nothing more from the repertoire — confirmed by the fixed floor.
 
-- Delete the merged batch branch: `git branch -d feat/batch-<name>`
-- Update `PROJECT_PROGRESS.md`: mark batch as complete, record summary
+### 3a. Smoke test and end-state checks
 
-### 6. Smoke Testing
+Run the smoke-testing procedure and every mechanical end-state condition, recording each command and its result. Confirm no constraint was violated (check protected paths against the branch diff). Any failure is a blocker: back to the loop.
 
-Execute the smoke testing procedure established in step 2.
+### 3b. `/review-release`
 
-**On issues found:**
-1. Diagnose the issue
-2. For straightforward fixes: implement, verify, commit
-3. For complex bugs: invoke the `/bug-fix` workflow
-4. For design-level problems: try `/think-deliberate` first, then andon cord if unresolvable
-5. Re-run smoke tests after fixes until clean
+Run last, after every code change. Auto-fix mechanical findings (debug artifacts, version mismatches, changelog gaps); `/think-deliberate` ambiguous ones; defer user-judgment items to the report; pull the cord for blocking failures. If its fixes touch code, re-run 3a.
 
-**Update `PROJECT_PROGRESS.md`** with smoke test results and any fixes applied.
+### 3c. Final report
 
-### 7. Quality Pipeline
-
-Run each quality pass sequentially. The orchestrator may use judgment to skip passes for trivial projects (e.g., 2 small tickets with no architectural impact may not need `/review-arch`). If skipping, note the reason in the final report.
-
-#### 7a. Refactor
-
-Run the `/refactor` workflow over the entire codebase. `/refactor` has exactly one operator checkpoint, the requirements menu; the orchestrator answers it from commander's intent, so the run proceeds without the user. Everything after the menu runs as `/refactor` defines it.
-
-| `/refactor` Step                     | Autonomous Override                                                                                                                                                                                                                       |
-|--------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Step 0** (isolate)                 | Normal operation. Branch `refactor/<slug>` from the project branch's HEAD.                                                                                                                                                               |
-| **Step 1** (menu — stakes)           | Answer with the Stakes field of commander's intent, verbatim.                                                                                                                                                                            |
-| **Step 1** (menu — probes)           | Pass the smoke-testing procedure from step 2, verbatim, plus every ticket's acceptance criteria. These are the operator's contribution to the oracle corpus; without them the oracle sees only what the orchestrator thought to record. |
-| **Step 1** (menu — verdicts)         | **Ratified:** behavior the project's tickets specify, plus the Constraints field. **Documented:** keep all (bulk ruling). **Invented:** presumed dead, as `/refactor` defines. **Priced:** take no trades; carry every offered trade to the final report. |
-| **Step 1** (scope)                   | Exclude anything the Non-goals field names.                                                                                                                                                                                              |
-| **Steps 2–5** (iterate → report)     | Normal operation.                                                                                                                                                                                                                         |
-| **Merge** (the operator's call)      | **Orchestrator merges.** When the run completes with the oracle green, merge `refactor/<slug>` into the project branch (`git merge --no-ff`), then re-run the full test suite and the smoke-testing procedure. **Andon cord** on a merge conflict or a failure. If the run adopted nothing, there is nothing to merge; log it and continue. |
-
-The orchestrator stands in for the operator at the menu and at the merge, and nowhere else: it does not rescue invented requirements, take trades, or override a gate outcome. The user sees what the menu answers cost when they read the final report — record the answered menu in `PROJECT_PROGRESS.md` when it is given.
-
-**Skip** this pass when no differential oracle can be built — the project has no user-visible boundary the orchestrator can run and diff. `/refactor`'s safety rests entirely on that oracle. Note the reason in the final report.
-
-#### 7b. Arch Review (Advisory)
-
-Run the `/review-arch` workflow. As of v8.0.0, `/review-arch` no longer makes changes — it produces an analysis and proposes a ticket structure for the recommended work.
-
-Invocation parameters:
-- **Scope:** Entire codebase
-
-The orchestrator receives `/review-arch`'s ticket-structure proposal and applies its own judgment per [`references/autonomy.md`](../../references/autonomy.md):
-
-- **Approve** items that should be tracked for follow-up (typically items that are out of scope for the current project but worth capturing durably).
-- **Edit** the proposed structure if finer-grained or coarser-grained tickets would compose better with other planned work.
-- **Decline** items that the orchestrator will implement inline as part of the quality pipeline.
-
-For items the orchestrator declines (intending to handle inline), surface them in the final report (step 8) under "Architectural Recommendations Acted On" along with what was actually implemented. For items where tickets were cut, surface them under "Deferred Items / Architectural Recommendations" with their ticket numbers, so the operator knows to follow up after the project ships.
-
-The orchestrator should be conservative: cutting a ticket for a finding is always safer than declining it (declining commits the orchestrator to handling it inline, which may not actually happen in the current pipeline).
-
-#### 7c. Test Review (Advisory)
-
-Run the `/review-test` workflow. As of v9.0.0, `/review-test` is advisory only — it surveys all five phases (unit coverage, integration, E2E, fuzz, quality) and produces a ticket-structure proposal rather than implementing test changes in-skill. The orchestrator receives the proposal and applies its own autonomy judgment per `references/autonomy.md`:
-
-- **Approve a ticket** when the work is well-scoped, the implementation requires deliberation (test design, mocking strategy, infrastructure setup), or the orchestrator does not intend to implement it inline within this project.
-- **Edit the structure** to merge, split, drop, or promote items (including refactor-for-testability suggestions) before approval.
-- **Decline a ticket** if the orchestrator intends to implement the work inline within this project — typically the unit-coverage gaps the orchestrator wants to close as part of the current pipeline.
-
-For items the orchestrator declines (intending to handle inline), surface them in the final report (step 8) under "Test Recommendations Acted On" along with what was actually implemented. For items where tickets were cut, surface them under "Deferred Items / Test Recommendations" with their ticket numbers.
-
-Phase 3's journey-classification confirmation step still requires user input even when invoked autonomously — the classification shapes ticket priorities and is the most subjective input in the analysis. The orchestrator should answer based on the project's commander's intent (which user journeys are critical to this project) and surface any uncertainty as an andon-cord pull rather than guessing.
-
-The orchestrator should be conservative: cutting a ticket for a test finding is safer than declining it (declining commits the orchestrator to handling it inline, which may not actually happen in the current pipeline).
-
-#### 7d. Tidy-Docs
-
-Run the `/tidy-docs` workflow:
-- Full documentation audit
-- Fixes committed separately
-
-#### 7e. Release Review
-
-Run the `/review-release` workflow with autonomous overrides:
-
-For each finding the release review surfaces:
-- **Auto-fix:** Debug artifacts, version mismatches, changelog gaps, formatting issues
-- **Deliberate:** Ambiguous findings, trade-off decisions
-- **Defer to final report:** Items that require user judgment (e.g., "should this breaking change be noted in CHANGELOG?")
-- **Andon cord:** Blocking issues that can't be resolved (e.g., tests fail, build broken)
-
-### 8. Final Report
-
-Present comprehensive summary to user:
+Ordered by what most needs the user's scrutiny. Every claim of completion carries both a one-sentence narrative and an artifact — commit SHA, command and result, file:line, or ticket ID. A narrative without an artifact is not evidence.
 
 ```
 ## Project Complete
 
-### Batches Implemented
-- Batch 1 (<name>): N tickets completed
-  - #12: <title> — <brief outcome>
-  - #15: <title> — <brief outcome>
-- Batch 2 (<name>): N tickets completed
-  - #18: <title> — <brief outcome>
+### Outcome
+[One paragraph: was intent met? Name any failed mechanical condition
+ or subjective condition awaiting sign-off.]
 
-### Smoke Testing
-- Result: PASS / N issues found and fixed
-- [Brief description of any fixes applied]
+### Top things to scrutinize
+[3–5 items where the run's judgment is most likely wrong or the stakes
+ highest: risky commits, downgraded or deferred findings, deliberated
+ decisions, inline work done instead of a ticket. One line + artifact each.]
 
-### Quality Pipeline Results
-- Refactor: concepts / mechanisms / code lines before → after; requirements killed / kept; merged at <sha>, or skipped with reason
-- Arch Review: advisory report produced (no changes made — /review-arch is advisory)
-- Test Review: advisory report produced; N tickets created / N declined / N approved-inline
-- Tidy-Docs: N documentation updates
-- Release Review: N findings resolved, N deferred
+### Key tasks / tickets
+- [✓] #12: <title> — <outcome> — SHA <short>
+- [~] #18: <title> — partial; see Deferred
 
-### Deferred Items / Architectural Recommendations
-[Items the orchestrator chose not to implement, with rationale.
- Includes /review-arch's recommendations from step 7b — each names
- a specific follow-up skill with scope hint (e.g.,
- "Dead code in src/foo/: /review-dead scoped to that directory").
- These are actionable next steps for the user.]
+### End state
+- Mechanical: [✓] <condition> — `<command>` → <result> at SHA <short>
+- Subjective (your sign-off): [?] <condition> — <what was done>
+- Smoke test: <result>
 
-### Deferred Items / Refactor Trade Menu and Side Memo
-[From step 7a: the behaviors /refactor priced as trades (none were taken —
- each is a decision for the user), and the bugs it found but did not fix
- (the oracle pins today's behavior, bugs included).]
+### Quality passes
+- Run: /refactor — concepts C0 → Cn, lines L0 → Ln, merged at <sha>
+- Run: /review-arch — 2 tickets cut (#48, #49), 1 handled inline (<sha>)
+- Not run: /review-test — <one-line reason>
+- Not run: /review-security — <one-line reason>
+- /review-release — N resolved, N deferred
 
-### Deferred Items / Test Recommendations
-[Tickets cut from step 7c that the orchestrator chose not to handle
- inline, plus any items it implemented inline alongside the ticket
- numbers. Each ticket names a specific follow-up skill with scope hint.]
+### Deferred items
+[Severity, source, description, reason, where tracked. Includes
+ /refactor's trade menu and side memo, verbatim.]
 
-### Statistics
-- Total commits: N
-- Net lines changed: +/-N
-- Tests added during batch implementation: N (this counts tests written
-  by SMEs during ticket implementation in step 5; /review-test does not
-  add tests itself — it surfaces ticket-shaped work)
-- Documentation files updated: N
-
-### Branch Status
-- Project branch: feat/project-<name>
-- Base branch: <main branch>
-- Ready for review and merge
+### Branch
+- feat/project-<name> @ <sha>, base <main> @ <sha>; N commits, +X/-Y
+- Tickets created / closed: <IDs>
 ```
 
-User decides next steps: merge to main, further work, or discard.
+The user decides: merge, iterate, or discard.
+
+## Andon Cord
+
+Use the shared handoff template in [`references/autonomy.md`](../../references/autonomy.md): pre-loaded options, a recommendation, the tradeoff that would flip it, a pre-rebutted counterargument. Add the current state: what is merged, what is in flight, which key tasks remain. Title: `## Andon Cord — /implement-project — <current action>`.
+
+Before pulling it, try to resolve autonomously; for judgment calls, `/think-deliberate` first; re-read intent — an apparent blocker may mean intent needs clarifying.
+
+**Pull it when:**
+- **An irreversible action is required:** pushing or merging to main/master, a public release or tag, force-push, global dependency installs, deleting data or untracked work, a breaking change the operator has not authorized.
+- **A blocking decision needs product judgment** that deliberation cannot resolve from the repo.
+- **Stuck:** the same failure three times across different strategies.
+- **Reviews contradict each other** on the same file.
+- **A merge conflicts**, or a merge breaks tests and the cause isn't local.
+- **A key task appears to require violating a constraint.**
+- **Resume finds HEAD diverged** from the state doc's record.
+- **The run is drifting** and the right path is unclear.
+- **A sub-skill's andon cord cascades up** for a reason this skill can't resolve.
 
 ## State Management
 
-### PROJECT_PROGRESS.md
+`PROJECT_STATE.md` at the repo root, gitignored, per the startup protocol's top-matter, plus:
 
-Maintain a progress file at the repository root throughout the workflow. This file is gitignored and serves two purposes: human-readable progress tracking and crash recovery context.
-
-**Structure:**
 ```markdown
-# Project: <name>
-Started: <timestamp>
-Branch: feat/project-<name>
-Status: <current phase>
+## Plan
+[Current hypothesis: batches, scoping, likely passes — revised as the run learns]
 
-## Configuration
-- Smoke testing: <procedure summary>
-- Refactor menu: <stakes; verdict rulings as answered>
-- Batches: <count>
+## Action log
+### <n> — <timestamp> — HEAD <short SHA>
+- Action: /implement-batch (batch 2: #18, #20)
+- Why: next key tasks; batch 1 merged clean
+- Outcome: merged; tests green; 1 medium finding deferred
 
-## Batch Progress
+## Quality passes
+- /refactor: run at action 6 — merged <sha>; menu: <answers>
+- /review-security: not run — <reason>
 
-### Batch 1: <name> — COMPLETE
-- Tickets: #12, #15
-- Commits: N
-- Summary: <brief>
-
-### Batch 2: <name> — IN PROGRESS
-- Tickets: #18, #20
-- Current ticket: #20
-- Status: implementing
-
-## Quality Pipeline
-- [x] Refactor (merged at <sha>)
-- [x] Arch Review (advisory)
-- [ ] Test Review
-- [ ] Tidy-Docs
-- [ ] Release Review
-
-## Issues Log
-- <timestamp>: <issue description and resolution>
+## Deferred items
+## Open questions
 ```
 
-**Update at every major transition:** batch start/complete, quality pass start/complete, andon cord events, smoke test results.
+Update it after every action. It is the run's memory across context compaction and resumption; keep entries short.
 
-## Agent Coordination
+## Hard Caps
 
-**Sequential execution:**
-- One batch at a time, one quality pass at a time
-- Each sub-workflow completes before the next begins
-- No parallel execution
+- **50 actions** without terminating → pull the cord.
+- **3 consecutive failed attempts** at the same goal → pull the cord.
 
-**Context management:**
-- The project orchestrator is a thin coordinator
-- It delegates all implementation to sub-workflows
-- It maintains only summary-level state in its context
-- `PROJECT_PROGRESS.md` provides durable state outside the context window
-- Keep per-batch and per-pass summaries brief to avoid context bloat
+## Coordination
 
-**Sub-workflow invocation:**
-- Quality passes (`/review-arch`, `/review-test`, `/tidy-docs`, `/review-release`): invoke as skills
-- `/refactor`: invoke as a skill with the menu answered from commander's intent
-- `/implement-batch`: invoke as a skill with autonomous overrides
-- `/think-deliberate`, `/bug-fix`: invoke as skills when needed
+One action at a time; each sub-skill completes before the next begins. The skill is a thin coordinator: it delegates implementation to sub-skills, keeps summary-level state in context, and keeps durable state in `PROJECT_STATE.md`.
 
-## Abort Conditions
+## Relationship to Other Skills
 
-**Abort current batch:**
-- Batch workflow's own andon cord triggers
-- Merge conflict into project branch
-- Post-merge test failures
+**`/scope-project` → `/implement-project`** is the planning-to-execution pair: `/scope-project` drafts and adversarially reviews the batched tickets; this skill executes them.
 
-**Abort quality pass:**
-- Quality pass encounters unresolvable issues after `/think-deliberate`
-- Skip the pass, log the issue, continue with next pass
-- Include in final report
+**`/implement-batch`** is this skill's workhorse for ticketed work. It runs one batch with no judgment about what else the project needs; this skill supplies that judgment.
 
-**Abort entire workflow:**
-- User interrupts
-- Git repository in unclean state that can't be resolved
-- Multiple consecutive andon cord pulls suggest fundamental problems
-- Critical system error
+**`/refactor`** is normally operator-run; this is the one caller that runs it unattended, by answering its menu from intent.
 
-**Do NOT abort for:**
-- Individual ticket failures within a batch (handled by `/implement-batch`)
-- Quality pass recommendations the orchestrator disagrees with (defer them)
-- Minor issues that can be noted in the final report
-
-## Integration with Other Skills
-
-**Relationship to `/implement-batch`:**
-- `/implement-project` is a higher-level orchestrator that runs `/implement-batch` for each batch of tickets
-- `/implement-batch` handles the per-ticket implementation loop via `/implement`
-- `/implement-project` adds: multi-batch coordination, smoke testing, comprehensive quality pipeline
-
-**Relationship to `/scope`:**
-- `/scope` creates tickets; `/implement-project` consumes them
-- Typical flow: `/scope` to plan → organize tickets into batches → `/implement-project` to implement
-
-**Relationship to quality passes:**
-- `/implement-project` runs each quality pass as a complete workflow
-- Each pass operates on the full codebase with fresh context
-- Passes build on each other: refactor → review-arch (advisory) → test → doc → release
-
-**Hierarchy:**
 ```
 /implement-project
-├── /implement-batch (per batch)
-│   ├── /implement (per ticket)
-│   └── /tidy-docs (per-batch quality)
-├── /refactor (project-level quality; menu answered from intent)
-├── /review-arch (project-level quality, advisory; ticket proposal)
-├── /review-test (project-level quality)
-├── /tidy-docs (project-level quality)
-└── /review-release (project-level quality)
+├── (startup)  /review-health (open-ended run, unfamiliar codebase)
+├── (loop, any of)
+│   ├── /implement-batch → /implement (per ticket)
+│   ├── /implement | /scope | /scope-project | /bug-fix
+│   ├── /refactor (menu answered from intent)
+│   ├── /review-arch | /review-test | /review-dead | /review-code
+│   ├── /review-security | /review-perf | /review-a11y
+│   ├── /bug-hunt | /tidy-docs
+│   └── /think-deliberate | /think-reframe | /think-diagnose | /think-scrutinize
+└── (termination)  smoke test → /review-release → report
 ```

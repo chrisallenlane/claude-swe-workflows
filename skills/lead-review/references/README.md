@@ -56,13 +56,12 @@ The operator chooses at startup. No mid-run switching. CRITICAL findings in tick
 
 If you want the interactive walkthrough that `/review-deep` provided, invoke individual `/review-*` skills directly — that's the same experience without the orchestration glue.
 
-## Relationship to Other `/lead-*` Skills
+## Relationship to Other Orchestrators
 
 | Skill              | Outcome contract                                                  | Composition                                                                        |
 |--------------------|-------------------------------------------------------------------|------------------------------------------------------------------------------------|
-| `/lead-project`    | Open-ended commander's intent → OODA loop                         | May invoke `/lead-review` as a comprehensive validation pass                       |
 | `/lead-bug-hunt`   | Iterate `/bug-hunt` → fix until bugs converge                     | Sibling — different outcome contract                                                |
-| `/implement-project`  | Implement a multi-batch ticket project                            | Natural pair: `/lead-review` (backlog) → `/implement-project` (execution)             |
+| `/implement-project` | Commander's intent → judgment-driven project lead                 | Natural pair: `/lead-review` (backlog) → `/implement-project` (execution)          |
 
 ## Workflow Diagram
 
@@ -218,7 +217,7 @@ Skills explicitly **not** in the repertoire (out-of-axis):
 - `/tidy-docs` — mechanical mutations, not advisory. Run separately if doc cleanup is wanted.
 - `/scope-*`, `/test-mutation`, `/tidy-git`, `/bug-*`, `/refactor`, `/implement-*` — adjacent concerns.
 
-If your goal mixes review with implementation, refactoring, or doc tidying, use `/lead-project` instead, or chain `/lead-review` with `/implement-project`.
+If your goal mixes review with implementation, refactoring, or doc tidying, use `/implement-project` — it invokes individual `/review-*` skills by judgment — or chain `/lead-review` with `/implement-project`.
 
 ## Examples
 
@@ -391,8 +390,6 @@ below. Operator decides next steps.
 **Individual `/review-*` skills:** the workhorses. Each keeps its native contract; `/lead-review` adds orchestration (scope passthrough, auto-approve/decline, consolidated reporting).
 
 **`/implement-project`:** natural pair. `/lead-review` (tickets ON) → backlog → `/implement-project` → work through backlog.
-
-**`/lead-project`:** may invoke `/lead-review` as a comprehensive validation pass, or invoke individual `/review-*` skills earlier when specific concerns arise.
 
 **`/tidy-docs`:** explicitly out-of-axis. Run separately.
 

@@ -25,7 +25,7 @@ In both modes, the skill spawns parallel pre-mortemers in isolation across failu
 **Use `/think-premortem` (plan mode) for:**
 
 - Before committing to a plan, design, or significant decision
-- Pre-flight check before invoking `/lead-project` or `/implement-project` on multi-week work
+- Pre-flight check before invoking `/implement-project` on multi-week work
 - Before merging a major architectural change
 - Before announcing a deadline or rollout to stakeholders
 - When a plan feels solid but residual unease remains — the unease often points at a real failure mode

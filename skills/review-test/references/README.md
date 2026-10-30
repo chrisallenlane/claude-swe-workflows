@@ -204,7 +204,7 @@ The operator approves / edits / declines:
 
 ## Orchestrator-Invoked Behavior
 
-When `/review-test` is invoked by an orchestrator (`/lead-project`, `/lead-review`, `/implement-project`), the workflow above is unchanged. The orchestrator receives the ticket-structure proposal and applies its own judgment per [`references/autonomy.md`](../../../references/autonomy.md) — typically declining items it intends to implement inline and approving items it wants tracked for follow-up.
+When `/review-test` is invoked by an orchestrator (`/implement-project`, `/lead-review`), the workflow above is unchanged. The orchestrator receives the ticket-structure proposal and applies its own judgment per [`references/autonomy.md`](../../../references/autonomy.md) — typically declining items it intends to implement inline and approving items it wants tracked for follow-up.
 
 ## Agent Coordination
 
@@ -237,7 +237,7 @@ When `/review-test` is invoked by an orchestrator (`/lead-project`, `/lead-revie
 
 3. **Promote refactor-for-testability suggestions explicitly.** They default to informational; if you want them tracked, edit the structure during step 8a to add one ticket per suggestion (or one batch ticket if they're related).
 
-4. **Orchestrators apply their own judgment to the offer.** When invoked from `/implement-project` or `/lead-project`, the orchestrator typically declines items it intends to implement inline and approves items it wants tracked for follow-up. Both responses are valid per `references/autonomy.md`.
+4. **Orchestrators apply their own judgment to the offer.** When invoked from an orchestrator such as `/implement-project`, the orchestrator typically declines items it intends to implement inline and approves items it wants tracked for follow-up. Both responses are valid per `references/autonomy.md`.
 
 5. **Consider running `/refactor` first.** If the codebase has tactical clutter, `/refactor` can clean it before `/review-test` analyzes coverage — the coverage analyst is more useful when it isn't navigating dead code and DRY violations.
 

@@ -4,7 +4,7 @@
 
 The `/lead-bug-hunt` skill drives a codebase toward "no bugs above a stated severity floor" without operator involvement between startup and termination. The operator states **scope, severity floor, and constraints** at startup; the skill then loops `/bug-hunt` → triage → `/implement-batch` until two consecutive hunt passes produce no findings above the floor, or until a hard cap or andon cord halts the run.
 
-This skill is a narrower sibling of `/lead-project`. `/lead-project` takes open-ended commander's intent and decides which skills to invoke from a broad repertoire. `/lead-bug-hunt` has a fixed loop shape (hunt → fix → re-hunt) and a bounded sub-skill repertoire. It exists because "iterate until bugs converge" is a recurring workflow worth canonizing.
+This skill is a narrower sibling of `/implement-project`. `/implement-project` takes broad commander's intent and decides by judgment which skills to invoke from a broad repertoire. `/lead-bug-hunt` has a fixed loop shape (hunt → fix → re-hunt) and a bounded sub-skill repertoire. It exists because "iterate until bugs converge" is a recurring workflow worth canonizing.
 
 This skill is a member of the **orchestrator family** and implements the autonomy discipline documented in [`references/autonomy.md`](../../../references/autonomy.md). The shared discipline governs the five levers (altitude rule, pre-loaded options, pre-rebutted recommendation, commander's intent, risk budgets), the cascade rule, the no-unilateral-breaking-changes guardrail, and the shared handoff template.
 
@@ -27,7 +27,7 @@ This skill is a member of the **orchestrator family** and implements the autonom
 **Don't use `/lead-bug-hunt` for:**
 - A single bug with a known cause (use `/bug-fix`)
 - A one-shot proactive scan (use `/bug-hunt` directly)
-- Mixed work that includes feature implementation, review, or refactor (use `/lead-project`)
+- Mixed work that includes feature implementation, review, or refactor (use `/implement-project`)
 - Exploratory diagnosis where the bug isn't yet characterized (use `/think-diagnose` or `/bug-fix`)
 
 **Rule of thumb:** if you find yourself repeatedly running `/bug-hunt`, accepting the proposed tickets, running `/implement-batch`, and running `/bug-hunt` again, `/lead-bug-hunt` is the right abstraction.
@@ -45,18 +45,16 @@ This skill is a member of the **orchestrator family** and implements the autonom
 
 `/lead-bug-hunt` invokes `/bug-hunt` as its workhorse. `/bug-hunt` remains advisory in its native contract — use it directly when you want a single pass with operator approval at the end.
 
-## Relationship to `/lead-project`
+## Relationship to `/implement-project`
 
-| Dimension                | `/lead-project`                                       | `/lead-bug-hunt`                                                 |
+| Dimension                | `/implement-project`                                  | `/lead-bug-hunt`                                                 |
 |--------------------------|-------------------------------------------------------|------------------------------------------------------------------|
-| Input                    | Five-field commander's intent (broad)                 | Three-field commander's intent (narrow, bug-specific)            |
-| Loop shape               | OODA, open-ended action space                         | Fixed: hunt → triage → batch-fix → verify → repeat               |
-| Sub-skill repertoire     | All implement/refactor/review/think/bug skills        | `/bug-hunt`, `/implement-batch`, `/implement`, `/bug-fix`, `/think-diagnose`, `/review-test` (termination, scoped to new tests) |
-| Termination              | Mechanical end-state conditions + quiescence          | 2 consecutive empty passes above severity floor                  |
-| Hard cap                 | 50 cycles                                             | 10 hunt-cycles                                                   |
+| Input                    | Six-field commander's intent (broad)                  | Three-field commander's intent (narrow, bug-specific)            |
+| Loop shape               | Judgment-driven, open action space                    | Fixed: hunt → triage → batch-fix → verify → repeat               |
+| Sub-skill repertoire     | Implement/refactor/review/think/bug skills            | `/bug-hunt`, `/implement-batch`, `/implement`, `/bug-fix`, `/think-diagnose`, `/review-test` (termination, scoped to new tests) |
+| Termination              | Key tasks done, confirmed by a fixed floor            | 2 consecutive empty passes above severity floor                  |
+| Hard cap                 | 50 actions                                            | 10 hunt-cycles                                                   |
 | Use when                 | Bug-hunting is one of several concerns                | Bug elimination is the sole objective                            |
-
-`/lead-project` may invoke `/lead-bug-hunt` as a sub-skill when its Decide phase identifies a bug-sweep as the next move.
 
 ## Workflow Diagram
 
@@ -278,7 +276,7 @@ The state doc is the durable orientation. Update at every phase transition. Losi
 
 ## Hard Caps
 
-- **10 hunt-cycles** — heavier than `/lead-project`'s OODA cycles, so the cap is lower. Hitting it pulls the andon cord.
+- **10 hunt-cycles** — heavier than `/implement-project`'s actions, so the cap is lower. Hitting it pulls the andon cord.
 - **3 consecutive failed batches** — if `/implement-batch` fails on the same finding 3 times with different approaches, pull the cord.
 
 No file-touch or dependency-change budgets — explicitly excluded per the autonomy discipline.
@@ -297,10 +295,10 @@ The bounded repertoire:
 | `/review-test`     | Termination 2a. Always runs, scoped to test files modified on this branch. Ticket proposals auto-approved; above-floor fixes routed through `/implement-batch`. |
 
 Skills explicitly **not** in the repertoire (out-of-axis):
-- Other `/review-*` skills (`/review-arch`, `/review-security`, etc.) — broader review work is `/lead-project` territory.
+- Other `/review-*` skills (`/review-arch`, `/review-security`, etc.) — broader review work is `/implement-project` territory.
 - `/scope-project`, `/test-mutation`, `/tidy-docs`, `/tidy-git` — adjacent concerns.
 
-If you need these alongside bug elimination, use `/lead-project`.
+If you need these alongside bug elimination, use `/implement-project`.
 
 ## Examples
 
@@ -461,9 +459,9 @@ No commits to pkg/legacy. Go 1.22 compatibility preserved.
 
 **`/review-test`:** the test-quality gate at termination, scoped to the run's new reproducing tests. Same auto-approval contract shift as `/bug-hunt`. Use `/review-test` directly when you want a broader test-suite review unrelated to this skill.
 
-**`/lead-project`:** the broader sibling. Use `/lead-project` when bug-hunting is one of several concerns; use `/lead-bug-hunt` when bug elimination is the sole objective. `/lead-project` may invoke `/lead-bug-hunt` from its Decide phase.
+**`/implement-project`:** the broader sibling. Use `/implement-project` when bug-hunting is one of several concerns; use `/lead-bug-hunt` when bug elimination is the sole objective.
 
-**`/refactor`:** not invoked. It is a standalone redesign skill the operator runs directly — it works on its own isolated branch and has an operator checkpoint, so orchestrators do not call it.
+**`/refactor`:** not invoked. It is a standalone redesign skill the operator normally runs directly — it works on its own isolated branch and has an operator checkpoint. `/implement-project` is its only orchestrator caller, answering that checkpoint from commander's intent.
 
 ## Agent Coordination
 

@@ -1,20 +1,20 @@
-# Lead-* Startup Protocol
+# Orchestrator Startup Protocol
 
-This document codifies the startup procedure shared by the `/lead-*` orchestrator-family skills (`/lead-project`, `/lead-bug-hunt`, `/lead-review`). Each `/lead-*` SKILL.md cites this document and supplies only its skill-specific values: branch-name pattern, state-doc filename, the semantics of "Resume as-is," and any bespoke push-back examples during intent elicitation.
+This document codifies the startup procedure shared by the long-running orchestrator-family skills (`/implement-project`, `/lead-bug-hunt`, `/lead-review`). Each of their SKILL.md files cites this document and supplies only its skill-specific values: branch-name pattern, state-doc filename, the semantics of "Resume as-is," and any bespoke push-back examples during intent elicitation.
 
-The protocol is fixed across the family. The operator experience depends on uniformity — one `/lead-*` skill should feel like the others at startup.
+The protocol is fixed across the family. The operator experience depends on uniformity — one orchestrator should feel like the others at startup.
 
 ## 0a. Branch and working-tree check
 
 - Identify the main branch (`main` or `master`).
-- If currently on `main`/`master`: create the skill's working branch from current HEAD and check it out. Confirm the branch name with the operator before creating. The branch-name pattern is skill-specific (e.g., `lead-bug-hunt/<date>`, `lead-review/<date>`, `lead-project/<descriptive-name>`).
+- If currently on `main`/`master`: create the skill's working branch from current HEAD and check it out. Confirm the branch name with the operator before creating. The branch-name pattern is skill-specific (e.g., `feat/project-<descriptive-name>`, `lead-bug-hunt/<date>`, `lead-review/<date>`).
 - Check working tree status:
   - Clean → proceed.
   - Dirty → **ask the operator** how to handle uncommitted work: commit as-is, stash, discard, or abort. Do not guess.
 
 ## 0b. Resume existing run or start fresh
 
-Check for the skill's state document at the repo root (e.g., `LEAD_BUG_HUNT_STATE.md`, `LEAD_REFACTOR_STATE.md`):
+Check for the skill's state document at the repo root (e.g., `PROJECT_STATE.md`, `LEAD_BUG_HUNT_STATE.md`):
 
 - **If absent:** proceed to intent elicitation (0c).
 - **If present:** read it. Verify the recorded branch still exists, is currently checked out, and the current HEAD matches `Last cycle HEAD` from the state doc.

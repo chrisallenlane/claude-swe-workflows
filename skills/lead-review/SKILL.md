@@ -386,12 +386,8 @@ Natural composition: `/lead-review` (tickets ON) produces a comprehensive backlo
 
 Sibling orchestrator. `/lead-bug-hunt` is bug-elimination-specific; `/lead-review` is multi-dimensional review. Both follow the orchestrator-family contract (auto-approval of sub-skill tickets, severity floor, andon protocol).
 
-**Relationship to `/lead-project`:**
-
-`/lead-project` is the broadest orchestrator — it takes open-ended commander's intent and decides which skills to invoke. `/lead-project` may invoke `/lead-review` near the end of a run as a comprehensive validation pass, or invoke individual `/review-*` skills earlier when specific concerns arise.
-
 **Out-of-axis skills:**
 
 `/tidy-docs` is not in this skill's repertoire. It is a `/tidy-*` (mechanical mutations), not a `/review-*` (advisory). Including it would muddy `/lead-review`'s contract — operators in tickets-OFF mode expect "evaluation only, no tree mutations," and `/tidy-docs` would commit doc changes. Run `/tidy-docs` separately after `/lead-review` if you want doc tidying.
 
-Other out-of-axis skills: `/scope-*`, `/test-mutation`, `/tidy-git`, `/bug-*`, `/refactor`, `/implement-*`. If your goal mixes review with implementation or refactoring, use `/lead-project` instead, or chain `/lead-review` with `/implement-project`.
+Other out-of-axis skills: `/scope-*`, `/test-mutation`, `/tidy-git`, `/bug-*`, `/refactor`, `/implement-*`. If your goal mixes review with implementation or refactoring, use `/implement-project` — it invokes individual `/review-*` skills by judgment — or chain `/lead-review` (tickets ON) → `/implement-project`.

@@ -8,7 +8,7 @@ model: opus
 
 Drives a codebase toward "no bugs above severity floor" without operator involvement between startup and termination. The operator states scope, severity floor, and constraints at startup; the skill then loops `/bug-hunt` → triage → `/implement-batch` until two consecutive hunt passes produce no findings above the floor, or until a hard cap or andon cord halts the run.
 
-This skill is a narrower sibling of `/lead-project`. `/lead-project` takes open-ended commander's intent and decides which skills to invoke from a broad repertoire. `/lead-bug-hunt` has a fixed loop shape (hunt → fix → re-hunt) and a bounded sub-skill repertoire. It exists because "iterate until bugs converge" is a recurring workflow worth canonizing.
+This skill is a narrower sibling of `/implement-project`. `/implement-project` takes broad commander's intent and decides by judgment which skills to invoke from a broad repertoire. `/lead-bug-hunt` has a fixed loop shape (hunt → fix → re-hunt) and a bounded sub-skill repertoire. It exists because "iterate until bugs converge" is a recurring workflow worth canonizing.
 
 ## Philosophy
 
@@ -40,7 +40,7 @@ No escape hatches: the skill cannot rationalize bugs away to make the loop conve
 
 The skill may: invoke `/bug-hunt`, `/implement-batch`, `/implement`, `/bug-fix`, `/think-diagnose`, `/review-test` (at termination, scoped to the run's new tests); create tickets via auto-approved proposals; commit fix work via sub-skills; create and modify the working branch.
 
-The skill may NOT without explicit authorization: push or merge to main/master, force-push, propose breaking changes (see `references/autonomy.md` § "No unilateral breaking changes"), invoke `/review-*` skills other than the scoped `/review-test` at termination (out-of-axis — use `/lead-project` if you want broader review-driven work), install dependencies, run irreversible destructive operations.
+The skill may NOT without explicit authorization: push or merge to main/master, force-push, propose breaking changes (see `references/autonomy.md` § "No unilateral breaking changes"), invoke `/review-*` skills other than the scoped `/review-test` at termination (out-of-axis — use `/implement-project` if you want broader review-driven work), install dependencies, run irreversible destructive operations.
 
 ## Workflow Overview
 
@@ -418,7 +418,7 @@ Ensure `LEAD_BUG_HUNT_STATE.md` is ignored. Commit the `.gitignore` change on th
 
 ## Hard Caps
 
-- **10 hunt-cycles** — each cycle is one full `/bug-hunt` + one batch-implementation. Heavier than `/lead-project`'s OODA cycles, so the cap is lower. Hitting it pulls the andon cord.
+- **10 hunt-cycles** — each cycle is one full `/bug-hunt` + one batch-implementation. Heavier than `/implement-project`'s actions, so the cap is lower. Hitting it pulls the andon cord.
 - **3 consecutive failed batches** — if `/implement-batch` (or `/implement` / `/bug-fix`) fails on the same finding 3 times across different attempts, pull the andon cord.
 - **No file-touch or dependency-change budgets** — explicitly excluded per `references/autonomy.md` § "Risk budgets."
 
@@ -428,13 +428,13 @@ Ensure `LEAD_BUG_HUNT_STATE.md` is ignored. Commit the `.gitignore` change on th
 
 `/lead-bug-hunt` invokes `/bug-hunt` as its workhorse. `/bug-hunt` remains advisory in its native contract — it produces ticket proposals and commits reproducing tests, but does not implement fixes. `/lead-bug-hunt` auto-approves the ticket proposals (per the autonomy contract) and chains `/implement-batch` to do the fix work. Run `/bug-hunt` directly when you want a single advisory pass with operator-approved tickets; run `/lead-bug-hunt` when you want the full hunt → fix → re-hunt loop unattended.
 
-**Relationship to `/lead-project`:**
+**Relationship to `/implement-project`:**
 
-`/lead-project` is the open-ended orchestrator — it takes broad commander's intent and decides which skills to invoke. `/lead-bug-hunt` is a fixed-shape loop for one specific outcome. Use `/lead-project` when bug-hunting is one of several concerns; use `/lead-bug-hunt` when bug elimination is the sole objective. `/lead-project` may invoke `/lead-bug-hunt` as a sub-skill when its Decide phase identifies a bug-sweep as the next move.
+`/implement-project` is the broad orchestrator — it takes commander's intent and decides by judgment which skills to invoke. `/lead-bug-hunt` is a fixed-shape loop for one specific outcome. Use `/implement-project` when bug-hunting is one of several concerns; use `/lead-bug-hunt` when bug elimination is the sole objective.
 
 **Relationship to `/refactor`:**
 
-It is not in this skill's repertoire; bug fixes ship as-is. `/refactor` is a standalone redesign skill that the operator runs directly — it works on its own isolated branch and has an operator checkpoint, so orchestrators do not call it. If you want cleanup after bug elimination, run `/refactor` separately after `/lead-bug-hunt` completes.
+It is not in this skill's repertoire; bug fixes ship as-is. `/refactor` is a standalone redesign skill that the operator normally runs directly — it works on its own isolated branch and has an operator checkpoint, which only `/implement-project` answers on the operator's behalf. If you want cleanup after bug elimination, run `/refactor` separately after `/lead-bug-hunt` completes.
 
 **Relationship to `/review-test`:**
 
@@ -442,4 +442,4 @@ Invoked once at termination, scoped to the test files modified during this run. 
 
 **Out-of-axis skills:**
 
-Other `/review-*` skills, `/scope-project`, `/test-mutation`, `/tidy-docs`, `/tidy-git` are not in this skill's repertoire. If your goal is "review → refactor → test → ship," use `/lead-project` instead. `/lead-bug-hunt` is deliberately narrower.
+Other `/review-*` skills, `/scope-project`, `/test-mutation`, `/tidy-docs`, `/tidy-git` are not in this skill's repertoire. If your goal is "review → refactor → test → ship," use `/implement-project` instead. `/lead-bug-hunt` is deliberately narrower.

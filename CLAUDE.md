@@ -57,13 +57,10 @@ claude --plugin-dir .
 The skills form a layered system. Higher-level workflows orchestrate lower-level ones:
 
 ```
-/lead-project
-└── OODA loop invoking any skill below, until commander's intent is met
-
 /implement-project
 ├── /implement-batch (per batch)
 │   └── /implement (per ticket)
-└── quality pipeline: /refactor, /review-arch, /review-test, /tidy-docs, /review-release
+└── judgment-chosen repertoire: /refactor, /review-*, /bug-hunt, /scope, … → /review-release last
 
 /lead-bug-hunt
 └── loop: /bug-hunt → /implement-batch (until convergence)
@@ -75,7 +72,7 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
   (sub-skill ticket proposals auto-approved or auto-declined per startup choice)
 ```
 
-Planning feeds implementation: `/scope-project` → `/implement-project`, or `/scope` → `/implement`. `/lead-project` sits one level higher — given a commander's intent, it decides which of the below skills to invoke and when.
+Planning feeds implementation: `/scope-project` → `/implement-project`, or `/scope` → `/implement`. `/implement-project` is the top-level autonomous lead — given commander's intent (usually a batch of tickets, sometimes an open-ended goal), it decides which of the below skills to invoke and when, over a small fixed floor (tests green at every merge, smoke test, `/review-release` last).
 
 Supporting workflows available at any level:
 

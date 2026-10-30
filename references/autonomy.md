@@ -1,6 +1,6 @@
 # Autonomy — Design Discipline for Orchestrator-Family Skills
 
-This document states the autonomy discipline that governs the orchestrator-family skills in this plugin: `/lead-project`, `/lead-bug-hunt`, `/lead-review`, `/implement-project`, `/implement-batch`. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
+This document states the autonomy discipline that governs the orchestrator-family skills in this plugin: `/implement-project`, `/lead-bug-hunt`, `/lead-review`, `/implement-batch`. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
 
 It is opinionated, plugin-wide for the orchestrator family, and cited from each applicable skill. New escalation points or handoff formats invented by a single skill should be reconciled against this document; the goal is a coherent operator experience across the family.
 
@@ -10,7 +10,7 @@ It is opinionated, plugin-wide for the orchestrator family, and cited from each 
 
 The failure mode this discipline counters: the operator runs many parallel sessions, leaves an autonomous skill running, and returns hours later to an interruption — a granular question, a low-altitude judgment call, an open-ended "what should I do?" The operator lacks the context to answer well. Either the operator reloads context for every interruption (defeating autonomy) or rubber-stamps Claude's recommendation (making the escalation ceremonial). Neither outcome is what the discipline of the andon cord is supposed to produce.
 
-The lineage is mixed: the **andon cord** itself comes from the Toyota production system, where any worker on the line could pull the cord to stop production when something was wrong. **Commander's intent** comes from military doctrine — mission command, where subordinates are given the *why* and are trusted to execute the *how* without micromanagement. **The OODA loop** (already used in `/lead-project`) comes from John Boyd. **Reversibility and blast radius** are widely used in operations and incident response. This discipline composes them into a coherent stance: autonomy is the default, the andon cord is the exception, and the exception is structured so it earns its keep.
+The lineage is mixed: the **andon cord** itself comes from the Toyota production system, where any worker on the line could pull the cord to stop production when something was wrong. **Commander's intent** comes from military doctrine — mission command, where subordinates are given the *why* and are trusted to execute the *how* without micromanagement. **The OODA loop** (behind `/implement-project`'s decide–act–record work loop) comes from John Boyd. **Reversibility and blast radius** are widely used in operations and incident response. This discipline composes them into a coherent stance: autonomy is the default, the andon cord is the exception, and the exception is structured so it earns its keep.
 
 ## The five levers
 
@@ -81,7 +81,7 @@ The principle: anything not captured in commander's intent becomes implicit, and
 
 Two budget categories are blessed plugin-wide:
 
-- **Iteration cap** — maximum cycles, loop iterations, or batches the skill runs before forcing a stop. Examples: `/lead-project` caps at 50 OODA cycles; `/implement-batch` is bounded by its ticket set; per-batch retry attempts bounded.
+- **Iteration cap** — maximum cycles, loop iterations, or batches the skill runs before forcing a stop. Examples: `/implement-project` caps at 50 actions; `/implement-batch` is bounded by its ticket set; per-batch retry attempts bounded.
 - **Retry cap** — maximum consecutive failures of the same kind before escalating. Examples: `/implement` retries acceptance verification 3 times; `/refactor` and `/review-arch` abort a batch after 3 QA failures.
 
 Two budget categories are explicitly **not** part of the discipline:
@@ -99,8 +99,7 @@ When an orchestrator invokes a sub-skill (e.g., `/implement-batch` invokes `/imp
 
 Today `/implement-batch` already intercepts `/implement` escalations — when `/implement`'s acceptance verification fails 3 times, `/implement-batch` is supposed to pull its own cord rather than allow `/implement` to escalate directly. This pattern generalizes:
 
-- `/implement-project` intercepts `/implement-batch` escalations and decides whether to pull its own cord.
-- `/lead-project` intercepts `/implement-project` and any other sub-skill escalations during its OODA loop.
+- `/implement-project` intercepts `/implement-batch` and any other sub-skill escalations during its work loop, and decides whether to pull its own cord.
 
 The deepest skill never goes around its caller. The caller has more context about the project than the worker does. Worker escalations are *cause* (something went wrong); caller escalations are *effect* (we couldn't fix it from this altitude).
 
@@ -118,10 +117,9 @@ How each orchestrator-family skill handles the contract shift:
 
 | Skill                | Behavior                                                                                                                                                                |
 |----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/lead-project`      | Auto-approves with Decide-phase judgment. Severity-threshold handling lives in the loop's Decide phase, not at the approval moment.                                     |
 | `/lead-bug-hunt`     | Auto-approves all `/bug-hunt` and `/review-test` proposals. The commander's-intent severity floor is applied at the triage step, not at the approval moment.            |
 | `/lead-review`       | Mode-dependent. Tickets ON → auto-approve at/above the severity floor, decline below. Tickets OFF → auto-decline uniformly. Mode is fixed at startup.                   |
-| `/implement-project` | Auto-approves proposals from quality-pipeline review sub-skills; severity handling is governed by the project acceptance bar rather than a separate floor.              |
+| `/implement-project` | Approves, edits, or declines with work-loop judgment; prefers cutting a ticket when in doubt. Severity handling lives in the loop's decisions, not at the approval moment. |
 
 Sub-skills surface contested findings and breaking-change requirements as andon-cord triggers rather than auto-approval candidates. The contract shift covers ordinary approval prompts; substantive disagreement still routes through the operator.
 
@@ -151,29 +149,20 @@ This rule does not apply when the operator has authorized the break — in comma
 
 The schemas below define what each skill elicits upfront. A skill may extend its schema with additional fields, but should not reduce the listed fields without revising this document.
 
-### `/lead-project` — canonical schema
+### `/implement-project` — canonical schema
 
-Five fields, all required:
+Six fields:
 
-- **Purpose** — one or two sentences stating why this iteration exists. The underlying motivation, not the tactical outcome.
-- **Key tasks** — non-negotiable outcomes that must be true at the end. Written as state, not activity. Listable (2–10 items).
-- **End state** — concrete, observable conditions defining completion. Classified as *mechanical* (shell-runnable check) or *subjective* (requires human judgment).
-- **Constraints** — hard limits the skill must not violate during the loop.
+- **Purpose** — one or two sentences stating why this iteration exists. The underlying motivation, not the tactical outcome. In a ticket-driven run, derived from the tickets and confirmed.
+- **Key tasks** — non-negotiable outcomes that must be true at the end. Written as state, not activity. Listable (2–10 items). In a ticket-driven run, the tickets themselves; in an open-ended run, elicited, and the skill scopes tickets for them.
+- **End state** — concrete, observable conditions defining completion. Classified as *mechanical* (shell-runnable check) or *subjective* (requires human judgment). Ticket-driven default: every ticket's acceptance criteria met; tests, linters, and smoke test pass.
+- **Constraints** — hard limits the skill must not violate during the run.
 - **Non-goals** — explicit out-of-scope items.
+- **Stakes** — the answers to `/refactor`'s two stakes questions (*what happens if this breaks?* and *who maintains it, for how long?*), recorded verbatim. Always asked, no default: when the skill runs `/refactor`, it answers that skill's requirements menu from this field, the constraints, and the tickets, and the stakes are the one part of the menu only the operator can supply.
+
+In a ticket-driven run, the skill pre-fills what the tickets imply and asks only for what they cannot supply; in an open-ended run, it walks the fields one at a time.
 
 This schema is the canonical implementation referenced from the rest of this document. Other schemas are lighter variants that drop fields the skill does not need (because the work is more bounded).
-
-### `/implement-project`
-
-Five fields:
-
-- **Tickets** — already gathered during step 1 (batched, fetched from tracker).
-- **Acceptance bar** — what defines "ready to merge for this project." Defaults to "all tickets implemented, full pipeline passes." Operator may extend (e.g., "and CHANGELOG mentions every user-visible change").
-- **Constraints** — cross-cutting constraints not encoded in individual tickets (e.g., "must remain compatible with library version X").
-- **Non-goals** — explicit out-of-scope items.
-- **Stakes** — the answers to `/refactor`'s two stakes questions (*what happens if this breaks?* and *who maintains it, for how long?*), recorded verbatim. No default. The quality pipeline's `/refactor` pass answers its requirements menu from this field, the constraints, and the tickets, so the stakes are the one part of that menu only the operator can supply.
-
-Purpose and end state are implicit: purpose is "ship this project's tickets"; end state is the acceptance bar plus the quality pipeline.
 
 ### `/lead-review`
 
@@ -200,7 +189,7 @@ Purpose, key tasks, end state, and non-goals are implicit: purpose is "eliminate
 
 ### `/implement-batch`
 
-**No separate elicitation.** `/implement-batch` is a for-loop, not an orchestrator. Tickets are the intent. Constraints inherit from the caller if the skill was invoked by `/implement-project` or `/lead-project`. When invoked directly by the operator, additional constraints can be expressed in the initial invocation or by editing the tickets themselves; the skill does not elicit them separately.
+**No separate elicitation.** `/implement-batch` is a for-loop, not an orchestrator. Tickets are the intent. Constraints inherit from the caller if the skill was invoked by `/implement-project`. When invoked directly by the operator, additional constraints can be expressed in the initial invocation or by editing the tickets themselves; the skill does not elicit them separately.
 
 This is a deliberate exception to the schema list. Adding a schema here would be ceremony without substance — the tickets carry the work definition, and cross-ticket constraints are rare enough that prompting on every invocation would be noise.
 
@@ -264,18 +253,18 @@ that, if true, would change the recommendation.]
  is resolved. Reference any state docs.]
 ```
 
-Skills may add fields below "Current state" that are specific to their workflow (e.g., `/lead-project` includes cycle-log pointer; `/implement-project` includes batch progress). They should not add fields *between* "Pre-loaded options" and "Recommendation" — that ordering is load-bearing.
+Skills may add fields below "Current state" that are specific to their workflow (e.g., `/implement-project` includes what is merged, what is in flight, and which key tasks remain). They should not add fields *between* "Pre-loaded options" and "Recommendation" — that ordering is load-bearing.
 
 ## Per-skill handoff extensions
 
 Each orchestrator-family skill extends the shared template in two predictable ways:
 
-1. **Title** — `## Andon Cord — /<skill> — <phase identifier>` where the phase identifier varies per skill (cycle number for `/lead-project` and `/lead-bug-hunt`; phase name for `/lead-review`; batch identifier for `/implement-batch` and `/implement-project`). The phase identifier is load-bearing — the same skill may pull the cord at different points and the operator needs to know which one.
+1. **Title** — `## Andon Cord — /<skill> — <phase identifier>` where the phase identifier varies per skill (cycle number for `/lead-bug-hunt`; phase name for `/lead-review`; batch identifier for `/implement-batch`; current action for `/implement-project`). The phase identifier is load-bearing — the same skill may pull the cord at different points and the operator needs to know which one.
 2. **Current-state additions** — skill-specific fields appended after the shared baseline (typically convergence counters, findings-ledger summaries, a state-doc pointer). Skills should not add fields *between* "Pre-loaded options" and "Recommendation" — that ordering is load-bearing.
 
 After pulling the cord, the skill stops. It does not attempt additional cycles or phases. It waits for operator input.
 
-The opening framing in each `/lead-*` skill's "Andon Cord Protocol" section is uniform: *the andon cord is the only planned escalation path; pull sparingly but decisively; use the shared handoff template, with the skill-specific extensions below.* Skills should not re-litigate the autonomy discipline at this point — it has already been established by the citation back to this document at the top of the skill.
+The opening framing in each orchestrator-family skill's andon-cord section is uniform: *the andon cord is the only planned escalation path; pull sparingly but decisively; use the shared handoff template, with the skill-specific extensions below.* Skills should not re-litigate the autonomy discipline at this point — it has already been established by the citation back to this document at the top of the skill.
 
 ## What to log instead of escalate
 
@@ -325,7 +314,7 @@ The intellectual lineage of this discipline, in rough order of how directly the 
 
 - **Toyota Production System** — the andon cord. Any worker can stop the line when something is wrong. Stopping is virtuous because it surfaces problems before they propagate.
 - **Mission command (military doctrine)** — commander's intent. Subordinates are given the *why* and are trusted to execute the *how*. Variants exist across NATO doctrine, the U.S. Marine Corps' MCDP 6, and the German *Auftragstaktik* tradition that precedes both.
-- **John Boyd — OODA loop** (1976+). Observe, Orient, Decide, Act. The decision-cycle framework that anchors `/lead-project`. Useful here as the mental model for what happens *between* andon-cord pulls.
+- **John Boyd — OODA loop** (1976+). Observe, Orient, Decide, Act. The decision-cycle framework behind `/implement-project`'s work loop. Useful here as the mental model for what happens *between* andon-cord pulls.
 - **Site Reliability Engineering / incident response practice** — blast radius, reversibility, "do-no-harm" defaults. The notion that some actions are cheap to take back and others aren't, and that the difference should drive how cautiously the skill behaves.
 - **Rationalist tradition (steelmanning)** — feeds the pre-rebutted-recommendation lever. The recommendation should be tested against its strongest critique before it reaches the operator.
 

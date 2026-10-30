@@ -182,7 +182,7 @@ Record each successful deletion (branch name + SHA) for the summary.
 - Local-only tags: J
   pre-rebase-backup-2026-05-11
 - Untracked files: I (sample below; see `git status` for full list)
-  /tmp/scratch.txt, PROJECT_PROGRESS.md, debug.log
+  /tmp/scratch.txt, PROJECT_STATE.md, debug.log
 ```
 
 If any of the auto-operations failed (e.g., `git remote prune` errored because there's no remote configured), report the failure inline and continue with the rest of the workflow.
@@ -232,7 +232,7 @@ Inventory:
 - Branches with no upstream: 1 (feat/wip-thing)
 - Branches ahead of upstream: 0
 - Local-only tags: 1 (pre-rebase-backup-2026-05-11)
-- Untracked files: 7 (incl. /tmp/scratch.txt, PROJECT_PROGRESS.md)
+- Untracked files: 7 (incl. /tmp/scratch.txt, PROJECT_STATE.md)
 
 ## Branch deletion preview
 
@@ -265,6 +265,6 @@ Deleting feat/old-experiment... done (sha 1a2b3c4).
 - Local-only branches with no upstream: 1 (feat/wip-thing)
 - Local-only tags: 1 (pre-rebase-backup-2026-05-11)
 - Untracked files: 7
-  /tmp/scratch.txt, PROJECT_PROGRESS.md, debug.log, ... (4 more)
+  /tmp/scratch.txt, PROJECT_STATE.md, debug.log, ... (4 more)
   Run `git status` for the full list.
 ```
