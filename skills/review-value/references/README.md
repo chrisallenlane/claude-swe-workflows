@@ -32,11 +32,11 @@ It is **advisory only**, and more strongly so than the other `/review-*` skills:
 
 Requirements are discovered, not assumed, because not every project has a design document — and documents drift. Each requirement is tagged with where it was found, and the tier determines what an approved trade must change:
 
-| Tier       | Found in                                                    | Approving a trade means…                     |
-| ---------- | ----------------------------------------------------------- | -------------------------------------------- |
-| Documented | Design docs, ADRs, README promises, user docs, CLI help     | Amending the document                        |
-| Pinned     | Test-suite assertions (specs are executable requirements)   | Amending the spec                            |
-| Inferred   | Observed behavior nothing records; presumed intentional     | Confirming intent (and recording it, ADR)    |
+| Tier       | Found in                                                  | Approving a trade means…                  |
+| ---------- | --------------------------------------------------------- | ----------------------------------------- |
+| Documented | Design docs, ADRs, README promises, user docs, CLI help   | Amending the document                     |
+| Pinned     | Test-suite assertions (specs are executable requirements) | Amending the spec                         |
+| Inferred   | Observed behavior nothing records; presumed intentional   | Confirming intent (and recording it, ADR) |
 
 Inferred requirements get Chesterton's-fence respect but are the cheapest trades — the operator may simply confirm the behavior was never wanted. Where a documented requirement and observed behavior disagree, the drift itself is reported: one of the two is wrong, and either may be the keeper.
 
@@ -44,7 +44,7 @@ Inferred requirements get Chesterton's-fence respect but are the cheapest trades
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ /review-value Workflow (advisory value engineering)      │
+│ /review-value Workflow (advisory value engineering)             │
 └─────────────────────────────────────────────────────────────────┘
 
  ┌──────────────────────────────────────────────┐

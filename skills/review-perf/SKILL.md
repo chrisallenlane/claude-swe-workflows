@@ -38,7 +38,7 @@ Scan the project for source files to determine what performance domains apply.
 **Web indicators** (any of these → dispatch web reviewer):
 
 | Indicator                                                               | Signal   |
-|-------------------------------------------------------------------------|----------|
+| ----------------------------------------------------------------------- | -------- |
 | `.html`, `.htm`, `.jsx`, `.tsx`, `.vue`, `.svelte`                      | Strong   |
 | `package.json` with web framework (react, vue, next, nuxt, astro, etc.) | Strong   |
 | `webpack.config.*`, `vite.config.*`, `next.config.*`                    | Strong   |
@@ -49,7 +49,7 @@ Scan the project for source files to determine what performance domains apply.
 **Non-web indicators** (any of these → dispatch compute reviewer):
 
 | Indicator                                                                | Signal   |
-|--------------------------------------------------------------------------|----------|
+| ------------------------------------------------------------------------ | -------- |
 | `.go`, `.rs`, `.c`, `.cpp`, `.java`, `.py`, `.rb`, `.zig` source files   | Strong   |
 | Existing benchmarks (`*_bench*`, `Benchmark` in test files, `criterion`) | Strong   |
 | Database query code (SQL files, ORM usage)                               | Moderate |

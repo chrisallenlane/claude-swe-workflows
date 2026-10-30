@@ -15,13 +15,13 @@ Four ideas shape it:
 
 Asked once, up front, then read back for confirmation:
 
-| Field          | Question                                                                 | Default if unanswered                                                     |
-|----------------|--------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| Field          | Question                                                                  | Default if unanswered                                                     |
+|----------------|---------------------------------------------------------------------------|---------------------------------------------------------------------------|
 | Scope          | What should the hunt cover? Areas you're worried about? Anything to skip? | Production code; tests, dev tooling, generated and vendored code excluded |
-| Severity floor | Below what severity should findings be reported but not acted on?        | High (Critical and High block convergence)                                |
-| Constraints    | Anything that must not change — public APIs, compatibility, files?       | No breaking changes; nothing else                                         |
-| Tickets        | May I create tickets for confirmed bugs without asking again?            | No — a ticket set is proposed at the end for approval                     |
-| Fix            | May I fix confirmed bugs (on a branch, via `/implement`) and re-hunt?    | No                                                                        |
+| Severity floor | Below what severity should findings be reported but not acted on?         | High (Critical and High block convergence)                                |
+| Constraints    | Anything that must not change — public APIs, compatibility, files?        | No breaking changes; nothing else                                         |
+| Tickets        | May I create tickets for confirmed bugs without asking again?             | No — a ticket set is proposed at the end for approval                     |
+| Fix            | May I fix confirmed bugs (on a branch, via `/implement`) and re-hunt?     | No                                                                        |
 
 The defaults make `/bug-hunt` an advisory audit: it changes nothing outside its report unless you say it may. Granting ticket authority up front *is* your approval to create them.
 
@@ -85,12 +85,12 @@ The defaults make `/bug-hunt` an advisory audit: it changes nothing outside its 
 
 ## What Each Authority Combination Produces
 
-| Tickets | Fix | Result                                                                                                                                      |
-|---------|-----|---------------------------------------------------------------------------------------------------------------------------------------------|
+| Tickets | Fix | Result                                                                                                                                     |
+|---------|-----|--------------------------------------------------------------------------------------------------------------------------------------------|
 | no      | no  | Advisory audit: report plus reproducing tests; a ticket structure proposed at the end, created only on approval; offer to commit the tests |
 | yes     | no  | Bugs ticketed autonomously; reproducing tests committed as expected failures referencing their tickets                                     |
 | no      | yes | Bugs fixed via `/implement` on a branch; commits and the report are the record; tickets only for deferred items, if you approve them       |
-| yes     | yes | Both: fixes for findings at or above the floor, tickets for the rest                                                                        |
+| yes     | yes | Both: fixes for findings at or above the floor, tickets for the rest                                                                       |
 
 ## Workflow Details
 
@@ -108,10 +108,10 @@ Each round has three steps.
 
 **Hunt.** A fresh `swe-bug-hunter` probes each hotspot, one at a time, each receiving the confirmed bugs and patterns found so far. A broken error-handling utility found in one module becomes a lead for every module that uses it. Hunters write tests that assert at the boundary a caller sees — return values, errors, output, persisted state — not internals, because the test becomes the fix's acceptance criterion:
 
-| Test result | Meaning                 | What happens to the test                                         |
-|-------------|-------------------------|------------------------------------------------------------------|
-| Fails       | Bug confirmed           | Kept; the finding is documented                                  |
-| Passes      | Hypothesis invalidated  | Kept only if it covers a previously untested path; else deleted |
+| Test result | Meaning                | What happens to the test                                        |
+|-------------|------------------------|-----------------------------------------------------------------|
+| Fails       | Bug confirmed          | Kept; the finding is documented                                 |
+| Passes      | Hypothesis invalidated | Kept only if it covers a previously untested path; else deleted |
 
 **Triage.** Each confirmed finding is:
 

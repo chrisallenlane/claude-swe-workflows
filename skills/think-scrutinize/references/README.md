@@ -82,7 +82,7 @@ The `/think-scrutinize` skill stress-tests an idea or plan before you commit to 
  ┌──────────────────────────────────────────────┐
  │  7. COUNTER-REBUTTAL (parallel)              │
  │  ────────────────────────────────────────    │
- │  Skeptics respond: concede/hold/refine   │
+ │  Skeptics respond: concede/hold/refine       │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -97,26 +97,26 @@ The `/think-scrutinize` skill stress-tests an idea or plan before you commit to 
 
 ## Roles
 
-| Role          | What they do                                                             |
-|---------------|--------------------------------------------------------------------------|
-| Judge (you)   | Capture idea, choose lenses, spawn agents, synthesize report             |
-| Skeptics  | Critique the idea through assigned lenses (parallel)                     |
-| Advocate      | Defends the idea in good faith — concedes real faults, refutes weak ones |
+| Role        | What they do                                                             |
+| ----------- | ------------------------------------------------------------------------ |
+| Judge (you) | Capture idea, choose lenses, spawn agents, synthesize report             |
+| Skeptics    | Critique the idea through assigned lenses (parallel)                     |
+| Advocate    | Defends the idea in good faith — concedes real faults, refutes weak ones |
 
 ## Critical Lenses
 
 The orchestrator selects lenses based on the idea's shape. Common lenses include:
 
-| Lens               | Asks                                                  |
-|--------------------|-------------------------------------------------------|
-| Technical          | Does this work as engineered?                         |
-| Economic           | Is the cost/benefit sound?                            |
-| Operational        | Can this run day-to-day?                              |
-| Adversarial-user   | How could users misuse this?                          |
-| Security/trust     | What attack surface is created?                       |
-| Regulatory/legal   | What compliance risks arise?                          |
-| Social/org         | Will people adopt this? Political risks?              |
-| Temporal           | Does this hold up over time?                          |
+| Lens             | Asks                                     |
+| ---------------- | ---------------------------------------- |
+| Technical        | Does this work as engineered?            |
+| Economic         | Is the cost/benefit sound?               |
+| Operational      | Can this run day-to-day?                 |
+| Adversarial-user | How could users misuse this?             |
+| Security/trust   | What attack surface is created?          |
+| Regulatory/legal | What compliance risks arise?             |
+| Social/org       | Will people adopt this? Political risks? |
+| Temporal         | Does this hold up over time?             |
 
 2-5 lenses is typical. You may nominate specific angles when invoking the skill.
 
@@ -209,12 +209,12 @@ before cutover.
 
 ## Relationship to Other Skills
 
-| Skill                | Relationship                                                                                   |
-|----------------------|------------------------------------------------------------------------------------------------|
-| `/think-deliberate`  | Chooses between N options; `/think-scrutinize` stress-tests 1 idea. Same adversarial pattern.  |
-| `/scope`             | If the idea should proceed, translates it into a ticket                                        |
-| `/bug-hunt`          | Points at existing code; `/think-scrutinize` points at ideas                                   |
-| `/review-security`   | Points at existing code; `/think-scrutinize` points at ideas                                   |
+| Skill               | Relationship                                                                                  |
+| ------------------- | --------------------------------------------------------------------------------------------- |
+| `/think-deliberate` | Chooses between N options; `/think-scrutinize` stress-tests 1 idea. Same adversarial pattern. |
+| `/scope`            | If the idea should proceed, translates it into a ticket                                       |
+| `/bug-hunt`         | Points at existing code; `/think-scrutinize` points at ideas                                  |
+| `/review-security`  | Points at existing code; `/think-scrutinize` points at ideas                                  |
 
 ## Philosophy
 

@@ -34,7 +34,7 @@ Advisory-only accessibility audit. Dispatches a `QA - Web A11y Reviewer` agent t
 Scan the project for web content files:
 
 | Extensions                     | Content type         |
-|--------------------------------|----------------------|
+| ------------------------------ | -------------------- |
 | `.html`, `.htm`                | HTML documents       |
 | `.jsx`, `.tsx`                 | React/JSX components |
 | `.vue`                         | Vue components       |

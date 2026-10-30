@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through specialist agents. It reproduces the bug with a failing test, performs root-cause analysis with git archaeology, implements a targeted fix, and verifies the fix through practical testing — all with the same review and documentation quality gates as `/implement`.
+The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through specialist agents. It reproduces the bug with a failing test, performs root-cause analysis with git archaeology, implements a targeted fix, and verifies the fix through practical testing — then runs it through review, correctness, and documentation gates.
 
 **Key benefits:**
 - Test-driven reproduction: a failing test defines "done"
@@ -10,7 +10,7 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
 - Git archaeology uncovers when and why the bug was introduced
 - Related failure modes are identified and tested, not just the reported bug
 - Practical verification confirms the fix actually works
-- Same review pipeline as `/implement` (security, refactoring, performance, peer review, correctness gate)
+- A full review pipeline: security, refactoring, performance, peer review, and a blocking correctness gate
 
 ## When to Use
 
@@ -194,17 +194,7 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
 
 ## How /bug-fix Differs from /implement
 
-The `/bug-fix` workflow diverges from `/implement` in steps 2-4, then rejoins for the review pipeline:
-
-| Step | `/implement`               | `/bug-fix`                                  |
-|------|----------------------------|---------------------------------------------|
-| 1    | Gather requirements        | Clarify bug symptoms                        |
-| 2    | Planning (conditional)     | **Write failing test** (SME)                |
-| 3    | Implementation             | **Diagnosis** (swe-bug-investigator)        |
-| 4    | QA acceptance gate         | **Implement fix** (guided by diagnosis)     |
-| 5    | Code review                | **QA verify-fix gate** (= `/implement` 4)   |
-| 6+   | Feedback through completion| Same as `/implement` steps 5-12, offset by  |
-|      |                            | one (correctness gate is step 10 here vs 9) |
+`/implement` builds from requirements; `/bug-fix` starts from a symptom and spends steps 2-4 on reproduction and diagnosis before any fix. Both end with the same kinds of gates: practical verification, a fresh blocking correctness review, and a documentation pass.
 
 Key differences:
 - **Test first, then fix.** `/implement` implements then tests. `/bug-fix` writes a failing test before any fix attempt.
@@ -272,7 +262,12 @@ The `qa-engineer` performs practical verification:
 If verification fails, returns to step 4 (max 3 attempts before escalating).
 
 ### 6-13. Reviews, Correctness Gate, Documentation, Completion
-Structurally identical to `/implement` steps 5-12, offset by one. See the [/implement guide](../../implement/references/README.md) for details on the shared pipeline.
+
+- **6-7. Conditional reviews and feedback.** `sec-blue-teamer` (security-sensitive changes; Critical/High findings must be addressed or explicitly waived), `swe-code-reviewer` (non-trivial changes; advisory), and `swe-perf-reviewer` (performance-critical changes; advisory). The implementing SME addresses the feedback.
+- **8. SME peer review.** A fresh instance of the same SME makes small fixes on non-trivial changes; reverted if it breaks tests.
+- **9. QA coverage and quality.** `qa-engineer` fills coverage gaps, runs linters, and confirms steps 7-8 broke nothing.
+- **10. Correctness review** (below).
+- **11-13. Documentation, final verification, completion.** `doc-maintainer` runs a targeted pass; the full suite and linters run; with your confirmation the skill commits, updates or closes the ticket, and offers a rebase.
 
 One step deserves bug-fix-specific mention — **step 10, the correctness review**. A fresh `swe-correctness-reviewer` reads the diff assuming a bug already shipped and mechanically verifies every assumption the fix makes (paths, signatures, runtime-version semantics, call sites). Its findings are blocking and resolve through a fix-and-fresh-re-review loop (max 3 rounds). Two contracts differ from the rest of the pipeline:
 

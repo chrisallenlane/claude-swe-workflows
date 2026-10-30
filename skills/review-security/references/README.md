@@ -39,9 +39,9 @@ The current design treats anchoring as a specific cognitive failure mode, with *
 ## Workflow
 
 ```
-┌──────────────────────────────────────────────────────────┐
+┌───────────────────────────────────────────────────────────┐
 │                   AUDIT WORKFLOW                          │
-├──────────────────────────────────────────────────────────┤
+├───────────────────────────────────────────────────────────┤
 │  1. Determine scope                                       │
 │  2. Independent first pass — parallel and isolated        │
 │     ├─ Blue-teamer: defense evaluation                    │
@@ -63,7 +63,7 @@ The current design treats anchoring as a specific cognitive failure mode, with *
 │     └─ If no new chains → proceed                         │
 │  6. Present consolidated findings to user                 │
 │  7. Cut tickets (proposed structure, operator-approved)   │
-└──────────────────────────────────────────────────────────┘
+└───────────────────────────────────────────────────────────┘
 ```
 
 ### 1. Determine Scope
@@ -85,12 +85,12 @@ The orchestrator pools both reports and produces a unified target list. **This s
 
 Each target is categorized as one of four types:
 
-| Category                     | Meaning                                                                            | Priority |
-|------------------------------|------------------------------------------------------------------------------------|----------|
-| **anchoring-suppressed**     | Red team flagged but blue team didn't account for. **The highest-value category** — these are the gaps anchoring would have suppressed under the old sequential design. | Highest  |
-| **convergent**               | Both teams independently flagged the same target. High confidence; investigate.    | High     |
-| **blue-flagged-unverified**  | Blue team called a gap but red team didn't reach in independent recon. Worth investigating to confirm exploitability. | Medium   |
-| **divergent**                | One team flagged, the other explicitly cleared. Noteworthy; orchestrator judges priority. | Variable |
+| Category                    | Meaning                                                                                                                                                                 | Priority |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| **anchoring-suppressed**    | Red team flagged but blue team didn't account for. **The highest-value category** — these are the gaps anchoring would have suppressed under the old sequential design. | Highest  |
+| **convergent**              | Both teams independently flagged the same target. High confidence; investigate.                                                                                         | High     |
+| **blue-flagged-unverified** | Blue team called a gap but red team didn't reach in independent recon. Worth investigating to confirm exploitability.                                                   | Medium   |
+| **divergent**               | One team flagged, the other explicitly cleared. Noteworthy; orchestrator judges priority.                                                                               | Variable |
 
 The unified target list is capped (typically at 25). The orchestrator triages by category, prioritizing anchoring-suppressed and convergent over blue-flagged-unverified and divergent. Each target carries its synthesis category as metadata, which is preserved in the final report.
 

@@ -134,24 +134,24 @@ The `/think-ach` skill operationalizes Richards Heuer's Analysis of Competing Hy
 
 ## Roles
 
-| Role                  | What they do                                                                                       |
-|-----------------------|----------------------------------------------------------------------------------------------------|
-| Judge (you)           | Capture question, validate, build matrix, run diagnosticity / leaderboard / sensitivity / falsification |
-| Hypothesizers         | Generate plausible hypotheses from an assigned angle, in isolation                                  |
-| Evidence-gatherers    | Enumerate relevant evidence in an assigned class, in isolation                                      |
+| Role               | What they do                                                                                            |
+| ------------------ | ------------------------------------------------------------------------------------------------------- |
+| Judge (you)        | Capture question, validate, build matrix, run diagnosticity / leaderboard / sensitivity / falsification |
+| Hypothesizers      | Generate plausible hypotheses from an assigned angle, in isolation                                      |
+| Evidence-gatherers | Enumerate relevant evidence in an assigned class, in isolation                                          |
 
 ## Hypothesis-Generation Angles
 
 The orchestrator selects 4-6 angles based on the question's character:
 
-| Angle         | Hypothesis shape                                                                       |
-|---------------|----------------------------------------------------------------------------------------|
-| leading       | The obvious, popular, most-favored hypothesis (plus close variants)                    |
-| alternative   | Hypotheses that contradict the leading candidate                                       |
-| adversarial   | An actor with motivation acted intentionally to produce the outcome                    |
-| null          | Nothing unusual is happening; appearances are normal                                   |
-| deceptive     | Appearances are intentionally misleading; signals have been manipulated                |
-| surprise      | An unexpected hypothesis that fits the evidence but the others would miss              |
+| Angle       | Hypothesis shape                                                          |
+| ----------- | ------------------------------------------------------------------------- |
+| leading     | The obvious, popular, most-favored hypothesis (plus close variants)       |
+| alternative | Hypotheses that contradict the leading candidate                          |
+| adversarial | An actor with motivation acted intentionally to produce the outcome       |
+| null        | Nothing unusual is happening; appearances are normal                      |
+| deceptive   | Appearances are intentionally misleading; signals have been manipulated   |
+| surprise    | An unexpected hypothesis that fits the evidence but the others would miss |
 
 **Selection heuristics:**
 
@@ -167,14 +167,14 @@ User-provided seed hypotheses are added to the pool *after* the hypothesizers ru
 
 The orchestrator selects 3-5 classes:
 
-| Class                    | Evidence shape                                                                       |
-|--------------------------|--------------------------------------------------------------------------------------|
-| direct-observational     | Logs, sensor data, metrics, witness accounts                                          |
-| documentary-historical   | Records: decision documents, message threads, configuration history, prior reports   |
-| structural               | System / environment features that constrain what's possible                          |
-| behavioral               | Patterns of action over time (baseline + deviations)                                  |
-| absent                   | What's missing; the dog that didn't bark                                             |
-| anomalous                | Observations that don't fit any obvious story                                        |
+| Class                  | Evidence shape                                                                     |
+| ---------------------- | ---------------------------------------------------------------------------------- |
+| direct-observational   | Logs, sensor data, metrics, witness accounts                                       |
+| documentary-historical | Records: decision documents, message threads, configuration history, prior reports |
+| structural             | System / environment features that constrain what's possible                       |
+| behavioral             | Patterns of action over time (baseline + deviations)                               |
+| absent                 | What's missing; the dog that didn't bark                                           |
+| anomalous              | Observations that don't fit any obvious story                                      |
 
 **Selection heuristics:**
 
@@ -465,14 +465,14 @@ and observe the success rate over the next 24 hours.
 
 ## Relationship to Other Skills
 
-| Skill                | Relationship                                                                                              |
-|----------------------|-----------------------------------------------------------------------------------------------------------|
-| `/think-diagnose`    | Natural upstream — generates candidate causes that ACH then rigorously narrows                            |
-| `/think-brainstorm`  | Natural upstream — when ACH operates on candidate options/scenarios rather than causes                    |
-| `/think-scrutinize`  | Natural downstream — adversarially stress-test the leading hypothesis                                     |
-| `/think-deliberate`  | Adjacent — operates on options-to-pick rather than hypotheses-to-narrow; different cognitive mode         |
-| `/think-reframe`     | Upstream when hypotheses are too vague or non-mutually-exclusive                                          |
-| `/think-premortem`   | Adjacent — both deal with hypothetical states, but premortem imagines failures while ACH evaluates competing real-world hypotheses |
+| Skill               | Relationship                                                                                                                       |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `/think-diagnose`   | Natural upstream — generates candidate causes that ACH then rigorously narrows                                                     |
+| `/think-brainstorm` | Natural upstream — when ACH operates on candidate options/scenarios rather than causes                                             |
+| `/think-scrutinize` | Natural downstream — adversarially stress-test the leading hypothesis                                                              |
+| `/think-deliberate` | Adjacent — operates on options-to-pick rather than hypotheses-to-narrow; different cognitive mode                                  |
+| `/think-reframe`    | Upstream when hypotheses are too vague or non-mutually-exclusive                                                                   |
+| `/think-premortem`  | Adjacent — both deal with hypothetical states, but premortem imagines failures while ACH evaluates competing real-world hypotheses |
 
 **ACH and diagnose compared.** Diagnose is open-ended causal exploration via lens-driven brainstorming + narrative evidence assessment. ACH is rigorous narrowing via explicit matrix + disconfirmation focus. Different cognitive modes:
 

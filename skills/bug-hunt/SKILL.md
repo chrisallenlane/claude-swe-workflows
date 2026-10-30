@@ -24,13 +24,13 @@ The user states intent once. The skill then hunts round after round until a roun
 
 Ask once, up front:
 
-| Field          | Question                                                                                   | Default if unanswered                                           |
-|----------------|--------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
-| Scope          | What should the hunt cover? Any areas you're worried about? Anything to skip?             | Production code; tests, dev tooling, generated and vendored code excluded |
-| Severity floor | Below what severity should findings be reported but not acted on?                          | High (Critical and High block convergence)                      |
-| Constraints    | Anything that must not change — public APIs, compatibility, files?                         | No breaking changes; nothing else                               |
-| Tickets        | May I create tickets for confirmed bugs without asking again?                              | **No** — propose a ticket set at the end for approval            |
-| Fix            | May I fix confirmed bugs (on a branch, via `/implement`) and re-hunt?                       | **No**                                                          |
+| Field          | Question                                                                      | Default if unanswered                                                     |
+|----------------|-------------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| Scope          | What should the hunt cover? Any areas you're worried about? Anything to skip? | Production code; tests, dev tooling, generated and vendored code excluded |
+| Severity floor | Below what severity should findings be reported but not acted on?             | High (Critical and High block convergence)                                |
+| Constraints    | Anything that must not change — public APIs, compatibility, files?            | No breaking changes; nothing else                                         |
+| Tickets        | May I create tickets for confirmed bugs without asking again?                 | **No** — propose a ticket set at the end for approval                     |
+| Fix            | May I fix confirmed bugs (on a branch, via `/implement`) and re-hunt?         | **No**                                                                    |
 
 User concerns steer prioritization; they don't replace systematic assessment. Read the intent back and confirm it. Granting ticket authority here *is* the approval to create them; without it, nothing is created unasked.
 

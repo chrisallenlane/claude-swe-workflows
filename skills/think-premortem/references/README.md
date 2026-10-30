@@ -132,7 +132,7 @@ In both modes, the skill spawns parallel pre-mortemers in isolation across failu
 ## Roles
 
 | Role          | What they do                                                                                                                              |
-|---------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | Judge (you)   | Detect mode, capture target, validate concreteness, choose lenses, synthesize the risk register                                           |
 | Pre-mortemers | Plan mode: imagine catastrophic failure within an assigned lens. Scenario mode: investigate actual code for given scenario. In isolation. |
 
@@ -175,19 +175,19 @@ Pre-mortemers cover three categories of lens. The orchestrator selects from each
 
 The 11 prescribed failure classes, available in every pre-mortem:
 
-| Lens                          | Failure shape                                                              |
-|-------------------------------|----------------------------------------------------------------------------|
-| technical                     | Implementation broke; design didn't survive contact with reality           |
-| operational                   | Couldn't deploy, observe, maintain, or sustain on-call                     |
-| estimation                    | Took 3-5x longer; sandbagged assumptions; hidden complexity surfaced late  |
-| scope                         | Built the wrong thing; problem moved while team built                      |
-| adoption                      | Users didn't take it up; defected; found a workaround                      |
-| dependency-and-environment    | External factor changed (vendor, regulation, market, library)              |
-| team-and-coordination         | Attrition, knowledge loss, blocked-on-someone, handoff breakdown           |
-| incentive                     | Goodhart; system rewarded the wrong thing                                  |
-| detection                     | Failure went unnoticed; instrumentation gap; silent corruption             |
-| reversibility                 | Couldn't roll back; sunk-cost trapped continuation                         |
-| adversarial                   | Malicious or careless actor; trust assumption was load-bearing and unstated |
+| Lens                       | Failure shape                                                               |
+| -------------------------- | --------------------------------------------------------------------------- |
+| technical                  | Implementation broke; design didn't survive contact with reality            |
+| operational                | Couldn't deploy, observe, maintain, or sustain on-call                      |
+| estimation                 | Took 3-5x longer; sandbagged assumptions; hidden complexity surfaced late   |
+| scope                      | Built the wrong thing; problem moved while team built                       |
+| adoption                   | Users didn't take it up; defected; found a workaround                       |
+| dependency-and-environment | External factor changed (vendor, regulation, market, library)               |
+| team-and-coordination      | Attrition, knowledge loss, blocked-on-someone, handoff breakdown            |
+| incentive                  | Goodhart; system rewarded the wrong thing                                   |
+| detection                  | Failure went unnoticed; instrumentation gap; silent corruption              |
+| reversibility              | Couldn't roll back; sunk-cost trapped continuation                          |
+| adversarial                | Malicious or careless actor; trust assumption was load-bearing and unstated |
 
 4-7 standard lenses is typical. Drop lenses that don't fit — forcing an unfit lens produces noise. **For software projects, technical, operational, and estimation are almost always present.**
 
@@ -197,13 +197,13 @@ The orchestrator may add lenses tailored to the target's domain when the standar
 
 Examples of ad-hoc lenses:
 
-| Domain                       | Ad-hoc lens                  | Failure shape                                                                       |
-|------------------------------|------------------------------|-------------------------------------------------------------------------------------|
-| ML system                    | training-distribution-drift  | Model performance degrades as input distribution diverges from training data        |
-| Multi-tenant SaaS            | tenant-isolation             | One tenant's actions affect another's correctness, performance, or privacy          |
-| Real-time trading            | latency-and-jitter           | Timing variance produces correctness or ordering failures                            |
-| Federated identity           | cross-domain-trust           | Trust propagation across boundaries amplifies a single compromise                    |
-| Compliance-bound system      | regulatory-shift             | A regulation change retroactively invalidates compliant behavior                     |
+| Domain                  | Ad-hoc lens                 | Failure shape                                                                |
+| ----------------------- | --------------------------- | ---------------------------------------------------------------------------- |
+| ML system               | training-distribution-drift | Model performance degrades as input distribution diverges from training data |
+| Multi-tenant SaaS       | tenant-isolation            | One tenant's actions affect another's correctness, performance, or privacy   |
+| Real-time trading       | latency-and-jitter          | Timing variance produces correctness or ordering failures                    |
+| Federated identity      | cross-domain-trust          | Trust propagation across boundaries amplifies a single compromise            |
+| Compliance-bound system | regulatory-shift            | A regulation change retroactively invalidates compliant behavior             |
 
 Add an ad-hoc lens when:
 
@@ -585,14 +585,14 @@ Lenses applied: technical, reversibility, detection, operational, adversarial
 
 ## Relationship to Other Skills
 
-| Skill                | Relationship                                                                                                                                  |
-|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| `/think-scrutinize`  | Natural downstream — stress-test mitigations or load-bearing assumptions surfaced                                                              |
-| `/think-deliberate`  | Natural downstream — choose between candidate mitigation / hardening approaches                                                                |
-| `/scope`             | Natural downstream — turn defendable failure modes into tickets                                                                                |
-| `/think-reflect`     | Matched pair on the time axis — pre-mortem ex-ante (hypothetical), reflect ex-post (resolved)                                                  |
-| `/think-brainstorm`  | Pre-mortem can identify the *problem* (failure modes); brainstorm generates *mitigations*                                                       |
-| `/think-diagnose`    | Adjacent skill for *currently-occurring* failures with unknown causes; pre-mortem (scenario mode) is for *hypothetical* failures against running systems |
+| Skill               | Relationship                                                                                                                                             |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/think-scrutinize` | Natural downstream — stress-test mitigations or load-bearing assumptions surfaced                                                                        |
+| `/think-deliberate` | Natural downstream — choose between candidate mitigation / hardening approaches                                                                          |
+| `/scope`            | Natural downstream — turn defendable failure modes into tickets                                                                                          |
+| `/think-reflect`    | Matched pair on the time axis — pre-mortem ex-ante (hypothetical), reflect ex-post (resolved)                                                            |
+| `/think-brainstorm` | Pre-mortem can identify the *problem* (failure modes); brainstorm generates *mitigations*                                                                |
+| `/think-diagnose`   | Adjacent skill for *currently-occurring* failures with unknown causes; pre-mortem (scenario mode) is for *hypothetical* failures against running systems |
 
 **Pre-mortem and scrutinize compared.** Both stress-test plans / systems, but they are not redundant. Pre-mortem is broader and more generative — it sweeps the failure space using prospective hindsight. Scrutinize is narrower and more dialectical — skeptics versus advocate on a specific concern. Natural ordering: *pre-mortem first, scrutinize second*. Pre-mortem identifies the top failure modes; scrutinize stress-tests the mitigations or load-bearing assumptions.
 

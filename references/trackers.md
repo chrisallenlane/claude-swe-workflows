@@ -14,12 +14,12 @@ If no usable integration is found, fall back to the "Manual fallback" section.
 
 ## Platform → Tool Mapping
 
-| Platform | Detection signal                              | Preferred integration            | Fallback                       |
-|----------|-----------------------------------------------|----------------------------------|--------------------------------|
-| GitHub   | `github.com` in remote URL                    | `gh` CLI                         | GitHub REST API                |
-| Gitea    | Self-hosted git or generic; check `CLAUDE.md` | `mcp__gitea__*` MCP tools        | Gitea REST API                 |
-| GitLab   | `gitlab.com` or self-hosted GitLab            | `glab` CLI                       | GitLab REST API                |
-| Other    | Anything else                                 | None (fall through)              | Manual fallback section below  |
+| Platform | Detection signal                              | Preferred integration     | Fallback                      |
+|----------|-----------------------------------------------|---------------------------|-------------------------------|
+| GitHub   | `github.com` in remote URL                    | `gh` CLI                  | GitHub REST API               |
+| Gitea    | Self-hosted git or generic; check `CLAUDE.md` | `mcp__gitea__*` MCP tools | Gitea REST API                |
+| GitLab   | `gitlab.com` or self-hosted GitLab            | `glab` CLI                | GitLab REST API               |
+| Other    | Anything else                                 | None (fall through)       | Manual fallback section below |
 
 **Andon cord** if the tracker matches a known platform but the integration is unavailable (CLI missing, MCP server down, API credentials absent). Surface the proposed ticket operation in the handoff so the operator can either fix the integration or take the action manually.
 
@@ -42,7 +42,7 @@ Fetch each ticket individually rather than relying on a search payload — searc
 For `/scope`:
 
 - Pass `title` and `body` to the integration.
-- Apply default labels if specified in `CLAUDE.md` (e.g., `bug`, `arch`, batch tags).
+- Apply default labels if specified in `CLAUDE.md` (e.g., `bug`, `arch`).
 - Capture and present the resulting URL and issue number.
 - When creating multiple related tickets, create them sequentially within a dependency group so later tickets can reference earlier ones by number.
 

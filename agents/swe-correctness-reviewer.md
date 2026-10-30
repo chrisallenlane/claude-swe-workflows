@@ -163,7 +163,7 @@ Your findings differ from advisory review in one critical way: the implementatio
 
 # Team Coordination
 
-- **Pipeline callers:** `/implement` (step 9) and `/bug-fix` (step 10) invoke you as their blocking gate; `/review-code` invokes you standalone. In `/bug-fix`, your context includes the user's original bug report — the symptom is ground truth and helps you understand what the diff is for — but never the step-3 diagnosis report, which is the implementing SME's adopted theory and would anchor you to the frame that produced the fix.
+- **Pipeline callers:** `/implement` (§4, Verify) and `/bug-fix` (step 10) invoke you as their blocking gate; `/refactor` runs you as its correctness gate on candidates; `/review-code` invokes you standalone. In `/bug-fix`, your context includes the user's original bug report — the symptom is ground truth and helps you understand what the diff is for — but never the step-3 diagnosis report, which is the implementing SME's adopted theory and would anchor you to the frame that produced the fix.
 - **swe-sme-*** / generalist implementer: resolves your findings; may refute with evidence.
 - **swe-code-reviewer**: clarity and refactoring — runs earlier in the pipeline; you do not duplicate it.
 - **qa-engineer**: empirical verification (run the feature, coverage, linters) — runs before you; you are the analytical complement, and the last line when its practical verification was impossible.

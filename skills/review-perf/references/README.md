@@ -57,10 +57,10 @@ Findings from both domains merged into a single report with a cross-cutting anal
 
 ## Agents Used
 
-| Agent                   | Domain                                                              |
-|-------------------------|---------------------------------------------------------------------|
-| `swe-perf-reviewer`     | Compute performance (algorithms, memory, benchmarks, profiling)     |
-| `swe-web-perf-reviewer` | Web performance (caching, assets, loading, Core Web Vitals)         |
+| Agent                   | Domain                                                          |
+| ----------------------- | --------------------------------------------------------------- |
+| `swe-perf-reviewer`     | Compute performance (algorithms, memory, benchmarks, profiling) |
+| `swe-web-perf-reviewer` | Web performance (caching, assets, loading, Core Web Vitals)     |
 
 ## Resource Usage
 

@@ -102,30 +102,30 @@ The skill's defining design choice is the three-tier action model. Every operati
 
 These operations remove only *references*. They cannot lose commits, objects, or files. They run without operator confirmation because there is nothing to confirm.
 
-| Operation                                | Command                       | What it removes                                              |
-|------------------------------------------|-------------------------------|--------------------------------------------------------------|
-| Prune stale remote-tracking refs         | `git remote prune <remote>`   | Local refs under `refs/remotes/<remote>/` for branches that no longer exist on the remote |
-| Prune stale worktree refs                | `git worktree prune`          | References to worktrees whose directories are already gone   |
+| Operation                        | Command                     | What it removes                                                                           |
+|----------------------------------|-----------------------------|-------------------------------------------------------------------------------------------|
+| Prune stale remote-tracking refs | `git remote prune <remote>` | Local refs under `refs/remotes/<remote>/` for branches that no longer exist on the remote |
+| Prune stale worktree refs        | `git worktree prune`        | References to worktrees whose directories are already gone                                |
 
 ### Tier 2 — Borderline-safe: preview, confirm, then do
 
 Operations that delete *references with associated commits*. Reversible from the reflog (90 days), but worth previewing.
 
-| Operation                          | Command                            | Safety                                                       |
-|------------------------------------|------------------------------------|--------------------------------------------------------------|
-| Delete merged local branch         | `git branch -d <name>` (lowercase) | `-d` refuses to delete if the branch isn't actually merged; this guards against rare `--merged` false positives. No `-D` fallback. |
+| Operation                  | Command                            | Safety                                                                                                                             |
+|----------------------------|------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| Delete merged local branch | `git branch -d <name>` (lowercase) | `-d` refuses to delete if the branch isn't actually merged; this guards against rare `--merged` false positives. No `-D` fallback. |
 
 ### Tier 3 — Real loss risk: report only
 
 State that *might* warrant cleanup, but the cleanup is judgment-laden or hard to reverse. The skill reports these so the operator can decide; it never acts on them.
 
-| Category                         | Why report-only                                                                        |
-|----------------------------------|----------------------------------------------------------------------------------------|
-| Stashes                          | A stash is by definition undecided work; auto-dropping violates reversibility          |
-| Branches with no upstream        | May be intentional local-only work or forgotten branches; operator knows which         |
-| Branches ahead of upstream       | Forgotten pushes — operator decides whether to push, abandon, or keep working          |
-| Local-only tags                  | Often intentional backups (e.g., `pre-rebase-backup-*`) — operator knows the intent    |
-| Untracked files                  | `git clean` is destructive and context-dependent; `/pre-compact` handles session-trash |
+| Category                   | Why report-only                                                                        |
+|----------------------------|----------------------------------------------------------------------------------------|
+| Stashes                    | A stash is by definition undecided work; auto-dropping violates reversibility          |
+| Branches with no upstream  | May be intentional local-only work or forgotten branches; operator knows which         |
+| Branches ahead of upstream | Forgotten pushes — operator decides whether to push, abandon, or keep working          |
+| Local-only tags            | Often intentional backups (e.g., `pre-rebase-backup-*`) — operator knows the intent    |
+| Untracked files            | `git clean` is destructive and context-dependent; `/pre-compact` handles session-trash |
 
 ## Why `--merged` Doesn't Catch Everything
 

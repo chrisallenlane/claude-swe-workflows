@@ -63,7 +63,8 @@ The `/think-diagnose` skill figures out *why* something is happening. Given a ph
  │  ────────────────────────────────────────    │
  │  Technical / Human-factors / Process /       │
  │  Incentive-structure / Environmental /       │
- │  Temporal / Measurement-artifact / Statistical│
+ │  Temporal / Measurement-artifact /           │
+ │  Statistical                                 │
  │  (3-6 selected; irrelevant ones dropped)     │
  └──────────────────┬───────────────────────────┘
                     ▼
@@ -73,7 +74,8 @@ The `/think-diagnose` skill figures out *why* something is happening. Given a ph
  │  One agent per lens                          │
  │  No cross-talk (NGT — avoids anchoring)      │
  │  Each returns: candidate causes with         │
- │  mechanism, predictions, refuters, plausibility│
+ │  mechanism, predictions, refuters,           │
+ │  plausibility                                │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -109,25 +111,25 @@ The `/think-diagnose` skill figures out *why* something is happening. Given a ph
 
 ## Roles
 
-| Role              | What they do                                                             |
-|-------------------|--------------------------------------------------------------------------|
-| Judge (you)       | Gather evidence, choose lenses, spawn diagnosticians, evaluate candidates |
-| Diagnosticians    | Generate candidate causes through assigned lenses, in isolation           |
+| Role           | What they do                                                              |
+| -------------- | ------------------------------------------------------------------------- |
+| Judge (you)    | Gather evidence, choose lenses, spawn diagnosticians, evaluate candidates |
+| Diagnosticians | Generate candidate causes through assigned lenses, in isolation           |
 
 ## Reasoning Lenses
 
 The orchestrator selects lenses based on the phenomenon's shape. Common lenses:
 
-| Lens                  | Surfaces causes rooted in                                      |
-|-----------------------|----------------------------------------------------------------|
-| technical             | Engineering systems (code, infra, config, capacity)            |
-| human-factors         | People, skills, fatigue, turnover, miscommunication            |
-| process               | Broken or missing process, handoffs, ownership, rituals        |
-| incentive-structure   | The system rewards the observed behavior (Goodhart)            |
-| environmental         | External factors (market, regulation, vendors, customer mix)   |
-| temporal              | Change-points that correlate with the phenomenon               |
-| measurement-artifact  | The phenomenon isn't real — it's an instrumentation issue      |
-| statistical           | Base rates, regression to mean, Simpson's, selection, confounders|
+| Lens                 | Surfaces causes rooted in                                         |
+| -------------------- | ----------------------------------------------------------------- |
+| technical            | Engineering systems (code, infra, config, capacity)               |
+| human-factors        | People, skills, fatigue, turnover, miscommunication               |
+| process              | Broken or missing process, handoffs, ownership, rituals           |
+| incentive-structure  | The system rewards the observed behavior (Goodhart)               |
+| environmental        | External factors (market, regulation, vendors, customer mix)      |
+| temporal             | Change-points that correlate with the phenomenon                  |
+| measurement-artifact | The phenomenon isn't real — it's an instrumentation issue         |
+| statistical          | Base rates, regression to mean, Simpson's, selection, confounders |
 
 3-6 lenses is typical. **Always include measurement-artifact for metric-based phenomena** — it catches a large share of "phenomena" that turn out to be measurement errors.
 
@@ -167,12 +169,12 @@ A structured report with:
 
 Qualitative categories only. No fabricated percentages.
 
-| Category                 | Meaning                                                                            |
-|--------------------------|------------------------------------------------------------------------------------|
-| **Strong fit**           | Cause explains all observations; predictions confirmed; no refuters; plausible     |
-| **Moderate fit**         | Cause explains most observations; some predictions unconfirmed but not contradicted |
-| **Weak fit**             | Cause explains some observations; significant predictions unconfirmed              |
-| **Unable to distinguish** | Two or more causes fit the evidence equally well; more evidence needed            |
+| Category                  | Meaning                                                                             |
+| ------------------------- | ----------------------------------------------------------------------------------- |
+| **Strong fit**            | Cause explains all observations; predictions confirmed; no refuters; plausible      |
+| **Moderate fit**          | Cause explains most observations; some predictions unconfirmed but not contradicted |
+| **Weak fit**              | Cause explains some observations; significant predictions unconfirmed               |
+| **Unable to distinguish** | Two or more causes fit the evidence equally well; more evidence needed              |
 
 Honest "can't distinguish" is a valuable outcome. Users can act on acknowledged uncertainty (by gathering more evidence); they can't protect themselves from false confidence.
 
@@ -343,13 +345,13 @@ with reinstated prep docs to test.
 
 ## Relationship to Other Skills
 
-| Skill                | Relationship                                                                                                  |
-|----------------------|---------------------------------------------------------------------------------------------------------------|
-| `/bug-fix`           | Code-specific diagnosis with artifact output; `/think-diagnose` is non-code, abstract                         |
-| `/think-ach`         | Natural downstream — when `/think-diagnose` surfaces multiple plausible causes, `/think-ach` rigorously narrows among them by ranking against evidence and disconfirmation |
-| `/think-brainstorm`  | Natural downstream — brainstorm remediations once the cause is identified                                     |
-| `/think-scrutinize`  | Pressure-test either the diagnosis or the planned intervention                                                |
-| `/think-reframe`     | If the phenomenon itself seems off, consider reframing before diagnosing                                      |
+| Skill               | Relationship                                                                                                                                                               |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/bug-fix`          | Code-specific diagnosis with artifact output; `/think-diagnose` is non-code, abstract                                                                                      |
+| `/think-ach`        | Natural downstream — when `/think-diagnose` surfaces multiple plausible causes, `/think-ach` rigorously narrows among them by ranking against evidence and disconfirmation |
+| `/think-brainstorm` | Natural downstream — brainstorm remediations once the cause is identified                                                                                                  |
+| `/think-scrutinize` | Pressure-test either the diagnosis or the planned intervention                                                                                                             |
+| `/think-reframe`    | If the phenomenon itself seems off, consider reframing before diagnosing                                                                                                   |
 
 **Natural pipeline (non-code phenomena):**
 

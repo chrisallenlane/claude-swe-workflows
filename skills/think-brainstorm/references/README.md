@@ -94,25 +94,25 @@ The `/think-brainstorm` skill generates candidate approaches for achieving a goa
 
 ## Roles
 
-| Role          | What they do                                                                 |
-|---------------|------------------------------------------------------------------------------|
-| Judge (you)   | Capture goal, validate assumptions, choose techniques, synthesize report     |
-| Brainstormers | Generate ideas through assigned techniques, in isolation                     |
+| Role          | What they do                                                             |
+| ------------- | ------------------------------------------------------------------------ |
+| Judge (you)   | Capture goal, validate assumptions, choose techniques, synthesize report |
+| Brainstormers | Generate ideas through assigned techniques, in isolation                 |
 
 ## Brainstorming Techniques
 
 The orchestrator selects techniques based on the goal's shape. Common techniques:
 
-| Technique           | What it does                                                                      |
-|---------------------|-----------------------------------------------------------------------------------|
-| first-principles    | Strip to irreducible requirements, reason up                                      |
-| working-backwards   | Imagine success concretely, trace paths back                                      |
-| lateral             | Random entry + provocation; deliberately break conventional thought               |
-| analogical          | Structural analogies from unrelated domains (biomimicry, cross-industry, etc.)    |
-| constraints-shift   | Force the goal through artificial constraints (10x budget, ship tomorrow, etc.)   |
-| worst-possible-idea | Generate bad ideas, invert them                                                   |
-| six-hats-green      | de Bono's creative hat; pure generative mode                                      |
-| SCAMPER             | Applies 7 verbs to an existing solution (only for refining, not greenfield)       |
+| Technique           | What it does                                                                    |
+| ------------------- | ------------------------------------------------------------------------------- |
+| first-principles    | Strip to irreducible requirements, reason up                                    |
+| working-backwards   | Imagine success concretely, trace paths back                                    |
+| lateral             | Random entry + provocation; deliberately break conventional thought             |
+| analogical          | Structural analogies from unrelated domains (biomimicry, cross-industry, etc.)  |
+| constraints-shift   | Force the goal through artificial constraints (10x budget, ship tomorrow, etc.) |
+| worst-possible-idea | Generate bad ideas, invert them                                                 |
+| six-hats-green      | de Bono's creative hat; pure generative mode                                    |
+| SCAMPER             | Applies 7 verbs to an existing solution (only for refining, not greenfield)     |
 
 3-6 techniques is typical. Irrelevant techniques are dropped — forcing an unfit technique produces noise, not insight.
 
@@ -257,11 +257,11 @@ constraints-shift
 
 ## Relationship to Other Skills
 
-| Skill                | Relationship                                                                        |
-|----------------------|-------------------------------------------------------------------------------------|
-| `/think-deliberate`  | Chooses between generated options. Natural downstream of brainstorming.             |
-| `/think-scrutinize`  | Stress-tests a selected standout. Natural downstream of deliberation.               |
-| `/scope`             | Translates a chosen idea into tickets — one, or a whole project's worth             |
+| Skill               | Relationship                                                            |
+| ------------------- | ----------------------------------------------------------------------- |
+| `/think-deliberate` | Chooses between generated options. Natural downstream of brainstorming. |
+| `/think-scrutinize` | Stress-tests a selected standout. Natural downstream of deliberation.   |
+| `/scope`            | Translates a chosen idea into tickets — one, or a whole project's worth |
 
 **Natural pipelines:**
 - `/think-brainstorm` → `/think-deliberate` → `/think-scrutinize` → `/scope` (generate → choose → stress-test → specify)

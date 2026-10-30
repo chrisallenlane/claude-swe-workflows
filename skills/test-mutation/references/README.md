@@ -31,14 +31,14 @@ The `/test-mutation` skill verifies your tests actually catch bugs by systematic
 
 Mutation testing introduces synthetic bugs one at a time:
 
-| Mutation Type      | Example                                          |
-|--------------------|--------------------------------------------------|
-| Arithmetic         | `amount + fee` → `amount - fee`                  |
-| Relational         | `count < max` → `count <= max`                   |
-| Logical            | `valid && active` → `valid \|\| active`          |
-| Constants          | `maxRetries = 3` → `maxRetries = 4`              |
-| Statement deletion | Remove `audit.Log(event)`                        |
-| Control flow       | `if err != nil` → `if err == nil`                |
+| Mutation Type      | Example                                 |
+| ------------------ | --------------------------------------- |
+| Arithmetic         | `amount + fee` → `amount - fee`         |
+| Relational         | `count < max` → `count <= max`          |
+| Logical            | `valid && active` → `valid \|\| active` |
+| Constants          | `maxRetries = 3` → `maxRetries = 4`     |
+| Statement deletion | Remove `audit.Log(event)`               |
+| Control flow       | `if err != nil` → `if err == nil`       |
 
 For each mutation: apply the change, run the test suite, check if tests fail, then revert.
 
@@ -91,7 +91,7 @@ If something goes wrong (SME can't write a test, new tests fail, a mutation resi
 ## Mutation Score Interpretation
 
 | Score   | Meaning                                                 |
-|---------|---------------------------------------------------------|
+| ------- | ------------------------------------------------------- |
 | 95-100% | Excellent — tests catch nearly all synthetic bugs       |
 | 80-94%  | Good — some gaps, worth addressing for critical code    |
 | 60-79%  | Adequate for non-critical code, weak for critical paths |

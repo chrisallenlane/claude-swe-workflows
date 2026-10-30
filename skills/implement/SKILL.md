@@ -120,12 +120,12 @@ Use what the work needs. Each pass that plausibly applied and did not run gets a
 
 `/refactor` has one operator checkpoint, its requirements menu. Answer it from the approved intent; everything after the menu runs as `/refactor` defines it.
 
-| Menu part | Answer                                                                                                                                                       |
-|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Stakes    | The user's answers, verbatim.                                                                                                                                |
-| Probes    | The smoke-testing procedure, plus every ticket's acceptance criteria.                                                                                        |
+| Menu part | Answer                                                                                                                                                        |
+|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Stakes    | The user's answers, verbatim.                                                                                                                                 |
+| Probes    | The smoke-testing procedure, plus every ticket's acceptance criteria.                                                                                         |
 | Verdicts  | **Ratified:** behavior the tickets specify, plus constraints. **Documented:** keep all. **Invented:** presumed dead. **Priced:** take no trades; report them. |
-| Non-goals | `/refactor` takes no exclusions; if non-goals name code that must not be touched, don't run it.                                                              |
+| Non-goals | `/refactor` takes no exclusions; if non-goals name code that must not be touched, don't run it.                                                               |
 | Merge     | Merge `refactor/<slug>` into the working branch (`--no-ff`) once its oracle is green; re-run tests and the smoke procedure.                                   |
 
 Stand in for the user at the menu and the merge, and nowhere else: never rescue an invented requirement, take a trade, or override a gate. If the project has no user-visible boundary to build an oracle against, don't run `/refactor`; its safety rests on that oracle.

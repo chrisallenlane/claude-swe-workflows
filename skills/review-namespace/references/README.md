@@ -19,17 +19,17 @@ A blind writer (who reads only the design doc/README, never the source) generate
 
 Field-derived, all enforced by the skill:
 
-| # | Law |
-|---|-----|
-| 1 | Pre-register scoring rules before reading any answers |
-| 2 | Pin ground truth sighted, per question, before grading; drop and record unpinnables |
-| 3 | Measure the noise floor (battery ×2, same tree) before comparing trees |
-| 4 | Score per-question paired, not aggregate — aggregates saturate |
-| 5 | Re-probe every rename for what it *newly* attracts; keep renamed files' semantic neighbors in the bank |
-| 6 | Universal mispredictions are placement problems — move the code, don't rename it |
-| 7 | Moves beat renames after repeated probe failure |
-| 8 | Confident-unanimous-wrong is the severity ceiling |
-| 9 | The canary (haiku reader) degrades first on vague names — weight its movement |
+| #   | Law                                                                                                    |
+| --- | ------------------------------------------------------------------------------------------------------ |
+| 1   | Pre-register scoring rules before reading any answers                                                  |
+| 2   | Pin ground truth sighted, per question, before grading; drop and record unpinnables                    |
+| 3   | Measure the noise floor (battery ×2, same tree) before comparing trees                                 |
+| 4   | Score per-question paired, not aggregate — aggregates saturate                                         |
+| 5   | Re-probe every rename for what it *newly* attracts; keep renamed files' semantic neighbors in the bank |
+| 6   | Universal mispredictions are placement problems — move the code, don't rename it                       |
+| 7   | Moves beat renames after repeated probe failure                                                        |
+| 8   | Confident-unanimous-wrong is the severity ceiling                                                      |
+| 9   | The canary (haiku reader) degrades first on vague names — weight its movement                          |
 
 ## Finding Classes
 

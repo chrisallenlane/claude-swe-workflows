@@ -35,16 +35,16 @@ Planning feeds implementation: `/scope` → `/implement`. Supporting skills (`/t
 Skills are grouped by namespace for discoverability. Each namespace gathers
 skills with a related purpose.
 
-| Namespace      | Purpose                                     | Skills                                                                                                                                                                                        |
-|----------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/implement`   | Implement tickets (mutate the working tree) | `/implement`                                                                                                                                                                                  |
-| `/scope`       | Plan and produce tickets                    | `/scope`                                                                                                                                                                                      |
-| `/review-*`    | Advisory audits — no code changes           | `/review-arch`, `/review-code`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-health`, `/review-security`, `/review-release`, `/review-value`, `/review-dead`, `/review-namespace` |
-| `/think-*`     | Reasoning support — no artifacts            | `/think-reframe`, `/think-brainstorm`, `/think-diagnose`, `/think-ach`, `/think-deliberate`, `/think-premortem`, `/think-scrutinize`, `/think-reflect`                                        |
-| `/tidy-*`      | Mechanical hygiene                          | `/tidy-docs`, `/tidy-git`                                                                                                                                                                     |
-| `/bug-*`       | Find and fix bugs                           | `/bug-fix`, `/bug-hunt`                                                                                                                                                                       |
-| `/test-*`      | Test-quality work                           | `/test-mutation`                                                                                                                                                                              |
-| (standalone)   | Skills that don't share a namespace         | `/refactor`, `/pre-compact`, `/release`                                                                                                                                                       |
+| Namespace    | Purpose                                     | Skills                                                                                                                                                                                        |
+|--------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/implement` | Implement tickets (mutate the working tree) | `/implement`                                                                                                                                                                                  |
+| `/scope`     | Plan and produce tickets                    | `/scope`                                                                                                                                                                                      |
+| `/review-*`  | Advisory audits — no code changes           | `/review-arch`, `/review-code`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-health`, `/review-security`, `/review-release`, `/review-value`, `/review-dead`, `/review-namespace` |
+| `/think-*`   | Reasoning support — no artifacts            | `/think-reframe`, `/think-brainstorm`, `/think-diagnose`, `/think-ach`, `/think-deliberate`, `/think-premortem`, `/think-scrutinize`, `/think-reflect`                                        |
+| `/tidy-*`    | Mechanical hygiene                          | `/tidy-docs`, `/tidy-git`                                                                                                                                                                     |
+| `/bug-*`     | Find and fix bugs                           | `/bug-fix`, `/bug-hunt`                                                                                                                                                                       |
+| `/test-*`    | Test-quality work                           | `/test-mutation`                                                                                                                                                                              |
+| (standalone) | Skills that don't share a namespace         | `/refactor`, `/pre-compact`, `/release`                                                                                                                                                       |
 
 The skills that act on granted authority — `/implement`, `/bug-hunt`, and
 `/review-health` — additionally share an autonomy discipline (commander's
@@ -58,37 +58,37 @@ cognitive failure modes) — see [references/think.md](references/think.md).
 Not everything needs the full pipeline. Enter at the level that matches your
 task:
 
-| You want to...                                                                              | Use                  |
-|---------------------------------------------------------------------------------------------|----------------------|
-| Implement a ticket, a batch of tickets, or an open-ended goal                               | `/implement`         |
-| Plan work and create tickets — one, or a whole project's worth                              | `/scope`             |
-| Fix a bug with diagnosis and root-cause analysis                                            | `/bug-fix`           |
-| Hunt for bugs — report, ticket, or fix them until a severity floor is met                   | `/bug-hunt`          |
-| Pressure-test a problem's framing before solving it                                         | `/think-reframe`     |
-| Brainstorm approaches to a goal                                                             | `/think-brainstorm`  |
-| Reason about why a phenomenon is happening                                                  | `/think-diagnose`    |
-| Narrow among competing hypotheses against evidence                                          | `/think-ach`         |
-| Make a hard decision with adversarial deliberation                                          | `/think-deliberate`  |
-| Imagine how a plan could fail, or how a hypothetical catastrophe could hit a running system | `/think-premortem`   |
-| Scrutinize an idea or plan before committing to it                                          | `/think-scrutinize`  |
-| Reflect on a completed experience to update beliefs                                         | `/think-reflect`     |
-| Shrink a codebase: strip and redesign it with behavior pinned                               | `/refactor`          |
-| Rethink module boundaries and architecture                                                  | `/review-arch`       |
-| Price the requirements and propose behavior-for-simplicity trades                           | `/review-value`      |
-| Audit for dead code without removing it                                                     | `/review-dead`       |
-| Measure how legibly the file tree communicates (and optionally optimize it)                 | `/review-namespace`  |
-| Survey the test suite and surface gaps as tickets                                           | `/review-test`       |
-| Verify test quality via mutation testing                                                    | `/test-mutation`     |
-| Tidy all project documentation                                                              | `/tidy-docs`         |
-| Pre-release readiness check                                                                 | `/review-release`    |
-| Cut a versioned release (preflight + plan + execute)                                        | `/release`           |
-| Audit web content for accessibility barriers                                                | `/review-a11y`       |
-| Orient on a repo — or review every dimension, with authority to run the specialists         | `/review-health`     |
-| Review performance (compute and/or web)                                                     | `/review-perf`       |
-| Perform a white-box security audit                                                          | `/review-security`   |
-| Adversarially review a diff for correctness bugs before merging                             | `/review-code`       |
-| Tidy up the session before running `/compact`                                               | `/pre-compact`       |
-| Clean up local git state (stale refs, merged branches)                                      | `/tidy-git`          |
+| You want to...                                                                              | Use                 |
+|---------------------------------------------------------------------------------------------|---------------------|
+| Implement a ticket, a batch of tickets, or an open-ended goal                               | `/implement`        |
+| Plan work and create tickets — one, or a whole project's worth                              | `/scope`            |
+| Fix a bug with diagnosis and root-cause analysis                                            | `/bug-fix`          |
+| Hunt for bugs — report, ticket, or fix them until a severity floor is met                   | `/bug-hunt`         |
+| Pressure-test a problem's framing before solving it                                         | `/think-reframe`    |
+| Brainstorm approaches to a goal                                                             | `/think-brainstorm` |
+| Reason about why a phenomenon is happening                                                  | `/think-diagnose`   |
+| Narrow among competing hypotheses against evidence                                          | `/think-ach`        |
+| Make a hard decision with adversarial deliberation                                          | `/think-deliberate` |
+| Imagine how a plan could fail, or how a hypothetical catastrophe could hit a running system | `/think-premortem`  |
+| Scrutinize an idea or plan before committing to it                                          | `/think-scrutinize` |
+| Reflect on a completed experience to update beliefs                                         | `/think-reflect`    |
+| Shrink a codebase: strip and redesign it with behavior pinned                               | `/refactor`         |
+| Rethink module boundaries and architecture                                                  | `/review-arch`      |
+| Price the requirements and propose behavior-for-simplicity trades                           | `/review-value`     |
+| Audit for dead code without removing it                                                     | `/review-dead`      |
+| Measure how legibly the file tree communicates (and optionally optimize it)                 | `/review-namespace` |
+| Survey the test suite and surface gaps as tickets                                           | `/review-test`      |
+| Verify test quality via mutation testing                                                    | `/test-mutation`    |
+| Tidy all project documentation                                                              | `/tidy-docs`        |
+| Pre-release readiness check                                                                 | `/review-release`   |
+| Cut a versioned release (preflight + plan + execute)                                        | `/release`          |
+| Audit web content for accessibility barriers                                                | `/review-a11y`      |
+| Orient on a repo — or review every dimension, with authority to run the specialists         | `/review-health`    |
+| Review performance (compute and/or web)                                                     | `/review-perf`      |
+| Perform a white-box security audit                                                          | `/review-security`  |
+| Adversarially review a diff for correctness bugs before merging                             | `/review-code`      |
+| Tidy up the session before running `/compact`                                               | `/pre-compact`      |
+| Clean up local git state (stale refs, merged branches)                                      | `/tidy-git`         |
 
 **Rules of thumb:**
 - Tickets to build, one or many, or a goal to reach? `/implement` (or `/bug-fix` for a single bug that needs diagnosis)

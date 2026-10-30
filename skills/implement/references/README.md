@@ -8,13 +8,13 @@
 
 **A small floor is fixed.** Five things hold on every run, at every scale:
 
-| # | Floor item                                    | What it means                                                                                                    |
-|---|-----------------------------------------------|------------------------------------------------------------------------------------------------------------------|
-| 1 | Concept inventory before code, audited        | Nothing is built that a requirement does not force; the diff is checked against the inventory                    |
-| 2 | Practical verification of acceptance criteria | The feature is actually run before the tests are trusted                                                         |
-| 3 | Tests and linters green                       | At every commit and every merge                                                                                  |
-| 4 | Independent correctness review                | Unless the change is trivial — and always when the feature couldn't be run or there's no test suite              |
-| 5 | No irreversible actions                       | No pushes, no commits or merges to main/master, no releases, no ticket closing, no unauthorized breaking changes |
+| #   | Floor item                                    | What it means                                                                                                    |
+|-----|-----------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| 1   | Concept inventory before code, audited        | Nothing is built that a requirement does not force; the diff is checked against the inventory                    |
+| 2   | Practical verification of acceptance criteria | The feature is actually run before the tests are trusted                                                         |
+| 3   | Tests and linters green                       | At every commit and every merge                                                                                  |
+| 4   | Independent correctness review                | Unless the change is trivial — and always when the feature couldn't be run or there's no test suite              |
+| 5   | No irreversible actions                       | No pushes, no commits or merges to main/master, no releases, no ticket closing, no unauthorized breaking changes |
 
 **Judgment is accountable.** The final report lists every pass that ran and gives a one-line reason for every plausible pass that didn't. That's how you audit the run's judgment without supervising it.
 

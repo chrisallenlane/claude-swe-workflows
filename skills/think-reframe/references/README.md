@@ -94,25 +94,25 @@ The `/think-reframe` skill stress-tests how a problem is framed before anyone tr
 
 ## Roles
 
-| Role          | What they do                                                             |
-|---------------|--------------------------------------------------------------------------|
-| Judge (you)   | Capture problem, extract premises, choose lenses, synthesize report      |
-| Reframers     | Restate the problem through assigned lenses, in isolation                |
+| Role        | What they do                                                        |
+| ----------- | ------------------------------------------------------------------- |
+| Judge (you) | Capture problem, extract premises, choose lenses, synthesize report |
+| Reframers   | Restate the problem through assigned lenses, in isolation           |
 
 ## Reframing Lenses
 
 The orchestrator selects lenses based on the problem's shape. Common lenses:
 
-| Lens                  | Asks                                                                      |
-|-----------------------|---------------------------------------------------------------------------|
-| problem-vs-symptom    | Is the stated problem a symptom of something upstream?                    |
-| scope-shift           | Narrower or wider framing?                                                |
-| stakeholder-shift     | What does this look like from different stakeholders' perspectives?       |
-| level-of-abstraction  | More general or more specific?                                            |
-| time-horizon          | 1 week? 6 months? 5 years?                                                |
-| inversion             | What new problems emerge if we succeeded wildly?                          |
-| category-shift        | Is this really technical / people / process / spec / business / etc.?     |
-| constraints-shift     | Which "fixed" constraints are actually negotiable?                        |
+| Lens                 | Asks                                                                  |
+| -------------------- | --------------------------------------------------------------------- |
+| problem-vs-symptom   | Is the stated problem a symptom of something upstream?                |
+| scope-shift          | Narrower or wider framing?                                            |
+| stakeholder-shift    | What does this look like from different stakeholders' perspectives?   |
+| level-of-abstraction | More general or more specific?                                        |
+| time-horizon         | 1 week? 6 months? 5 years?                                            |
+| inversion            | What new problems emerge if we succeeded wildly?                      |
+| category-shift       | Is this really technical / people / process / spec / business / etc.? |
+| constraints-shift    | Which "fixed" constraints are actually negotiable?                    |
 
 3-6 lenses is typical. Irrelevant lenses are dropped — forcing an unfit lens produces noise, not insight.
 
@@ -259,12 +259,12 @@ problem-vs-symptom if the mismatch is incentive-driven.
 
 ## Relationship to Other Skills
 
-| Skill                | Relationship                                                                        |
-|----------------------|-------------------------------------------------------------------------------------|
-| `/think-brainstorm`  | Natural downstream — brainstorm on the (possibly reframed) problem                  |
-| `/think-deliberate`  | Further downstream — choose between generated approaches                            |
-| `/think-scrutinize`  | Final stress-test of a chosen approach                                              |
-| `/scope`             | When a reframed problem is clear enough, translate into a ticket                    |
+| Skill               | Relationship                                                       |
+| ------------------- | ------------------------------------------------------------------ |
+| `/think-brainstorm` | Natural downstream — brainstorm on the (possibly reframed) problem |
+| `/think-deliberate` | Further downstream — choose between generated approaches           |
+| `/think-scrutinize` | Final stress-test of a chosen approach                             |
+| `/scope`            | When a reframed problem is clear enough, translate into a ticket   |
 
 ## Philosophy
 

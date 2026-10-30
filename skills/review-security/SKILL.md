@@ -40,7 +40,7 @@ The parallel-isolated first pass is the load-bearing discipline of this skill. T
 │     ├─ If exploit chains found → goto 4 (new vector) │
 │     └─ If no new chains → proceed                    │
 │  6. Present consolidated findings to user            │
-│  7. Cut tickets (proposed structure, operator-approved) │
+│  7. Cut tickets (proposal, operator-approved)        │
 └──────────────────────────────────────────────────────┘
 ```
 

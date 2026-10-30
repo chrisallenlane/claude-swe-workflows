@@ -170,7 +170,7 @@ For large scopes (>15 test files), the audit is partitioned across multiple `qa-
 Issue categories and recommended actions on the resulting ticket(s):
 
 | Category         | Action   | Description                                    |
-|------------------|----------|------------------------------------------------|
+| ---------------- | -------- | ---------------------------------------------- |
 | Tautological     | DELETE   | Tests that can't fail                          |
 | Brittle          | REWRITE  | Tests coupled to implementation details        |
 | False confidence | REWRITE  | Tests that don't verify what they claim        |
@@ -208,13 +208,13 @@ When `/review-test` is invoked by an orchestrator (`/implement`, `/review-health
 
 ## Agent Coordination
 
-| Phase   | Analysis Agent                  | Parallelized    |
-|---------|---------------------------------|-----------------|
-| Phase 1 | `qa-test-coverage-reviewer`     | Yes (>15 files) |
-| Phase 2 | `qa-test-integration-reviewer`  | No (single)     |
-| Phase 3 | `qa-test-e2e-reviewer`          | No (single)     |
-| Phase 4 | `qa-test-fuzz-reviewer`         | No (single)     |
-| Phase 5 | `qa-test-reviewer`              | Yes (>15 files) |
+| Phase   | Analysis Agent                 | Parallelized    |
+| ------- | ------------------------------ | --------------- |
+| Phase 1 | `qa-test-coverage-reviewer`    | Yes (>15 files) |
+| Phase 2 | `qa-test-integration-reviewer` | No (single)     |
+| Phase 3 | `qa-test-e2e-reviewer`         | No (single)     |
+| Phase 4 | `qa-test-fuzz-reviewer`        | No (single)     |
+| Phase 5 | `qa-test-reviewer`             | Yes (>15 files) |
 
 **No implementation agents.** `/review-test` does not spawn `swe-sme-*` or `qa-engineer` agents. Test design and implementation are handled out-of-skill by `/implement` against the cut tickets.
 

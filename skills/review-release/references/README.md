@@ -31,7 +31,7 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
 ## What It Checks
 
 | Check                   | What it looks for                                           | Severity        |
-|-------------------------|-------------------------------------------------------------|-----------------|
+| ----------------------- | ----------------------------------------------------------- | --------------- |
 | **Debug artifacts**     | console.log, print(), breakpoint(), debugger statements     | BLOCKER         |
 | **Work markers**        | TODO, FIXME, HACK, XXX, REMOVEME                            | WARNING         |
 | **Hardcoded URLs**      | localhost, 127.0.0.1 in production code                     | WARNING         |
@@ -105,7 +105,7 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
  │  • Test/build failures (investigate)         │
  │  • Changelog gaps (scaffold offered)         │
  │  • License issues (user decides)             │
- │  • Doc staleness (suggest /tidy-docs)       │
+ │  • Doc staleness (suggest /tidy-docs)        │
  │  • Breaking changes (document or revert)     │
  └──────────────────┬───────────────────────────┘
                     ▼

@@ -81,4 +81,4 @@ Committed: "docs: tidy project documentation"
 
 2. **Run before releases.** Stale docs in a release are embarrassing. A quick `/tidy-docs` pass catches drift. Pair with `/review-health` (with follow-up authority) for a full pre-release sweep across every review dimension — it never changes files, so run `/tidy-docs` separately.
 
-3. **Different from `/implement` step 10.** The `/implement` workflow's documentation step is scoped to the git diff. `/tidy-docs` audits everything regardless of recent changes.
+3. **Different from `/implement`'s documentation pass.** When `/implement` runs `doc-maintainer`, it is scoped to the git diff. `/tidy-docs` audits everything regardless of recent changes.

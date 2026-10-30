@@ -320,14 +320,14 @@ This skill is one-shot. ACH analyses are fragile to silently-changing inputs —
 
 ## Relationship to Other Skills
 
-| Skill                | Relationship                                                                                              |
-|----------------------|-----------------------------------------------------------------------------------------------------------|
-| `/think-diagnose`    | Natural upstream — generates candidate causes that ACH then rigorously narrows                            |
-| `/think-brainstorm`  | Natural upstream — when ACH operates on candidate options/scenarios rather than causes                    |
-| `/think-scrutinize`  | Natural downstream — adversarially stress-test the leading hypothesis                                     |
-| `/think-deliberate`  | Adjacent — operates on options-to-pick rather than hypotheses-to-narrow; different cognitive mode         |
-| `/think-reframe`     | Upstream when hypotheses are too vague or non-mutually-exclusive                                          |
-| `/think-premortem`   | Adjacent — both deal with hypothetical states, but premortem imagines failures while ACH evaluates competing real-world hypotheses |
+| Skill               | Relationship                                                                                                                       |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `/think-diagnose`   | Natural upstream — generates candidate causes that ACH then rigorously narrows                                                     |
+| `/think-brainstorm` | Natural upstream — when ACH operates on candidate options/scenarios rather than causes                                             |
+| `/think-scrutinize` | Natural downstream — adversarially stress-test the leading hypothesis                                                              |
+| `/think-deliberate` | Adjacent — operates on options-to-pick rather than hypotheses-to-narrow; different cognitive mode                                  |
+| `/think-reframe`    | Upstream when hypotheses are too vague or non-mutually-exclusive                                                                   |
+| `/think-premortem`  | Adjacent — both deal with hypothetical states, but premortem imagines failures while ACH evaluates competing real-world hypotheses |
 
 **ACH and diagnose compared (important).** Diagnose is open-ended causal exploration via lens-driven brainstorming + narrative evidence assessment. ACH is rigorous narrowing via explicit matrix + disconfirmation focus. They have different cognitive modes:
 

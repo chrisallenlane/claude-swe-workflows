@@ -30,7 +30,7 @@ The `/think-deliberate` skill uses adversarial representation to make decisions.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ /think-deliberate Workflow                                             │
+│ /think-deliberate Workflow                                      │
 └─────────────────────────────────────────────────────────────────┘
 
  ┌──────────────────────────────────────────────┐

@@ -120,12 +120,12 @@ The skill sits in the same conceptual lane as `/review-release` but on the oppos
 
 Every step in the plan is annotated with one of four reversibility classes. The classes are not arbitrary — they correspond to materially different recovery profiles:
 
- | Tier                         | Examples                                                  | How to undo                                                                                                            |
- | ---------------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
- | `reversible`                 | File edits to `package.json`, CHANGELOG.md before commit  | `git checkout -- <file>`                                                                                               |
- | `reversible-locally`         | Local commit, local tag (`git commit`, `git tag`)         | `git reset --hard HEAD~1`, `git tag -d <name>`                                                                         |
- | `irreversible-on-publish`    | `git push`, `npm publish`, `cargo publish`                | Cannot be undone once anyone has fetched / installed. Some registries permit yank-but-not-delete.                      |
- | `partially-reversible`       | `gh release create`                                       | The GitHub release can be deleted, but notifications have already gone out and consumers may have started downloading. |
+ | Tier                      | Examples                                                 | How to undo                                                                                                            |
+ |---------------------------|----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
+ | `reversible`              | File edits to `package.json`, CHANGELOG.md before commit | `git checkout -- <file>`                                                                                               |
+ | `reversible-locally`      | Local commit, local tag (`git commit`, `git tag`)        | `git reset --hard HEAD~1`, `git tag -d <name>`                                                                         |
+ | `irreversible-on-publish` | `git push`, `npm publish`, `cargo publish`               | Cannot be undone once anyone has fetched / installed. Some registries permit yank-but-not-delete.                      |
+ | `partially-reversible`    | `gh release create`                                      | The GitHub release can be deleted, but notifications have already gone out and consumers may have started downloading. |
 
 The plan's presentation places a visible boundary line between the last `reversible-locally` step and the first `irreversible-on-publish` step. That boundary is the **one** mid-execution confirmation pause the skill performs — see [The Local → Remote Boundary](#the-local--remote-boundary) below.
 

@@ -73,7 +73,7 @@ The plugin is moving `/review-*` skills toward advisory-only over time; `/review
  ┌──────────────────────────────────────────────┐
  │  6. COMPLETION SUMMARY                       │
  │  ────────────────────────────────────────    │
- │  Tickets created (or "no tickets — analysis │
+ │  Tickets created (or "no tickets — analysis  │
  │  only")                                      │
  │                                              │
  │  "Recommended next steps" names specific     │
@@ -93,12 +93,12 @@ The caller may also adjust the **auditability ceiling** (default: 500 lines) —
 
 A fresh `swe-arch-reviewer` agent performs four sequential analysis steps:
 
-| Step                   | What it does                                                                       |
-|------------------------|------------------------------------------------------------------------------------|
+| Step                   | What it does                                                                                                                                 |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1. Prune dead code     | Catalogs unused functions, dead imports, legacy assumptions; audits each nontrivial mechanism against the simplest sufficient implementation |
-| 2. Noun analysis       | Builds domain model — identifies what nouns exist, where they live, where they should live |
-| 3. Identify repetition | Catalogs duplication patterns as inputs to the blueprint                           |
-| 4. Produce blueprint   | Synthesizes steps 1-3 into a target architecture                                   |
+| 2. Noun analysis       | Builds domain model — identifies what nouns exist, where they live, where they should live                                                   |
+| 3. Identify repetition | Catalogs duplication patterns as inputs to the blueprint                                                                                     |
+| 4. Produce blueprint   | Synthesizes steps 1-3 into a target architecture                                                                                             |
 
 The blueprint describes each module's target state: what it owns, what it absorbs from other modules, what gets renamed, and what implementation simplifications are possible. Every module audit entry carries its largest file's line count; entries over the auditability ceiling must resolve to a file split or a justified cohesion exception.
 

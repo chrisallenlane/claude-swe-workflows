@@ -24,16 +24,15 @@ Implementation-detail forks get the skill's best judgment plus a state-doc log e
 
 Worked examples:
 
- | Situation                                                                         | Altitude                  | Action                                         |
- | --------------------------------------------------------------------------------- | ------------------------- | ---------------------------------------------- |
- | "Use `argon2` or `bcrypt` for password hashing?"                                  | Implementation detail     | Pick one. Log the rationale.                   |
- | "The codebase has no auth model and the ticket assumes one exists."               | Architectural / intent    | Escalate.                                      |
- | "Reviewer suggests renaming `helper.go` to `util.go`. Reasonable but contested."  | Implementation detail     | Pick one. Log the rationale.                   |
- | "Two reviewer skills produce contradictory findings on the same file."            | Intent (product judgment) | Escalate.                                      |
- | "Refactor would move 12 functions across 3 modules. Boldness is set to moderate." | Boldness governed         | Apply the boldness rubric. Log items deferred. |
- | "Refactor proposes deleting a public API that may have external consumers."       | Reversibility / contract  | Escalate.                                      |
- | "Test coverage on a non-critical helper module is 60%."                           | Threshold judgment        | Apply severity threshold. Log if deferred.     |
- | "A constraint in commander's intent appears to conflict with a key task."         | Intent                    | Escalate.                                      |
+ | Situation                                                                        | Altitude                  | Action                                     |
+ |----------------------------------------------------------------------------------|---------------------------|--------------------------------------------|
+ | "Use `argon2` or `bcrypt` for password hashing?"                                 | Implementation detail     | Pick one. Log the rationale.               |
+ | "The codebase has no auth model and the ticket assumes one exists."              | Architectural / intent    | Escalate.                                  |
+ | "Reviewer suggests renaming `helper.go` to `util.go`. Reasonable but contested." | Implementation detail     | Pick one. Log the rationale.               |
+ | "Two reviewer skills produce contradictory findings on the same file."           | Intent (product judgment) | Escalate.                                  |
+ | "Refactor proposes deleting a public API that may have external consumers."      | Reversibility / contract  | Escalate.                                  |
+ | "Test coverage on a non-critical helper module is 60%."                          | Threshold judgment        | Apply severity threshold. Log if deferred. |
+ | "A constraint in commander's intent appears to conflict with a key task."        | Intent                    | Escalate.                                  |
 
 The principle: if a competent operator could answer the question after a 30-second skim of the state doc, it might be high enough altitude to escalate. If answering requires watching the last hour of the run, it's too low.
 
@@ -125,7 +124,7 @@ Sub-skills surface contested findings and breaking-change requirements as andon-
 
 > Breaking changes must be explicitly authorized by the operator.
 
-This is a categorical guardrail, not an altitude judgment. The five levers describe how a skill decides between options; this rule constrains the option set itself. A skill in the autonomous skills must not introduce a breaking change without operator authorization — no matter how confident it is, how clear the rationale, or how strong the consensus among sub-agents.
+This is a categorical guardrail, not an altitude judgment. The five levers describe how a skill decides between options; this rule constrains the option set itself. An autonomous skill must not introduce a breaking change without operator authorization — no matter how confident it is, how clear the rationale, or how strong the consensus among sub-agents.
 
 A breaking change is any modification that requires downstream consumers — humans, scripts, or systems — to update to keep working. Concrete examples:
 
@@ -250,9 +249,9 @@ The opening framing in each autonomous skill's andon-cord section is uniform: *t
 The altitude rule (lever 1) says "implementation-detail forks get the skill's best judgment plus a state-doc log entry." This section enumerates concrete examples so future skill maintainers know what *doesn't* warrant escalation.
 
  | Situation                                                                             | Resolution                                                                      | Log entry                                                                                      |
- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+ |---------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
  | SME proposes function name `parseInput` vs `parseRequest` — conventions don't dictate | Pick the more specific one.                                                     | "Named `parseRequest` for clarity; `parseInput` was equally idiomatic."                        |
- | Refactor reviewer suggests deleting a helper; another invocation argues to keep       | Apply default policy (refactor wins if no caller references and no test fails). | "Removed `unusedHelper`; refactor-reviewer flagged unused; no callers found."                  |
+ | Code reviewer suggests deleting a helper; another invocation argues to keep           | Apply default policy (deletion wins if no caller references and no test fails). | "Removed `unusedHelper`; code reviewer flagged unused; no callers found."                      |
  | Test review surfaces a coverage gap on a non-critical helper, severity low            | Defer to final report. Do not block termination.                                | "Deferred: low-coverage helper `pkg/util/format`; rationale: non-critical, no recent changes." |
  | Two SMEs return functionally equivalent implementations                               | Pick one (the simpler diff).                                                    | "Chose SME A's implementation; SME B's was equivalent but had two more lines."                 |
  | `/tidy-docs` flags wording as unclear; the agent didn't propose a rewrite             | Improve wording with judgment; commit if improvement is clear.                  | "Rewrote intro paragraph; `/tidy-docs` flagged ambiguity in two sentences."                    |
@@ -266,19 +265,19 @@ Direction, not strictly enforced today. Review skills should produce reports and
 
 Status as of this document:
 
- | Skill              | Status                                                                  |
- | ------------------ | ----------------------------------------------------------------------- |
- | `/review-arch`     | Advisory as of v8.0.0. First concrete step.                             |
- | `/review-test`     | Advisory as of v9.0.0.                                                  |
- | `/review-a11y`     | Already advisory.                                                       |
- | `/review-health`   | Already advisory.                                                       |
- | `/review-perf`     | Already advisory.                                                       |
- | `/review-security` | Advisory as of v8.0.0.                                                  |
- | `/review-release`  | Effectively advisory (presents findings for operator review).           |
+ | Skill              | Status                                                        |
+ |--------------------|---------------------------------------------------------------|
+ | `/review-arch`     | Advisory as of v8.0.0. First concrete step.                   |
+ | `/review-test`     | Advisory as of v9.0.0.                                        |
+ | `/review-a11y`     | Already advisory.                                             |
+ | `/review-health`   | Already advisory.                                             |
+ | `/review-perf`     | Already advisory.                                             |
+ | `/review-security` | Advisory as of v8.0.0.                                        |
+ | `/review-release`  | Effectively advisory (presents findings for operator review). |
 
 The path forward: when a `/review-*` skill becomes advisory, its findings should name specific implementation skills with scope hints so the operator (or a calling orchestrator) can chain the right next step. Example: "Dead code in `src/foo/`: work the sweep ticket with `/implement`."
 
-Skills whose find→fix seam is small enough to keep find-and-fix fused live in the `/tidy-*` namespace instead (e.g., `/tidy-docs`, `/tidy-git`). Those skills are not advisory by design — they default to acting on safe categories. The principled distinction: `/review-*` = produces a report, no mutations; `/tidy-*` = mechanical mutations with operator approval for borderline-safe categories; `/implement-*` = substantive mutations driven by tickets.
+Skills whose find→fix seam is small enough to keep find-and-fix fused live in the `/tidy-*` namespace instead (e.g., `/tidy-docs`, `/tidy-git`). Those skills are not advisory by design — they default to acting on safe categories. The principled distinction: `/review-*` = produces a report, no mutations; `/tidy-*` = mechanical mutations with operator approval for borderline-safe categories; `/implement` = substantive mutations driven by tickets.
 
 ## What this discipline does NOT do
 

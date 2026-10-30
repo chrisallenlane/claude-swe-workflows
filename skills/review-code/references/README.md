@@ -29,7 +29,7 @@ Each assumption gets a ledger entry: verified (with the evidence), false (a find
 - Security posture review — that's `/review-security`
 - Reviewing code you're about to write — review needs a diff to exist
 
-**Relationship to `/implement` and `/bug-fix`:** the same `swe-correctness-reviewer` agent runs as `/implement`'s step 9 and `/bug-fix`'s step 10, where its findings are blocking and resolved through an automatic fix-and-re-review convergence loop. `/review-code` is the standalone wrapper: one pass, findings routed to you instead of to an implementation agent. If you fix the findings, re-run `/review-code` — the fresh-instance re-review is the part of the protocol that catches bugs introduced by the fixes.
+**Relationship to `/implement` and `/bug-fix`:** the same `swe-correctness-reviewer` agent runs as `/implement`'s §4 (Verify) and `/bug-fix`'s step 10, where its findings are blocking and resolved through an automatic fix-and-re-review convergence loop. `/review-code` is the standalone wrapper: one pass, findings routed to you instead of to an implementation agent. If you fix the findings, re-run `/review-code` — the fresh-instance re-review is the part of the protocol that catches bugs introduced by the fixes.
 
 ## Workflow
 
@@ -133,7 +133,7 @@ User: /review-code   (dirty working tree, small refactor)
 
 ## Tips for Effective Use
 
-1. **Re-run after fixing.** The protocol's value comes from fresh-instance re-review — fixes introduce bugs too. A fix-then-re-run cycle that converges to APPROVE is the standalone equivalent of `/implement` step 9's convergence loop.
+1. **Re-run after fixing.** The protocol's value comes from fresh-instance re-review — fixes introduce bugs too. A fix-then-re-run cycle that converges to APPROVE is the standalone equivalent of `/implement` §4 (Verify)'s convergence loop.
 
 2. **Don't feed it your rationale.** If you just wrote the code, resist explaining your design to the reviewer. The skill deliberately withholds conversation context from the agent; the diff and the repo are the whole input. Your justifications are exactly the anchoring the review exists to escape.
 

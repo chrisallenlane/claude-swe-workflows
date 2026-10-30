@@ -34,11 +34,11 @@ Dead-code auditing's classic failure is dynamic dispatch: reflection, string-bui
 2. **Determines the reference roots** — an application's entry points, or a library's exported API. A library's unused export is not a finding.
 3. **Tiers every finding:**
 
-| Tier         | Meaning                                                                        |
-| ------------ | ------------------------------------------------------------------------------ |
+| Tier         | Meaning                                                                          |
+| ------------ | -------------------------------------------------------------------------------- |
 | PROVEN       | Tool-verified, or exhaustive search with no dynamic dispatch that could reach it |
-| LIKELY       | No references found; dynamic patterns checked and appear not to apply          |
-| UNVERIFIABLE | No references found, but a dynamic pattern could plausibly reach it            |
+| LIKELY       | No references found; dynamic patterns checked and appear not to apply            |
+| UNVERIFIABLE | No references found, but a dynamic pattern could plausibly reach it              |
 
 Every finding cites its evidence — the tool that flagged it, or the searches performed and their results. UNVERIFIABLE findings route to verification tickets, never removal tickets.
 

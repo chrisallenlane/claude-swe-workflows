@@ -89,10 +89,10 @@ Default: ask; do not guess from context. The lens is a load-bearing input — it
 
 **Elicit authority** in the same exchange — two grants, both defaulting to no:
 
-| Grant             | Question                                                         | If granted                                                  |
-|-------------------|------------------------------------------------------------------|-------------------------------------------------------------|
-| Follow-up reviews | May I run the specialist reviews the map calls for?              | Phase 5 runs them; without it, Phase 4 only recommends them |
-| Tickets           | May I create tickets at or above a severity floor? Which floor?  | Phase 5 creates them; without it, they're proposed          |
+| Grant             | Question                                                        | If granted                                                  |
+|-------------------|-----------------------------------------------------------------|-------------------------------------------------------------|
+| Follow-up reviews | May I run the specialist reviews the map calls for?             | Phase 5 runs them; without it, Phase 4 only recommends them |
+| Tickets           | May I create tickets at or above a severity floor? Which floor? | Phase 5 creates them; without it, they're proposed          |
 
 Ask the ticket question only if follow-ups are granted: the specialists are what produce ticket-shaped findings, so ticket authority means nothing without them. Mention that some follow-ups (notably `/review-security`) are heavy. The floor (default High) governs only what is created unasked.
 
@@ -291,14 +291,14 @@ Do not routinely spawn per-language SMEs. That is the prior failure mode this re
 `/review-health` recommends sibling skills in Phase 4, and runs them in Phase 5 when it has follow-up authority.
 
  | Finding type                               | Sibling skill      | When to route                                                          |
- | ------------------------------------------ | ------------------ | ---------------------------------------------------------------------- |
+ |--------------------------------------------|--------------------|------------------------------------------------------------------------|
  | Architectural coupling / module boundaries | `/review-arch`     | Architecture hygiene at Foundational + cross-cutting coupling findings |
  | Dead or unreachable code                   | `/review-dead`     | Dead-code signals in Observe, or before any architectural review       |
  | Test coverage or test quality gaps         | `/review-test`     | Test health at Foundational, or specific coverage gaps                 |
  | Security findings (CVEs, secrets, auth)    | `/review-security` | Safety-tier findings involving security                                |
  | Performance hotspots                       | `/review-perf`     | Observations of perf-sensitive code without benchmarks                 |
  | Accessibility (for web projects)           | `/review-a11y`     | Documentation findings for web UI code                                 |
- | Documentation gaps                         | `/tidy-docs`      | Documentation at Foundational                                          |
+ | Documentation gaps                         | `/tidy-docs`       | Documentation at Foundational                                          |
  | Pre-release readiness                      | `/review-release`  | When the user is preparing to publish/deploy                           |
 
 Route with a scoped argument when possible: `/review-arch services/billing/` is more useful than `/review-arch`.

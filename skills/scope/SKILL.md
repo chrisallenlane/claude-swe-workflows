@@ -47,14 +47,14 @@ For a multi-ticket set, state each ticket's dependencies explicitly and give the
 
 **Quality bar.** Every ticket meets these; reviewers check against them:
 
-| Criterion                          | Meaning                                                                                                    |
-|------------------------------------|------------------------------------------------------------------------------------------------------------|
-| Implementable without guessing     | Two developers would build substantially the same thing                                                    |
-| Testable acceptance criteria       | Each criterion is a concrete check, not a judgment ("it should be fast")                                   |
-| Explicit dependencies              | Every ticket says what must exist before it starts; no forward dependencies within the execution order     |
-| No gaps, no overlaps               | All necessary work is assigned to exactly one ticket; no two tickets change the same code in conflicting ways |
-| Accurate code references           | Paths, functions, and modules named in the tickets exist as described                                      |
-| Appropriate scope                  | Each ticket is a coherent unit — not unmanageable, not trivial                                             |
+| Criterion                      | Meaning                                                                                                       |
+|--------------------------------|---------------------------------------------------------------------------------------------------------------|
+| Implementable without guessing | Two developers would build substantially the same thing                                                       |
+| Testable acceptance criteria   | Each criterion is a concrete check, not a judgment ("it should be fast")                                      |
+| Explicit dependencies          | Every ticket says what must exist before it starts; no forward dependencies within the execution order        |
+| No gaps, no overlaps           | All necessary work is assigned to exactly one ticket; no two tickets change the same code in conflicting ways |
+| Accurate code references       | Paths, functions, and modules named in the tickets exist as described                                         |
+| Appropriate scope              | Each ticket is a coherent unit — not unmanageable, not trivial                                                |
 
 ## 5. Review
 
@@ -67,6 +67,8 @@ Spawn fresh-context reviewers on the drafts — at least one, always (rule 1). C
 - **`swe-arch-reviewer`**, **`swe-value-engineer`** — when the design's structure, or the requirements themselves, deserve a challenge.
 
 **Iterate to convergence.** Revise from the findings, then re-review with a **fresh** instance of each lens that raised material findings — a fresh reader doesn't anchor on its own prior findings. Stop when a round finds nothing material: nothing that would change what gets built, how it is verified, or how the work is cut. Wording nits are not material. Simple work usually converges in one round; complex work may take several. A lens still raising material findings after three rounds goes to the user — the disagreement is probably a requirements question, not a drafting one.
+
+**Sign-offs are constraints.** When a lens signs off on something — an approved command name, a required security control — later reviewers may raise a conflict with it, but they don't silently trade it away. A conflict between lenses the skill cannot resolve goes to the user.
 
 ## 6. Approve and Create
 

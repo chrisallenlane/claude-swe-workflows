@@ -74,11 +74,11 @@ Granting tickets *is* the approval to create them. Without the grant, nothing is
 
 **Never run here:**
 
-| Skill                          | Why                                                                     |
-|--------------------------------|-------------------------------------------------------------------------|
-| `/review-code`                 | It reviews a diff; a repository review has none                         |
-| `/review-value`                | Only if your intent asks for it — its trade menu is product decisions   |
-| `/review-namespace` (search)   | Search mode needs operator calibration                                  |
+| Skill                        | Why                                                                   |
+|------------------------------|-----------------------------------------------------------------------|
+| `/review-code`               | It reviews a diff; a repository review has none                       |
+| `/review-value`              | Only if your intent asks for it — its trade menu is product decisions |
+| `/review-namespace` (search) | Search mode needs operator calibration                                |
 
 **Tickets.** Each specialist ends with a ticket proposal. With ticket authority, the skill approves proposals at or above the floor and declines the rest, recording them for the report. Without it, every proposal is declined within the run and one consolidated set is proposed at the end — every finding, ordered by severity, for you to trim — created only on approval.
 
@@ -202,13 +202,13 @@ Report ends with:
 
 Each element of the design is a countermeasure to a specific predictable failure of informal repo review:
 
-| Failure mode                                                              | Countermeasure                                                                     |
-|---------------------------------------------------------------------------|------------------------------------------------------------------------------------|
-| Inheritor's paralysis / availability bias — fixate on first file opened   | Systematic Observe phase with fixed signal battery                                 |
-| Unknown-unknowns dominance                                                | Coverage Manifest elevates missing tooling to first-class output                   |
-| Premature closure                                                         | Phase-integrity gates (Orient cites Observe; Decide cites Orient)                  |
-| Expert deference — accept prior-author choices unexamined                 | Differential-diagnosis classification forces candidate alternatives with evidence  |
-| Free-floating adjectives ("health: good")                                 | Reference-class calibration with cited per-class rubrics                           |
+| Failure mode                                                            | Countermeasure                                                                    |
+|-------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
+| Inheritor's paralysis / availability bias — fixate on first file opened | Systematic Observe phase with fixed signal battery                                |
+| Unknown-unknowns dominance                                              | Coverage Manifest elevates missing tooling to first-class output                  |
+| Premature closure                                                       | Phase-integrity gates (Orient cites Observe; Decide cites Orient)                 |
+| Expert deference — accept prior-author choices unexamined               | Differential-diagnosis classification forces candidate alternatives with evidence |
+| Free-floating adjectives ("health: good")                               | Reference-class calibration with cited per-class rubrics                          |
 
 ## Intellectual Foundations
 

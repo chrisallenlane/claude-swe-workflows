@@ -46,7 +46,7 @@ The `/think-reflect` skill extracts learnings from something that already happen
  │  ────────────────────────────────────────    │
  │  • What's being reflected on?                │
  │  • Start point, end point                    │
- │  • What's in scope, what's out                │
+ │  • What's in scope, what's out               │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -67,7 +67,7 @@ The `/think-reflect` skill extracts learnings from something that already happen
  │  What-worked-vs-got-lucky / What-didn't /    │
  │  What-surprised / System-rewards-vs-intent / │
  │  Decisions-that-aged / What-to-tell-past-self│
- │  / Patterns-that-recur                        │
+ │  / Patterns-that-recur                       │
  │  (3-6 selected; irrelevant ones dropped)     │
  └──────────────────┬───────────────────────────┘
                     ▼
@@ -85,8 +85,8 @@ The `/think-reflect` skill extracts learnings from something that already happen
  │  ────────────────────────────────────────    │
  │  • Cluster learnings across lenses           │
  │  • Extract updated mental models             │
- │    (first-class output)                       │
- │  • Distinguish process wins from luck         │
+ │    (first-class output)                      │
+ │  • Distinguish process wins from luck        │
  │  • Note observation/recollection gaps        │
  │  • Identify recurring patterns               │
  └──────────────────┬───────────────────────────┘
@@ -104,24 +104,24 @@ The `/think-reflect` skill extracts learnings from something that already happen
 
 ## Roles
 
-| Role          | What they do                                                                  |
-|---------------|-------------------------------------------------------------------------------|
-| Judge (you)   | Scope experience, gather ground truth, choose lenses, synthesize models       |
-| Reflectors    | Extract learnings through assigned lenses, in isolation                        |
+| Role        | What they do                                                            |
+| ----------- | ----------------------------------------------------------------------- |
+| Judge (you) | Scope experience, gather ground truth, choose lenses, synthesize models |
+| Reflectors  | Extract learnings through assigned lenses, in isolation                 |
 
 ## Reflection Lenses
 
 The orchestrator selects lenses based on what the experience affords:
 
-| Lens                          | Extracts                                                                |
-|-------------------------------|-------------------------------------------------------------------------|
-| what-worked-vs-got-lucky      | Attribution honesty for positive outcomes (process win vs. luck)         |
-| what-didn't                   | Blameless failure-mode identification                                    |
-| what-surprised                | Surprises as signal; candidate mental-model updates                      |
-| system-rewards-vs-intent      | Goodhart gaps; what was actually rewarded vs. what was intended           |
-| decisions-that-aged           | Decision-quality calibration, separated from outcome quality              |
-| what-to-tell-past-self        | Forward-applicable advice derived from hindsight                         |
-| patterns-that-recur           | Connections to prior experiences; one-off vs. recurring                   |
+| Lens                     | Extracts                                                         |
+| ------------------------ | ---------------------------------------------------------------- |
+| what-worked-vs-got-lucky | Attribution honesty for positive outcomes (process win vs. luck) |
+| what-didn't              | Blameless failure-mode identification                            |
+| what-surprised           | Surprises as signal; candidate mental-model updates              |
+| system-rewards-vs-intent | Goodhart gaps; what was actually rewarded vs. what was intended  |
+| decisions-that-aged      | Decision-quality calibration, separated from outcome quality     |
+| what-to-tell-past-self   | Forward-applicable advice derived from hindsight                 |
+| patterns-that-recur      | Connections to prior experiences; one-off vs. recurring          |
 
 3-6 lenses is typical. Drop lenses that don't fit — forcing an unfit lens produces noise. **Always include what-worked-vs-got-lucky when the experience had positive outcomes** — mistaking luck for process is among the most damaging reflection failures.
 
@@ -390,12 +390,12 @@ reduction 35% post-launch; error rate unchanged.
 
 ## Relationship to Other Skills
 
-| Skill                | Relationship                                                                        |
-|----------------------|-------------------------------------------------------------------------------------|
-| `/think-brainstorm`  | Natural downstream — if reflection surfaces actionable themes, brainstorm interventions |
-| `/think-diagnose`    | Natural downstream — if reflection surfaces a recurring failure mode, diagnose its cause |
-| `/think-scrutinize`  | Natural downstream — stress-test an intervention derived from reflection             |
-| `/bug-fix`           | If a reflected-on failure is in code, `/bug-fix` investigates it                    |
+| Skill               | Relationship                                                                             |
+| ------------------- | ---------------------------------------------------------------------------------------- |
+| `/think-brainstorm` | Natural downstream — if reflection surfaces actionable themes, brainstorm interventions  |
+| `/think-diagnose`   | Natural downstream — if reflection surfaces a recurring failure mode, diagnose its cause |
+| `/think-scrutinize` | Natural downstream — stress-test an intervention derived from reflection                 |
+| `/bug-fix`          | If a reflected-on failure is in code, `/bug-fix` investigates it                         |
 
 **Reflection does not replace these skills; it informs them.** A mental-model update is a changed belief, not an action plan. The action comes from downstream skills operating on the updated beliefs.
 

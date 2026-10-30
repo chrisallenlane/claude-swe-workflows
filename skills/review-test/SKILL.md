@@ -67,7 +67,7 @@ Follow this waterfall — stop at the first step that produces a usable report.
 Search for coverage files in common locations:
 
 | Format       | Files to search for                                                              |
-|--------------|----------------------------------------------------------------------------------|
+| ------------ | -------------------------------------------------------------------------------- |
 | Go           | `coverage.out`, `cover.out`, `c.out`                                             |
 | lcov         | `lcov.info`, `coverage/lcov.info`                                                |
 | Istanbul/nyc | `coverage/coverage-summary.json`, `coverage/coverage-final.json`, `.nyc_output/` |
