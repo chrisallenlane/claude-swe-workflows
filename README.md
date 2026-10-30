@@ -22,9 +22,9 @@ lower-level ones. Enter at the layer that matches your task. The deepest stack:
     judgment over a fixed floor              security, /refactor, /review-*, …
 ```
 
-Two other entry points orchestrate bounded autonomous loops:
+Two other entry points can run autonomously:
 
-- `/lead-bug-hunt` — loops `/bug-hunt` → `/implement` until bugs converge below a severity floor.
+- `/bug-hunt` — hunts until a round confirms nothing above a severity floor; with authority, tickets the bugs and fixes them via `/implement` between rounds.
 - `/lead-review` — runs its eight-phase review pipeline once.
 
 Planning feeds implementation: `/scope` → `/implement`. Supporting skills (`/think-*`, `/review-*`, `/bug-*`,
@@ -37,7 +37,7 @@ skills with a related purpose.
 
 | Namespace      | Purpose                                     | Skills                                                                                                                                                                                        |
 |----------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/lead-*`      | Autonomous orchestrators                    | `/lead-bug-hunt`, `/lead-review`                                                                                                                                                              |
+| `/lead-*`      | Autonomous orchestrators                    | `/lead-review`                                                                                                                                                                                |
 | `/implement`   | Implement tickets (mutate the working tree) | `/implement`                                                                                                                                                                                  |
 | `/scope`       | Plan and produce tickets                    | `/scope`                                                                                                                                                                                      |
 | `/review-*`    | Advisory audits — no code changes           | `/review-arch`, `/review-code`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-health`, `/review-security`, `/review-release`, `/review-value`, `/review-dead`, `/review-namespace` |
@@ -64,8 +64,7 @@ task:
 | Implement a ticket, a batch of tickets, or an open-ended goal                               | `/implement`         |
 | Plan work and create tickets — one, or a whole project's worth                              | `/scope`             |
 | Fix a bug with diagnosis and root-cause analysis                                            | `/bug-fix`           |
-| Proactively hunt for bugs before they're reported                                           | `/bug-hunt`          |
-| Iterate hunt → fix until bugs converge below a severity floor (autonomous)                  | `/lead-bug-hunt`     |
+| Hunt for bugs — report, ticket, or fix them until a severity floor is met                   | `/bug-hunt`          |
 | Pressure-test a problem's framing before solving it                                         | `/think-reframe`     |
 | Brainstorm approaches to a goal                                                             | `/think-brainstorm`  |
 | Reason about why a phenomenon is happening                                                  | `/think-diagnose`    |
@@ -103,7 +102,6 @@ One-line summaries grouped by namespace. Click through to each skill's detailed 
 
 ### `/lead-*` — Autonomous orchestrators
 
-- **`/lead-bug-hunt`** — Loops `/bug-hunt` → `/implement` until bugs converge below a stated severity floor; runs `/review-test` on the new reproducing tests at termination. ([details](skills/lead-bug-hunt/references/README.md))
 - **`/lead-review`** — Runs every repo-scoped `/review-*` sub-skill autonomously with an operator-set toggle for whether sub-skill ticket proposals are written to the tracker (diff-scoped `/review-code` is excluded — an audit has no diff under review). ([details](skills/lead-review/references/README.md))
 
 ### `/implement` — Working-tree mutator
@@ -146,7 +144,7 @@ All `/think-*` skills produce feedback only — no code, no tickets, no artifact
 ### `/bug-*` — Bug work
 
 - **`/bug-fix`** — Diagnosis-first bug fix: reproduce with a failing test, root-cause via git archaeology, targeted fix, verify. Mutates. ([details](skills/bug-fix/SKILL.md))
-- **`/bug-hunt`** — Proactive bug discovery. Risk-ranks hotspots, deep-dives each with reproducing tests. Advisory — proposes tickets for confirmed findings. ([details](skills/bug-hunt/SKILL.md))
+- **`/bug-hunt`** — Proactive bug discovery. Risk-ranks hotspots and deep-dives each with reproducing tests, round after round until nothing is confirmed above a severity floor. Advisory by default — proposes tickets for confirmed findings; with authority in its commander's intent, creates tickets and fixes via `/implement`. ([details](skills/bug-hunt/references/README.md))
 
 ### `/tidy-*` — Mechanical hygiene
 

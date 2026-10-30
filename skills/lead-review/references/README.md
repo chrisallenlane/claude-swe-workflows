@@ -27,7 +27,7 @@ This skill is a member of the **orchestrator family** and implements the autonom
 
 **Don't use `/lead-review` for:**
 - Targeted single-dimension review — use the individual `/review-*` skill directly
-- Bug hunting — use `/bug-hunt` or `/lead-bug-hunt`
+- Bug hunting — use `/bug-hunt`
 - Change-oriented cleanup — use `/refactor`
 
 **Rule of thumb:** if the goal is "audit the codebase across every dimension before shipping (or before deciding what to fix)," `/lead-review` is the right entry point. If the goal is targeted (one dimension, one area), invoke the relevant `/review-*` skill directly.
@@ -60,8 +60,8 @@ If you want the interactive walkthrough that `/review-deep` provided, invoke ind
 
 | Skill              | Outcome contract                                                  | Composition                                                                        |
 |--------------------|-------------------------------------------------------------------|------------------------------------------------------------------------------------|
-| `/lead-bug-hunt`   | Iterate `/bug-hunt` → fix until bugs converge                     | Sibling — different outcome contract                                                |
-| `/implement`         | Tickets or a goal → judgment-driven implementation                | Natural pair: `/lead-review` (backlog) → `/implement` (execution)                  |
+| `/bug-hunt`        | Hunt to a severity floor; ticket or fix on authority              | Sibling — different outcome contract                                                |
+| `/implement`       | Tickets or a goal → judgment-driven implementation                | Natural pair: `/lead-review` (backlog) → `/implement` (execution)                  |
 
 ## Workflow Diagram
 

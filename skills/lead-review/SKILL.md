@@ -382,9 +382,9 @@ Run individual `/review-*` skills directly when you want a single dimension audi
 
 Natural composition: `/lead-review` (tickets ON) produces a comprehensive backlog → `/implement` works through the backlog. `/lead-review` is the planning half; `/implement` is the execution half.
 
-**Relationship to `/lead-bug-hunt`:**
+**Relationship to `/bug-hunt`:**
 
-Sibling orchestrator. `/lead-bug-hunt` is bug-elimination-specific; `/lead-review` is multi-dimensional review. Both follow the orchestrator-family contract (auto-approval of sub-skill tickets, severity floor, andon protocol).
+`/bug-hunt` hunts for bugs to a severity floor and, with authority, tickets and fixes them; `/lead-review` is multi-dimensional review. `/lead-review` does not invoke `/bug-hunt` — bug hunting is a different lens from its review pipeline.
 
 **Out-of-axis skills:**
 

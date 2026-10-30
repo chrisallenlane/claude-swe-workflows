@@ -61,9 +61,8 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
 ├── fixed floor: concept inventory → build → practical verification → correctness review
 └── judgment-chosen repertoire: SMEs, reviewers, /refactor, /review-*, /bug-hunt, /scope, …
 
-/lead-bug-hunt
-└── loop: /bug-hunt → /implement (until convergence)
-    └── termination: /review-test (new tests)
+/bug-hunt (commander's intent: scope, severity floor, constraints, ticket/fix authority)
+└── loop: assess → hunt → triage → (fix via /implement, if authorized) until no finding above the floor
 
 /lead-review
 └── /review-health → /review-dead → /review-arch → /review-security → /review-perf
@@ -89,8 +88,7 @@ Supporting workflows available at any level:
 **Bug work:**
 
 - `/bug-fix` — diagnosis-first bug fixing
-- `/bug-hunt` — proactive bug discovery
-- `/lead-bug-hunt` — autonomous bug-elimination loop (orchestrator-family; iterates `/bug-hunt` → `/implement` until convergence below a severity floor; always runs `/review-test` on new reproducing tests at termination)
+- `/bug-hunt` — proactive bug discovery (commander's intent with optional ticket/fix authority; iterates rounds until nothing is confirmed above a severity floor; advisory by default, fixes via `/implement` only when authorized)
 
 **Quality pipelines:**
 

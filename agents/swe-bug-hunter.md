@@ -46,6 +46,8 @@ Be specific: "If `processOrder()` receives an order with zero items, it will pan
 
 Write a test that encodes the **correct expected behavior**. If the hypothesis is right (the bug exists), the test will fail against the current code.
 
+Assert at the boundary a caller sees — return values, errors, output, persisted state — not against internals. The test becomes the fix's acceptance criterion; one pinned to internals pushes the fix toward the wrong shape and breaks under any correct restructuring.
+
 ### c. Run the Test
 
 Execute the test and observe the result.

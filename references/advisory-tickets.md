@@ -33,14 +33,14 @@ The dispatcher accepts exactly three outcomes:
 
 Skill-specific behavior on decline:
 
-- `/bug-hunt` — falls through to a reproducing-test commit step. The tests have standalone coverage value regardless of ticket creation, so the skill offers to commit them even after a declined ticket proposal.
+- `/bug-hunt` — falls through to a reproducing-test commit step. The tests have standalone coverage value regardless of ticket creation, so the skill offers to commit them even after a declined ticket proposal — bug-confirming tests marked as expected failures, so the suite stays green. (With ticket authority in its commander's intent, `/bug-hunt` creates its tickets without a proposal step.)
 - `/review-arch`, `/review-code`, `/review-dead`, `/review-security`, `/review-test` — exit cleanly with the analysis report; no further actions.
 - `/review-value` — exit cleanly; the priced trade menu stands as a planning artifact (knowing what the commitments cost is itself the product).
 - `/review-namespace` — exit cleanly; findings (and in search mode, the champion tree + mapping) stand as a planning artifact.
 
 ## Orchestrator-invoked behavior
 
-When invoked by an orchestrator (`/implement`, `/lead-bug-hunt`, `/lead-review`, etc.), the workflow above is unchanged. The skill proposes the ticket structure to the orchestrator, which applies its own autonomy judgment per [`autonomy.md`](autonomy.md) § "Auto-approval of sub-skill ticket proposals" — approving, editing, or declining the proposal, then deciding which of any created tickets to work in the current flow versus defer.
+When invoked by an orchestrator (`/implement`, `/bug-hunt`, `/lead-review`, etc.), the workflow above is unchanged. The skill proposes the ticket structure to the orchestrator, which applies its own autonomy judgment per [`autonomy.md`](autonomy.md) § "Auto-approval of sub-skill ticket proposals" — approving, editing, or declining the proposal, then deciding which of any created tickets to work in the current flow versus defer.
 
 The skill does not branch on "interactive operator vs orchestrator." The proposal is the same. The receiver decides.
 
@@ -50,6 +50,6 @@ Each advisory skill's SKILL.md is responsible for:
 
 - The **shape catalog** — the menu of proposed ticket structures the skill chooses among given its finding mix (e.g., "Concentrated CRITICALs" → 1 ticket per finding; "Spread across severity" → batch tickets; "Defense-in-depth only" → single hardening ticket).
 - The **per-ticket body schema** — the section headings each created ticket uses (Bug/Attack/Gap; Root cause/Defensive gap/Risk; Reproducing test/Acceptance criteria; Fix guidance; etc.).
-- Any **commit-step boundary** — `/bug-hunt` commits reproducing tests *before* ticket creation so ticket bodies can reference them by path; other advisory skills don't have a commit dependency.
+- Any **commit-step boundary** — `/bug-hunt` commits reproducing tests (bug-confirming ones marked as expected failures) *before* ticket creation so ticket bodies can reference them by path; other advisory skills don't have a commit dependency.
 
 What this document carries is uniform across the family: the proposal form, the three-outcome dispatcher, and the orchestrator-invoked behavior paragraph.

@@ -1,6 +1,6 @@
 # Autonomy — Design Discipline for Orchestrator-Family Skills
 
-This document states the autonomy discipline that governs the orchestrator-family skills in this plugin: `/lead-bug-hunt`, `/lead-review`, and `/implement` when it runs multi-ticket or unattended work. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
+This document states the autonomy discipline that governs the orchestrator-family skills in this plugin: `/lead-review`, `/implement` when it runs multi-ticket or unattended work, and `/bug-hunt` when its commander's intent grants ticket or fix authority. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
 
 It is opinionated, plugin-wide for the orchestrator family, and cited from each applicable skill. New escalation points or handoff formats invented by a single skill should be reconciled against this document; the goal is a coherent operator experience across the family.
 
@@ -81,7 +81,7 @@ The principle: anything not captured in commander's intent becomes implicit, and
 
 Two budget categories are blessed plugin-wide:
 
-- **Iteration cap** — maximum cycles, loop iterations, or batches the skill runs before forcing a stop. Examples: `/implement` caps at 50 actions; `/lead-bug-hunt` is bounded by its iteration cap; per-ticket retry attempts bounded.
+- **Iteration cap** — maximum cycles, loop iterations, or batches the skill runs before forcing a stop. Examples: `/implement` caps at 50 actions; `/bug-hunt` caps at 10 hunt rounds; per-ticket retry attempts bounded.
 - **Retry cap** — maximum consecutive failures of the same kind before escalating. Examples: `/implement` retries acceptance verification 3 times; `/refactor` and `/review-arch` abort a batch after 3 QA failures.
 
 Two budget categories are explicitly **not** part of the discipline:
@@ -95,7 +95,7 @@ Skills can introduce additional skill-specific budgets if they earn their keep, 
 
 > Worker → caller → user. Not worker → user.
 
-When an orchestrator invokes a sub-skill (e.g., `/lead-bug-hunt` invokes `/implement`), the sub-skill's escalations cascade up to the orchestrator, not directly to the operator. The orchestrator decides whether to resolve the escalation itself or to pull its own andon cord at a higher altitude.
+When an orchestrator invokes a sub-skill (e.g., `/bug-hunt` with fix authority invokes `/implement`), the sub-skill's escalations cascade up to the orchestrator, not directly to the operator. The orchestrator decides whether to resolve the escalation itself or to pull its own andon cord at a higher altitude.
 
 `/implement`'s "Invoked by Another Skill" contract makes this explicit: when a caller supplies the tickets and constraints, `/implement`'s escalations go to the caller, which decides whether to escalate further. The same holds inside `/implement` itself: escalations from the agents and skills it runs come to it first.
 
@@ -103,7 +103,7 @@ The deepest skill never goes around its caller. The caller has more context abou
 
 ## Auto-approval of sub-skill ticket proposals
 
-Advisory sub-skills (`/bug-hunt`, `/review-arch`, `/review-dead`, `/review-security`, `/review-test`, `/review-health`) produce ticket *proposals* that require operator approval in their native contract. Under an orchestrator-family skill, those approvals are answered automatically by the orchestrator rather than escalated to the operator.
+Advisory sub-skills (`/bug-hunt` by default, `/review-arch`, `/review-dead`, `/review-security`, `/review-test`, `/review-health`) produce ticket *proposals* that require operator approval in their native contract. Under an orchestrator-family skill, those approvals are answered automatically by the orchestrator rather than escalated to the operator.
 
 This is a deliberate contract shift consistent with the autonomy discipline:
 
@@ -115,7 +115,7 @@ How each orchestrator-family skill handles the contract shift:
 
 | Skill                | Behavior                                                                                                                                                                |
 |----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/lead-bug-hunt`     | Auto-approves all `/bug-hunt` and `/review-test` proposals. The commander's-intent severity floor is applied at the triage step, not at the approval moment.            |
+| `/bug-hunt`          | With ticket authority, creates tickets for its own confirmed findings at or above the severity floor; without it, proposes them for operator approval.                 |
 | `/lead-review`       | Mode-dependent. Tickets ON → auto-approve at/above the severity floor, decline below. Tickets OFF → auto-decline uniformly. Mode is fixed at startup.                   |
 | `/implement`         | Approves, edits, or declines with judgment; prefers cutting a ticket when in doubt, since a decline commits the run to doing the work inline.                            |
 
@@ -164,15 +164,17 @@ Purpose and end state are implicit: purpose is "comprehensive review across all 
 
 This schema's binary ticket-creation field is unusual in the family — other orchestrator-family skills cut tickets (via auto-approval of sub-skill proposals). `/lead-review` honors both modes because operator intents legitimately split: "produce a backlog" and "produce a report" are both valid review outcomes.
 
-### `/lead-bug-hunt`
+### `/bug-hunt`
 
-Three fields:
+Five fields:
 
-- **Scope** — entire codebase or user-specified subset, with exclusions (e.g., generated code, vendored code). Same shape as `/bug-hunt`'s scope.
-- **Severity floor** — the lowest severity that gates termination (Critical only / Critical+High / Critical+High+Medium / All). Defaults to Critical+High. This is the dominant judgment call this skill exposes: too low and the loop never converges; too high and the run ships with known bugs.
-- **Constraints** — hard limits beyond the always-on guardrails (no breaking changes, no main/master writes). Examples: don't modify a specific module's public API, must remain compatible with a particular language version.
+- **Scope** — what to hunt, with exclusions (defaults: production code; tests, dev tooling, generated and vendored code excluded).
+- **Severity floor** — findings at or above it block convergence; findings below it are reported only. Defaults to High. This is the dominant judgment call: too low and the hunt never converges; too high and known bugs are left standing.
+- **Constraints** — hard limits beyond the always-on guardrails (no breaking changes, no main/master writes).
+- **Tickets** — authority to create tickets for confirmed findings without asking again. Defaults to no: a ticket proposal is presented for approval at the end.
+- **Fix** — authority to fix confirmed findings on a branch via `/implement` and re-hunt. Defaults to no.
 
-Purpose, key tasks, end state, and non-goals are implicit: purpose is "eliminate bugs above the floor"; key task is convergence; end state is two consecutive `/bug-hunt` passes producing no findings above the floor; non-goals are anything outside the bounded sub-skill repertoire (other `/review-*` skills, `/scope`, etc.). The skill drops these fields because the work is fixed-shape and the implicit values are stable across runs.
+With both authority fields at their defaults the skill is advisory and changes nothing outside its report until the operator approves. Purpose and end state are implicit: find the bugs above the floor; end when a hunt round confirms nothing above it, or at the 10-round cap.
 
 ## Shared handoff template
 
@@ -240,7 +242,7 @@ Skills may add fields below "Current state" that are specific to their workflow 
 
 Each orchestrator-family skill extends the shared template in two predictable ways:
 
-1. **Title** — `## Andon Cord — /<skill> — <phase identifier>` where the phase identifier varies per skill (cycle number for `/lead-bug-hunt`; phase name for `/lead-review`; current action for `/implement`). The phase identifier is load-bearing — the same skill may pull the cord at different points and the operator needs to know which one.
+1. **Title** — `## Andon Cord — /<skill> — <phase identifier>` where the phase identifier varies per skill (round number for `/bug-hunt`; phase name for `/lead-review`; current action for `/implement`). The phase identifier is load-bearing — the same skill may pull the cord at different points and the operator needs to know which one.
 2. **Current-state additions** — skill-specific fields appended after the shared baseline (typically convergence counters, findings-ledger summaries, a state-doc pointer). Skills should not add fields *between* "Pre-loaded options" and "Recommendation" — that ordering is load-bearing.
 
 After pulling the cord, the skill stops. It does not attempt additional cycles or phases. It waits for operator input.
