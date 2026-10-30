@@ -22,10 +22,10 @@ lower-level ones. Enter at the layer that matches your task. The deepest stack:
     judgment over a fixed floor              security, /refactor, /review-*, …
 ```
 
-Two other entry points can run autonomously:
+Two other entry points can run autonomously, given authority up front:
 
 - `/bug-hunt` — hunts until a round confirms nothing above a severity floor; with authority, tickets the bugs and fixes them via `/implement` between rounds.
-- `/lead-review` — runs its eight-phase review pipeline once.
+- `/review-health` — maps the repository; with authority, runs the specialist reviews the map calls for and tickets their findings.
 
 Planning feeds implementation: `/scope` → `/implement`. Supporting skills (`/think-*`, `/review-*`, `/bug-*`,
 `/tidy-*`) compose into any of the orchestrators above or run standalone.
@@ -37,7 +37,6 @@ skills with a related purpose.
 
 | Namespace      | Purpose                                     | Skills                                                                                                                                                                                        |
 |----------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/lead-*`      | Autonomous orchestrators                    | `/lead-review`                                                                                                                                                                                |
 | `/implement`   | Implement tickets (mutate the working tree) | `/implement`                                                                                                                                                                                  |
 | `/scope`       | Plan and produce tickets                    | `/scope`                                                                                                                                                                                      |
 | `/review-*`    | Advisory audits — no code changes           | `/review-arch`, `/review-code`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-health`, `/review-security`, `/review-release`, `/review-value`, `/review-dead`, `/review-namespace` |
@@ -47,9 +46,9 @@ skills with a related purpose.
 | `/test-*`      | Test-quality work                           | `/test-mutation`                                                                                                                                                                              |
 | (standalone)   | Skills that don't share a namespace         | `/refactor`, `/pre-compact`, `/release`                                                                                                                                                       |
 
-The `/lead-*` skills and `/implement` additionally share an autonomy
-discipline (commander's intent, pre-loaded options, pre-rebutted
-recommendations, risk budgets) — see
+The skills that act on granted authority — `/implement`, `/bug-hunt`, and
+`/review-health` — additionally share an autonomy discipline (commander's
+intent, pre-loaded options, pre-rebutted recommendations, risk budgets) — see
 [references/autonomy.md](references/autonomy.md). The `/think-*` namespace
 shares a design discipline (practitioner-sourced countermeasures to specific
 cognitive failure modes) — see [references/think.md](references/think.md).
@@ -84,11 +83,10 @@ task:
 | Pre-release readiness check                                                                 | `/review-release`    |
 | Cut a versioned release (preflight + plan + execute)                                        | `/release`           |
 | Audit web content for accessibility barriers                                                | `/review-a11y`       |
-| First-pass strategic orientation on a repo                                                  | `/review-health`     |
+| Orient on a repo — or review every dimension, with authority to run the specialists         | `/review-health`     |
 | Review performance (compute and/or web)                                                     | `/review-perf`       |
 | Perform a white-box security audit                                                          | `/review-security`   |
 | Adversarially review a diff for correctness bugs before merging                             | `/review-code`       |
-| Run every review dimension autonomously (with optional backlog creation)                    | `/lead-review`       |
 | Tidy up the session before running `/compact`                                               | `/pre-compact`       |
 | Clean up local git state (stale refs, merged branches)                                      | `/tidy-git`          |
 
@@ -99,10 +97,6 @@ task:
 ## Skills
 
 One-line summaries grouped by namespace. Click through to each skill's detailed README.
-
-### `/lead-*` — Autonomous orchestrators
-
-- **`/lead-review`** — Runs every repo-scoped `/review-*` sub-skill autonomously with an operator-set toggle for whether sub-skill ticket proposals are written to the tracker (diff-scoped `/review-code` is excluded — an audit has no diff under review). ([details](skills/lead-review/references/README.md))
 
 ### `/implement` — Working-tree mutator
 
@@ -120,13 +114,13 @@ All `/review-*` skills are advisory — they audit and propose, never mutate.
 - **`/review-test`** — Five-phase test-suite survey: unit, integration, E2E (browser, webapps only), fuzz, test quality. Proposes a ticket structure for gaps. ([details](skills/review-test/SKILL.md))
 - **`/review-perf`** — Performance review across compute (algorithms, profiling) and web (caching, asset delivery, Core Web Vitals) domains. ([details](skills/review-perf/SKILL.md))
 - **`/review-a11y`** — WCAG 2.2 Level AA audit of detected web content. ([details](skills/review-a11y/SKILL.md))
-- **`/review-health`** — First-pass strategic orientation review. Useful when inheriting a project, evaluating a library, or revisiting your own repo. Evidence-cited map, not a grade. ([details](skills/review-health/SKILL.md))
+- **`/review-health`** — Holistic review. Produces an evidence-cited map, not a grade, calibrated to the repo's reference class — useful when inheriting a project, evaluating a library, or revisiting your own repo. Given authority up front, it also runs the specialist reviews the map calls for (`/review-dead`, `/review-arch`, `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release`), consolidates their findings, and creates tickets. Never changes code. ([details](skills/review-health/SKILL.md))
 - **`/review-security`** — White-box security audit. Blue-teamer evaluates defensive posture first; red-teamers then attack informed by the gaps. Iterates until no new exploit chains emerge. ([details](skills/review-security/SKILL.md))
 - **`/review-release`** — Pre-release readiness check: debug artifacts, version mismatches, changelog gaps, git hygiene, breaking changes, license compliance. ([details](skills/review-release/SKILL.md))
 - **`/review-code`** — Adversarial correctness review of a diff: assumes a bug already shipped and mechanically verifies every assumption the change makes against the repo. The one diff-scoped `/review-*` skill — the rest audit the whole repository. ([details](skills/review-code/SKILL.md))
-- **`/review-value`** — Value-engineering review: discovers the project's requirements across provenance tiers (documented, spec-pinned, inferred from behavior), attributes implementation cost to the requirements that force it, and presents a trade menu — small concrete behavior relaxations that dissolve disproportionate machinery. Excluded from `/lead-review`: its output is product decisions. ([details](skills/review-value/SKILL.md))
-- **`/review-dead`** — Focused dead-code audit: unreferenced symbols, dead files, unreachable branches, unused imports and dependencies, tests-only code, dead configuration. Per-finding confidence tiers calibrated against the codebase's dynamic-dispatch patterns; leverages language tooling when present. Runs as `/lead-review`'s phase 2. ([details](skills/review-dead/SKILL.md))
-- **`/review-namespace`** — Empirical namespace-legibility review: cold reader agents receive only the file listing and answer navigation questions against verified ground truth — mispredictions become evidence-backed findings, and taxonomy debates are settled by measurement. Optional heavy search mode evolves hypothetical trees (each with an old→new mapping) against the probe battery until a champion converges, calibrated by a style-primed reader pool that proxies the maintainer. Excluded from `/lead-review`. ([details](skills/review-namespace/SKILL.md))
+- **`/review-value`** — Value-engineering review: discovers the project's requirements across provenance tiers (documented, spec-pinned, inferred from behavior), attributes implementation cost to the requirements that force it, and presents a trade menu — small concrete behavior relaxations that dissolve disproportionate machinery. `/review-health` runs it only when asked: its output is product decisions. ([details](skills/review-value/SKILL.md))
+- **`/review-dead`** — Focused dead-code audit: unreferenced symbols, dead files, unreachable branches, unused imports and dependencies, tests-only code, dead configuration. Per-finding confidence tiers calibrated against the codebase's dynamic-dispatch patterns; leverages language tooling when present. `/review-health`'s follow-up runs it before `/review-arch`. ([details](skills/review-dead/SKILL.md))
+- **`/review-namespace`** — Empirical namespace-legibility review: cold reader agents receive only the file listing and answer navigation questions against verified ground truth — mispredictions become evidence-backed findings, and taxonomy debates are settled by measurement. Optional heavy search mode evolves hypothetical trees (each with an old→new mapping) against the probe battery until a champion converges, calibrated by a style-primed reader pool that proxies the maintainer. `/review-health`'s follow-up never runs search mode. ([details](skills/review-namespace/SKILL.md))
 
 ### `/think-*` — Reasoning
 

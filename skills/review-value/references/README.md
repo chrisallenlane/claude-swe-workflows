@@ -104,7 +104,7 @@ Every trade names:
 
 5. **Watch the drift observations.** A documented requirement the implementation no longer honors is a decision waiting to be made in either direction — enforce it or strike it.
 
-6. **Orchestrators: this skill is excluded from `/lead-review`.** Its output is product decisions an autonomous pipeline cannot rule on. Run it with the product owner present.
+6. **Callers run it only when asked.** `/review-health`'s follow-up runs it only when intent asks for it, because its output is product decisions an autonomous run cannot rule on. Run it with the product owner present.
 
 ## Agent Coordination
 

@@ -64,10 +64,9 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
 /bug-hunt (commander's intent: scope, severity floor, constraints, ticket/fix authority)
 └── loop: assess → hunt → triage → (fix via /implement, if authorized) until no finding above the floor
 
-/lead-review
-└── /review-health → /review-dead → /review-arch → /review-security → /review-perf
-  → /review-a11y → /review-test → /review-release
-  (sub-skill ticket proposals auto-approved or auto-declined per startup choice)
+/review-health (commander's intent: lens, scope, follow-up and ticket authority)
+└── map (observe → orient → decide → act) → (with authority) the specialist reviews
+    the map calls for, consolidated → tickets created (with authority) or proposed
 ```
 
 Planning feeds implementation: `/scope` → `/implement`. `/implement` takes one ticket, a batch, or an open-ended goal, and decides by judgment which of the below skills to invoke and when, over a small fixed floor (concept inventory, practical verification, tests green, an independent correctness review, no irreversible actions).
@@ -92,12 +91,12 @@ Supporting workflows available at any level:
 
 **Quality pipelines:**
 
-- `/review-code` — adversarial correctness review of a specific diff (advisory; the one diff-scoped `/review-*` skill, excluded from `/lead-review`'s repo-scoped pipeline; wraps the same `swe-correctness-reviewer` agent that `/implement` (step 9) and `/bug-fix` (step 10) run as blocking gates)
-- `/review-value` — value-engineering review (advisory; discovers requirements across provenance tiers — documented, spec-pinned, inferred — attributes implementation cost to them, and presents a behavior-for-simplicity trade menu; excluded from `/lead-review` because its output is product decisions the operator must rule on)
-- `/review-dead` — focused dead-code audit (advisory; per-finding confidence tiers calibrated against the codebase's dynamic-dispatch patterns; runs as `/lead-review`'s phase 2)
-- `/review-namespace` — empirical namespace-legibility review (advisory; cold reader agents probe the file tree by navigation task, misses become evidence-backed findings; optional heavy search mode evolves hypothetical trees to a measured champion; excluded from `/lead-review` — overlaps `/review-arch` in-pipeline, and search mode needs the operator for calibration)
+- `/review-code` — adversarial correctness review of a specific diff (advisory; the one diff-scoped `/review-*` skill, so never run by `/review-health`'s follow-up; wraps the same `swe-correctness-reviewer` agent that `/implement` and `/bug-fix` run as blocking gates)
+- `/review-value` — value-engineering review (advisory; discovers requirements across provenance tiers — documented, spec-pinned, inferred — attributes implementation cost to them, and presents a behavior-for-simplicity trade menu; run by `/review-health`'s follow-up only when intent asks, because its output is product decisions the operator must rule on)
+- `/review-dead` — focused dead-code audit (advisory; per-finding confidence tiers calibrated against the codebase's dynamic-dispatch patterns; `/review-health`'s follow-up runs it before `/review-arch`)
+- `/review-namespace` — empirical namespace-legibility review (advisory; cold reader agents probe the file tree by navigation task, misses become evidence-backed findings; optional heavy search mode evolves hypothetical trees to a measured champion; `/review-health`'s follow-up never runs search mode, which needs the operator for calibration)
 - `/test-mutation` — mutation testing
-- `/lead-review` — autonomous comprehensive review (orchestrator-family; runs its eight-phase review pipeline — health, dead code, arch, security, perf, a11y, test, release — in sequence; `/review-code`, `/review-value`, and `/review-namespace` are structurally excluded; operator-configurable ticket creation at startup)
+- `/review-health` — holistic review (evidence-cited map calibrated to a reference class; with follow-up authority, runs the specialist reviews the map calls for and consolidates them; with ticket authority, creates tickets — otherwise proposes them; never changes code)
 
 **Releases:**
 

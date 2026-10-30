@@ -77,5 +77,5 @@ Audit: ~10-15 agents (probe writer, two 3-reader pools, optional extra batteries
 ## Integration
 
 - **`/review-arch`** — the analyst's view (noun frequency, blueprints) vs this skill's user study. When they disagree, prefer the measurement. Longer-term catalog direction: `/review-arch` becomes a wrapper dispatching this skill plus a stack-tier review.
-- **Excluded from `/lead-review`** — audit overlaps `/review-arch`'s in-pipeline analysis, and search mode's owner-calibration checkpoints cannot be answered by an autonomous orchestrator.
+- **`/review-health` never runs search mode** in its follow-up — search mode's owner-calibration checkpoints cannot be answered without you. Audit mode overlaps `/review-arch`, so run it deliberately.
 - **`/refactor` / `/implement`** — execute the migration ticket this skill proposes.

@@ -139,7 +139,7 @@ requirements changes the blueprint. Then /refactor for tactical cleanup."]
 
 **`/review-value` vs `/scope`:** inverses. `/scope` turns desired behavior into planned cost; this turns observed cost back into behavior options.
 
-**Excluded from `/lead-review`'s pipeline:** its output is product decisions, which an autonomous orchestrator cannot rule on. Run it deliberately, with the product owner present.
+**Run by `/review-health`'s follow-up only when intent asks:** its output is product decisions, which an autonomous run cannot rule on. Run it deliberately, with the product owner present.
 
 ## Example Session
 

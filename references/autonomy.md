@@ -1,20 +1,20 @@
-# Autonomy — Design Discipline for Orchestrator-Family Skills
+# Autonomy — Design Discipline for Skills That Act on Granted Authority
 
-This document states the autonomy discipline that governs the orchestrator-family skills in this plugin: `/lead-review`, `/implement` when it runs multi-ticket or unattended work, and `/bug-hunt` when its commander's intent grants ticket or fix authority. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
+This document states the autonomy discipline that governs the plugin's autonomous skills — the ones that act on authority granted up front: `/implement` when it runs multi-ticket or unattended work, `/bug-hunt` when its commander's intent grants ticket or fix authority, and `/review-health` when its intent grants follow-up or ticket authority. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
 
-It is opinionated, plugin-wide for the orchestrator family, and cited from each applicable skill. New escalation points or handoff formats invented by a single skill should be reconciled against this document; the goal is a coherent operator experience across the family.
+It is opinionated, plugin-wide for these autonomous skills, and cited from each of them. New escalation points or handoff formats invented by a single skill should be reconciled against this document; the goal is a coherent operator experience across them.
 
 ## Thesis
 
-> Autonomy is the default for orchestrator-family skills; escalation is the exception. When escalation happens, it must be high-altitude, structured, and cheap to answer.
+> Autonomy is the default for autonomous skills; escalation is the exception. When escalation happens, it must be high-altitude, structured, and cheap to answer.
 
 The failure mode this discipline counters: the operator runs many parallel sessions, leaves an autonomous skill running, and returns hours later to an interruption — a granular question, a low-altitude judgment call, an open-ended "what should I do?" The operator lacks the context to answer well. Either the operator reloads context for every interruption (defeating autonomy) or rubber-stamps Claude's recommendation (making the escalation ceremonial). Neither outcome is what the discipline of the andon cord is supposed to produce.
 
-The lineage is mixed: the **andon cord** itself comes from the Toyota production system, where any worker on the line could pull the cord to stop production when something was wrong. **Commander's intent** comes from military doctrine — mission command, where subordinates are given the *why* and are trusted to execute the *how* without micromanagement. **The OODA loop** (behind the orchestrators' decide–act–record work loops) comes from John Boyd. **Reversibility and blast radius** are widely used in operations and incident response. This discipline composes them into a coherent stance: autonomy is the default, the andon cord is the exception, and the exception is structured so it earns its keep.
+The lineage is mixed: the **andon cord** itself comes from the Toyota production system, where any worker on the line could pull the cord to stop production when something was wrong. **Commander's intent** comes from military doctrine — mission command, where subordinates are given the *why* and are trusted to execute the *how* without micromanagement. **The OODA loop** (behind the autonomous skills' work loops) comes from John Boyd. **Reversibility and blast radius** are widely used in operations and incident response. This discipline composes them into a coherent stance: autonomy is the default, the andon cord is the exception, and the exception is structured so it earns its keep.
 
 ## The five levers
 
-These five levers govern how an orchestrator-family skill behaves between startup and termination.
+These five levers govern how an autonomous skill behaves between startup and termination.
 
 ### 1. Altitude rule
 
@@ -71,7 +71,7 @@ The pre-rebuttal should be specific and substantive. "It has trade-offs" is not 
 
 > What is elicited upfront and frozen for the duration.
 
-Each orchestrator-family skill has a commander's-intent schema — the structured information it captures from the operator before the autonomous phase begins. The schema is skill-specific, because the skills differ in purpose. The schemas are documented here so they stay aligned across the family and so each skill can cite this section instead of re-defining its own.
+Each autonomous skill has a commander's-intent schema — the structured information it captures from the operator before the autonomous phase begins. The schema is skill-specific, because the skills differ in purpose. The schemas are documented here so they stay aligned across these skills and so each skill can cite this section instead of re-defining its own.
 
 The principle: anything not captured in commander's intent becomes implicit, and implicit assumptions are the source of granular escalations later. Invest time at startup. The structure is load-bearing.
 
@@ -103,21 +103,21 @@ The deepest skill never goes around its caller. The caller has more context abou
 
 ## Auto-approval of sub-skill ticket proposals
 
-Advisory sub-skills (`/bug-hunt` by default, `/review-arch`, `/review-dead`, `/review-security`, `/review-test`, `/review-health`) produce ticket *proposals* that require operator approval in their native contract. Under an orchestrator-family skill, those approvals are answered automatically by the orchestrator rather than escalated to the operator.
+Advisory sub-skills (`/bug-hunt` by default, `/review-arch`, `/review-dead`, `/review-security`, `/review-test`, `/review-health`) produce ticket *proposals* that require operator approval in their native contract. Under an autonomous skill, those approvals are answered automatically by the orchestrator rather than escalated to the operator.
 
 This is a deliberate contract shift consistent with the autonomy discipline:
 
-- **Commander's intent authorizes the work.** The operator's startup choices (scope, severity floor, ticket-creation toggle in `/lead-review`'s case) are the standing answer to whatever approval prompts the sub-skills would have asked.
+- **Commander's intent authorizes the work.** The operator's startup choices (scope, severity floor, ticket and follow-up authority) are the standing answer to whatever approval prompts the sub-skills would have asked.
 - **Sub-skill prompts are answered by the orchestrator** per the cascade rule — the operator is not in the loop between cycles or phases.
 - **The completion report lists every ticket action** (created, declined, modified) so the operator can audit the contract shift after the run.
 
-How each orchestrator-family skill handles the contract shift:
+How each autonomous skill handles the contract shift:
 
-| Skill                | Behavior                                                                                                                                                                |
-|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/bug-hunt`          | With ticket authority, creates tickets for its own confirmed findings at or above the severity floor; without it, proposes them for operator approval.                 |
-| `/lead-review`       | Mode-dependent. Tickets ON → auto-approve at/above the severity floor, decline below. Tickets OFF → auto-decline uniformly. Mode is fixed at startup.                   |
-| `/implement`         | Approves, edits, or declines with judgment; prefers cutting a ticket when in doubt, since a decline commits the run to doing the work inline.                            |
+| Skill            | Behavior                                                                                                                                                                              |
+|------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/bug-hunt`      | With ticket authority, creates tickets for its own confirmed findings at or above the severity floor; without it, proposes them for operator approval.                                |
+| `/review-health` | With ticket authority, approves its specialists' proposals at or above the floor and declines the rest; without it, declines them all and proposes one consolidated set for approval. |
+| `/implement`     | Approves, edits, or declines with judgment; prefers cutting a ticket when in doubt, since a decline commits the run to doing the work inline.                                         |
 
 Sub-skills surface contested findings and breaking-change requirements as andon-cord triggers rather than auto-approval candidates. The contract shift covers ordinary approval prompts; substantive disagreement still routes through the operator.
 
@@ -125,7 +125,7 @@ Sub-skills surface contested findings and breaking-change requirements as andon-
 
 > Breaking changes must be explicitly authorized by the operator.
 
-This is a categorical guardrail, not an altitude judgment. The five levers describe how a skill decides between options; this rule constrains the option set itself. A skill in the orchestrator family must not introduce a breaking change without operator authorization — no matter how confident it is, how clear the rationale, or how strong the consensus among sub-agents.
+This is a categorical guardrail, not an altitude judgment. The five levers describe how a skill decides between options; this rule constrains the option set itself. A skill in the autonomous skills must not introduce a breaking change without operator authorization — no matter how confident it is, how clear the rationale, or how strong the consensus among sub-agents.
 
 A breaking change is any modification that requires downstream consumers — humans, scripts, or systems — to update to keep working. Concrete examples:
 
@@ -151,19 +151,6 @@ The schemas below define what each skill elicits upfront. A skill may extend its
 
 **No fixed schema.** `/implement` asks only what the user can answer and the work needs: the requirements or tickets; constraints and non-goals, for multi-ticket work the tickets don't already bound; `/refactor`'s two stakes questions (*what happens if this breaks?* and *who maintains it, for how long?*), when `/refactor` is likely to run; and a smoke-testing procedure, when the work spans user-visible features. It presents these with its plan in one interaction and records the result as the **approved intent**, which anchors every later decision. When a calling skill supplies the tickets and constraints, the caller's intent is the approved intent and nothing is elicited.
 
-### `/lead-review`
-
-Four fields:
-
-- **Scope** — entire codebase or user-specified subset, with exclusions (e.g., generated code, vendored code). Passed through to all sub-skills.
-- **Ticket creation** — yes or no. The mode-defining field. Yes = auto-approve sub-skill ticket proposals at/above severity floor (backlog-generation mode); no = auto-decline uniformly, surface findings in completion report only (audit-report mode).
-- **Severity floor** — only consulted when ticket creation is yes (CRITICAL only / HIGH+ / MEDIUM+ / All). Defaults to HIGH+. Determines which sub-skill proposed tickets get created versus declined-and-deferred-to-report.
-- **Constraints** — hard limits beyond the always-on guardrails (no breaking changes, no main/master writes). Passed through to sub-skills.
-
-Purpose and end state are implicit: purpose is "comprehensive review across all enabled dimensions"; end state is "every enabled sub-skill ran exactly once and a consolidated report was produced." Non-goals are implicit too: the skill is bounded to the `/review-*` repertoire — `/tidy-docs` and other mutating skills are out of axis.
-
-This schema's binary ticket-creation field is unusual in the family — other orchestrator-family skills cut tickets (via auto-approval of sub-skill proposals). `/lead-review` honors both modes because operator intents legitimately split: "produce a backlog" and "produce a report" are both valid review outcomes.
-
 ### `/bug-hunt`
 
 Five fields:
@@ -176,9 +163,18 @@ Five fields:
 
 With both authority fields at their defaults the skill is advisory and changes nothing outside its report until the operator approves. Purpose and end state are implicit: find the bugs above the floor; end when a hunt round confirms nothing above it, or at the 10-round cap.
 
+### `/review-health`
+
+The lens (what the operator is doing — inheriting, evaluating, revisiting, onboarding), the scope, and two grants, both defaulting to no:
+
+- **Follow-up reviews** — authority to run the specialist reviews the map calls for (`/review-dead`, `/review-arch`, `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release`). Without it, they are recommended only.
+- **Tickets** — authority to create tickets at or above a severity floor (default High) without asking again. Without it, one consolidated ticket set is proposed for approval.
+
+With neither grant the skill is a fast orientation pass that changes nothing.
+
 ## Shared handoff template
 
-The template below is the canonical structure for andon-cord pulls across the orchestrator family. Skills must use this structure when escalating to the operator; skill-specific extensions go inline as additional fields, not as replacements.
+The template below is the canonical structure for andon-cord pulls across the autonomous skills. Skills must use this structure when escalating to the operator; skill-specific extensions go inline as additional fields, not as replacements.
 
 ```markdown
 ## Andon Cord — <Skill> — <Phase / Cycle>
@@ -240,14 +236,14 @@ Skills may add fields below "Current state" that are specific to their workflow 
 
 ## Per-skill handoff extensions
 
-Each orchestrator-family skill extends the shared template in two predictable ways:
+Each autonomous skill extends the shared template in two predictable ways:
 
-1. **Title** — `## Andon Cord — /<skill> — <phase identifier>` where the phase identifier varies per skill (round number for `/bug-hunt`; phase name for `/lead-review`; current action for `/implement`). The phase identifier is load-bearing — the same skill may pull the cord at different points and the operator needs to know which one.
+1. **Title** — `## Andon Cord — /<skill> — <phase identifier>` where the phase identifier varies per skill (round number for `/bug-hunt`; current phase or specialist for `/review-health`; current action for `/implement`). The phase identifier is load-bearing — the same skill may pull the cord at different points and the operator needs to know which one.
 2. **Current-state additions** — skill-specific fields appended after the shared baseline (typically convergence counters, findings-ledger summaries, a state-doc pointer). Skills should not add fields *between* "Pre-loaded options" and "Recommendation" — that ordering is load-bearing.
 
 After pulling the cord, the skill stops. It does not attempt additional cycles or phases. It waits for operator input.
 
-The opening framing in each orchestrator-family skill's andon-cord section is uniform: *the andon cord is the only planned escalation path; pull sparingly but decisively; use the shared handoff template, with the skill-specific extensions below.* Skills should not re-litigate the autonomy discipline at this point — it has already been established by the citation back to this document at the top of the skill.
+The opening framing in each autonomous skill's andon-cord section is uniform: *the andon cord is the only planned escalation path; pull sparingly but decisively; use the shared handoff template, with the skill-specific extensions below.* Skills should not re-litigate the autonomy discipline at this point — it has already been established by the citation back to this document at the top of the skill.
 
 ## What to log instead of escalate
 
@@ -303,6 +299,6 @@ The intellectual lineage of this discipline, in rough order of how directly the 
 
 ## Evolution
 
-This document changes with the orchestrator family, but deliberately. A change to autonomy.md is a meaningful event that should be reflected in the cited skills. New escalation patterns invented in a single skill should either be reconciled here or rejected.
+This document changes with the autonomous skills, but deliberately. A change to autonomy.md is a meaningful event that should be reflected in the cited skills. New escalation patterns invented in a single skill should either be reconciled here or rejected.
 
-Skills that drift from this discipline are candidates for revision. The cost of the discipline is uniformity and a slightly higher bar for new escalation points; the benefit is that an operator who has used one orchestrator-family skill knows what to expect from another.
+Skills that drift from this discipline are candidates for revision. The cost of the discipline is uniformity and a slightly higher bar for new escalation points; the benefit is that an operator who has used one autonomous skill knows what to expect from another.

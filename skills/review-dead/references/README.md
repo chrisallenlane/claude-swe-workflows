@@ -58,7 +58,7 @@ Ticket shapes follow the shared advisory pattern (`references/advisory-tickets.m
 1. **Chain it ahead of `/review-arch`.** Dead code perturbs noun frequencies; auditing (and removing) first gives the blueprint cleaner input.
 2. **Trust the tiers, not the totals.** Act on PROVEN freely, review LIKELY, and treat UNVERIFIABLE as questions for a human, not cleanup work.
 3. **Watch the tests-only category.** Source whose only references are its own tests looks alive to naive search — the tests keep it warm — but no production path reaches it. Deleting it removes the tests too.
-4. **Runs inside `/lead-review` as phase 2.** The orchestrator answers ticket proposals per the autonomy contract; `/review-arch`'s incidental dead-code findings later in the pipeline are deduped as confirmations.
+4. **Runs inside `/review-health`'s follow-up, before `/review-arch`.** The caller answers ticket proposals per the autonomy contract; `/review-arch`'s incidental dead-code findings are deduped as confirmations.
 
 ## Agent Coordination
 

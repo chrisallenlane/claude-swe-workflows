@@ -1,6 +1,6 @@
 ---
 name: review-health
-description: First-pass strategic-orientation review of a repository. Produces an evidence-cited map (not a grade) calibrated to a reference class, helping the user decide where to engage, where to tread carefully, and where to leave alone. Advisory only — no changes made.
+description: Holistic review of a repository. Produces an evidence-cited map (not a grade) calibrated to a reference class, helping the user decide where to engage, where to tread carefully, and where to leave alone. Given authority in its commander's intent, follows up by running the specialist reviews the map calls for (/review-arch, /review-dead, /review-security, /review-perf, /review-a11y, /review-test, /review-release), consolidates their findings, and creates tickets. Never changes code.
 model: opus
 ---
 
@@ -8,7 +8,7 @@ model: opus
 
 A first-pass review skill for the moment you want to step back and assess a repo strategically: you've just inherited it, you're evaluating a FOSS project for adoption, you're onboarding a teammate, or you're revisiting your own project to decide where to invest. The skill produces an evidence-cited map of the repo's state — not a grade. Its output is built to inform strategic decisions about engagement, not to itemize every imperfection.
 
-**This skill is advisory only. It makes no changes.** To act on findings, hand off to `/refactor`, `/review-arch`, `/review-test`, `/review-security`, or other specialists as the findings indicate.
+**This skill never changes code.** By default it produces the map and recommends follow-ups. Given authority up front, it also runs the specialist reviews the map calls for and tickets what they find — the comprehensive review, without a fixed pipeline.
 
 ## Philosophy
 
@@ -20,7 +20,7 @@ A first-pass review skill for the moment you want to step back and assess a repo
 
 **Named unknowns beat silent unknowns.** The Coverage Manifest is first-class output. Tools that weren't available, signals that couldn't be computed, and questions that couldn't be answered are named explicitly with the reasons they couldn't be resolved. A honest "we couldn't assess X" beats a confident assessment that silently excluded X.
 
-**Breadth first. Compose, don't reinvent.** This skill is the wide-and-shallow pass. When a finding warrants a deep-and-narrow follow-up, the skill routes to a sibling specialist (`/review-arch`, `/refactor`, `/review-test`, `/review-security`, etc.) with a scoped argument. The skill does its own work at breadth level; it defers to siblings only when a sibling is an exact fit for what needs doing.
+**Breadth first. Compose, don't reinvent.** This skill is the wide-and-shallow pass. When a finding warrants a deep-and-narrow follow-up, the skill routes to a sibling specialist (`/review-arch`, `/review-test`, `/review-security`, etc.) with a scoped argument — and, with follow-up authority, runs it. The map decides which specialists are worth their cost; there is no fixed sequence of reviews.
 
 ## Cognitive Failure Modes This Skill Countermands
 
@@ -64,6 +64,11 @@ The practitioner traditions this skill draws from — OODA (Boyd), medical diffe
 │  Phase 4 — ACT (concrete next steps)                           │
 │    • Top 3-5 recommendations                                   │
 │    • Sibling-skill routing with scoped arguments               │
+│                                                                │
+│  Phase 5 — FOLLOW UP (only with authority)                     │
+│    • Run the specialist reviews the map calls for              │
+│    • Consolidate and dedupe their findings                     │
+│    • Tickets: create (with authority) or propose for approval  │
 └────────────────────────────────────────────────────────────────┘
 ```
 
@@ -81,6 +86,17 @@ The practitioner traditions this skill draws from — OODA (Boyd), medical diffe
 > 5. Other — briefly describe
 
 Default: ask; do not guess from context. The lens is a load-bearing input — it shapes the Decide phase's option generation and informs classification.
+
+**Elicit authority** in the same exchange — two grants, both defaulting to no:
+
+| Grant             | Question                                                         | If granted                                                  |
+|-------------------|------------------------------------------------------------------|-------------------------------------------------------------|
+| Follow-up reviews | May I run the specialist reviews the map calls for?              | Phase 5 runs them; without it, Phase 4 only recommends them |
+| Tickets           | May I create tickets at or above a severity floor? Which floor?  | Phase 5 creates them; without it, they're proposed          |
+
+Ask the ticket question only if follow-ups are granted: the specialists are what produce ticket-shaped findings, so ticket authority means nothing without them. Mention that some follow-ups (notably `/review-security`) are heavy. The floor (default High) governs only what is created unasked.
+
+With neither grant, the skill is the cheap, fast orientation pass it has always been. Granting tickets *is* the approval to create them; without it, nothing is created unasked.
 
 **Determine scope.** Default: the whole repo. If the user specifies a directory or module, honor that scope in all phases. If the repo is unusually large (>100k LOC or >10 top-level subsystems), ask whether to scope down before running the full pass.
 
@@ -233,6 +249,22 @@ Produce a concrete next-step queue: top 3-5 recommendations, prioritized by seve
 
 Route to a sibling skill *only* when the sibling does exactly what needs to be done at the depth warranted. If the finding needs shallow follow-up, recommend the action directly rather than routing.
 
+### Phase 5 — FOLLOW UP (only with authority)
+
+**Without follow-up authority**, stop after Phase 4 and offer to run the recommended follow-ups.
+
+**With it**, run the specialist reviews the map calls for, each scoped to the region its findings point at. Judgment, not a checklist: run a review because the map gives it something to look at, not because it exists. Every specialist that plausibly applied and did not run gets a one-line reason in the report.
+
+- **Candidates:** `/review-dead`, `/review-arch`, `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release`.
+- **Order** so that earlier reviews inform later ones — dead code before architecture, so `/review-arch` isn't analyzing code that should be deleted; release readiness last.
+- **Never run here:** `/review-code` (it reviews a diff, and a repository review has none); `/review-value` unless intent asks for it (its trade menu is product decisions); `/review-namespace` in search mode (it needs the operator).
+
+**Ticket proposals from the specialists.** Each specialist ends by proposing tickets. With ticket authority, approve those at or above the floor and decline the rest, recording them for the report, per [`references/advisory-tickets.md`](../../references/advisory-tickets.md). Without it, decline them all within the run, and propose one consolidated ticket set at the end — every finding, ordered by severity, for the user to trim — created only on approval.
+
+**Consolidate.** Dedupe findings that several reviews raised (`/review-arch` re-finding dead code `/review-dead` already reported is a confirmation, not a second finding), reconcile them with the map's findings, and note where a specialist contradicted the map — the deeper review wins, and the contradiction is itself worth reporting.
+
+**Escalate rather than decide** when a recommended fix would require a breaking change, or two specialists contradict each other on the same code: record both positions and put the call to the user. For long runs, keep `REVIEW_HEALTH_STATE.md` (gitignored) with the pinned intent and which reviews have run, so the run can resume after compaction.
+
 ## Evidence Discipline
 
 The skill's credibility is load-bearing. These rules are structural, not stylistic:
@@ -256,12 +288,12 @@ Do not routinely spawn per-language SMEs. That is the prior failure mode this re
 
 ## Sibling-Skill Composition
 
-`/review-health` is allowed and encouraged to recommend sibling skills. It does not normally invoke them itself — recommendations are for the user.
+`/review-health` recommends sibling skills in Phase 4, and runs them in Phase 5 when it has follow-up authority.
 
  | Finding type                               | Sibling skill      | When to route                                                          |
  | ------------------------------------------ | ------------------ | ---------------------------------------------------------------------- |
  | Architectural coupling / module boundaries | `/review-arch`     | Architecture hygiene at Foundational + cross-cutting coupling findings |
- | Tactical cleanup (DRY, naming, dead code)  | `/refactor`        | Multiple Minor findings in a single module                             |
+ | Dead or unreachable code                   | `/review-dead`     | Dead-code signals in Observe, or before any architectural review       |
  | Test coverage or test quality gaps         | `/review-test`     | Test health at Foundational, or specific coverage gaps                 |
  | Security findings (CVEs, secrets, auth)    | `/review-security` | Safety-tier findings involving security                                |
  | Performance hotspots                       | `/review-perf`     | Observations of perf-sensitive code without benchmarks                 |
@@ -283,6 +315,7 @@ Route with a scoped argument when possible: `/review-arch services/billing/` is 
 4. **Coverage Manifest** — what couldn't be assessed, with reasons
 5. **Strategic Options (Decide)** — lens-specific options with supporting findings
 6. **Next Steps (Act)** — top 3-5 recommendations; sibling-skill routing with scoped arguments
+7. **Follow-up results** (Phase 5 only) — per specialist: scope, headline findings, tickets created or proposed; specialists not run, each with a one-line reason; contradictions and breaking-change findings awaiting the user
 
 Keep the Observation Record compact and scannable (tables where appropriate; not prose paragraphs). The Findings section is the primary narrative. Recommendations are bulleted and concrete.
 
@@ -299,8 +332,8 @@ Keep the Observation Record compact and scannable (tables where appropriate; not
 
 ## What This Skill Is Not
 
-- **Not a code-quality linter.** Line-by-line defects are out of scope. Hand off to `/refactor` or `/review-arch`.
-- **Not a security audit.** Safety findings are surfaced, but thorough security review is `/review-security`.
-- **Not a performance analysis.** Perf hotspots are noted as signals; actual profiling is `/review-perf`.
+- **Not a code-quality linter.** Line-by-line defects are out of scope for the map; the specialist reviews go deeper.
+- **Not a substitute for the specialists.** Safety findings are surfaced, but thorough security review is `/review-security` — which this skill runs only with follow-up authority.
+- **Not a code changer.** It produces maps, findings, and tickets — never commits to code.
 - **Not a grade.** There is no overall "health score." The skill produces a map, not a scalar.
 - **Not a substitute for reading the code.** The user will still need to engage with the repo. The skill helps them engage *well*.
