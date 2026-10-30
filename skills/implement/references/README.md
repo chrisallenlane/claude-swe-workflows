@@ -2,11 +2,12 @@
 
 ## Overview
 
-The `/implement` skill orchestrates a complete development workflow through specialist agents, taking you from requirements to tested, documented, production-ready code. It coordinates implementation, refactoring, quality assurance, and documentation in a systematic, repeatable process.
+The `/implement` skill orchestrates a complete development workflow through specialist agents, taking you from requirements to tested, documented, production-ready code. It coordinates design, implementation, refactoring, quality assurance, and documentation in a systematic, repeatable process.
 
 **Key benefits:**
 - Specialist expertise applied to each phase
 - Prevents common failure modes (untested code, breaking changes, outdated docs)
+- Design-first discipline: nothing is built that a requirement does not force
 - Built-in quality gates and feedback loops
 - Language-specific best practices enforced
 - Comprehensive but efficient (agents skip unnecessary work)
@@ -44,13 +45,19 @@ The `/implement` skill orchestrates a complete development workflow through spec
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  2. PLANNING (conditional)                   │
+ │  2. DESIGN AND PLANNING                      │
  │  ────────────────────────────────────────    │
- │  Agent: swe-planner                          │
+ │  2a. Concept inventory (always)              │
+ │      • Every concept cites its requirement   │
+ │      • Naive baseline is the default         │
+ │      • Shop before you build                 │
+ │      • No caller, no export                  │
  │                                              │
- │  Complex task?                               │
- │  ├─ Yes → Generate implementation plan       │
- │  └─ No  → Skip to implementation             │
+ │  2b. Planning (conditional)                  │
+ │      Agent: swe-planner                      │
+ │      Complex task?                           │
+ │      ├─ Yes → Generate implementation plan   │
+ │      └─ No  → Skip to implementation         │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -71,7 +78,8 @@ The `/implement` skill orchestrates a complete development workflow through spec
  │  • TypeScript → swe-sme-typescript           │
  │  • Other      → Generalist implementation    │
  │                                              │
- │  Implements feature + writes unit tests      │
+ │  Builds the inventoried concepts, and only   │
+ │  those, + writes unit tests                  │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -99,9 +107,11 @@ The `/implement` skill orchestrates a complete development workflow through spec
  │      Agent: sec-blue-teamer                  │
  │      Authority: Can demand changes           │
  │                                              │
- │  5b. Refactoring (if non-trivial)            │
+ │  5b. Refactoring (if non-trivial, or the     │
+ │      inventory lists new concepts/exports)   │
  │      Agent: swe-code-reviewer                │
- │      Authority: Advisory suggestions         │
+ │      Authority: Inventory departures must    │
+ │      be resolved; the rest is advisory       │
  │                                              │
  │  5c. Performance (if critical code)          │
  │      Agent: swe-perf-reviewer                │
@@ -115,6 +125,7 @@ The `/implement` skill orchestrates a complete development workflow through spec
  │                                              │
  │  • Aggregate all review feedback             │
  │  • Security: Must address or get approval    │
+ │  • Inventory departures: Remove or amend     │
  │  • Other: Advisory - use discretion          │
  │  • Implement accepted changes                │
  └──────────────────┬───────────────────────────┘
@@ -201,8 +212,21 @@ The workflow starts by ensuring requirements are clear and unambiguous. The orch
 
 This step loops until requirements are crystal clear.
 
-### 2. Planning (Conditional)
-For complex tasks, the `swe-planner` agent creates a structured implementation plan:
+### 2. Design and Planning
+
+**2a. Concept Inventory (Always):**
+Before any plan or code, the orchestrator writes down every concept the change will introduce — each type, module, mechanism, layer, configuration knob, or abstraction — and holds it to four rules:
+- **Every concept cites its requirement.** A concept that no requirement or acceptance criterion forces is not built. "We might need it later" is a question for you, not a reason to write code.
+- **The naive baseline is the default.** A plain array, a direct call, a hard-coded value — unless a named requirement rules the simple form out.
+- **Shop before you build.** The codebase, the standard library, and existing dependencies are searched for a mechanism that already solves the problem. This is the fix for parallel machinery: the second queue or config reader that appears because nobody looked for the first.
+- **No caller, no export.** A public symbol must name its caller outside the module.
+
+The inventory scales with the task (a small fix may introduce no new concepts at all) but always runs. It then binds the rest of the workflow: the planner and the implementation agent build what it lists and nothing else, and the refactoring review in step 5b audits the diff against it.
+
+**Why this exists:** it is cheaper not to write bloat than to strip it afterwards, and no later gate looks for working code that never needed to exist. The discipline has a ceiling — nothing at write time can prove a concept unnecessary the way `/refactor` can by removing it and re-checking behavior — so it reduces the need for `/refactor` without replacing it.
+
+**2b. Planning (Conditional):**
+For complex tasks, the `swe-planner` agent creates a structured implementation plan from the inventory:
 - **Complex tasks** needing planning: architectural changes, migrations, cross-cutting concerns, multi-module features
 - **Simple tasks** skip planning: bug fixes, single-file changes, straightforward CRUD
 
@@ -213,6 +237,7 @@ A language-specific specialist (or generalist) implements the feature:
 - Follows language idioms and best practices
 - Writes unit tests for pure functions (TDD encouraged)
 - Handles edge cases and errors
+- Builds the concepts in the inventory and only those; a concept discovered mid-build is reported back and added to the inventory with its forcing requirement before it is built
 - Follows the plan if one exists
 
 **Specialists available:**
@@ -258,8 +283,9 @@ If security-sensitive code changed (auth, crypto, input validation):
 - Checks control consistency, defense-in-depth, and configuration
 - **Has authority to demand changes** - critical/high severity findings must be addressed or require explicit user approval
 
-**5b. Refactoring Review (Advisory):**
-If non-trivial implementation (>50 lines, multiple files, complex logic):
+**5b. Refactoring Review (Advisory, except the inventory audit):**
+If non-trivial implementation (>50 lines, multiple files, complex logic), or the inventory lists any new concept or export:
+- `swe-code-reviewer` audits the diff against the concept inventory: uninventoried concepts, forms more elaborate than recorded, duplicated mechanisms, exports with no outside caller. These departures must be resolved in step 6 — removed, or admitted by amending the inventory with a forcing requirement
 - `swe-code-reviewer` analyzes code quality
 - Identifies DRY violations, dead code, complexity
 - Provides recommendations (advisory only)
@@ -375,7 +401,9 @@ User: "Add a --format flag to support JSON and YAML output"
 
 Workflow:
 1. Clarify: Output format for what command? Default behavior?
-2. Plan: Skip (straightforward feature)
+2. Design: Inventory lists one concept (an output formatter selected by flag, forced by
+           the --format requirement); shopping finds encoding/json in the stdlib and a YAML
+           library already in go.mod, so no new dependency. Plan: skip (straightforward)
 3. Implement: swe-sme-golang adds flag, implements formatters, writes tests
 4. QA (acceptance): qa-engineer runs CLI with --format json and --format yaml,
                    verifies output actually works, writes additional test cases
@@ -397,14 +425,17 @@ User: "Add user mutation with password reset capability"
 
 Workflow:
 1. Clarify: Email verification required? Token expiration? Rate limiting?
-2. Plan: swe-planner creates plan (mutation, resolver, email service, rate limiter)
+2. Design: Inventory lists reset token, mutation, and rate limit, each citing a clarified
+           requirement; shopping finds an existing mailer and rate limiter, so both are
+           reused rather than rebuilt. Plan: swe-planner sequences the inventoried work
 3. Implement: swe-sme-graphql implements following plan, writes resolver tests
 4. QA (acceptance): qa-engineer spawns test agent, actually tests password reset
                     flow end-to-end, verifies feature works
 5. Review: sec-blue-teamer finds timing attack vulnerability, recommends constant-time comparison
-          swe-code-reviewer suggests extracting email service
+          swe-code-reviewer flags an exported token helper with no caller outside its module
+          (inventory departure)
           (performance reviews skipped - not applicable)
-6. Respond: swe-sme-graphql addresses security issue (must fix), implements email extraction
+6. Respond: swe-sme-graphql addresses security issue (must fix), makes the helper private
 7. Peer review: Fresh swe-sme-graphql reviews, cleans up error message formatting
 8. QA (coverage): Coverage check, linters, verify changes didn't break tests
 9. Correctness: Round 1 finds the resolver assumes the email service throws on failure,
@@ -422,7 +453,7 @@ User: "Fix off-by-one error in pagination"
 
 Workflow:
 1. Clarify: Which pagination function? Expected behavior?
-2. Plan: Skip (simple fix)
+2. Design: Inventory is one line — no new concepts. Plan: skip (simple fix)
 3. Implement: Fix error, add test case
 4. QA (acceptance): Actually runs pagination, verifies correct behavior
 5. Review: swe-code-reviewer finds no issues (all other reviews skipped)
@@ -476,6 +507,7 @@ If limits reached, workflow escalates to user with current state and specific bl
 The `/implement` workflow embodies several key principles:
 
 **Different lenses, different stages:**
+- Design focuses on "does this need to exist?" - the one stage that asks before the code is written
 - Implementation focuses on "does it work?"
 - Acceptance QA focuses on "does it actually work in practice?"
 - Review phase focuses on multiple concerns (security, quality, performance) - all reviewers provide feedback on working code

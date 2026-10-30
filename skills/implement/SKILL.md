@@ -6,7 +6,7 @@ model: opus
 
 # Implement - Automated Development Workflow
 
-Coordinates specialist agents through a complete development cycle: requirements -> planning -> implementation -> refactoring -> QA -> documentation.
+Coordinates specialist agents through a complete development cycle: requirements -> design -> planning -> implementation -> refactoring -> QA -> documentation.
 
 ## Workflow
 
@@ -24,11 +24,48 @@ Coordinates specialist agents through a complete development cycle: requirements
 
 Loop back to user until requirements are clear.
 
-### 2. Planning (Conditional)
+### 2. Design and Planning
+
+#### 2a. Concept Inventory (Always)
+
+**Design before code.** It is cheaper not to write a mechanism than to strip it out later, and nothing downstream of this step hunts for machinery that works but was never needed: QA verifies that the feature runs, and the reviewers read what was built, not what could have been left out. The inventory is the only gate that asks "does this need to exist?", so it runs on every task. It scales with the change — a one-line fix has a one-line inventory ("no new concepts") — but it is never skipped.
+
+**Write the inventory yourself, before planning or spawning any agent.** Four rules bind it:
+
+- **Every concept cites its requirement.** List each concept the change introduces — a type, module, mechanism, layer, configuration knob, or abstraction — in one sentence, and cite the requirement or acceptance criterion from step 1 that forces it. A concept that cites nothing is not built. Future needs, symmetry, and completeness are not requirements; if one of them matters, it goes back to the user as a requirements question (step 1), not into the code.
+- **The naive baseline is the default.** Each concept is implemented in the dumbest form that meets its cited requirement: a plain array, a direct call, a hard-coded value, a linear scan. Anything more elaborate must name the requirement the naive form fails.
+- **Shop before you build.** For each concept, search the codebase, the standard library, and the dependencies already present for a mechanism that solves the same problem, and record what was searched and what was found. An existing mechanism is reused or extended. Building a second one beside it — a second queue, clamp, config reader, retry loop — requires a cited reason the first cannot serve.
+- **No caller, no export.** Every exported or public symbol names the caller outside its module that this change adds or already has. A symbol with no such caller is private, or is not written.
+
+**Inventory format:**
+
+```
+## Concept Inventory
+
+### New concepts
+- <concept, one sentence>
+  - Forced by: <requirement or acceptance criterion>
+  - Form: naive — <what> | elaborated — <what>, because <requirement the naive form fails>
+  - Shopped: <what was searched> → <nothing found | reusing X | extending X | X cannot serve because ...>
+
+### Exports
+- <symbol> — called by <caller outside the module>
+
+### Considered and omitted
+- <concept> — <why no requirement forces it>
+```
+
+**The inventory is binding for the rest of the workflow:**
+- The planner (step 2b) plans how to build the inventoried concepts, and adds none.
+- The implementation agent (step 3) builds the inventoried concepts and only those.
+- The refactoring reviewer (step 5b) audits the diff against it.
+- The inventory is amended only by adding a concept with its forcing requirement, form, and shopping record — never by building first and listing afterwards.
+
+#### 2b. Planning (Conditional)
 
 **Assess task complexity:**
 
-After requirements are clear, assess whether planning is warranted:
+After the inventory is written, assess whether planning is warranted:
 
 **Invoke `swe-planner` agent for complex tasks:**
 - Large architectural changes (refactoring entire subsystems, technology migrations)
@@ -48,6 +85,7 @@ After requirements are clear, assess whether planning is warranted:
 **Note:** `swe-planner` has a safety valve to exit early if invoked for a task simpler than assessed. If planner reports "planning not needed," proceed directly to implementation with planner's brief recommendation.
 
 **If planning invoked:**
+- Pass the concept inventory (step 2a) to `swe-planner`; if the plan calls for a concept the inventory lacks, amend the inventory before proceeding
 - `swe-planner` will produce implementation plan with ordered sub-tasks
 - Each sub-task includes: What/Why/How/Verify/Risks
 - Plan identifies risk areas (prototyping needs, user decisions, performance/security concerns)
@@ -77,6 +115,11 @@ After requirements are clear, assess whether planning is warranted:
 - If HTML/markup changes: spawn `swe-sme-html` agent
 - If CSS/styling changes: spawn `swe-sme-css` agent
 - Otherwise: implement directly with general best practices
+
+**Pass the concept inventory (step 2a) to the implementation agent:**
+- The inventory is the build list: the agent implements those concepts, in the listed form, reusing what the shopping record names
+- If the work reveals a concept the inventory lacks, the agent stops and reports it with the requirement that forces it, rather than building it; amend the inventory (or decline the concept) and re-invoke
+- Exports are limited to the symbols the inventory lists with a caller
 
 **Pass plan to implementation agent if planning was done:**
 - Implementation agent should follow plan's sequencing
@@ -132,17 +175,18 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 
 **Output**: Defense evaluation with severity levels (critical/high/low)
 
-#### 5b. Refactoring Review (Conditional - Advisory)
+#### 5b. Refactoring Review (Conditional - Advisory, except the inventory audit)
 
-**If non-trivial implementation (>50 lines changed, multiple files, or complex logic):**
+**If non-trivial implementation (>50 lines changed, multiple files, or complex logic), or the concept inventory (step 2a) lists any new concept or export:**
 
 **Spawn `swe-code-reviewer` agent:**
+- Pass the concept inventory and have the agent audit the diff against it, reporting each departure: a concept built but not inventoried, a form more elaborate than the inventory records, a mechanism that duplicates one already in the codebase, an exported symbol with no caller outside its module
 - Reviews implementation for code quality issues
 - Identifies refactoring opportunities (DRY violations, dead code, complexity, etc.)
 - Provides structured recommendations organized by priority
 - Agent will report "No refactoring needed" if code is already clean
 
-**Output**: Refactoring recommendations (advisory only)
+**Output**: Inventory departures (must be resolved in step 6) and refactoring recommendations (advisory only)
 
 #### 5c. Performance Review (Conditional - Advisory)
 
@@ -164,6 +208,7 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 - Provide all review feedback (security, refactoring, performance)
 - Specialist reviews all feedback and **uses own discretion** to implement
 - **Security findings**: Must address or get explicit user approval to skip
+- **Inventory departures (step 5b)**: Must resolve — remove the departure, or amend the inventory with the requirement that forces it
 - **Other feedback**: Advisory only - specialist has final authority
 - Specialist may decline recommendations that conflict with language idioms
 - Specialist implements accepted changes and commits
@@ -171,10 +216,10 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 **If no specialist (general implementation):**
 - Re-invoke the same agent that did implementation in step 3
 - Provide all review feedback
-- Agent addresses security issues and implements accepted recommendations
+- Agent addresses security issues, resolves inventory departures, and implements accepted recommendations
 - Agent commits changes
 
-**Note**: Security issues have authority to block; other feedback is advisory. Implementation agent makes final decisions on advisory feedback.
+**Note**: Security issues have authority to block, and inventory departures must be resolved; other feedback is advisory. Implementation agent makes final decisions on advisory feedback.
 
 ### 7. SME Peer Review (Conditional)
 
@@ -258,7 +303,8 @@ The default is to run. Skip only when the diff is trivial — typo fixes, commen
 - Medium/Low severity: Advisory - implementation agent decides in step 6
 
 **Code review feedback (steps 5b-5c):**
-- All refactoring and performance feedback is advisory
+- Inventory departures (step 5b) are resolved in step 6: removed, or admitted by amending the inventory with a forcing requirement
+- All other refactoring and performance feedback is advisory
 - Implementation agent in step 6 uses discretion to implement
 
 **Peer review issues (step 7):**
@@ -306,6 +352,7 @@ The default is to run. Skip only when the diff is trivial — typo fixes, commen
 
 **Present summary to user:**
 - Files changed
+- Concept inventory as built, including any amendments made after step 2a
 - Tests added/modified
 - Coverage improvements
 - Residual risks surfaced by the correctness review (step 9), if any
@@ -387,6 +434,7 @@ Detect tracker, recover the ticket number, and post the close-out per [`referenc
 
 **State management:**
 - Track current workflow step
+- Preserve the concept inventory (step 2a) and its amendments for passing to the planner, the implementation agent, and the refactoring reviewer
 - Track QA iteration count (for acceptance verification failures)
 - Track correctness review round count (step 9 convergence loop)
 - Carry residual risks from step 9 forward to the final summary
@@ -398,6 +446,7 @@ Detect tracker, recover the ticket number, and post the close-out per [`referenc
 - Report "nothing to do" rather than making unnecessary changes
 
 **Planning pass-through:**
+- The concept inventory precedes the plan and constrains it
 - If swe-planner produces a plan, pass it to implementation agent
 - Implementation agent should acknowledge plan and follow it
 - Plan helps coordinate implementation approach
