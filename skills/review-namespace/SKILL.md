@@ -131,4 +131,4 @@ Runs the audit first (round 0 = the incumbent's baseline + noise floor: battery 
 
 **Excluded from `/lead-review`'s pipeline:** audit mode overlaps `/review-arch`'s in-pipeline noun analysis, and search mode's operator-calibration checkpoints (vetoes, self-tests) cannot be answered by an autonomous orchestrator. Run it deliberately.
 
-**Feeds `/refactor` and `/implement-batch`:** the migration ticket routes there; this skill never mutates the tree itself.
+**Feeds `/refactor` and `/implement`:** the migration ticket routes there; this skill never mutates the tree itself.

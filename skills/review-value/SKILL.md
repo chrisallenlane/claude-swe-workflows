@@ -90,7 +90,7 @@ For each **approved** trade, draft one ticket. **The amendment leads; the implem
 - **Description** — the trade in full: old commitment, new commitment, user-visible delta, machinery to dissolve.
 - **First acceptance criterion — amend the record.** The design doc section, ADR, README claim, or spec that carries the old requirement is updated to the new one. For *inferred* requirements: record the newly-confirmed intent wherever the project keeps such decisions (an ADR is the natural home).
 - **Remaining acceptance criteria** — the dissolution: files/mechanisms removed, tests amended, suite green.
-- **Recommended implementation skill** — typically `/implement` per ticket, or `/implement-batch` when approved trades share a chain.
+- **Recommended implementation skill** — typically `/implement` — per ticket, or with the chain's tickets together when approved trades share a chain.
 
 Preview the set; the operator approves / edits / declines per the standard advisory pattern ([`references/advisory-tickets.md`](../../references/advisory-tickets.md)). On approval, create tickets via the canonical tracker integration ([`references/trackers.md`](../../references/trackers.md)).
 

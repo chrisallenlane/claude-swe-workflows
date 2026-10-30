@@ -286,7 +286,7 @@ This skill is one-shot. If the user revises the plan based on the report, they *
 **Good fit (plan mode):**
 
 - Before committing to a plan, design, or significant decision
-- Pre-flight check before invoking `/implement-project` on a project that will run for weeks
+- Pre-flight check before invoking `/implement` on a project that will run for weeks
 - Before merging a major architectural change
 - Before announcing a deadline, deliverable, or rollout to stakeholders
 - When a plan feels solid and there is residual unease — the unease often points at a failure mode worth surfacing

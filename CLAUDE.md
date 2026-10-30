@@ -57,13 +57,12 @@ claude --plugin-dir .
 The skills form a layered system. Higher-level workflows orchestrate lower-level ones:
 
 ```
-/implement-project
-├── /implement-batch (per batch)
-│   └── /implement (per ticket)
-└── judgment-chosen repertoire: /refactor, /review-*, /bug-hunt, /scope, … → /review-release last
+/implement (one ticket, a batch, or an open-ended goal)
+├── fixed floor: concept inventory → build → practical verification → correctness review
+└── judgment-chosen repertoire: SMEs, reviewers, /refactor, /review-*, /bug-hunt, /scope, …
 
 /lead-bug-hunt
-└── loop: /bug-hunt → /implement-batch (until convergence)
+└── loop: /bug-hunt → /implement (until convergence)
     └── termination: /review-test (new tests)
 
 /lead-review
@@ -72,7 +71,7 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
   (sub-skill ticket proposals auto-approved or auto-declined per startup choice)
 ```
 
-Planning feeds implementation: `/scope-project` → `/implement-project`, or `/scope` → `/implement`. `/implement-project` is the top-level autonomous lead — given commander's intent (usually a batch of tickets, sometimes an open-ended goal), it decides which of the below skills to invoke and when, over a small fixed floor (tests green at every merge, smoke test, `/review-release` last).
+Planning feeds implementation: `/scope` → `/implement`. `/implement` takes one ticket, a batch, or an open-ended goal, and decides by judgment which of the below skills to invoke and when, over a small fixed floor (concept inventory, practical verification, tests green, an independent correctness review, no irreversible actions).
 
 Supporting workflows available at any level:
 
@@ -91,7 +90,7 @@ Supporting workflows available at any level:
 
 - `/bug-fix` — diagnosis-first bug fixing
 - `/bug-hunt` — proactive bug discovery
-- `/lead-bug-hunt` — autonomous bug-elimination loop (orchestrator-family; iterates `/bug-hunt` → `/implement-batch` until convergence below a severity floor; always runs `/review-test` on new reproducing tests at termination)
+- `/lead-bug-hunt` — autonomous bug-elimination loop (orchestrator-family; iterates `/bug-hunt` → `/implement` until convergence below a severity floor; always runs `/review-test` on new reproducing tests at termination)
 
 **Quality pipelines:**
 

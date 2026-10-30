@@ -4,7 +4,7 @@
 
 The `/review-security` skill orchestrates a comprehensive security assessment of the project's source code using both defensive and offensive analysis. The blue-teamer and lead red-teamer run their first pass **in parallel and in isolation** — neither sees the other's output during reconnaissance. The orchestrator then synthesizes their reports into a unified target list, classifying each target by how it was discovered. Dedicated red-teamers investigate each target in depth. Findings are synthesized, exploit chains are explored, and the process iterates until no new chains emerge.
 
-The skill is **advisory only** as of v8.0.0: it produces findings and proposes tickets but does not implement remediation. After the audit, Phase 7 proposes a ticket structure tailored to the audit's shape (severity distribution, chain count, defense-in-depth findings) and cuts tickets on operator approval. The cognitive seam between "find vulnerability" and "fix vulnerability" is wide; tickets capture findings durably and compose with `/implement` and `/implement-project` for remediation.
+The skill is **advisory only** as of v8.0.0: it produces findings and proposes tickets but does not implement remediation. After the audit, Phase 7 proposes a ticket structure tailored to the audit's shape (severity distribution, chain count, defense-in-depth findings) and cuts tickets on operator approval. The cognitive seam between "find vulnerability" and "fix vulnerability" is wide; tickets capture findings durably and compose with `/implement` for remediation.
 
 **Key benefits:**
 - **NGT discipline** — independent generation followed by synthesis, designed to surface the gaps anchoring would otherwise suppress
@@ -114,7 +114,7 @@ The skill examines the audit's shape (severity distribution, chain count, defens
 
 Each cut ticket preserves the `Discovered by:` attribution introduced in v7.1.0, so the empirical signal about whether the parallel-isolated first pass is producing value (especially anchoring-suppressed findings) survives the handoff to the tracker.
 
-The skill offers ticket creation regardless of caller. When an orchestrator invokes `/review-security`, the orchestrator receives the proposal and applies its own autonomy judgment per `references/autonomy.md` — approving, editing, or declining the proposal, then deciding which of any created tickets to work in the current flow versus defer. Remediation happens via `/implement` or `/implement-project`, not within this skill.
+The skill offers ticket creation regardless of caller. When an orchestrator invokes `/review-security`, the orchestrator receives the proposal and applies its own autonomy judgment per `references/autonomy.md` — approving, editing, or declining the proposal, then deciding which of any created tickets to work in the current flow versus defer. Remediation happens via `/implement`, not within this skill.
 
 ## Agents Used
 
@@ -123,7 +123,7 @@ The skill offers ticket creation regardless of caller. When an orchestrator invo
 | `sec-blue-teamer` | Defensive posture evaluation (independent first pass)                         |
 | `sec-red-teamer`  | Offensive reconnaissance and exploitation (lead first pass + focused targets) |
 
-Remediation is handled by `/implement` or `/implement-project` against the tickets this skill cuts — `swe-sme-*` and `qa-engineer` are no longer invoked from within the security audit.
+Remediation is handled by `/implement` against the tickets this skill cuts — `swe-sme-*` and `qa-engineer` are no longer invoked from within the security audit.
 
 ## Resource Usage
 

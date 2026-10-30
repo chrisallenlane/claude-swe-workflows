@@ -1,14 +1,14 @@
 ---
 name: lead-bug-hunt
-description: Autonomous bug-elimination loop. Iteratively invokes /bug-hunt and /implement-batch until findings converge below an operator-specified severity floor. At termination, runs /review-test scoped to the run's new reproducing tests and fixes quality issues above the floor. Auto-approves /bug-hunt and /review-test ticket proposals; pulls the andon cord on contested findings, repeated implementation failure, hard-cap exhaustion, or breaking-change proposals.
+description: Autonomous bug-elimination loop. Iteratively invokes /bug-hunt and /implement until findings converge below an operator-specified severity floor. At termination, runs /review-test scoped to the run's new reproducing tests and fixes quality issues above the floor. Auto-approves /bug-hunt and /review-test ticket proposals; pulls the andon cord on contested findings, repeated implementation failure, hard-cap exhaustion, or breaking-change proposals.
 model: opus
 ---
 
 # Lead-Bug-Hunt — Autonomous Bug Elimination
 
-Drives a codebase toward "no bugs above severity floor" without operator involvement between startup and termination. The operator states scope, severity floor, and constraints at startup; the skill then loops `/bug-hunt` → triage → `/implement-batch` until two consecutive hunt passes produce no findings above the floor, or until a hard cap or andon cord halts the run.
+Drives a codebase toward "no bugs above severity floor" without operator involvement between startup and termination. The operator states scope, severity floor, and constraints at startup; the skill then loops `/bug-hunt` → triage → `/implement` until two consecutive hunt passes produce no findings above the floor, or until a hard cap or andon cord halts the run.
 
-This skill is a narrower sibling of `/implement-project`. `/implement-project` takes broad commander's intent and decides by judgment which skills to invoke from a broad repertoire. `/lead-bug-hunt` has a fixed loop shape (hunt → fix → re-hunt) and a bounded sub-skill repertoire. It exists because "iterate until bugs converge" is a recurring workflow worth canonizing.
+This skill is a narrower sibling of `/implement`. `/implement` takes tickets or an open-ended goal and decides by judgment which skills to invoke from a broad repertoire. `/lead-bug-hunt` has a fixed loop shape (hunt → fix → re-hunt) and a bounded sub-skill repertoire. It exists because "iterate until bugs converge" is a recurring workflow worth canonizing.
 
 ## Philosophy
 
@@ -24,7 +24,7 @@ This is the dominant judgment call this skill exposes. Setting the floor too low
 
 `/bug-hunt` commits reproducing tests as it works. Those tests outlive the run — they become permanent regression tests in the suite. Their quality matters more than typical test code because they will catch regressions for years and bias future test authors who read them as examples.
 
-This skill therefore treats test review as part of its core contract, not as adjacent cleanup. At termination (after convergence), the skill invokes `/review-test` scoped to the test files modified during this run, auto-approves any quality-finding ticket proposals at or above the severity floor, and fixes them via `/implement-batch`. Findings below the floor are deferred to the completion report.
+This skill therefore treats test review as part of its core contract, not as adjacent cleanup. At termination (after convergence), the skill invokes `/review-test` scoped to the test files modified during this run, auto-approves any quality-finding ticket proposals at or above the severity floor, and fixes them via `/implement`. Findings below the floor are deferred to the completion report.
 
 ### Trust the reproducing test, escalate the disagreement
 
@@ -38,9 +38,9 @@ No escape hatches: the skill cannot rationalize bugs away to make the loop conve
 
 ### Broad authority, narrow gates
 
-The skill may: invoke `/bug-hunt`, `/implement-batch`, `/implement`, `/bug-fix`, `/think-diagnose`, `/review-test` (at termination, scoped to the run's new tests); create tickets via auto-approved proposals; commit fix work via sub-skills; create and modify the working branch.
+The skill may: invoke `/bug-hunt`, `/implement`, `/bug-fix`, `/think-diagnose`, `/review-test` (at termination, scoped to the run's new tests); create tickets via auto-approved proposals; commit fix work via sub-skills; create and modify the working branch.
 
-The skill may NOT without explicit authorization: push or merge to main/master, force-push, propose breaking changes (see `references/autonomy.md` § "No unilateral breaking changes"), invoke `/review-*` skills other than the scoped `/review-test` at termination (out-of-axis — use `/implement-project` if you want broader review-driven work), install dependencies, run irreversible destructive operations.
+The skill may NOT without explicit authorization: push or merge to main/master, force-push, propose breaking changes (see `references/autonomy.md` § "No unilateral breaking changes"), invoke `/review-*` skills other than the scoped `/review-test` at termination (out-of-axis — use `/implement` if you want broader review-driven work), install dependencies, run irreversible destructive operations.
 
 ## Workflow Overview
 
@@ -58,7 +58,7 @@ The skill may NOT without explicit authorization: push or merge to main/master, 
 │     ├─ 1a. Hunt — invoke /bug-hunt, gather findings              │
 │     ├─ 1b. Triage — apply severity floor, screen for contests    │
 │     ├─ 1c. Decide — form batch, escalate, or terminate           │
-│     ├─ 1d. Act — invoke /implement-batch (or /implement, etc.)   │
+│     ├─ 1d. Act — invoke /implement (or /bug-fix, etc.)           │
 │     ├─ 1e. Verify — tests pass, reproducing tests now pass       │
 │     └─ 1f. Convergence check                                     │
 │                                                                  │
@@ -129,14 +129,13 @@ Record the chosen outcome and rationale in the cycle log.
 
 Execute the batch. Sub-skill choice:
 
-- **`/implement-batch`** — default for any batch with 2+ tickets, or single tickets with bounded scope.
-- **`/implement`** — single ticket only, used when `/implement-batch` would be ceremony.
+- **`/implement`** — the default, for one ticket or the whole fix-list. Invoke it per its "Invoked by Another Skill" contract: this skill supplies the tickets and constraints, `/implement`'s floor applies unchanged, and its escalations come back here.
 - **`/bug-fix`** — finding has a reproducing test but root cause is unclear and needs diagnosis-first work. Used when `/implement` from the ticket alone would be cargo-culting toward a fix.
 - **`/think-diagnose`** — pre-fix, when bug cause is genuinely unclear and `/bug-fix`'s diagnosis phase would benefit from structured reasoning.
 
 When invoking a sub-skill that supports autonomous mode, use it. When a sub-skill requires interactive input, answer using engineering judgment anchored to commander's intent.
 
-Sub-skill escalations cascade up per `references/autonomy.md` § "Cascade rule." `/implement-batch`'s andon-cord pulls become this skill's responsibility to either resolve (next cycle's diagnosis) or escalate further (pull this skill's own andon cord).
+Sub-skill escalations cascade up per `references/autonomy.md` § "Cascade rule." `/implement`'s escalations become this skill's responsibility to either resolve (next cycle's diagnosis) or escalate further (pull this skill's own andon cord).
 
 #### 1e. Verify
 
@@ -177,7 +176,7 @@ Always runs (not opt-in). The reproducing tests committed by `/bug-hunt` during 
    - **Contested test-quality finding** (the skill believes the proposed change is wrong on substance, e.g., the finding suggests deleting a test that is genuinely load-bearing) → andon cord, do not silently dismiss.
    - **Breaking-test-change required** (a quality fix would alter test signatures/imports in ways that affect external consumers — rare for test files, but possible for shared test helpers exported by the project) → andon cord per `references/autonomy.md` § "No unilateral breaking changes."
 
-4. **Fix the fix-list** via `/implement-batch` (or `/implement` for single tickets). Sub-skill escalations cascade up per `references/autonomy.md` § "Cascade rule."
+4. **Fix the fix-list** via `/implement`. Sub-skill escalations cascade up per `references/autonomy.md` § "Cascade rule."
 
 5. **Verify after fixing.** Full test suite still passes. The reproducing tests that were the original acceptance criteria still pass after any rewrites. If a fix invalidates a reproducing test (e.g., a SIMPLIFY suggestion accidentally weakens the assertion), pull the andon cord ("regression in reproducing test").
 
@@ -324,7 +323,7 @@ Pull the cord when:
 - **Contested finding.** The skill believes a `/bug-hunt` finding is wrong on substance — the reproducing test asserts wrong behavior, the "bug" is documented intentional behavior, or the finding contradicts a constraint in commander's intent. Surface the finding, the reproducing test, and the disagreement.
 - **Breaking-change required.** Fixing a finding requires a breaking change (per `references/autonomy.md` § "No unilateral breaking changes"). List the finding, the breaking-change option, and the non-breaking alternative (if any).
 - **Regression introduced.** A batch fix made the test suite fail in ways unrelated to the targeted bug. Record the failing tests, the cycle, and the batch SHAs.
-- **Sub-skill cord cascaded up.** `/implement-batch`, `/implement`, or `/bug-fix` pulled its own cord for a reason this skill cannot resolve.
+- **Sub-skill cord cascaded up.** `/implement` or `/bug-fix` pulled its own cord for a reason this skill cannot resolve.
 - **Reproducing test stale at triage.** A `/bug-hunt` finding's reproducing test does not actually fail on current HEAD. This indicates either the hunter was wrong or the test exercises the wrong path. Worth operator review before continuing.
 - **Contested test-quality finding.** During termination step 2a, `/review-test` proposed a change the skill believes is wrong on substance (e.g., delete a test that is genuinely load-bearing, rewrite an assertion in a way that weakens coverage).
 - **Breaking test change required.** A `/review-test` quality fix would alter test signatures or imports in ways that affect external consumers — rare for test files but possible for shared test helpers.
@@ -418,28 +417,28 @@ Ensure `LEAD_BUG_HUNT_STATE.md` is ignored. Commit the `.gitignore` change on th
 
 ## Hard Caps
 
-- **10 hunt-cycles** — each cycle is one full `/bug-hunt` + one batch-implementation. Heavier than `/implement-project`'s actions, so the cap is lower. Hitting it pulls the andon cord.
-- **3 consecutive failed batches** — if `/implement-batch` (or `/implement` / `/bug-fix`) fails on the same finding 3 times across different attempts, pull the andon cord.
+- **10 hunt-cycles** — each cycle is one full `/bug-hunt` + one batch-implementation. Heavier than `/implement`'s actions, so the cap is lower. Hitting it pulls the andon cord.
+- **3 consecutive failed batches** — if `/implement` (or `/bug-fix`) fails on the same finding 3 times across different attempts, pull the andon cord.
 - **No file-touch or dependency-change budgets** — explicitly excluded per `references/autonomy.md` § "Risk budgets."
 
 ## Integration with Other Skills
 
 **Relationship to `/bug-hunt`:**
 
-`/lead-bug-hunt` invokes `/bug-hunt` as its workhorse. `/bug-hunt` remains advisory in its native contract — it produces ticket proposals and commits reproducing tests, but does not implement fixes. `/lead-bug-hunt` auto-approves the ticket proposals (per the autonomy contract) and chains `/implement-batch` to do the fix work. Run `/bug-hunt` directly when you want a single advisory pass with operator-approved tickets; run `/lead-bug-hunt` when you want the full hunt → fix → re-hunt loop unattended.
+`/lead-bug-hunt` invokes `/bug-hunt` as its workhorse. `/bug-hunt` remains advisory in its native contract — it produces ticket proposals and commits reproducing tests, but does not implement fixes. `/lead-bug-hunt` auto-approves the ticket proposals (per the autonomy contract) and chains `/implement` to do the fix work. Run `/bug-hunt` directly when you want a single advisory pass with operator-approved tickets; run `/lead-bug-hunt` when you want the full hunt → fix → re-hunt loop unattended.
 
-**Relationship to `/implement-project`:**
+**Relationship to `/implement`:**
 
-`/implement-project` is the broad orchestrator — it takes commander's intent and decides by judgment which skills to invoke. `/lead-bug-hunt` is a fixed-shape loop for one specific outcome. Use `/implement-project` when bug-hunting is one of several concerns; use `/lead-bug-hunt` when bug elimination is the sole objective.
+`/implement` is the broad skill — it takes tickets or a goal and decides by judgment which skills to invoke. `/lead-bug-hunt` is a fixed-shape loop for one specific outcome, and uses `/implement` as its fixer. Use `/implement` directly when bug-hunting is one of several concerns; use `/lead-bug-hunt` when bug elimination is the sole objective.
 
 **Relationship to `/refactor`:**
 
-It is not in this skill's repertoire; bug fixes ship as-is. `/refactor` is a standalone redesign skill that the operator normally runs directly — it works on its own isolated branch and has an operator checkpoint, which only `/implement-project` answers on the operator's behalf. If you want cleanup after bug elimination, run `/refactor` separately after `/lead-bug-hunt` completes.
+It is not in this skill's repertoire; bug fixes ship as-is. `/refactor` is a standalone redesign skill that the operator normally runs directly — it works on its own isolated branch and has an operator checkpoint, which only `/implement` answers on the operator's behalf. If you want cleanup after bug elimination, run `/refactor` separately after `/lead-bug-hunt` completes.
 
 **Relationship to `/review-test`:**
 
-Invoked once at termination, scoped to the test files modified during this run. `/review-test`'s ticket proposals are auto-approved (same contract shift as `/bug-hunt`). Findings above the severity floor are fixed via `/implement-batch`; below-floor findings are deferred. Contested findings or breaking test changes pull the andon cord. `/review-test` remains a directly-invokable advisory skill — use it outside `/lead-bug-hunt` for broader test-suite reviews.
+Invoked once at termination, scoped to the test files modified during this run. `/review-test`'s ticket proposals are auto-approved (same contract shift as `/bug-hunt`). Findings above the severity floor are fixed via `/implement`; below-floor findings are deferred. Contested findings or breaking test changes pull the andon cord. `/review-test` remains a directly-invokable advisory skill — use it outside `/lead-bug-hunt` for broader test-suite reviews.
 
 **Out-of-axis skills:**
 
-Other `/review-*` skills, `/scope-project`, `/test-mutation`, `/tidy-docs`, `/tidy-git` are not in this skill's repertoire. If your goal is "review → refactor → test → ship," use `/implement-project` instead. `/lead-bug-hunt` is deliberately narrower.
+Other `/review-*` skills, `/scope`, `/test-mutation`, `/tidy-docs`, `/tidy-git` are not in this skill's repertoire. If your goal is "review → refactor → test → ship," use `/implement` instead. `/lead-bug-hunt` is deliberately narrower.

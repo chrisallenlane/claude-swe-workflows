@@ -40,7 +40,7 @@ Skill-specific behavior on decline:
 
 ## Orchestrator-invoked behavior
 
-When invoked by an orchestrator (`/implement-project`, `/lead-bug-hunt`, `/lead-review`, etc.), the workflow above is unchanged. The skill proposes the ticket structure to the orchestrator, which applies its own autonomy judgment per [`autonomy.md`](autonomy.md) § "Auto-approval of sub-skill ticket proposals" — approving, editing, or declining the proposal, then deciding which of any created tickets to work in the current flow versus defer.
+When invoked by an orchestrator (`/implement`, `/lead-bug-hunt`, `/lead-review`, etc.), the workflow above is unchanged. The skill proposes the ticket structure to the orchestrator, which applies its own autonomy judgment per [`autonomy.md`](autonomy.md) § "Auto-approval of sub-skill ticket proposals" — approving, editing, or declining the proposal, then deciding which of any created tickets to work in the current flow versus defer.
 
 The skill does not branch on "interactive operator vs orchestrator." The proposal is the same. The receiver decides.
 

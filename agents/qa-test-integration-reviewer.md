@@ -273,7 +273,7 @@ Briefly note what was reviewed and exit. Don't manufacture findings.
 
 - Spawned by `/review-test` Phase 2.
 - Output is advisory. The orchestrator records the findings, presents them in the consolidated review report, and at the end of `/review-test` proposes a ticket structure to the operator for approve / edit / decline.
-- Implementation happens out-of-skill via `/implement` or `/implement-project` against the cut tickets — not within `/review-test` itself (advisory only as of v9.0.0).
+- Implementation happens out-of-skill via `/implement` against the cut tickets — not within `/review-test` itself (advisory only as of v9.0.0).
 
 ---
 

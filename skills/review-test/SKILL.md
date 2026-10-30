@@ -8,7 +8,7 @@ model: opus
 
 Five-phase survey: unit coverage gaps, integration coverage gaps, E2E (browser) coverage gaps when applicable, fuzz coverage gaps, then test quality issues. Each phase runs its analysis and contributes findings to a consolidated report; at the end, the skill proposes a ticket structure for the recommended work and creates tickets after operator approval.
 
-**Advisory only.** The skill produces findings and proposes tickets; it does not implement test changes. The cognitive seam between "find a coverage gap" and "design a test for it" is wide enough that mixing them under one workflow degrades both — test design requires fresh reasoning about edge cases, mocking strategy, and assertion shape, and the discovery agents shouldn't be biased toward gaps whose fixes are easy. Tickets capture findings durably across that seam and compose with `/implement` and `/implement-project` for remediation.
+**Advisory only.** The skill produces findings and proposes tickets; it does not implement test changes. The cognitive seam between "find a coverage gap" and "design a test for it" is wide enough that mixing them under one workflow degrades both — test design requires fresh reasoning about edge cases, mocking strategy, and assertion shape, and the discovery agents shouldn't be biased toward gaps whose fixes are easy. Tickets capture findings durably across that seam and compose with `/implement` for remediation.
 
 The same logic applies in reverse to test-quality findings (DELETE / REWRITE / SIMPLIFY): the operator should approve removing or rewriting an existing test explicitly, via a ticket, rather than have a workflow do it as a side effect of running a review.
 
@@ -477,7 +477,7 @@ The contract change versus pre-v9.0.0 is that test work surfaced by `/review-tes
 **Phase 4 analysis:** Spawn single `qa-test-fuzz-reviewer` agent.
 **Phase 5 analysis:** Spawn `qa-test-reviewer` agent(s). For large scopes, partition and run in parallel.
 
-**No remediation agents.** Step 8 cuts tickets via the tracker integration; no `swe-sme-*` or `qa-engineer` invocations happen inside `/review-test`. Test design and implementation are handled out-of-skill by `/implement` or `/implement-project` against the cut tickets.
+**No remediation agents.** Step 8 cuts tickets via the tracker integration; no `swe-sme-*` or `qa-engineer` invocations happen inside `/review-test`. Test design and implementation are handled out-of-skill by `/implement` against the cut tickets.
 
 **Fresh instances:** Every agent spawn is a fresh instance. No state carried between invocations.
 
@@ -507,7 +507,7 @@ The contract change versus pre-v9.0.0 is that test work surfaced by `/review-tes
 
 ## Integration with Other Skills
 
-**`/review-test` vs `/test-mutation`:** Complementary. `/review-test` builds breadth (surfaces gap and quality tickets); `/test-mutation` builds depth (verifies that existing tests actually catch bugs). Recommended sequence: `/review-test` → work the cut tickets via `/implement` or `/implement-project` → `/test-mutation` to strengthen.
+**`/review-test` vs `/test-mutation`:** Complementary. `/review-test` builds breadth (surfaces gap and quality tickets); `/test-mutation` builds depth (verifies that existing tests actually catch bugs). Recommended sequence: `/review-test` → work the cut tickets via `/implement` → `/test-mutation` to strengthen.
 
 **`/review-test` before `/refactor`:** Run `/review-test` first to ensure the test suite is strong enough to catch regressions before refactoring. Note that gaps surfaced this way land as tickets, not as immediately-filled tests — work the cut tickets via `/implement` before invoking `/refactor` if immediate strengthening is needed.
 

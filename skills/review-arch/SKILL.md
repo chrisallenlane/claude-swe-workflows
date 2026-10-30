@@ -16,7 +16,7 @@ Analyzes codebase architecture and produces a target blueprint via noun analysis
 
 **Recommend boldly.** The analysis agent surfaces every opportunity it finds, even uncertain ones — the operator can always reject a recommendation when reviewing the plan. The skill's job is to *see*, not to *act*.
 
-**Single workflow for everyone.** The skill's workflow is identical whether a human operator or an orchestrator (e.g. `/implement-project`) is at the receiving end. After the analysis, the skill presents a proposed ticket structure for the recommended work; the operator (human or orchestrator) approves, edits, or declines. Orchestrators apply their own autonomy judgment per [`references/autonomy.md`](../../references/autonomy.md) — declining items they intend to implement inline, approving items they want tracked for later.
+**Single workflow for everyone.** The skill's workflow is identical whether a human operator or an orchestrator (e.g. `/implement`) is at the receiving end. After the analysis, the skill presents a proposed ticket structure for the recommended work; the operator (human or orchestrator) approves, edits, or declines. Orchestrators apply their own autonomy judgment per [`references/autonomy.md`](../../references/autonomy.md) — declining items they intend to implement inline, approving items they want tracked for later.
 
 ## Workflow Overview
 
@@ -117,7 +117,7 @@ Once the plan is finalized, offer to convert the planned work into tickets. **Th
 - **Recommended implementation skill** — name the skill that should pick this up, with scope hint. Examples:
   - "Implementation: `/refactor` with scope `src/utils/`" (for mechanical changes within an existing module)
   - "Implementation: `/scope` first to plan dependencies, then `/implement`" (for new module creation)
-  - "Implementation: `/implement-batch` with this ticket plus the related `request.go` absorption ticket" (for cross-cutting changes)
+  - "Implementation: `/implement` with this ticket plus the related `request.go` absorption ticket" (for cross-cutting changes)
 - **Acceptance criteria** — what "done" looks like for this ticket (tests still pass, specific symbols moved, specific files removed).
 
 **Preview the full ticket set to the operator.** Show all tickets at once so the operator can see the whole plan. The operator can:
@@ -157,7 +157,7 @@ When invoked by an orchestrator, the dispatch is the same — the orchestrator i
 
 ### Recommended next steps
 [Brief paragraph naming the natural follow-up. Examples:
- - "Tickets are labeled `arch`; consider `/implement-batch` to work through them as a cohesive unit."
+ - "Tickets are labeled `arch`; consider `/implement` to work through them as a cohesive unit."
  - "Single ticket — run `/implement` when ready."
  - "No tickets cut — analysis stands as a planning artifact; revisit when you have time to act on it."
  - When invoked by an orchestrator: "Tickets are now in the tracker for deferred follow-up; orchestrator declined N items to handle inline."]
@@ -246,7 +246,7 @@ Drafting tickets...
    - AC: validate() lives in request.go; server.go imports nothing from request beyond what it already uses; tests pass
 
 4. Dissolve helpers.go; distribute 6 functions
-   - Implementation: /scope first (cross-module moves benefit from planning); then /implement-batch
+   - Implementation: /scope first (cross-module moves benefit from planning); then /implement
    - AC: helpers.go is deleted; each named function has a new home documented in the ticket
 
 Labels to apply (defaults to none)?
@@ -270,10 +270,10 @@ Creating tickets in Gitea...
 
 ### Tickets created
 - #201, #202, #203 — recommend /refactor scoped per ticket
-- #204 — recommends /scope then /implement-batch
+- #204 — recommends /scope then /implement
 
 ### Recommended next steps
-Tickets are labeled `arch, tech-debt`. Consider `/implement-batch` to
+Tickets are labeled `arch, tech-debt`. Consider `/implement` to
 work through #201-#203 as a cohesive unit (they touch overlapping
 files); #204 deserves its own scoping pass first.
 ```

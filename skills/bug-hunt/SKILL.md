@@ -10,7 +10,7 @@ Systematically hunts for bugs before they reach users. An assessor analyzes the 
 
 **This is deliberately thorough.** Each suspected bug gets a reproducing test — no speculative reports. The goal is confirmed findings with evidence, not a noisy list of maybes.
 
-**Advisory only.** The skill produces findings and proposes tickets; it does not implement fixes. The cognitive seam between "find bug" and "fix bug" is wide enough that mixing them under one workflow degrades both — investigation pressure shouldn't bias the hunters toward bugs they could easily fix, and remediation requires fresh reasoning the hunters aren't currently in. Tickets capture findings durably across that seam and compose with `/implement` and `/implement-project` for remediation. The reproducing tests serve as acceptance criteria — the fix is done when the test passes.
+**Advisory only.** The skill produces findings and proposes tickets; it does not implement fixes. The cognitive seam between "find bug" and "fix bug" is wide enough that mixing them under one workflow degrades both — investigation pressure shouldn't bias the hunters toward bugs they could easily fix, and remediation requires fresh reasoning the hunters aren't currently in. Tickets capture findings durably across that seam and compose with `/implement` for remediation. The reproducing tests serve as acceptance criteria — the fix is done when the test passes.
 
 ## Workflow Overview
 
@@ -246,7 +246,7 @@ Then create tickets via the canonical tracker integration ([`references/trackers
 **For systemic-pattern tickets:**
 - **Pattern** — description of the cross-cutting issue.
 - **Observed in** — `file:line` locations across the codebase.
-- **Recommendation** — usually a follow-up `/refactor` with appropriate scope, or `/implement-batch` if multiple touchpoints need careful coordination.
+- **Recommendation** — usually a follow-up `/refactor` with appropriate scope, or `/implement` with the related tickets together if multiple touchpoints need careful coordination.
 - **Individual findings** — references to the per-bug tickets if they were cut separately.
 
 **For batch tickets:**
@@ -275,7 +275,7 @@ Ask: "Would you like to commit the reproducing tests? They document known bugs a
 
 **Sequential execution within investigation phase.** The assessor runs first, then hunters run sequentially so findings accumulate for pattern detection.
 
-**No remediation agents.** Step 6 cuts tickets and commits reproducing tests; no `swe-sme-*` or `qa-engineer` invocations happen inside `/bug-hunt`. Remediation is handled out-of-skill by `/implement` or `/implement-project` against the cut tickets, using the reproducing tests as acceptance criteria.
+**No remediation agents.** Step 6 cuts tickets and commits reproducing tests; no `swe-sme-*` or `qa-engineer` invocations happen inside `/bug-hunt`. Remediation is handled out-of-skill by `/implement` against the cut tickets, using the reproducing tests as acceptance criteria.
 
 **Fresh instances for every agent.** Each agent gets a clean context window dedicated entirely to its task.
 

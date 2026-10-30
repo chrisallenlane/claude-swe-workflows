@@ -1,161 +1,85 @@
 ---
 name: scope
-description: Exploratory workflow for understanding problem spaces and drafting feature proposals, refactorings, or complex bug-fixes. Creates detailed tickets in your issue tracker without doing implementation work.
+description: Explores a problem space with the user and turns it into well-specified tickets in the issue tracker — one ticket or a whole project's worth, as the work warrants. Uses judgment to choose which reviewers the draft needs (UX, implementer, security, performance), with two fixed rules — a fresh-context review of every draft before it goes upstream, and nothing is created without the user's approval. Writes no code.
 model: opus
 ---
 
-# Scope - Problem Space Exploration & Ticket Creation
+# Scope — From a Problem to Tickets
 
-Helps you thoroughly understand a problem space through codebase exploration and iterative dialogue, then creates a well-specified ticket for future implementation.
+Helps the user understand a problem space through codebase exploration and dialogue, then writes the tickets that implementing it will need. A small bug fix may produce one ticket; a new subsystem may produce a dozen with dependencies between them. The work decides how many, and which reviewers the draft needs before it goes upstream.
 
-**This skill does NOT write code.** It explores, questions, understands, and documents.
+**This skill does not write code.** It explores, questions, designs with the user, and documents.
 
-## Workflow
+## Philosophy
 
-### 1. Initial Discovery
+**Planning is cheaper than rework.** A gap found in a ticket costs minutes; the same gap found mid-implementation costs hours and may cascade.
 
-**Understand what the user wants to explore:**
-- What feature are they considering?
-- What refactoring are they contemplating?
-- What bug needs detailed investigation?
-- Is this greenfield or modifying existing code?
+**Judgment over checklists.** There is no fixed sequence of review loops. The skill decides what the work needs — how many tickets, which lenses — and the reviewers below are there to support it, not to be walked through in order.
 
-**Ask clarifying questions:**
-- Scope and boundaries
-- Problem statement
-- Desired outcome (not implementation details yet)
+**Two rules are fixed:**
 
-Output: Clear understanding of what problem space to explore.
+1. **Drafts go upstream only after review converges.** The author of a plan anchors on what they just wrote; self-review is where planning judgment is weakest. Every draft is reviewed by at least one fresh-context reader, and review repeats — revise, then a *fresh* reviewer — until a round finds nothing material. Which reviewers is judgment; convergence is not.
+2. **Nothing is created upstream without the user's approval** of the final ticket set.
 
-### 2. Codebase Exploration
+## 1. Discover
 
-**Use exploration tools to understand context:**
-- Spawn `Explore` agent (set thoroughness based on scope: "quick", "medium", "very thorough")
-- Use Grep to find relevant code patterns
-- Use Read to examine key files identified
-- Map out the current architecture/implementation
+Understand what the user wants to explore — a feature, a refactoring, a bug that needs investigation, a whole project — and ask about scope, boundaries, the problem, and the desired outcome (not the implementation yet).
 
-**For third-party dependencies:**
-- Use WebFetch to read API documentation
-- Clone relevant repositories to `/tmp` for examination if needed
-- Understand integration points and constraints
+## 2. Explore
 
-**Exploration goals:**
-- Where does this change fit in the architecture?
-- What existing code will be affected?
-- What patterns/conventions are already established?
-- What are the integration points?
-- What similar features exist that we can learn from?
+Learn the relevant code before proposing anything: where the change fits, what it affects, the conventions already established, the integration points, and similar features to learn from. Use `Explore` agents for broad sweeps, read key files directly, and read third-party docs or clone dependencies to a scratch directory when the integration matters.
 
-Output: Comprehensive understanding of the relevant codebase areas.
+## 3. Design With the User
 
-### 3. Iterative Refinement
+Present what exploration found, then work the design out together: the approaches and their trade-offs, edge cases, constraints, and acceptance criteria. Challenge assumptions and propose alternatives — this is collaborative design, not requirements transcription. Continue until both sides share a precise understanding of what to build and why.
 
-**Use AskUserQuestion to refine understanding:**
-- Present what you've learned from exploration
-- Ask about approaches (if multiple valid options exist)
-- Clarify edge cases and requirements
-- Discuss trade-offs between approaches
-- Validate assumptions about existing code
+Decide here how the work should be cut: one ticket, or several. Several when the work has independently verifiable parts, when parts depend on others landing first, or when one ticket would be too large to implement and review as a unit.
 
-**Loop until both Claude and user have:**
-- Precise understanding of what to build
-- Clear rationale for approach chosen
-- Identified edge cases and constraints
-- Agreed on acceptance criteria
+## 4. Draft
 
-**Important:** This is collaborative design, not just requirements gathering. Challenge assumptions, propose alternatives, discuss trade-offs.
+Write each ticket so that someone else could implement it tomorrow without guessing. Adapt the content to the kind of work:
 
-Output: Shared, precise understanding of the work to be done.
+- **Feature:** problem statement; proposed solution; acceptance criteria (specific and testable — "run X, expect Y"); technical notes (affected components, current signatures and modules the implementer will need); security considerations where the change adds attack surface, handles input, or crosses a trust boundary; dependencies; out of scope; open questions.
+- **Refactoring:** current state and what is wrong with it; desired state; motivation; approach; risks; affected areas.
+- **Bug fix:** observed behavior; root cause from exploration; proposed fix; why it happened; how to verify; how to prevent recurrence.
 
-### 4. Ticket Synthesis
+For a multi-ticket set, state each ticket's dependencies explicitly and give the set an execution order. Draft in a gitignored `.tickets/` staging directory when the set is large enough that files beat holding it in context; remove it when done.
 
-**Draft ticket content adaptively based on type:**
+**Quality bar.** Every ticket meets these; reviewers check against them:
 
-**For feature proposals:**
-- Problem statement (what problem does this solve?)
-- Proposed solution (high-level approach)
-- Acceptance criteria (specific, testable)
-- Technical notes (implementation considerations, affected components)
-- Security considerations (if the change introduces new attack surface, handles user input, touches auth/authz, or affects trust boundaries — note what controls will be needed. Consult the `sec-blue-teamer` agent if the implications are non-obvious.)
-- Out of scope (what explicitly won't be done)
-- Open questions (if any remain)
+| Criterion                          | Meaning                                                                                                    |
+|------------------------------------|------------------------------------------------------------------------------------------------------------|
+| Implementable without guessing     | Two developers would build substantially the same thing                                                    |
+| Testable acceptance criteria       | Each criterion is a concrete check, not a judgment ("it should be fast")                                   |
+| Explicit dependencies              | Every ticket says what must exist before it starts; no forward dependencies within the execution order     |
+| No gaps, no overlaps               | All necessary work is assigned to exactly one ticket; no two tickets change the same code in conflicting ways |
+| Accurate code references           | Paths, functions, and modules named in the tickets exist as described                                      |
+| Appropriate scope                  | Each ticket is a coherent unit — not unmanageable, not trivial                                             |
 
-**For refactorings:**
-- Current state (what's problematic about existing code)
-- Desired state (what we want it to look like)
-- Motivation (why is this worth doing)
-- Approach (high-level refactoring strategy)
-- Risk assessment (what could go wrong)
-- Affected areas (files/modules that will change)
+## 5. Review
 
-**For complex bug fixes:**
-- Bug description (observed behavior)
-- Root cause (from your exploration)
-- Proposed fix (high-level approach)
-- Why this happened (what allowed the bug)
-- Verification plan (how to confirm fix works)
-- Regression prevention (tests/checks to prevent recurrence)
+Spawn fresh-context reviewers on the drafts — at least one, always (rule 1). Choose by what the work needs:
 
-**Format guidelines:**
-- Use markdown
-- Be specific, not vague
-- Include code references (file paths, line numbers, function names)
-- Link to relevant documentation or issues
-- Make it actionable (someone else should be able to implement from this)
+- **Implementer** — the default cold reader. Spawn the project's language SME (`swe-sme-golang`, `swe-sme-zig`, `swe-sme-typescript`, …) or a general-purpose agent, told to review every ticket as if assigned to implement it tomorrow: every gap, ambiguity, missing dependency, wrong code reference, and unanswered question, with a specific fix for each.
+- **`ux-reviewer`** — whenever the work changes what a user (of a CLI, MCP server, web app, or library API) sees or does: mental-model fit, dead ends, missing recovery paths, naming. Asks "should we build this?"
+- **`sec-blue-teamer`** — when the work shapes authentication, authorization, trust boundaries, or data handling at the design level. Frame it as a spec-time review: the controls the design needs, not an audit of existing code.
+- **`swe-perf-reviewer`** — when the design has architectural performance implications: data structures at scale, caching strategy, hot-path shape.
+- **`swe-arch-reviewer`**, **`swe-value-engineer`** — when the design's structure, or the requirements themselves, deserve a challenge.
 
-Output: Draft ticket content for user review.
+**Iterate to convergence.** Revise from the findings, then re-review with a **fresh** instance of each lens that raised material findings — a fresh reader doesn't anchor on its own prior findings. Stop when a round finds nothing material: nothing that would change what gets built, how it is verified, or how the work is cut. Wording nits are not material. Simple work usually converges in one round; complex work may take several. A lens still raising material findings after three rounds goes to the user — the disagreement is probably a requirements question, not a drafting one.
 
-### 5. Review & Refine Ticket
+## 6. Approve and Create
 
-**Present draft to user:**
-- Show complete ticket content
-- Highlight any areas of uncertainty
-- Ask if anything is missing or unclear
+**Present the final set** to the user: each ticket in full (or summarized, with the files available, for a large set), the execution order and dependencies, and a summary of what the reviewers found and how it was resolved. Highlight remaining uncertainty. Iterate until the user approves (rule 2).
 
-**Iterate if needed:**
-- Adjust based on feedback
-- Add missing details
-- Clarify ambiguous sections
+**Create the tickets** per [`references/trackers.md`](../../references/trackers.md) (Detection Procedure + "Create"). Create them in execution order, so later tickets can link to the earlier ones they depend on. Apply labels the user wants. Report each ticket's number and URL, and clean up any staging directory.
 
-Output: Approved ticket content ready to create.
+## Boundaries
 
-### 6. Create Ticket
+**Will:** explore code extensively, ask many questions, challenge assumptions, propose alternatives, spawn reviewers, and create tickets in the tracker on approval.
 
-Detect the issue tracker and create the ticket per [`references/trackers.md`](../../references/trackers.md) (Detection Procedure + "Create" operation). Capture and present the resulting ticket URL.
+**Will not:** write production code, commit, run tests, or modify files other than its own staging drafts (and the `.gitignore` entry that keeps them out of commits).
 
-Output: Created ticket with URL.
+## Relationship to Other Skills
 
-## Skill Boundaries
-
-**This skill will:**
-- Explore code extensively
-- Ask lots of questions
-- Synthesize understanding into tickets
-- Challenge your assumptions
-- Propose alternatives
-- Create issues in your issue tracker
-
-**This skill will NOT:**
-- Write production code
-- Make commits
-- Run tests or linters
-- Modify files (except ticket creation)
-- Implement features
-
-## Notes
-
-**Exploration thoroughness:**
-- Quick exploration: ~5 minutes, high-level understanding
-- Medium exploration: ~15 minutes, detailed component analysis
-- Very thorough: ~30 minutes, comprehensive system understanding
-
-**Ticket quality over speed:**
-- Take time to understand deeply
-- Don't rush to ticket creation
-- Better to ask more questions than create vague tickets
-
-**Integration with /implement:**
-- These skills are separate and complementary
-- `/scope` creates the ticket, `/implement` implements it
-- Ticket created by `/scope` can be handed to someone else or tackled later with `/implement`
+**`/scope` → `/implement`** is the planning-to-execution pair: this skill writes the tickets; `/implement` builds them — one, or the whole set.

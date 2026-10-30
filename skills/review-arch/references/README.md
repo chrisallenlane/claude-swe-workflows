@@ -22,7 +22,7 @@ The plugin is moving `/review-*` skills toward advisory-only over time; `/review
 - When "helpers.go" or "utils.py" has become a dumping ground
 - When a codebase feels over-engineered relative to its actual scale — the mechanism audit compares each piece of machinery against the simplest implementation that meets the same acceptance criteria
 - Preparing a codebase for a major new feature that needs clean abstractions
-- Generating a coherent batch of refactoring tickets for `/implement-batch` to work through
+- Generating a coherent batch of refactoring tickets for `/implement` to work through
 
 **Don't use `/review-arch` for:**
 - Routine code cleanup or DRY fixes (use `/refactor` instead)
@@ -128,7 +128,7 @@ For each blueprint item (or cohesive group of items), generate a draft ticket in
 
 - **Title** — short, action-oriented
 - **Description** — rationale plus specific moves/renames
-- **Recommended implementation skill** — names the skill that should pick this up, with scope hint (e.g., `/refactor scoped to src/utils/`, or `/scope then /implement-batch` for cross-module work)
+- **Recommended implementation skill** — names the skill that should pick this up, with scope hint (e.g., `/refactor scoped to src/utils/`, or `/scope then /implement` for cross-module work)
 - **Acceptance criteria** — what "done" looks like
 
 **Preview the full set to the operator.** The operator can approve as-is, edit any field, remove tickets they don't want cut, and choose labels (default: none). Orchestrators apply their autonomy judgment per `references/autonomy.md` — typically declining items they intend to implement inline.
@@ -147,9 +147,9 @@ See SKILL.md for the exact template.
 
 2. **Ticket creation is opt-in.** If you want the analysis as a planning artifact rather than a set of tickets, decline at step 5. The recommendations stand on their own.
 
-3. **Pay attention to the "Recommended implementation skill" hint in each ticket.** It names the right next move (`/refactor` for mechanical changes; `/scope` then `/implement` for new modules; `/implement-batch` for cohesive groups).
+3. **Pay attention to the "Recommended implementation skill" hint in each ticket.** It names the right next move (`/refactor` for mechanical changes; `/scope` then `/implement` for new modules; `/implement` with the group's tickets together for cohesive groups).
 
-4. **Orchestrators apply their own judgment to the offer.** When invoked from an orchestrator such as `/implement-project`, the orchestrator typically declines items it intends to implement inline and approves items it wants tracked for follow-up. Both responses are valid.
+4. **Orchestrators apply their own judgment to the offer.** When invoked from an orchestrator such as `/lead-review` or `/implement` running a multi-ticket project, the orchestrator typically declines items it intends to implement inline and approves items it wants tracked for follow-up. Both responses are valid.
 
 5. **Consider running `/refactor` first.** Cleaning up dead code and DRY violations with `/refactor` reduces noise in the architectural analysis. The analysis agent can then focus on structural opportunities rather than rediscovering tactical ones.
 

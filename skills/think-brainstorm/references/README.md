@@ -261,8 +261,7 @@ constraints-shift
 |----------------------|-------------------------------------------------------------------------------------|
 | `/think-deliberate`  | Chooses between generated options. Natural downstream of brainstorming.             |
 | `/think-scrutinize`  | Stress-tests a selected standout. Natural downstream of deliberation.               |
-| `/scope`             | Translates a chosen idea into a ticket                                              |
-| `/scope-project`     | Translates a chosen idea into a multi-batch project plan                            |
+| `/scope`             | Translates a chosen idea into tickets — one, or a whole project's worth             |
 
 **Natural pipelines:**
 - `/think-brainstorm` → `/think-deliberate` → `/think-scrutinize` → `/scope` (generate → choose → stress-test → specify)

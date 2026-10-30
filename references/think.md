@@ -82,7 +82,7 @@ The five tests above gate `/think-*` admission. They do not gate other skill fam
 
 - **Practitioner-methodology bias.** When designing any new skill, look for the practitioner tradition that has already studied this problem. `/scope` inherits from agile/XP spike practice; `/implement` from TDD and incremental feature delivery; `/refactor` from Fowler. The bias toward citing lineage is plugin-wide — it's how the plugin avoids reinventing what practitioner traditions have already worked out.
 
-- **Structured discipline beats flexible framework.** Make uncomfortable questions unskippable where a skill's purpose warrants it. `/implement-project`'s commander's-intent elicitation applies this discipline outside the `/think-*` namespace, to good effect.
+- **Structured discipline beats flexible framework.** Make uncomfortable questions unskippable where a skill's purpose warrants it. The `/lead-*` skills' commander's-intent elicitation applies this discipline outside the `/think-*` namespace, to good effect.
 
 - **Specific countermeasures over vague aspirations.** Designing a skill against a *specific failure mode* it counters — even informally — produces sharper skills than designing for "improvement" generically.
 

@@ -1,46 +1,58 @@
 ---
 name: implement
-description: Iterative development workflow that coordinates implementation, refactoring, QA, and documentation agents to complete features systematically. Use when the user wants a full development workflow with quality checks.
+description: Implements one ticket, a batch of tickets, or an open-ended goal, end to end. Uses judgment to choose which specialist agents and skills the work needs — planning, language SMEs, reviews, /refactor, /review-arch, /bug-hunt — over a small fixed floor that always holds — concept inventory before code, practical verification of acceptance criteria, tests green at every commit, an independent correctness review, and no irreversible actions. One planned interaction scaled to the work, then autonomous; every pass not run is accounted for in the final report.
 model: opus
 ---
 
-# Implement - Automated Development Workflow
+# Implement — From Tickets to a Review-Ready Branch
 
-Coordinates specialist agents through a complete development cycle: requirements -> design -> planning -> implementation -> refactoring -> QA -> documentation.
+Implements whatever it is given — one ticket, a batch of tickets, or a goal that still needs scoping — and hands back a branch and a report. The skill decides how much process the work needs. A typo-sized fix gets a concept inventory of "no new concepts," a verification run, and a commit; a twelve-ticket feature may get planning, SMEs, `/refactor`, `/review-arch`, and a smoke test. The work decides, not a checklist.
 
-## Workflow
+## Philosophy
 
-### 1. Receive and clarify requirements
+**Correctness is the goal; judgment chooses the tools.** The skill holds a repertoire of agents and skills (below) and uses the ones the work needs, when it needs them, the way a capable senior engineer would. Running a pass because a list says so wastes the run; skipping one the work needed is a judgment error the report must make visible.
 
-**Gather requirements from user:**
-- What feature/bug/change is being requested?
-- What are the acceptance criteria?
-- Any constraints or preferences?
+**A small floor is fixed.** These hold on every run, at every scale, because they are cheap and they carry the correctness:
 
-**Ask clarifying questions if needed:**
-- Ambiguous requirements
-- Missing information
-- Multiple valid approaches
+1. **Concept inventory before code, audited against the diff.** Nothing is built that a requirement does not force (§2).
+2. **Practical verification of the acceptance criteria.** Actually run the feature before trusting the tests (§4).
+3. **Tests and linters green** at every commit and every merge.
+4. **An independent correctness review** of each ticket's diff, unless the change is trivial — and always when the feature could not be run or the project has no meaningful test suite (§4).
+5. **No irreversible actions.** No pushes, no merges or commits to main/master, no releases, no ticket closing, no breaking changes the user has not authorized.
 
-Loop back to user until requirements are clear.
+**Judgment is accountable.** The final report names every repertoire pass that ran and gives a one-line reason for each plausible pass that did not. That record is how the user audits the run's judgment without supervising it.
 
-### 2. Design and Planning
+**One interaction, then autonomy.** The skill confirms its understanding and plan once, scaled to the work, and then runs to completion. It comes back early only through escalation (§7).
 
-#### 2a. Concept Inventory (Always)
+## 1. Understand and Plan
 
-**Design before code.** It is cheaper not to write a mechanism than to strip it out later, and nothing downstream of this step hunts for machinery that works but was never needed: QA verifies that the feature runs, and the reviewers read what was built, not what could have been left out. The inventory is the only gate that asks "does this need to exist?", so it runs on every task. It scales with the change — a one-line fix has a one-line inventory ("no new concepts") — but it is never skipped.
+**Gather the work.** Tickets are fetched per [`references/trackers.md`](../../references/trackers.md): title, description, acceptance criteria, dependencies. A request with no ticket is clarified directly. A goal that needs decomposing ("make config handling work end to end") is scoped first — draft the tickets with `/scope`, or inline when the shape is obvious.
 
-**Write the inventory yourself, before planning or spawning any agent.** Four rules bind it:
+**Ask what only the user can answer**, and nothing else:
+- Ambiguous requirements, missing acceptance criteria, or several valid approaches with real trade-offs.
+- For multi-ticket work: constraints and non-goals, if the tickets don't state them; the grouping, if the user chose one deliberately.
+- If `/refactor` is likely to run: its two stakes questions — *what happens if this breaks?* and *who maintains it, for how long?*
+- If the work spans user-visible features: a smoke-testing procedure (a CLI run with representative commands, JSON-RPC calls to an MCP server, Playwright against a web app, an end-to-end use of a library's API).
 
-- **Every concept cites its requirement.** List each concept the change introduces — a type, module, mechanism, layer, configuration knob, or abstraction — in one sentence, and cite the requirement or acceptance criterion from step 1 that forces it. A concept that cites nothing is not built. Future needs, symmetry, and completeness are not requirements; if one of them matters, it goes back to the user as a requirements question (step 1), not into the code.
-- **The naive baseline is the default.** Each concept is implemented in the dumbest form that meets its cited requirement: a plain array, a direct call, a hard-coded value, a linear scan. Anything more elaborate must name the requirement the naive form fails.
+**Present understanding and plan together, and wait for approval.** For one ticket this is a few lines; for a project it is the ticket order with dependencies, the probable passes, constraints, non-goals, stakes, and smoke procedure. The user may pre-approve ("just do it"), in which case proceed. Record the approved intent; it anchors every later decision.
+
+**Branching.** Never commit to main/master; if on it, create a working branch first. For multi-ticket work, create a project branch (`feat/project-<name>`) and implement each ticket on a topic branch from it, merged back (`--no-ff`) once verified — one revert unit per ticket.
+
+**State.** For multi-ticket work, keep `PROJECT_STATE.md` at the repo root (gitignored): the approved intent, the plan, and a one-line-per-action log (action, why, outcome, HEAD). It is the run's memory across compaction and resumption; on resume, re-read it and re-observe the branch before deciding anything.
+
+## 2. Concept Inventory (Floor)
+
+**Design before code.** It is cheaper not to write a mechanism than to strip it out later, and nothing downstream hunts for machinery that works but was never needed. The inventory is the gate that asks "does this need to exist?", so it runs for every ticket. It scales with the change — a one-line fix has a one-line inventory ("no new concepts") — but it is never skipped.
+
+**Write it before planning or building each ticket.** Four rules bind it:
+
+- **Every concept cites its requirement.** List each concept the change introduces — a type, module, mechanism, layer, configuration knob, or abstraction — in one sentence, and cite the requirement or acceptance criterion that forces it. A concept that cites nothing is not built. Future needs, symmetry, and completeness are not requirements; if one of them matters, it is a question for the user, not code.
+- **The naive baseline is the default.** Each concept is implemented in the dumbest form that meets its cited requirement: a plain array, a direct call, a hard-coded value, a linear scan. Anything more elaborate names the requirement the naive form fails.
 - **Shop before you build.** For each concept, search the codebase, the standard library, and the dependencies already present for a mechanism that solves the same problem, and record what was searched and what was found. An existing mechanism is reused or extended. Building a second one beside it — a second queue, clamp, config reader, retry loop — requires a cited reason the first cannot serve.
 - **No caller, no export.** Every exported or public symbol names the caller outside its module that this change adds or already has. A symbol with no such caller is private, or is not written.
 
-**Inventory format:**
-
 ```
-## Concept Inventory
+## Concept Inventory — <ticket>
 
 ### New concepts
 - <concept, one sentence>
@@ -55,415 +67,132 @@ Loop back to user until requirements are clear.
 - <concept> — <why no requirement forces it>
 ```
 
-**The inventory is binding for the rest of the workflow:**
-- The planner (step 2b) plans how to build the inventoried concepts, and adds none.
-- The implementation agent (step 3) builds the inventoried concepts and only those.
-- The refactoring reviewer (step 5b) audits the diff against it.
-- The inventory is amended only by adding a concept with its forcing requirement, form, and shopping record — never by building first and listing afterwards.
-
-#### 2b. Planning (Conditional)
-
-**Assess task complexity:**
-
-After the inventory is written, assess whether planning is warranted:
-
-**Invoke `swe-planner` agent for complex tasks:**
-- Large architectural changes (refactoring entire subsystems, technology migrations)
-- Cross-cutting concerns (multi-tenancy, i18n, audit logging)
-- Features touching many modules with unclear implementation path
-- Changes requiring database migrations and backward compatibility
-- Multiple valid approaches with significant trade-offs
-- Tasks where diving straight into implementation risks going down wrong path
-
-**Skip planning for simple tasks:**
-- Single-file changes or small bug fixes
-- Straightforward CRUD operations
-- Simple refactorings (rename, extract method, remove duplication)
-- Clear, well-defined changes with obvious implementation path
-- Tasks that can be completed in <100 lines of code
-
-**Note:** `swe-planner` has a safety valve to exit early if invoked for a task simpler than assessed. If planner reports "planning not needed," proceed directly to implementation with planner's brief recommendation.
-
-**If planning invoked:**
-- Pass the concept inventory (step 2a) to `swe-planner`; if the plan calls for a concept the inventory lacks, amend the inventory before proceeding
-- `swe-planner` will produce implementation plan with ordered sub-tasks
-- Each sub-task includes: What/Why/How/Verify/Risks
-- Plan identifies risk areas (prototyping needs, user decisions, performance/security concerns)
-- Plan applies YAGNI, emphasizes starting small and working incrementally
-
-**Use plan to guide implementation:**
-- Implementation agent should follow plan's sequencing
-- Implement one sub-task at a time
-- Verify each sub-task before moving to next
-- If plan identifies prototyping needs, create scratch repos in `/tmp` first
-
-### 3. Implementation
-
-**Detect project language/framework:**
-- Check for language-specific files (go.mod, package.json, Cargo.toml, Dockerfile, Makefile, etc.)
-- Determine which specialist agent to use
-
-**Spawn appropriate implementation agent:**
-- If Dockerfile changes: spawn `swe-sme-docker` agent
-- If Makefile changes: spawn `swe-sme-makefile` agent
-- If Golang project: spawn `swe-sme-golang` agent
-- If GraphQL schema/resolvers: spawn `swe-sme-graphql` agent
-- If Ansible playbooks/roles: spawn `swe-sme-ansible` agent
-- If Zig project: spawn `swe-sme-zig` agent
-- If TypeScript project (`.ts` files, `tsconfig.json`): spawn `swe-sme-typescript` agent
-- If vanilla JavaScript (`.js` files, no TypeScript): spawn `swe-sme-javascript` agent
-- If HTML/markup changes: spawn `swe-sme-html` agent
-- If CSS/styling changes: spawn `swe-sme-css` agent
-- Otherwise: implement directly with general best practices
-
-**Pass the concept inventory (step 2a) to the implementation agent:**
-- The inventory is the build list: the agent implements those concepts, in the listed form, reusing what the shopping record names
-- If the work reveals a concept the inventory lacks, the agent stops and reports it with the requirement that forces it, rather than building it; amend the inventory (or decline the concept) and re-invoke
-- Exports are limited to the symbols the inventory lists with a caller
-
-**Pass plan to implementation agent if planning was done:**
-- Implementation agent should follow plan's sequencing
-- Work incrementally through sub-tasks
-- Verify each step as specified in plan
-
-**Implementation agent responsibilities:**
-- Write code following language idioms
-- Follow project conventions
-- Handle edge cases and errors
-- Write unit tests for pure functions as part of TDD (encouraged, not just QA's job)
-- If following plan: implement sub-tasks sequentially, verify each before proceeding
-
-### 4. Quality Assurance - Verify Acceptance Criteria (CRITICAL GATE)
-
-**Spawn `qa-engineer` agent:**
-- Pass original requirements and acceptance criteria to the agent
-- The agent infers its mode from context: presence of acceptance criteria triggers acceptance verification
-- Agent performs **practical verification first** - actually running/using the feature to confirm it works
-- This means: executing CLI commands, spawning subagents to test MCP tools, making API calls, etc.
-- Only AFTER practical verification confirms the feature works does the agent write unit tests
-- This prevents the failure mode of "passing unit tests for broken code"
-
-**Practical verification by feature type:**
-- CLI tools: Run commands in subshell (skip destructive operations)
-- MCP servers/Claude skills: Spawn subagent to actually use the feature
-- API integrations: Make actual calls (with caution for dangerous operations)
-- Libraries: Quick sanity checks, then unit tests
-
-**This is a CRITICAL GATE:**
-- Implementation must demonstrably work (practical test) AND have tests to proceed
-- If practical verification fails: return to step 3 (implementation) immediately
-- If verification passes but tests fail: debug tests, not implementation
-- Track iteration count (max 3 attempts before escalating to user)
-
-**Expected output:** Practical verification results, integration test recommendations, pass/fail determination with specific findings about each acceptance criterion.
+**The inventory binds the build.** The implementation agent builds the inventoried concepts and only those. A concept discovered mid-build is reported with its forcing requirement and added to the inventory before it is built — never built first and listed afterwards.
 
-### 5. Code Review (Conditional)
+**The audit.** Whenever the inventory lists a new concept or export, spawn `swe-code-reviewer` with the inventory and the diff to report each departure: a concept built but not inventoried, a form more elaborate than recorded, a mechanism duplicating one already in the codebase, an export with no outside caller. Departures are resolved — removed, or admitted by amending the inventory with a forcing requirement. They are not advisory.
 
-**Only proceed to code review if acceptance verification passed.** Don't review broken code.
+## 3. Build
 
-Conditionally invoke specialized reviewers based on code changes and complexity. All reviewers provide feedback; implementation agent responds to all feedback in step 6.
+**Choose the implementation agent** by what the change touches: `swe-sme-golang`, `swe-sme-zig`, `swe-sme-typescript`, `swe-sme-javascript`, `swe-sme-html`, `swe-sme-css`, `swe-sme-graphql`, `swe-sme-docker`, `swe-sme-makefile`, `swe-sme-ansible` — or implement directly when no specialist fits. Pass it the ticket, the inventory, and any plan.
 
-#### 5a. Security Review (Conditional - Has Authority)
+**Plan when the work is unclear.** `swe-planner` sequences complex changes (cross-cutting concerns, migrations, many modules, several viable approaches) into verifiable sub-tasks; it plans the inventoried concepts and adds none. Prototype risky approaches in a scratch directory first.
 
-**If security-sensitive code changed (auth, crypto, input validation, data access):**
+**Implementation responsibilities:** language idioms and project conventions; edge cases and errors; unit tests for pure logic as it is written.
 
-**Spawn `sec-blue-teamer` agent:**
-- Evaluates defensive security posture of changed code
-- Checks control consistency, defense-in-depth, and configuration
-- Identifies systemic gaps that enable vulnerability classes
-- **Has authority to demand changes** - security issues should block or require explicit user approval
+## 4. Verify (Floor)
 
-**Output**: Defense evaluation with severity levels (critical/high/low)
+**Practical verification first.** Spawn `qa-engineer` with the ticket's acceptance criteria. It exercises the feature for real — runs the CLI, calls the API, drives the MCP tool through a subagent, uses the library — and only then writes tests. This prevents passing tests for broken code. Failure returns to §3; after 3 failed attempts on the same ticket, escalate (§7).
 
-#### 5b. Refactoring Review (Conditional - Advisory, except the inventory audit)
+**Tests and linters green.** Run the suite, linters, and formatters after every change set, and before every commit and merge.
 
-**If non-trivial implementation (>50 lines changed, multiple files, or complex logic), or the concept inventory (step 2a) lists any new concept or export:**
+**Correctness review.** Spawn a fresh `swe-correctness-reviewer` with the diff and the target runtime and versions — never the implementation history or rationale; its independence is the point. It assumes a bug already shipped and works backward, verifying every assumption the diff makes against the repo.
 
-**Spawn `swe-code-reviewer` agent:**
-- Pass the concept inventory and have the agent audit the diff against it, reporting each departure: a concept built but not inventoried, a form more elaborate than the inventory records, a mechanism that duplicates one already in the codebase, an exported symbol with no caller outside its module
-- Reviews implementation for code quality issues
-- Identifies refactoring opportunities (DRY violations, dead code, complexity, etc.)
-- Provides structured recommendations organized by priority
-- Agent will report "No refactoring needed" if code is already clean
+- **Run unless trivial:** skip only typo, comment-only, or single-line changes whose correctness is obvious by inspection. When in doubt, run it.
+- **Mandatory** when practical verification was impossible or the project has no meaningful test suite — then it is the only correctness gate left.
+- **Findings are blocking.** Each is fixed or refuted with cited evidence; re-run tests; spawn a *fresh* reviewer on the updated diff. Up to 3 rounds, then escalate with the surviving findings. Residual risks (non-blocking) go to the report.
 
-**Output**: Inventory departures (must be resolved in step 6) and refactoring recommendations (advisory only)
+For multi-ticket work, run it per ticket before its merge; a final review of the whole project diff is a repertoire choice.
 
-#### 5c. Performance Review (Conditional - Advisory)
+## 5. The Repertoire
 
-**If performance-critical code changed (hot paths, loops, database queries, API endpoints):**
+Use what the work needs. Each pass that plausibly applied and did not run gets a one-line reason in the report.
 
-**Spawn `swe-perf-reviewer` agent:**
-- Reviews code for performance bottlenecks
-- Identifies missing benchmarks and profiling gaps
-- Provides optimization recommendations
+**Reviews of the change:**
+- `sec-blue-teamer` — auth, crypto, input handling, trust boundaries. Critical/High findings must be fixed or explicitly waived by the user.
+- `swe-perf-reviewer` — hot paths, queries, loops at scale.
+- A fresh instance of the same SME — "would I accept this PR?" nits on non-trivial diffs; small fixes only, never re-architecture. If its edits break tests, revert them.
+- `doc-maintainer` or `/tidy-docs` — documentation for what changed; targeted for one ticket, a full pass for a project.
 
-**Output**: Performance metrics and recommendations (advisory only)
+**Skills, mostly at project scale:**
+- `/refactor` — shrinks the machine with behavior pinned. Best after the tickets are done, before other reviews. Runs with its menu answered from intent (below).
+- `/review-arch`, `/review-test`, `/review-dead`, `/review-security`, `/review-perf`, `/review-a11y` — when the work touched their territory. They propose tickets; approve what should be tracked, decline what you will handle inline — then handle it — and prefer a ticket when in doubt.
+- `/bug-hunt` — substantial new surface with thin coverage.
+- `/bug-fix` — a failure that resists a direct fix.
+- The smoke-testing procedure — before declaring multi-ticket work done.
+- `/review-release` — last, when the work is headed for a release.
+- `/think-deliberate`, `/think-reframe`, `/think-diagnose`, `/think-scrutinize` — close calls, wrong-seeming framings, unclear failures, risky plans.
 
-### 6. Implement Review Feedback
+**Only when intent asks:** `/review-value` — its trade menu is product decisions, so surface it rather than act on it. **Never:** `/release`.
 
-**Aggregate all review feedback from step 5 and provide to implementation agent.**
+**Severity handling.** Critical/High: resolve before finishing. Medium: resolve if bounded and local, else defer with a note. Low/Info: defer with a note. **Don't thrash:** re-run a review only if files it flagged have changed; if two reviews contradict each other on the same code, escalate rather than oscillate.
 
-**If specialist was used in step 3 (swe-sme-golang, swe-sme-graphql, etc.):**
-- Re-invoke the same specialist agent that did implementation
-- Provide all review feedback (security, refactoring, performance)
-- Specialist reviews all feedback and **uses own discretion** to implement
-- **Security findings**: Must address or get explicit user approval to skip
-- **Inventory departures (step 5b)**: Must resolve — remove the departure, or amend the inventory with the requirement that forces it
-- **Other feedback**: Advisory only - specialist has final authority
-- Specialist may decline recommendations that conflict with language idioms
-- Specialist implements accepted changes and commits
+### Running `/refactor` unattended
 
-**If no specialist (general implementation):**
-- Re-invoke the same agent that did implementation in step 3
-- Provide all review feedback
-- Agent addresses security issues, resolves inventory departures, and implements accepted recommendations
-- Agent commits changes
+`/refactor` has one operator checkpoint, its requirements menu. Answer it from the approved intent; everything after the menu runs as `/refactor` defines it.
 
-**Note**: Security issues have authority to block, and inventory departures must be resolved; other feedback is advisory. Implementation agent makes final decisions on advisory feedback.
+| Menu part | Answer                                                                                                                                                       |
+|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Stakes    | The user's answers, verbatim.                                                                                                                                |
+| Probes    | The smoke-testing procedure, plus every ticket's acceptance criteria.                                                                                        |
+| Verdicts  | **Ratified:** behavior the tickets specify, plus constraints. **Documented:** keep all. **Invented:** presumed dead. **Priced:** take no trades; report them. |
+| Non-goals | `/refactor` takes no exclusions; if non-goals name code that must not be touched, don't run it.                                                              |
+| Merge     | Merge `refactor/<slug>` into the working branch (`--no-ff`) once its oracle is green; re-run tests and the smoke procedure.                                   |
 
-### 7. SME Peer Review (Conditional)
+Stand in for the user at the menu and the merge, and nowhere else: never rescue an invented requirement, take a trade, or override a gate. If the project has no user-visible boundary to build an oracle against, don't run `/refactor`; its safety rests on that oracle.
 
-**Condition:** Non-trivial changes (>50 lines changed, multiple files, or complex logic).
+## 6. Finish
 
-**Skip if:**
-- Changes are trivial (single file, <50 lines, simple logic)
-- No language-specific SME was used in step 3 (general implementation)
+**Commit** each ticket's work with a descriptive message referencing the ticket (`Fixes #123`), so the tracker closes it when the user merges. Do not close or comment on tickets directly.
 
-**If applicable, spawn a fresh instance of the same SME type used in step 3:**
-- Fresh context window - reviewer sees only current code state via git diff
-- Reviews with "would I accept this PR" lens
-- Focuses on: minor oversights, idiomatic patterns, naming, small cleanups
-- **Has authority to make small fixes directly**
+**Final checks:** the full suite, linters, and formatters pass; `git status` is clean or every leftover is explained; for multi-ticket work, the smoke procedure passes.
 
-**Scope constraints (critical):**
-- Small cleanups and nits only
-- No architectural changes
-- No re-implementing features
-- No changing approaches or patterns chosen by original SME
-- If something seems wrong at a deeper level, flag it rather than fix it
+**Report**, ordered by what most needs the user's scrutiny. Every completion claim carries an artifact — a commit SHA, a command and its result, a file:line.
 
-**Expected output:** Small fixes committed, or "no changes needed" if code is clean.
-
-### 8. Quality Assurance - Coverage & Quality Verification
-
-**Spawn `qa-engineer` agent:**
-- The agent infers its mode from context: absence of acceptance criteria triggers general assessment
-- Agent performs general QA assessment of all changed code (from steps 3, 6, and 7)
-- Assess test coverage for new/modified code
-- Identify gaps and write missing tests
-- Run linters/formatters and fix issues
-- Evaluate test quality (assertions, edge cases)
-- **Verify implementations from steps 6 and 7 didn't break tests** - catches issues from refactoring, security fixes, or peer review cleanups
-
-**This is SUPPLEMENTARY:**
-- Issues found here don't block the workflow by default
-- Agent documents issues and proposes fixes
-- Minor issues: proceed to documentation
-- Significant issues (tests broken, major bugs): return to step 6 (review feedback) or step 3 (implementation)
-
-**Expected output:** Coverage metrics, tests added/modified, quality issues found, confirmation that all changes still pass tests.
-
-### 9. Correctness Review (Conditional — Blocking)
-
-**This is the analytical correctness gate.** Every gate before this point is either empirical (step 4 runs the feature; step 8 runs the test suite) or quality-focused (clarity, security posture, idiom nits). None of them reads the diff asking "is this correct?" This step does. It runs last among the review gates deliberately: mechanical verification is cheap and analytical review is expensive — don't spend review rounds on code that fails its own test suite.
-
-**When to run (run-unless):**
-
-The default is to run. Skip only when the diff is trivial — typo fixes, comment- or documentation-only changes, single-line changes whose correctness is obvious by inspection. When in doubt, run it.
-
-**Degraded-verification override (mandatory):** if practical verification in step 4 was impossible (the feature could not actually be run) **or** the project has no meaningful test suite, this step is **mandatory regardless of diff size**. When the empirical gates collapse, analytical review is the only correctness gate left — it must not be skipped quietly.
-
-**Spawn `swe-correctness-reviewer` agent (fresh context):**
-- Provide: the full diff (or branch/commit range), target runtime and framework versions if known, and the round number if looping
-- Do **not** provide: implementation history, rationale for design choices, or prior agents' outputs. The reviewer sees the diff and the repo, nothing else — independence from the implementation context is what makes the review effective
-- The agent assumes a bug already shipped and works backward to find it, walking a six-concern spine (assumptions, runtime semantics, call sites, data flow, error paths, first-principles residual) with mechanical verification of every assumption the diff makes
-
-**Convergence loop (blocking):**
-1. Reviewer reports findings (blocking) and residual risks (non-blocking)
-2. **Zero findings:** proceed to step 10. Carry any residual risks forward to the final summary (step 11) so a human sees them.
-3. **Findings:** re-invoke the implementation agent (same as steps 3/6) to resolve each one — fix it, or refute it with cited evidence
-4. Re-run mechanical verification (test suite, linters) — fixes must not regress the earlier gates
-5. Spawn a **fresh** `swe-correctness-reviewer` instance to re-review the updated diff in full
-6. Repeat until a round reports zero findings
-
-**Iteration cap: 3 rounds.** If findings persist after 3 rounds, escalate to the user with the surviving findings and the implementation agent's responses. (When invoked from `/implement-batch`, this escalation cascades to the batch level per its andon-cord protocol.)
-
-**Expected output:** APPROVE verdict (possibly with residual risks for the final summary), or escalation after cap exhaustion.
-
-### Feedback Loops
-
-**Acceptance verification failure (step 4):**
-- Return to step 3 (implementation)
-- Track iteration count (max 3 attempts before escalating to user)
-- Report specific acceptance criteria that failed
-- Report practical verification results (what was tried, what failed)
-
-**Security review findings (step 5a):**
-- Critical/High severity: Must address in step 6 or get explicit user approval to skip
-- Medium/Low severity: Advisory - implementation agent decides in step 6
-
-**Code review feedback (steps 5b-5c):**
-- Inventory departures (step 5b) are resolved in step 6: removed, or admitted by amending the inventory with a forcing requirement
-- All other refactoring and performance feedback is advisory
-- Implementation agent in step 6 uses discretion to implement
-
-**Peer review issues (step 7):**
-- If peer review changes break tests: revert peer review changes and proceed (nits aren't worth breaking functionality)
-- If peer review flags deeper issues: escalate to user for decision
-
-**Coverage & quality issues (step 8):**
-- Tests broken by changes from step 6: Return to step 6 to fix or revert
-- Tests broken by changes from step 7: Revert step 7 changes (peer review nits shouldn't break tests)
-- Major bugs found: Return to step 3 (implementation)
-- Minor issues (low coverage in non-critical code, style nitpicks): document and proceed
-- User can approve proceeding despite issues if acceptable
-
-**Correctness review findings (step 9):**
-- All findings are blocking — advisory discretion does not apply
-- Each finding is resolved by fixing it or refuting it with cited evidence; fixes route to the implementation agent, then mechanical re-verification, then a fresh reviewer instance
-- 3 rounds maximum, then escalate to user with surviving findings
-- Residual risks (non-blocking) carry forward to the final summary
-
-### 10. Documentation
-
-**Spawn `doc-maintainer` agent:**
-- Review git diff to identify which files/modules changed
-- Determine which documentation is affected:
-  - README.md if user-facing functionality changed
-  - CLAUDE.md if architecture/integration points changed
-  - API docs if public interfaces changed
-  - Internal docs (doc/, adr/) if implementation details relevant to architecture changed
-- Focus review on documentation related to changed code
-- Verify code examples in affected docs still work
-- Check for broken links in modified documentation
-
-**Agent should be targeted, not comprehensive:**
-- Only review documentation relevant to the changes made
-- Skip full codebase documentation scan
-- Report "no documentation changes needed" if changes are purely internal with no doc impact
-
-### 11. Final verification
-
-**Run comprehensive checks:**
-- Execute full test suite (must pass)
-- Run all linters and formatters
-- Verify no new warnings introduced
-- Check git status (document any uncommitted changes)
-
-**Present summary to user:**
-- Files changed
-- Concept inventory as built, including any amendments made after step 2a
-- Tests added/modified
-- Coverage improvements
-- Residual risks surfaced by the correctness review (step 9), if any
-- Any remaining TODOs or follow-ups
-
-**If verification fails:**
-- Determine root cause (implementation bug vs. refactoring issue vs. test issue)
-- Return to appropriate step (step 3 for implementation bugs, step 5 for refactoring issues)
-- Report specific failures to user
-
-### 12. Workflow Completion (Optional)
-
-**After presenting summary from step 11, ask user if they want to complete the workflow.**
-
-User may also explicitly request workflow completion at any point after step 11 succeeds.
-
-**If user confirms, perform housekeeping tasks:**
-
-#### 12a. Commit Changes
-
-**If uncommitted changes exist:**
-- Review git status to see what changed
-- Create commit with descriptive message
-- If ticket number is known (from branch name, prior context, or user input):
-  - Reference ticket in commit message (e.g., "Fixes #123" or "Closes: #123")
-- Use heredoc format for multi-line commit messages
-
-**Example commit message format:**
 ```
-Add user authentication with JWT tokens
+## Implementation Complete
 
-Implements login/logout endpoints with refresh token rotation.
-Includes rate limiting and CSRF protection.
+### Outcome
+[One paragraph: done or not; anything awaiting the user's judgment.]
 
-Fixes #123
+### Look at these first
+[1–5 items where judgment was most likely wrong or stakes highest.]
+
+### Tickets
+- [✓] #12: <title> — <outcome> — SHA <short>
+
+### Verification
+- Acceptance: <what was run, what happened>
+- Tests/linters: <command> → <result>
+- Correctness review: <rounds; residual risks>
+- Smoke test: <result, if run>
+
+### Passes
+- Run: <pass> — <result>
+- Not run: <pass> — <one-line reason>
+
+### Concept inventory, as built
+[Per ticket, including amendments.]
+
+### Deferred
+[Findings not addressed, with reasons; /refactor's trade menu and side memo.]
+
+### Branch
+- <branch> @ <sha>, base <main> @ <sha>; N commits
 ```
 
-#### 12b. Update/Close Issue Tracker Ticket (Conditional)
+If the branch is behind main, say so and offer to rebase; don't rebase unasked.
 
-Detect tracker, recover the ticket number, and post the close-out per [`references/trackers.md`](../../references/trackers.md) (Detection Procedure + "Comment / update (close-out)" + "Close" operations).
+## 7. Escalation
 
-**Close-out comment content (skill-specific):**
-- List of files changed
-- Key changes made
-- Tests added
-- Documentation updated
+Try to resolve problems first; for judgment calls, `/think-deliberate`; re-read the approved intent — an apparent blocker may mean the intent needs clarifying. When the user is present, ask plainly. When running unattended, stop all work and hand off with: what went wrong, what was tried, 2–3 named options, a recommendation and the trade-off that would flip it, and the branch state (what is merged, what is in flight).
 
-#### 12c. Sync with Main Branch (Conditional)
+**Escalate when:**
+- An irreversible action is required (floor item 5).
+- A decision needs product judgment the repo cannot answer.
+- The same failure recurs 3 times across different strategies, or the correctness review exhausts its 3 rounds.
+- Two reviews contradict each other on the same code.
+- A merge conflicts, or a merge breaks tests for reasons that aren't local.
+- A requirement appears to violate a constraint.
+- On resume, HEAD no longer matches `PROJECT_STATE.md`.
+- The work is drifting from the approved intent and the right path is unclear.
+- A multi-ticket run's action log reaches 50 entries without finishing.
 
-**Check branch state:**
-- Identify main branch name (master or main)
-- Check if current branch is not main
-- Check if there are new commits on main that current branch doesn't have
+## Invoked by Another Skill
 
-**If current branch is behind main:**
-- Ask user: "Your branch is behind main. Would you like to rebase on main?"
-- If user confirms:
-  - Perform: `git fetch origin main && git rebase origin/main`
-  - If conflicts arise, report to user and halt (don't auto-resolve)
-  - If rebase succeeds, report success
+When a calling skill supplies the tickets and constraints, skip the planned interaction: the caller's intent is the approved intent. Apply the floor unchanged — a caller cannot waive it, and cannot authorize an irreversible action on the user's behalf. Escalations go to the caller, which decides whether to escalate further.
 
-**Skip if:**
-- Current branch is main/master
-- Current branch is up to date with main
-- No main/master branch exists
+## Relationship to Other Skills
 
-**Present final status:**
-- ✓ Changes committed
-- ✓ Ticket #123 updated and closed
-- ✓ Branch rebased on main
-- Ready to push or move to next task
+**`/scope` → `/implement`** is the planning-to-execution pair: `/scope` drafts and reviews tickets; this skill builds them.
 
-## Agent Coordination
-
-**Sequential execution:**
-- Agents run one at a time (no parallel spawning)
-- Each agent completes before next begins
-- Use Task tool to spawn agents
-
-**State management:**
-- Track current workflow step
-- Preserve the concept inventory (step 2a) and its amendments for passing to the planner, the implementation agent, and the refactoring reviewer
-- Track QA iteration count (for acceptance verification failures)
-- Track correctness review round count (step 9 convergence loop)
-- Carry residual risks from step 9 forward to the final summary
-- Accumulate summary information
-- Preserve original requirements for passing to QA acceptance verification
-
-**Agent self-skipping:**
-- Agents should skip work if not applicable
-- Report "nothing to do" rather than making unnecessary changes
-
-**Planning pass-through:**
-- The concept inventory precedes the plan and constrains it
-- If swe-planner produces a plan, pass it to implementation agent
-- Implementation agent should acknowledge plan and follow it
-- Plan helps coordinate implementation approach
-
-**TDD coordination:**
-- SWE agents are encouraged to write unit tests for pure functions during implementation
-- QA agent focuses on practical verification and integration tests
-- This prevents duplicate test-writing while ensuring comprehensive coverage
-
-## Iteration Limits
-
-**Maximum iterations:**
-- Acceptance verification loop (step 4): 3 attempts, then escalate to user
-- Correctness review convergence loop (step 9): 3 rounds, then escalate to user
-- Overall workflow: 15 total agent spawns (safety limit)
-
-**Escalation to user:**
-- Present current state
-- Explain what's blocking progress
-- Request guidance
+**`/refactor`** is normally run by the user. This skill runs it unattended only by answering its menu from approved intent, as above.

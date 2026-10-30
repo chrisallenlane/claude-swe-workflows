@@ -10,7 +10,7 @@ Orchestrates a comprehensive security assessment of the project's source code us
 
 **This is deliberately heavy.** Thoroughness is the priority, not speed. A complete audit may spawn many agents and take significant time. That's the point — shallow security reviews miss the vulnerabilities that matter.
 
-**Advisory only.** The skill produces findings and proposes tickets; it does not implement remediation. The cognitive seam between "find vulnerability" and "fix vulnerability" is wide enough that mixing them under one workflow degrades both — security findings require fresh threat-model reasoning to remediate correctly, and the discovery agents shouldn't be biased toward findings they could easily fix. Tickets capture findings durably across that seam and compose with `/implement` and `/implement-project` for remediation.
+**Advisory only.** The skill produces findings and proposes tickets; it does not implement remediation. The cognitive seam between "find vulnerability" and "fix vulnerability" is wide enough that mixing them under one workflow degrades both — security findings require fresh threat-model reasoning to remediate correctly, and the discovery agents shouldn't be biased toward findings they could easily fix. Tickets capture findings durably across that seam and compose with `/implement` for remediation.
 
 The parallel-isolated first pass is the load-bearing discipline of this skill. The previous design ran blue first, then red informed by blue. That design embedded an anchoring failure mode: whatever the blue team flagged as "the defensive territory" became the salient territory for the red team. Real attackers don't get a defensive briefing — they look at the system fresh and find what defenders missed. Independent reconnaissance surfaces the territory the old design suppressed.
 
@@ -444,7 +444,7 @@ The contract change versus pre-v8.0.0 is that work surfaced by `/review-security
 
 **Sequential execution within all other phases.** Focused red-teamers (phase 4) run sequentially so findings accumulate for chain analysis.
 
-**No remediation agents.** Phase 7 cuts tickets via the tracker integration; no `swe-sme-*` or `qa-engineer` invocations happen inside `/review-security`. Remediation is handled out-of-skill by `/implement` or `/implement-project` against the cut tickets.
+**No remediation agents.** Phase 7 cuts tickets via the tracker integration; no `swe-sme-*` or `qa-engineer` invocations happen inside `/review-security`. Remediation is handled out-of-skill by `/implement` against the cut tickets.
 
 **Fresh instances for every agent.** Each agent gets a clean context window dedicated entirely to its task. This is the core design principle — full context dedicated to a single concern.
 

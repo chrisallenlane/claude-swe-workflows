@@ -18,7 +18,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
 
 The same pipeline serves two operator intents:
 
-- **Backlog generation** (tickets ON) — autonomous review-driven ticket creation. The skill runs every enabled review sub-skill, auto-approves each one's ticket proposals at or above the severity floor, and produces a consolidated, batch-tagged backlog the operator can feed to `/implement-project`.
+- **Backlog generation** (tickets ON) — autonomous review-driven ticket creation. The skill runs every enabled review sub-skill, auto-approves each one's ticket proposals at or above the severity floor, and produces a consolidated backlog, with dependencies stated, that the operator can feed to `/implement`.
 - **Audit report** (tickets OFF) — autonomous comprehensive audit. The skill runs every enabled review sub-skill, auto-declines all ticket proposals uniformly, and surfaces all findings in the consolidated completion report. No tracker writes.
 
 The operator chooses at startup. There is no mid-run switching.
@@ -193,7 +193,7 @@ Produce a single report aggregating every enabled phase. The report is ordered b
 - Duration (wall-clock, approximate)
 ```
 
-The operator decides next steps — most commonly, feed the backlog to `/implement-project` (tickets ON) or address the findings directly (tickets OFF).
+The operator decides next steps — most commonly, feed the backlog to `/implement` (tickets ON) or address the findings directly (tickets OFF).
 
 ## Commander's Intent — Field Reference
 
@@ -378,9 +378,9 @@ Ensure `LEAD_REVIEW_STATE.md` is ignored. Commit the `.gitignore` change on the 
 
 Run individual `/review-*` skills directly when you want a single dimension audited; run `/lead-review` when you want comprehensive coverage unattended.
 
-**Relationship to `/implement-project`:**
+**Relationship to `/implement`:**
 
-Natural composition: `/lead-review` (tickets ON) produces a comprehensive backlog → `/implement-project` works through the backlog. `/lead-review` is the planning half; `/implement-project` is the execution half.
+Natural composition: `/lead-review` (tickets ON) produces a comprehensive backlog → `/implement` works through the backlog. `/lead-review` is the planning half; `/implement` is the execution half.
 
 **Relationship to `/lead-bug-hunt`:**
 
@@ -390,4 +390,4 @@ Sibling orchestrator. `/lead-bug-hunt` is bug-elimination-specific; `/lead-revie
 
 `/tidy-docs` is not in this skill's repertoire. It is a `/tidy-*` (mechanical mutations), not a `/review-*` (advisory). Including it would muddy `/lead-review`'s contract — operators in tickets-OFF mode expect "evaluation only, no tree mutations," and `/tidy-docs` would commit doc changes. Run `/tidy-docs` separately after `/lead-review` if you want doc tidying.
 
-Other out-of-axis skills: `/scope-*`, `/test-mutation`, `/tidy-git`, `/bug-*`, `/refactor`, `/implement-*`. If your goal mixes review with implementation or refactoring, use `/implement-project` — it invokes individual `/review-*` skills by judgment — or chain `/lead-review` (tickets ON) → `/implement-project`.
+Other out-of-axis skills: `/scope`, `/test-mutation`, `/tidy-git`, `/bug-*`, `/refactor`, `/implement`. If your goal mixes review with implementation or refactoring, use `/implement` — it invokes individual `/review-*` skills by judgment — or chain `/lead-review` (tickets ON) → `/implement`.

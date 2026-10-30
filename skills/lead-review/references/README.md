@@ -61,7 +61,7 @@ If you want the interactive walkthrough that `/review-deep` provided, invoke ind
 | Skill              | Outcome contract                                                  | Composition                                                                        |
 |--------------------|-------------------------------------------------------------------|------------------------------------------------------------------------------------|
 | `/lead-bug-hunt`   | Iterate `/bug-hunt` → fix until bugs converge                     | Sibling — different outcome contract                                                |
-| `/implement-project` | Commander's intent → judgment-driven project lead                 | Natural pair: `/lead-review` (backlog) → `/implement-project` (execution)          |
+| `/implement`         | Tickets or a goal → judgment-driven implementation                | Natural pair: `/lead-review` (backlog) → `/implement` (execution)                  |
 
 ## Workflow Diagram
 
@@ -217,7 +217,7 @@ Skills explicitly **not** in the repertoire (out-of-axis):
 - `/tidy-docs` — mechanical mutations, not advisory. Run separately if doc cleanup is wanted.
 - `/scope-*`, `/test-mutation`, `/tidy-git`, `/bug-*`, `/refactor`, `/implement-*` — adjacent concerns.
 
-If your goal mixes review with implementation, refactoring, or doc tidying, use `/implement-project` — it invokes individual `/review-*` skills by judgment — or chain `/lead-review` with `/implement-project`.
+If your goal mixes review with implementation, refactoring, or doc tidying, use `/implement` — it invokes individual `/review-*` skills by judgment — or chain `/lead-review` with `/implement`.
 
 ## Examples
 
@@ -328,7 +328,7 @@ the report. No contested findings, no breaking-change recommendations.
 [List of 38 findings grouped by severity]
 
 ### Recommendation
-Feed #501-#520 to /implement-project when ready to address the backlog.
+Feed #501-#520 to /implement when ready to address the backlog.
 ```
 
 ### Example 2: Audit-only mode (no tracker writes)
@@ -381,7 +381,7 @@ below. Operator decides next steps.
 
 **Andon cords are not failures.** A contested finding or a breaking-change-required recommendation is the skill doing its job — surfacing decisions that need operator judgment.
 
-**Pair with `/implement-project` for the full review-and-fix arc.** `/lead-review` (tickets ON) generates the backlog; `/implement-project` works through it. Two skills, one comprehensive sweep.
+**Pair with `/implement` for the full review-and-fix arc.** `/lead-review` (tickets ON) generates the backlog; `/implement` works through it. Two skills, one comprehensive sweep.
 
 **Pair with `/tidy-docs` separately if you want doc cleanup.** `/tidy-docs` is mechanical and out-of-axis for `/lead-review`.
 
@@ -389,7 +389,7 @@ below. Operator decides next steps.
 
 **Individual `/review-*` skills:** the workhorses. Each keeps its native contract; `/lead-review` adds orchestration (scope passthrough, auto-approve/decline, consolidated reporting).
 
-**`/implement-project`:** natural pair. `/lead-review` (tickets ON) → backlog → `/implement-project` → work through backlog.
+**`/implement`:** natural pair. `/lead-review` (tickets ON) → backlog → `/implement` → work through backlog.
 
 **`/tidy-docs`:** explicitly out-of-axis. Run separately.
 

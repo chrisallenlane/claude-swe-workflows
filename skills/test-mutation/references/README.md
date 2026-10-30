@@ -165,7 +165,7 @@ Unresolved survivors: 3 (see summary above)
 
 2. **Or just test everything.** Press Enter at the scope prompt and let it run. Come back when it's done.
 
-3. **Pair with /review-test.** Run `/review-test` first to surface coverage and quality gaps as tickets, work the tickets via `/implement` or `/implement-project`, then run `/test-mutation` to find remaining weaknesses. Review surfaces, implementation builds, mutation strengthens.
+3. **Pair with /review-test.** Run `/review-test` first to surface coverage and quality gaps as tickets, work the tickets via `/implement`, then run `/test-mutation` to find remaining weaknesses. Review surfaces, implementation builds, mutation strengthens.
 
 4. **Don't chase 100%.** Some surviving mutations (e.g., constant tweaks, logging removal) may not be worth testing. The final summary lists unresolved survivors so you can decide later.
 

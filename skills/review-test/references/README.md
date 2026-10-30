@@ -25,7 +25,7 @@ The plugin is moving `/review-*` skills toward advisory-only over time; `/review
 - Adding integration or E2E coverage to a project that lacks it (Mode A starter strategy)
 
 **Don't use `/review-test` for:**
-- Projects with no tests yet (write initial tests first, or scope a project via `/scope-project`)
+- Projects with no tests yet (write initial tests first, or scope a project via `/scope`)
 - Quick one-off test additions (just write them directly, or use `/implement` against a small ticket)
 - Mutation testing (use `/test-mutation` for that)
 
@@ -204,7 +204,7 @@ The operator approves / edits / declines:
 
 ## Orchestrator-Invoked Behavior
 
-When `/review-test` is invoked by an orchestrator (`/implement-project`, `/lead-review`), the workflow above is unchanged. The orchestrator receives the ticket-structure proposal and applies its own judgment per [`references/autonomy.md`](../../../references/autonomy.md) — typically declining items it intends to implement inline and approving items it wants tracked for follow-up.
+When `/review-test` is invoked by an orchestrator (`/implement`, `/lead-review`), the workflow above is unchanged. The orchestrator receives the ticket-structure proposal and applies its own judgment per [`references/autonomy.md`](../../../references/autonomy.md) — typically declining items it intends to implement inline and approving items it wants tracked for follow-up.
 
 ## Agent Coordination
 
@@ -216,7 +216,7 @@ When `/review-test` is invoked by an orchestrator (`/implement-project`, `/lead-
 | Phase 4 | `qa-test-fuzz-reviewer`         | No (single)     |
 | Phase 5 | `qa-test-reviewer`              | Yes (>15 files) |
 
-**No implementation agents.** `/review-test` does not spawn `swe-sme-*` or `qa-engineer` agents. Test design and implementation are handled out-of-skill by `/implement` or `/implement-project` against the cut tickets.
+**No implementation agents.** `/review-test` does not spawn `swe-sme-*` or `qa-engineer` agents. Test design and implementation are handled out-of-skill by `/implement` against the cut tickets.
 
 **Fresh instances:** Every agent spawn is a fresh instance. No state carried between invocations.
 
@@ -237,7 +237,7 @@ When `/review-test` is invoked by an orchestrator (`/implement-project`, `/lead-
 
 3. **Promote refactor-for-testability suggestions explicitly.** They default to informational; if you want them tracked, edit the structure during step 8a to add one ticket per suggestion (or one batch ticket if they're related).
 
-4. **Orchestrators apply their own judgment to the offer.** When invoked from an orchestrator such as `/implement-project`, the orchestrator typically declines items it intends to implement inline and approves items it wants tracked for follow-up. Both responses are valid per `references/autonomy.md`.
+4. **Orchestrators apply their own judgment to the offer.** When invoked from an orchestrator such as `/implement` running a multi-ticket project, the orchestrator typically declines items it intends to implement inline and approves items it wants tracked for follow-up. Both responses are valid per `references/autonomy.md`.
 
 5. **Consider running `/refactor` first.** If the codebase has tactical clutter, `/refactor` can clean it before `/review-test` analyzes coverage — the coverage analyst is more useful when it isn't navigating dead code and DRY violations.
 
@@ -245,4 +245,4 @@ When `/review-test` is invoked by an orchestrator (`/implement-project`, `/lead-
 
 ## Integration with Other Skills
 
-Recommended sequence for test improvement: `/review-test` first (surface ticket-shaped work) → `/implement` or `/implement-project` (remediate) → `/test-mutation` (strengthen). Run `/review-test` before `/refactor` to ensure the test suite is strong enough to catch regressions before restructuring.
+Recommended sequence for test improvement: `/review-test` first (surface ticket-shaped work) → `/implement` (remediate) → `/test-mutation` (strengthen). Run `/review-test` before `/refactor` to ensure the test suite is strong enough to catch regressions before restructuring.

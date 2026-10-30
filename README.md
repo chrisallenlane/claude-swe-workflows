@@ -17,19 +17,17 @@ The skills are arranged as **layered composition** — higher-level skills invok
 lower-level ones. Enter at the layer that matches your task. The deepest stack:
 
 ```
-/implement-project                         ← autonomous project lead (decides what to do next)
-└── /implement-batch                       ← one batch of related tickets
-    └── /implement                         ← one ticket, end-to-end
-        └── SME agents                     ← language-specific specialists
+/implement                                 ← one ticket, a batch, or an open-ended goal
+└── SME agents and reviewers, chosen by    ← language specialists, QA, correctness,
+    judgment over a fixed floor              security, /refactor, /review-*, …
 ```
 
 Two other entry points orchestrate bounded autonomous loops:
 
-- `/lead-bug-hunt` — loops `/bug-hunt` → `/implement-batch` until bugs converge below a severity floor.
+- `/lead-bug-hunt` — loops `/bug-hunt` → `/implement` until bugs converge below a severity floor.
 - `/lead-review` — runs its eight-phase review pipeline once.
 
-Planning feeds implementation: `/scope-project` → `/implement-project`, or
-`/scope` → `/implement`. Supporting skills (`/think-*`, `/review-*`, `/bug-*`,
+Planning feeds implementation: `/scope` → `/implement`. Supporting skills (`/think-*`, `/review-*`, `/bug-*`,
 `/tidy-*`) compose into any of the orchestrators above or run standalone.
 
 ## Namespaces
@@ -40,8 +38,8 @@ skills with a related purpose.
 | Namespace      | Purpose                                     | Skills                                                                                                                                                                                        |
 |----------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `/lead-*`      | Autonomous orchestrators                    | `/lead-bug-hunt`, `/lead-review`                                                                                                                                                              |
-| `/implement-*` | Implement tickets (mutate the working tree) | `/implement`, `/implement-batch`, `/implement-project`                                                                                                                                        |
-| `/scope-*`     | Plan and produce tickets                    | `/scope`, `/scope-project`                                                                                                                                                                    |
+| `/implement`   | Implement tickets (mutate the working tree) | `/implement`                                                                                                                                                                                  |
+| `/scope`       | Plan and produce tickets                    | `/scope`                                                                                                                                                                                      |
 | `/review-*`    | Advisory audits — no code changes           | `/review-arch`, `/review-code`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-health`, `/review-security`, `/review-release`, `/review-value`, `/review-dead`, `/review-namespace` |
 | `/think-*`     | Reasoning support — no artifacts            | `/think-reframe`, `/think-brainstorm`, `/think-diagnose`, `/think-ach`, `/think-deliberate`, `/think-premortem`, `/think-scrutinize`, `/think-reflect`                                        |
 | `/tidy-*`      | Mechanical hygiene                          | `/tidy-docs`, `/tidy-git`                                                                                                                                                                     |
@@ -49,7 +47,7 @@ skills with a related purpose.
 | `/test-*`      | Test-quality work                           | `/test-mutation`                                                                                                                                                                              |
 | (standalone)   | Skills that don't share a namespace         | `/refactor`, `/pre-compact`, `/release`                                                                                                                                                       |
 
-The `/lead-*` and `/implement-*` namespaces additionally share an autonomy
+The `/lead-*` skills and `/implement` additionally share an autonomy
 discipline (commander's intent, pre-loaded options, pre-rebutted
 recommendations, risk budgets) — see
 [references/autonomy.md](references/autonomy.md). The `/think-*` namespace
@@ -63,11 +61,8 @@ task:
 
 | You want to...                                                                              | Use                  |
 |---------------------------------------------------------------------------------------------|----------------------|
-| Drive a project to completion autonomously — a ticket set or an open-ended goal             | `/implement-project` |
-| Implement a batch of related tickets                                                        | `/implement-batch`   |
-| Implement a single ticket or feature                                                        | `/implement`         |
-| Plan a multi-batch project with adversarial review                                          | `/scope-project`     |
-| Plan a single feature and create a ticket                                                   | `/scope`             |
+| Implement a ticket, a batch of tickets, or an open-ended goal                               | `/implement`         |
+| Plan work and create tickets — one, or a whole project's worth                              | `/scope`             |
 | Fix a bug with diagnosis and root-cause analysis                                            | `/bug-fix`           |
 | Proactively hunt for bugs before they're reported                                           | `/bug-hunt`          |
 | Iterate hunt → fix until bugs converge below a severity floor (autonomous)                  | `/lead-bug-hunt`     |
@@ -99,10 +94,8 @@ task:
 | Clean up local git state (stale refs, merged branches)                                      | `/tidy-git`          |
 
 **Rules of thumb:**
-- A project — multiple batches of tickets, or open-ended work where the next step depends on the last? `/implement-project`
-- One batch of 2+ related tickets? `/implement-batch`
-- One ticket? `/implement` (or `/bug-fix` if it's a bug)
-- Not sure what to build yet? Start with `/scope` or `/scope-project`
+- Tickets to build, one or many, or a goal to reach? `/implement` (or `/bug-fix` for a single bug that needs diagnosis)
+- Not sure what to build yet? Start with `/scope`
 
 ## Skills
 
@@ -110,19 +103,16 @@ One-line summaries grouped by namespace. Click through to each skill's detailed 
 
 ### `/lead-*` — Autonomous orchestrators
 
-- **`/lead-bug-hunt`** — Loops `/bug-hunt` → `/implement-batch` until bugs converge below a stated severity floor; runs `/review-test` on the new reproducing tests at termination. ([details](skills/lead-bug-hunt/references/README.md))
+- **`/lead-bug-hunt`** — Loops `/bug-hunt` → `/implement` until bugs converge below a stated severity floor; runs `/review-test` on the new reproducing tests at termination. ([details](skills/lead-bug-hunt/references/README.md))
 - **`/lead-review`** — Runs every repo-scoped `/review-*` sub-skill autonomously with an operator-set toggle for whether sub-skill ticket proposals are written to the tracker (diff-scoped `/review-code` is excluded — an audit has no diff under review). ([details](skills/lead-review/references/README.md))
 
-### `/implement-*` — Working-tree mutators
+### `/implement` — Working-tree mutator
 
-- **`/implement-project`** — Autonomous project lead. Takes commander's intent — usually a batch of tickets, sometimes an open-ended goal — and drives it to a review-ready branch, choosing by judgment which implementation, refactoring, review, and bug-hunting skills to run. A small fixed floor holds regardless (tests green at every merge, smoke test, `/review-release` last), and every pass not run is accounted for in the report. ([details](skills/implement-project/references/README.md))
-- **`/implement-batch`** — Plans execution order of a batch of tickets, implements each via `/implement` autonomously, runs a cross-cutting `/tidy-docs` pass. ([details](skills/implement-batch/SKILL.md))
-- **`/implement`** — Single-ticket development cycle: requirements → planning → implementation → QA → code review → documentation. Dispatches to language SMEs. ([details](skills/implement/SKILL.md))
+- **`/implement`** — Implements one ticket, a batch of tickets, or an open-ended goal, end to end. Chooses by judgment which specialists and skills the work needs (planning, language SMEs, security and performance reviews, `/refactor`, `/review-arch`, `/bug-hunt`, …) over a fixed floor: concept inventory before code, practical verification of acceptance criteria, tests green at every commit, an independent correctness review, and no irreversible actions. One planned interaction, then autonomous; every pass not run is accounted for in the report. ([details](skills/implement/references/README.md))
 
-### `/scope-*` — Planning
+### `/scope` — Planning
 
-- **`/scope-project`** — Plans a multi-batch project through layered adversarial review loops (UX, optional security/performance, implementer). Produces batch-tagged tickets ready for `/implement-project`. ([details](skills/scope-project/SKILL.md))
-- **`/scope`** — Iterative problem-space exploration that produces a single detailed ticket. For one feature, bug, or refactor proposal. ([details](skills/scope/SKILL.md))
+- **`/scope`** — Explores a problem space with you and turns it into well-specified tickets — one, or a whole project's worth. Chooses which reviewers the drafts need (implementer, UX, security, performance); every draft gets a fresh-context review, and nothing is created without your approval. ([details](skills/scope/references/README.md))
 
 ### `/review-*` — Read-only audits
 

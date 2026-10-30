@@ -1,6 +1,6 @@
 # Issue Tracker Detection and Operations
 
-Shared convention for detecting the project's issue tracker and operating against it. Cited by skills that read, create, comment on, or close tickets — including `/scope`, `/scope-project`, `/implement`, `/implement-batch`, `/implement-project`, and `/bug-fix`.
+Shared convention for detecting the project's issue tracker and operating against it. Cited by skills that read, create, comment on, or close tickets — including `/scope`, `/implement`, and `/bug-fix`.
 
 ## Detection Procedure
 
@@ -27,7 +27,7 @@ If no usable integration is found, fall back to the "Manual fallback" section.
 
 ### Fetch (read)
 
-When fetching tickets for a skill that consumes them (`/implement-batch`, `/implement-project`):
+When fetching tickets for a skill that consumes them (`/implement`):
 
 - Title
 - Description / body
@@ -39,7 +39,7 @@ Fetch each ticket individually rather than relying on a search payload — searc
 
 ### Create
 
-For `/scope` and `/scope-project`:
+For `/scope`:
 
 - Pass `title` and `body` to the integration.
 - Apply default labels if specified in `CLAUDE.md` (e.g., `bug`, `arch`, batch tags).

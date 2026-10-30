@@ -99,7 +99,7 @@ Follow the runtime ticket-proposal pattern in [`references/advisory-tickets.md`]
 Close the report with routing appropriate to the outcome:
 
 - Findings on an unmerged branch → fix on the branch (directly, or via `/implement` with the report as context), then re-run `/review-code` for a fresh pass
-- Findings on already-merged code → `/bug-fix` per finding, or work the created tickets via `/implement-batch`
+- Findings on already-merged code → `/bug-fix` per finding, or work the created tickets via `/implement`
 - Residual risks → name the concrete verification each one needs
 - Zero findings → say so plainly; do not pad
 
