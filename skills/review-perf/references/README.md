@@ -22,7 +22,7 @@ The `/review-perf` skill reviews a project for performance issues across two dom
 **Don't use `/review-perf` for:**
 - Implementing optimizations (ask directly after reviewing findings, or use `/implement`)
 - Accessibility review (use `/review-a11y`)
-- General code quality cleanup (use `/refactor`)
+- Specific code changes (use `/implement`), or shrinking the codebase (use `/refactor`)
 - Strategic orientation on an unfamiliar repo (use `/review-health`)
 - Security review (use `/review-security`)
 

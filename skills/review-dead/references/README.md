@@ -20,7 +20,7 @@ The `/review-dead` skill audits a codebase for dead code — unreferenced symbol
 - When you want removal *tickets* rather than immediate removal
 
 **Don't use it for:**
-- Immediate cleanup — `/refactor` finds and removes dead code with QA verification
+- Removing the code — work the tickets with `/implement`, or shrink the whole codebase with `/refactor`
 - Live-but-unnecessary machinery — that's `/review-arch`'s mechanism audit or `/review-value`
 - Duplicate code — `/refactor`
 
@@ -51,7 +51,7 @@ Every finding cites its evidence — the tool that flagged it, or the searches p
 
 The iteration step matters: the operator may know liveness the audit can't see (external consumers, deployment-read config). Operator knowledge is evidence; findings get dropped or downgraded accordingly.
 
-Ticket shapes follow the shared advisory pattern (`references/advisory-tickets.md`): per-cluster removal tickets, a single sweep ticket for scattered PROVEN findings (recommend `/refactor` scoped to the paths), and a verification ticket for UNVERIFIABLE items. Declining tickets is valid — the audit stands as a planning artifact.
+Ticket shapes follow the shared advisory pattern (`references/advisory-tickets.md`): per-cluster removal tickets, a single sweep ticket for scattered PROVEN findings (recommend working it with `/implement`), and a verification ticket for UNVERIFIABLE items. Declining tickets is valid — the audit stands as a planning artifact.
 
 ## Tips for Effective Use
 

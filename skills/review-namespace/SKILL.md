@@ -131,4 +131,4 @@ Runs the audit first (round 0 = the incumbent's baseline + noise floor: battery 
 
 **Never run in search mode by `/review-health`'s follow-up:** search mode's operator-calibration checkpoints (vetoes, self-tests) cannot be answered by an autonomous run, and audit mode overlaps `/review-arch`'s noun analysis. Run it deliberately.
 
-**Feeds `/refactor` and `/implement`:** the migration ticket routes there; this skill never mutates the tree itself.
+**Feeds `/implement`:** the migration ticket routes there; this skill never mutates the tree itself.

@@ -82,7 +82,7 @@ The principle: anything not captured in commander's intent becomes implicit, and
 Two budget categories are blessed plugin-wide:
 
 - **Iteration cap** — maximum cycles, loop iterations, or batches the skill runs before forcing a stop. Examples: `/implement` caps at 50 actions; `/bug-hunt` caps at 10 hunt rounds; per-ticket retry attempts bounded.
-- **Retry cap** — maximum consecutive failures of the same kind before escalating. Examples: `/implement` retries acceptance verification 3 times; `/refactor` and `/review-arch` abort a batch after 3 QA failures.
+- **Retry cap** — maximum consecutive failures of the same kind before escalating. Examples: `/implement` retries acceptance verification 3 times; the correctness review in `/implement` escalates after 3 rounds.
 
 Two budget categories are explicitly **not** part of the discipline:
 
@@ -276,7 +276,7 @@ Status as of this document:
  | `/review-security` | Advisory as of v8.0.0.                                                  |
  | `/review-release`  | Effectively advisory (presents findings for operator review).           |
 
-The path forward: when a `/review-*` skill becomes advisory, its findings should name specific implementation skills with scope hints so the operator (or a calling orchestrator) can chain the right next step. Example: "Dead code in `src/foo/`: run `/refactor` scoped to that directory."
+The path forward: when a `/review-*` skill becomes advisory, its findings should name specific implementation skills with scope hints so the operator (or a calling orchestrator) can chain the right next step. Example: "Dead code in `src/foo/`: work the sweep ticket with `/implement`."
 
 Skills whose find→fix seam is small enough to keep find-and-fix fused live in the `/tidy-*` namespace instead (e.g., `/tidy-docs`, `/tidy-git`). Those skills are not advisory by design — they default to acting on safe categories. The principled distinction: `/review-*` = produces a report, no mutations; `/tidy-*` = mechanical mutations with operator approval for borderline-safe categories; `/implement-*` = substantive mutations driven by tickets.
 

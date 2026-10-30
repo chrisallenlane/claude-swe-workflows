@@ -373,8 +373,8 @@ Baseline coverage: XX% (if measured) — or "manual analysis — not measured"
 
 ## Refactoring for Testability (informational)
 [Refactoring suggestions from Phase 1 coverage analyst, if any. These
-suggestions are not implemented by this workflow; use /refactor or
-address them manually if cut as tickets.]
+suggestions are not implemented by this workflow; work them with
+/implement if cut as tickets.]
 ```
 
 Present to the user. Walk through CRITICAL items and high-impact starter-strategy proposals (Mode A items in Phases 2 and 3) explicitly — these are the highest-leverage findings and the operator should engage with them before the ticket-structure proposal.
@@ -509,7 +509,7 @@ The contract change versus pre-v9.0.0 is that test work surfaced by `/review-tes
 
 **`/review-test` vs `/test-mutation`:** Complementary. `/review-test` builds breadth (surfaces gap and quality tickets); `/test-mutation` builds depth (verifies that existing tests actually catch bugs). Recommended sequence: `/review-test` → work the cut tickets via `/implement` → `/test-mutation` to strengthen.
 
-**`/review-test` before `/refactor`:** Run `/review-test` first to ensure the test suite is strong enough to catch regressions before refactoring. Note that gaps surfaced this way land as tickets, not as immediately-filled tests — work the cut tickets via `/implement` before invoking `/refactor` if immediate strengthening is needed.
+**`/review-test` and `/refactor`:** `/refactor` pins behavior with a differential oracle rather than the test suite, and retires tests that pin the internals it removes; it ports behavior-level tests. Run `/review-test` after a `/refactor` run to see what the reduced codebase's suite covers.
 
 ## Example Session
 

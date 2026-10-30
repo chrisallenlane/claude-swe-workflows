@@ -25,7 +25,7 @@ The plugin is moving `/review-*` skills toward advisory-only over time; `/review
 - Generating a coherent batch of refactoring tickets for `/implement` to work through
 
 **Don't use `/review-arch` for:**
-- Routine code cleanup or DRY fixes (use `/refactor` instead)
+- Specific code changes (use `/implement`), or shrinking the whole codebase (use `/refactor`)
 - Active development where module structure is still in flux
 
 **Rule of thumb:** Use `/review-arch` when the module structure itself needs rethinking — the output is a plan (or a set of tickets), not a set of commits.
@@ -128,7 +128,7 @@ For each blueprint item (or cohesive group of items), generate a draft ticket in
 
 - **Title** — short, action-oriented
 - **Description** — rationale plus specific moves/renames
-- **Recommended implementation skill** — names the skill that should pick this up, with scope hint (e.g., `/refactor scoped to src/utils/`, or `/scope then /implement` for cross-module work)
+- **Recommended implementation skill** — names the skill that should pick this up, with scope hint (e.g., `/implement` for a contained move, or `/scope` then `/implement` for cross-module work)
 - **Acceptance criteria** — what "done" looks like
 
 **Preview the full set to the operator.** The operator can approve as-is, edit any field, remove tickets they don't want cut, and choose labels (default: none). Orchestrators apply their autonomy judgment per `references/autonomy.md` — typically declining items they intend to implement inline.
@@ -147,11 +147,11 @@ See SKILL.md for the exact template.
 
 2. **Ticket creation is opt-in.** If you want the analysis as a planning artifact rather than a set of tickets, decline at step 5. The recommendations stand on their own.
 
-3. **Pay attention to the "Recommended implementation skill" hint in each ticket.** It names the right next move (`/refactor` for mechanical changes; `/scope` then `/implement` for new modules; `/implement` with the group's tickets together for cohesive groups).
+3. **Pay attention to the "Recommended implementation skill" hint in each ticket.** It names the right next move (`/implement` for mechanical changes; `/scope` then `/implement` for new modules; `/implement` with the group's tickets together for cohesive groups).
 
 4. **Orchestrators apply their own judgment to the offer.** When invoked from `/review-health`'s follow-up or `/implement` running a multi-ticket project, the orchestrator typically declines items it intends to implement inline and approves items it wants tracked for follow-up. Both responses are valid.
 
-5. **Consider running `/refactor` first.** Cleaning up dead code and DRY violations with `/refactor` reduces noise in the architectural analysis. The analysis agent can then focus on structural opportunities rather than rediscovering tactical ones.
+5. **Consider `/review-dead` first.** Clearing dead code reduces noise in the architectural analysis, so the analysis agent can focus on structure rather than rediscovering what should simply be deleted.
 
 6. **Scope aggressively for large codebases.** `/review-arch src/core/` targets a specific module; better than analyzing everything when you already know where the problems are.
 
@@ -198,4 +198,4 @@ The `/review-arch` workflow embodies several principles:
 **Atomic tickets, not atomic commits:**
 - Each blueprint item becomes a ticket (or a cohesive group becomes one ticket).
 - Tickets are individually implementable — one ticket per coherent unit of work.
-- The implementation skills (`/refactor`, `/implement`) handle the commit discipline.
+- `/implement` handles the commit discipline when the tickets are worked.

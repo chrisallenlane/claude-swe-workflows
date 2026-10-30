@@ -115,7 +115,7 @@ Once the plan is finalized, offer to convert the planned work into tickets. **Th
 - **Title** — short, action-oriented (e.g., "Dissolve helpers.go; distribute functions to domain owners").
 - **Description** — the rationale from the blueprint plus the specific moves/renames involved.
 - **Recommended implementation skill** — name the skill that should pick this up, with scope hint. Examples:
-  - "Implementation: `/refactor` with scope `src/utils/`" (for mechanical changes within an existing module)
+  - "Implementation: `/implement`" (for mechanical changes within an existing module)
   - "Implementation: `/scope` first to plan dependencies, then `/implement`" (for new module creation)
   - "Implementation: `/implement` with this ticket plus the related `request.go` absorption ticket" (for cross-cutting changes)
 - **Acceptance criteria** — what "done" looks like for this ticket (tests still pass, specific symbols moved, specific files removed).
@@ -149,8 +149,8 @@ When invoked by an orchestrator, the dispatch is the same — the orchestrator i
 - Items finalized for ticket creation: N
 
 ### Tickets created
-- #123: Dissolve helpers.go; distribute functions — recommends /refactor scoped to pkg/helpers
-- #124: Absorb validate() into request.go — recommends /refactor scoped to pkg/request and pkg/server
+- #123: Dissolve helpers.go; distribute functions — recommends /implement
+- #124: Absorb validate() into request.go — recommends /implement
 - ...
 
 (or: "No tickets created — analysis was advisory-only per operator request.")
@@ -189,7 +189,7 @@ When invoked by an orchestrator, the dispatch is the same — the orchestrator i
 
 ## Integration with Other Skills
 
-**`/review-arch` vs `/refactor`:** `/refactor` is tactical cleanup within existing architecture. `/review-arch` is strategic — it questions the architecture and proposes restructuring. Use `/refactor` for routine cleanup; use `/review-arch` when the module structure itself needs rethinking. After `/review-arch`'s tickets are cut, `/refactor` and `/implement` carry them out.
+**`/review-arch` vs `/refactor`:** `/review-arch` questions the module structure and proposes specific restructuring as tickets, which `/implement` carries out. `/refactor` redesigns the whole codebase downward on its own branch, with behavior pinned, and adopts only what measurably shrinks the machine. Use `/review-arch` to plan a structural change you want; use `/refactor` to find out how much less machine the same behavior needs.
 
 **`/review-arch` vs `/scope`:** `/scope` creates individual tickets through exploratory dialogue when you already know what you want. `/review-arch` *discovers* what tickets are needed by analyzing the codebase as a whole and cuts a coherent batch from one blueprint.
 
@@ -234,15 +234,15 @@ Drafting tickets...
 
 ### Ticket preview
 1. Remove dead code (4 instances)
-   - Implementation: /refactor scoped to {server.go, helpers.go, parser.go}
+   - Implementation: /implement
    - AC: lines listed in description are gone; tests pass
 
 2. Rename parser.go → request.go (domain noun)
-   - Implementation: /refactor scoped to parser.go
+   - Implementation: /implement
    - AC: file is renamed; all references updated; tests pass
 
 3. request.go absorbs validate() from server.go
-   - Implementation: /refactor scoped to {server.go, request.go}
+   - Implementation: /implement
    - AC: validate() lives in request.go; server.go imports nothing from request beyond what it already uses; tests pass
 
 4. Dissolve helpers.go; distribute 6 functions
@@ -269,7 +269,7 @@ Creating tickets in Gitea...
 - Items finalized for ticket creation: 4
 
 ### Tickets created
-- #201, #202, #203 — recommend /refactor scoped per ticket
+- #201, #202, #203 — recommend /implement
 - #204 — recommends /scope then /implement
 
 ### Recommended next steps

@@ -239,10 +239,8 @@ When `/review-test` is invoked by an orchestrator (`/implement`, `/review-health
 
 4. **Orchestrators apply their own judgment to the offer.** When invoked from an orchestrator such as `/implement` running a multi-ticket project, the orchestrator typically declines items it intends to implement inline and approves items it wants tracked for follow-up. Both responses are valid per `references/autonomy.md`.
 
-5. **Consider running `/refactor` first.** If the codebase has tactical clutter, `/refactor` can clean it before `/review-test` analyzes coverage — the coverage analyst is more useful when it isn't navigating dead code and DRY violations.
-
-6. **Scope aggressively for large codebases.** `/review-test pkg/core/` targets a specific module; better than analyzing everything when you already know where the gaps are.
+5. **Scope aggressively for large codebases.** `/review-test pkg/core/` targets a specific module; better than analyzing everything when you already know where the gaps are.
 
 ## Integration with Other Skills
 
-Recommended sequence for test improvement: `/review-test` first (surface ticket-shaped work) → `/implement` (remediate) → `/test-mutation` (strengthen). Run `/review-test` before `/refactor` to ensure the test suite is strong enough to catch regressions before restructuring.
+Recommended sequence for test improvement: `/review-test` first (surface ticket-shaped work) → `/implement` (remediate) → `/test-mutation` (strengthen).

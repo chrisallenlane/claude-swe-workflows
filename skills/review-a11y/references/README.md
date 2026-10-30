@@ -22,7 +22,7 @@ The `/review-a11y` skill audits web content against WCAG 2.2 Level AA. It detect
 **Don't use `/review-a11y` for:**
 - Non-web projects (CLI tools, APIs, libraries without UI)
 - Implementing fixes (just ask directly after reviewing findings)
-- General code quality cleanup (use `/refactor`)
+- Specific code changes (use `/implement`), or shrinking the codebase (use `/refactor`)
 - Strategic orientation on an unfamiliar repo (use `/review-health`)
 - Security review (use `/review-security`)
 

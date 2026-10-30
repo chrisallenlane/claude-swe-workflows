@@ -22,7 +22,7 @@ It is **advisory only**, and more strongly so than the other `/review-*` skills:
 - A design document exists but you suspect it over-commits (or has drifted from reality)
 
 **Don't use it for:**
-- Behavior-preserving cleanup (`/refactor`)
+- Behavior-preserving reduction (`/refactor`)
 - Structural reorganization within fixed behavior (`/review-arch`)
 - Machinery that serves *no* requirement — that's `/review-arch`'s mechanism audit; this skill prices machinery that serves a *real but expensive* requirement
 

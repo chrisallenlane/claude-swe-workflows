@@ -25,7 +25,7 @@ Each assumption gets a ledger entry: verified (with the evidence), false (a find
 
 **Don't use `/review-code` for:**
 - Repo-wide proactive bug discovery with no specific diff in mind — that's `/bug-hunt` (risk-ranked, writes reproducing tests)
-- Style, naming, and refactoring feedback — that's `/refactor` (or the code-review step inside `/implement`)
+- Style, naming, and refactoring feedback — that's the code reviews inside `/implement`
 - Security posture review — that's `/review-security`
 - Reviewing code you're about to write — review needs a diff to exist
 

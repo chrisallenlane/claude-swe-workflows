@@ -80,7 +80,7 @@ Some valuable disciplines belong as *phases inside* skills, not as skills of the
 
 The five tests above gate `/think-*` admission. They do not gate other skill families. That said, several values from this document apply across the plugin even without strict gating:
 
-- **Practitioner-methodology bias.** When designing any new skill, look for the practitioner tradition that has already studied this problem. `/scope` inherits from agile/XP spike practice; `/implement` from TDD and incremental feature delivery; `/refactor` from Fowler. The bias toward citing lineage is plugin-wide — it's how the plugin avoids reinventing what practitioner traditions have already worked out.
+- **Practitioner-methodology bias.** When designing any new skill, look for the practitioner tradition that has already studied this problem. `/scope` inherits from agile/XP spike practice; `/implement` from TDD and incremental feature delivery; `/refactor` from the five-step design algorithm of the Raptor engine program and from compiler optimization passes. The bias toward citing lineage is plugin-wide — it's how the plugin avoids reinventing what practitioner traditions have already worked out.
 
 - **Structured discipline beats flexible framework.** Make uncomfortable questions unskippable where a skill's purpose warrants it. The commander's-intent elicitation in `/implement`, `/bug-hunt`, and `/review-health` applies this discipline outside the `/think-*` namespace, to good effect.
 

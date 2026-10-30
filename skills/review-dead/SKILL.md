@@ -6,7 +6,7 @@ model: opus
 
 # Dead-Code Review — Focused Audit
 
-Audits a codebase for dead code: unreferenced symbols, dead files, unreachable branches, unused imports and dependencies, commented-out blocks, tests-only code, and dead configuration. **Advisory only** — the skill catalogs and proposes; removal happens through `/refactor` or ticketed work.
+Audits a codebase for dead code: unreferenced symbols, dead files, unreachable branches, unused imports and dependencies, commented-out blocks, tests-only code, and dead configuration. **Advisory only** — the skill catalogs and proposes; removal happens through ticketed work in `/implement`, or as part of a whole-codebase reduction by `/refactor`.
 
 ## Philosophy
 
@@ -61,7 +61,7 @@ The operator may know liveness the audit can't see (a symbol reached by an exter
 Per the shared advisory pattern ([`references/advisory-tickets.md`](../../references/advisory-tickets.md)). Sensible shapes:
 
 - **One removal ticket per subsystem or category** when findings cluster (e.g., "remove dead config plumbing": the keys, their readers, their docs).
-- **A single sweep ticket** for scattered PROVEN findings — recommend `/refactor` scoped to the affected paths, which removes with QA verification.
+- **A single sweep ticket** for scattered PROVEN findings — recommend working it with `/implement`, which removes the code under its verification and correctness gates.
 - **UNVERIFIABLE findings** go in a verification ticket (what a human must confirm), never a removal ticket.
 
 On approval, create tickets per [`references/trackers.md`](../../references/trackers.md). Declining is valid — the audit stands as a planning artifact.
@@ -75,7 +75,7 @@ On approval, create tickets per [`references/trackers.md`](../../references/trac
 ### Findings: N (PROVEN: a, LIKELY: b, UNVERIFIABLE: c) — ~N lines removable (estimate)
 ### Dropped in iteration: N (operator knowledge)
 ### Tickets created: [#s with recommended skill] | none — audit stands as planning artifact
-### Recommended next steps: [e.g., "/refactor scoped to src/legacy/ for the PROVEN sweep"]
+### Recommended next steps: [e.g., "/implement on the PROVEN sweep ticket for src/legacy/"]
 ```
 
 ## Agent Coordination
@@ -92,6 +92,6 @@ One `swe-dead-code-auditor` per invocation, fresh instance. No SME or QA agents 
 
 **`/review-dead` vs `/review-arch`:** `/review-arch` catalogs dead code incidentally, as input to a full blueprint. Use `/review-dead` when you want only the audit — it's focused and cheap. Running `/review-arch` afterward on a cleaned codebase gives its noun analysis less noise to see through.
 
-**`/review-dead` vs `/refactor`:** `/refactor` finds *and removes* dead code within its broader cleanup loop. Use `/review-dead` when you want the audit without the mutation — to review before deleting, or to cut tickets for later.
+**`/review-dead` vs `/refactor`:** `/refactor` deletes dead code too, but as one move in a whole-codebase redesign on its own branch. Use `/review-dead` when you want the audit without the mutation — to review before deleting, or to cut tickets for `/implement`.
 
 **Runs inside `/review-health`'s follow-up, before `/review-arch`.** The caller answers the ticket-proposal step per the autonomy contract ([`references/autonomy.md`](../../references/autonomy.md) § "Auto-approval of sub-skill ticket proposals"). `/review-arch`, running later, re-catalogs dead code incidentally in its Step 1 — `/review-health` treats those re-findings as confirmations and dedupes them in the consolidated report.

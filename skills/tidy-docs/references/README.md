@@ -20,7 +20,6 @@ The skill lives in the `/tidy-*` namespace because the find→fix seam is small 
 - Before a release (catch stale docs)
 - Periodic documentation hygiene
 - When you suspect docs have drifted from the code
-- As part of `/refactor` or `/review-arch` completion (it runs automatically)
 
 **Don't use `/tidy-docs` for:**
 - Updating docs for a specific change (the `/implement` and `/bug-fix` workflows do this as part of their flow)

@@ -117,7 +117,7 @@ Preview the set; the operator approves / edits / declines per the standard advis
 
 ### Recommended next steps
 [e.g., "Run /review-arch after the approved dissolutions land — removing
-requirements changes the blueprint. Then /refactor for tactical cleanup."]
+requirements changes the blueprint. Then /refactor to shrink what remains."]
 ```
 
 ## Agent Coordination
