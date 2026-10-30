@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `/implement-batch` skill takes a batch of tickets, plans their execution order, implements each one sequentially using the `/implement` workflow in autonomous mode, runs cross-cutting quality passes, and presents results for final review. It turns a set of tickets into a single project branch ready to merge.
+The `/implement-batch` skill takes a batch of tickets, plans their execution order, implements each one sequentially using the `/implement` workflow in autonomous mode, runs a cross-cutting documentation pass, and presents results for final review. It turns a set of tickets into a single project branch ready to merge.
 
 The skill is a **for-loop, not an orchestrator** in the autonomy sense — it has no commander's intent; the tickets carry the work definition. Its andon-cord pulls follow the shared autonomy discipline documented in [`references/autonomy.md`](../../../references/autonomy.md), and `/implement` escalations cascade up to this skill rather than going directly to the operator.
 
@@ -10,7 +10,7 @@ The skill is a **for-loop, not an orchestrator** in the autonomy sense — it ha
 - Batch execution of multiple tickets without intervention
 - Dependency-aware ordering
 - Each ticket gets full `/implement` quality treatment
-- Cross-cutting quality passes catch inter-ticket issues
+- A cross-cutting documentation pass catches inter-ticket documentation drift
 - Topic branches per ticket, merged into a project branch
 - Andon cord protocol stops work immediately on failures, using the shared handoff template
 
@@ -104,10 +104,9 @@ The skill is a **for-loop, not an orchestrator** in the autonomy sense — it ha
                     │
                     ▼ (all tickets done)
  ┌──────────────────────────────────────────────┐
- │  6. CROSS-CUTTING QUALITY PASSES             │
+ │  6. CROSS-CUTTING DOCUMENTATION PASS         │
  │  ────────────────────────────────────────    │
- │  6a. /refactor (SAFE aggression)              │
- │  6b. /tidy-docs (full audit)                │
+ │  /tidy-docs (full audit)                     │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -116,7 +115,7 @@ The skill is a **for-loop, not an orchestrator** in the autonomy sense — it ha
  │  Present to user:                            │
  │  • Tickets implemented with outcomes         │
  │  • Statistics (commits, lines, tests)        │
- │  • Quality pass results                      │
+ │  • Documentation pass results                │
  │  • Branch status (ready to merge)            │
  │                                              │
  │  User decides: merge, more work, or discard  │
@@ -169,12 +168,10 @@ For each ticket in order:
 
 **5e. Clean up** by deleting the merged topic branch.
 
-### 6. Cross-Cutting Quality Passes
-After all tickets are implemented:
-- **`/refactor`**: Conservative pass (SAFE aggression ceiling only)
-- **`/tidy-docs`**: Full documentation audit
+### 6. Cross-Cutting Documentation Pass
+After all tickets are implemented, **`/tidy-docs`** runs a full documentation audit.
 
-These catch issues that span multiple tickets or emerge from their interaction.
+It catches documentation issues that span multiple tickets or emerge from their interaction.
 
 ### 7. Final Review
 Presents a comprehensive summary. The user decides: merge the project branch to main, do more work, or discard.
@@ -259,8 +256,7 @@ Creating branch: feat/batch-sprint-4
 [Ticket #15] Merged into project branch
 [Ticket #15] Post-merge verification: all tests pass
 
-Running cross-cutting quality passes...
-- /refactor: 1 DRY improvement (-12 lines)
+Running cross-cutting documentation pass...
 - /tidy-docs: README updated with auth docs
 
 ## Batch Complete
@@ -311,8 +307,7 @@ Awaiting your guidance.
 | `/scope`       | Creates tickets that `/implement-batch` consumes. Typical flow: `/scope` then `/implement-batch`.          |
 | `/implement`     | Runs inside `/implement-batch` for each ticket. `/implement-batch` adds batching, ordering, and branching. |
 | `/bug-fix`      | Not used by `/implement-batch` currently — all tickets go through `/implement`.                      |
-| `/refactor`    | Runs as cross-cutting quality pass (SAFE aggression).                                      |
-| `/tidy-docs`  | Runs as cross-cutting quality pass.                                                        |
+| `/tidy-docs`  | Runs as the cross-cutting documentation pass.                                              |
 
 ## Tips
 
@@ -322,6 +317,6 @@ Awaiting your guidance.
 
 3. **Trust the andon cord.** When it fires, something genuinely went wrong. Don't try to force past it — address the root cause.
 
-4. **Check cross-cutting results.** The quality passes in step 6 often find inter-ticket issues (duplicate code, conflicting patterns) that per-ticket `/implement` runs can't see.
+4. **Check cross-cutting results.** The documentation pass in step 6 often finds inter-ticket issues (contradictory or stale docs) that per-ticket `/implement` runs can't see.
 
 5. **The project branch is your safety net.** Main stays clean. If the project branch is unsatisfactory, you can discard it entirely.

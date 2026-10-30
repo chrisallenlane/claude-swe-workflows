@@ -18,7 +18,7 @@ This skill implements the autonomy discipline documented in [`references/autonom
 
 The same pipeline serves two operator intents:
 
-- **Backlog generation** (tickets ON) — autonomous review-driven ticket creation. The skill runs every enabled review sub-skill, auto-approves each one's ticket proposals at or above the severity floor, and produces a consolidated, batch-tagged backlog the operator can feed to `/implement-project` or `/lead-refactor`.
+- **Backlog generation** (tickets ON) — autonomous review-driven ticket creation. The skill runs every enabled review sub-skill, auto-approves each one's ticket proposals at or above the severity floor, and produces a consolidated, batch-tagged backlog the operator can feed to `/implement-project`.
 - **Audit report** (tickets OFF) — autonomous comprehensive audit. The skill runs every enabled review sub-skill, auto-declines all ticket proposals uniformly, and surfaces all findings in the consolidated completion report. No tracker writes.
 
 The operator chooses at startup. There is no mid-run switching.
@@ -382,10 +382,6 @@ Run individual `/review-*` skills directly when you want a single dimension audi
 
 Natural composition: `/lead-review` (tickets ON) produces a comprehensive backlog → `/implement-project` works through the backlog. `/lead-review` is the planning half; `/implement-project` is the execution half.
 
-**Relationship to `/lead-refactor`:**
-
-`/lead-refactor` runs `/review-arch` internally (within Phase 2). Operators who want both can run `/lead-review` (broad audit with backlog) and then `/lead-refactor` (deep refactor sweep), but the architectural review will run twice. For efficiency: pick one based on goal — `/lead-review` for evaluation across all dimensions, `/lead-refactor` for change-oriented cleanup.
-
 **Relationship to `/lead-bug-hunt`:**
 
 Sibling orchestrator. `/lead-bug-hunt` is bug-elimination-specific; `/lead-review` is multi-dimensional review. Both follow the orchestrator-family contract (auto-approval of sub-skill tickets, severity floor, andon protocol).
@@ -398,4 +394,4 @@ Sibling orchestrator. `/lead-bug-hunt` is bug-elimination-specific; `/lead-revie
 
 `/tidy-docs` is not in this skill's repertoire. It is a `/tidy-*` (mechanical mutations), not a `/review-*` (advisory). Including it would muddy `/lead-review`'s contract — operators in tickets-OFF mode expect "evaluation only, no tree mutations," and `/tidy-docs` would commit doc changes. Run `/tidy-docs` separately after `/lead-review` if you want doc tidying.
 
-Other out-of-axis skills: `/scope-*`, `/test-mutation`, `/tidy-git`, `/bug-*`, `/refactor`, `/implement-*`. If your goal mixes review with implementation or refactoring, use `/lead-project` instead, or chain `/lead-review` with `/implement-project` / `/lead-refactor`.
+Other out-of-axis skills: `/scope-*`, `/test-mutation`, `/tidy-git`, `/bug-*`, `/refactor`, `/implement-*`. If your goal mixes review with implementation or refactoring, use `/lead-project` instead, or chain `/lead-review` with `/implement-project`.

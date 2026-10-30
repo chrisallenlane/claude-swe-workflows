@@ -1,12 +1,12 @@
 ---
 name: lead-bug-hunt
-description: Autonomous bug-elimination loop. Iteratively invokes /bug-hunt and /implement-batch until findings converge below an operator-specified severity floor. At termination, runs /review-test scoped to the run's new reproducing tests and fixes quality issues above the floor. Auto-approves /bug-hunt and /review-test ticket proposals; pulls the andon cord on contested findings, repeated implementation failure, hard-cap exhaustion, or breaking-change proposals. Optional /refactor finisher.
+description: Autonomous bug-elimination loop. Iteratively invokes /bug-hunt and /implement-batch until findings converge below an operator-specified severity floor. At termination, runs /review-test scoped to the run's new reproducing tests and fixes quality issues above the floor. Auto-approves /bug-hunt and /review-test ticket proposals; pulls the andon cord on contested findings, repeated implementation failure, hard-cap exhaustion, or breaking-change proposals.
 model: opus
 ---
 
 # Lead-Bug-Hunt — Autonomous Bug Elimination
 
-Drives a codebase toward "no bugs above severity floor" without operator involvement between startup and termination. The operator states scope, severity floor, constraints, and finisher preference at startup; the skill then loops `/bug-hunt` → triage → `/implement-batch` until two consecutive hunt passes produce no findings above the floor, or until a hard cap or andon cord halts the run.
+Drives a codebase toward "no bugs above severity floor" without operator involvement between startup and termination. The operator states scope, severity floor, and constraints at startup; the skill then loops `/bug-hunt` → triage → `/implement-batch` until two consecutive hunt passes produce no findings above the floor, or until a hard cap or andon cord halts the run.
 
 This skill is a narrower sibling of `/lead-project`. `/lead-project` takes open-ended commander's intent and decides which skills to invoke from a broad repertoire. `/lead-bug-hunt` has a fixed loop shape (hunt → fix → re-hunt) and a bounded sub-skill repertoire. It exists because "iterate until bugs converge" is a recurring workflow worth canonizing.
 
@@ -24,7 +24,7 @@ This is the dominant judgment call this skill exposes. Setting the floor too low
 
 `/bug-hunt` commits reproducing tests as it works. Those tests outlive the run — they become permanent regression tests in the suite. Their quality matters more than typical test code because they will catch regressions for years and bias future test authors who read them as examples.
 
-This skill therefore treats test review as part of its core contract, not as adjacent cleanup. At termination (after convergence, after any `/refactor` finisher), the skill invokes `/review-test` scoped to the test files modified during this run, auto-approves any quality-finding ticket proposals at or above the severity floor, and fixes them via `/implement-batch`. Findings below the floor are deferred to the completion report.
+This skill therefore treats test review as part of its core contract, not as adjacent cleanup. At termination (after convergence), the skill invokes `/review-test` scoped to the test files modified during this run, auto-approves any quality-finding ticket proposals at or above the severity floor, and fixes them via `/implement-batch`. Findings below the floor are deferred to the completion report.
 
 ### Trust the reproducing test, escalate the disagreement
 
@@ -38,7 +38,7 @@ No escape hatches: the skill cannot rationalize bugs away to make the loop conve
 
 ### Broad authority, narrow gates
 
-The skill may: invoke `/bug-hunt`, `/implement-batch`, `/implement`, `/bug-fix`, `/think-diagnose`, `/refactor`, `/review-test` (at termination, scoped to the run's new tests); create tickets via auto-approved proposals; commit fix work via sub-skills; create and modify the working branch.
+The skill may: invoke `/bug-hunt`, `/implement-batch`, `/implement`, `/bug-fix`, `/think-diagnose`, `/review-test` (at termination, scoped to the run's new tests); create tickets via auto-approved proposals; commit fix work via sub-skills; create and modify the working branch.
 
 The skill may NOT without explicit authorization: push or merge to main/master, force-push, propose breaking changes (see `references/autonomy.md` § "No unilateral breaking changes"), invoke `/review-*` skills other than the scoped `/review-test` at termination (out-of-axis — use `/lead-project` if you want broader review-driven work), install dependencies, run irreversible destructive operations.
 
@@ -51,7 +51,7 @@ The skill may NOT without explicit authorization: push or merge to main/master, 
 │  0. Startup                                                      │
 │     ├─ 0a. Branch and working-tree check                         │
 │     ├─ 0b. Resume existing run or start fresh                    │
-│     ├─ 0c. Elicit commander's intent (4 fields)                  │
+│     ├─ 0c. Elicit commander's intent (3 fields)                  │
 │     └─ 0d. Seed LEAD_BUG_HUNT_STATE.md                           │
 │                                                                  │
 │  1. Hunt cycle (repeat until convergence or andon cord)          │
@@ -63,11 +63,10 @@ The skill may NOT without explicit authorization: push or merge to main/master, 
 │     └─ 1f. Convergence check                                     │
 │                                                                  │
 │  2. Termination                                                  │
-│     ├─ 2a. Optional /refactor finisher (if opted in)             │
-│     ├─ 2b. /review-test on new reproducing tests                 │
+│     ├─ 2a. /review-test on new reproducing tests                 │
 │     │       (auto-approved, fix above-floor findings)            │
-│     ├─ 2c. Final verification pass                               │
-│     └─ 2d. Completion report                                     │
+│     ├─ 2b. Final verification pass                               │
+│     └─ 2c. Completion report                                     │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
@@ -79,8 +78,8 @@ Follow the shared startup protocol in [`references/lead-startup.md`](../../refer
 
 - **0a. Branch and working-tree check** — branch-name pattern: `lead-bug-hunt/<date>` (e.g., `lead-bug-hunt/2026-05-12`).
 - **0b. Resume existing run or start fresh** — state-doc filename: `LEAD_BUG_HUNT_STATE.md`. "Resume as-is" semantic: re-run a hunt before forming the next batch.
-- **0c. Elicit commander's intent** — four fields per the schema in [`references/autonomy.md`](../../references/autonomy.md) § "Commander's-intent schemas per skill / `/lead-bug-hunt`". Push-back examples specific to this skill: "Find all the bugs" is not a scope — ask which modules; "Whatever severity" is not a floor — push for Critical+High at minimum, or ask why broader makes sense.
-- **0d. Seed `LEAD_BUG_HUNT_STATE.md`** — include the four pinned intent fields, an empty cycle log, and an empty findings ledger. Gitignore the state doc per the protocol.
+- **0c. Elicit commander's intent** — three fields per the schema in [`references/autonomy.md`](../../references/autonomy.md) § "Commander's-intent schemas per skill / `/lead-bug-hunt`". Push-back examples specific to this skill: "Find all the bugs" is not a scope — ask which modules; "Whatever severity" is not a floor — push for Critical+High at minimum, or ask why broader makes sense.
+- **0d. Seed `LEAD_BUG_HUNT_STATE.md`** — include the three pinned intent fields, an empty cycle log, and an empty findings ledger. Gitignore the state doc per the protocol.
 
 ### 1. Hunt Cycle
 
@@ -164,19 +163,7 @@ Otherwise → return to 1a for the next cycle.
 
 ### 2. Termination
 
-#### 2a. Optional `/refactor` finisher
-
-If commander's intent field 4 specified a finisher aggression:
-
-- Invoke `/refactor` with the specified aggression ceiling, scoped to the bug-hunt scope (field 1).
-- Verify tests still pass after the refactor.
-- Record refactor outcome in the cycle log.
-
-If field 4 was "no finisher": skip this step.
-
-The finisher is opt-in because it is not the core action of this skill. Bug-elimination is the contract; cleanup is adjacent and may be a separate concern for the operator.
-
-#### 2b. `/review-test` on new reproducing tests
+#### 2a. `/review-test` on new reproducing tests
 
 Always runs (not opt-in). The reproducing tests committed by `/bug-hunt` during the run are durable regression artifacts; their quality matters.
 
@@ -200,7 +187,7 @@ Record outcome in the state doc under `## Test review` section.
 
 **Why no re-hunt after this step:** if the test-review's fixes have changed behavior enough to introduce new bugs above the floor, the test suite catches it during the verify step. Otherwise we'd be susceptible to an infinite loop (re-hunt → find → fix → re-review → re-hunt …).
 
-#### 2c. Final verification pass
+#### 2b. Final verification pass
 
 Before declaring done:
 
@@ -211,16 +198,16 @@ Before declaring done:
 
 If any check fails, treat as a blocker — return to the loop (cycle counter does not increment).
 
-#### 2d. Completion report
+#### 2c. Completion report
 
 ```
 ## Lead-Bug-Hunt Complete
 
 ### Commander's intent
-[All four fields, verbatim]
+[All three fields, verbatim]
 
 ### Outcome
-[One paragraph: did the loop converge? At what cycle? Did the finisher run?
+[One paragraph: did the loop converge? At what cycle?
  Any caveats the operator should know about — non-determinism of /bug-hunt,
  deferred findings below floor, etc.]
 
@@ -234,8 +221,7 @@ If any check fails, treat as a blocker — return to the loop (cycle counter doe
 [Three to five items where the skill's judgment is most likely to need
  review. Each item: one sentence + artifact (SHA, ticket ID, file:line).
  Examples: triage calls on borderline findings, batches with multiple
- attempts, the finisher's net diff, areas the hunters flagged as
- uncertain.]
+ attempts, areas the hunters flagged as uncertain.]
 
 ### Tickets created and fixed
 - [#N] <title> — fix SHA <short> — reproducing test <file:line>
@@ -243,7 +229,7 @@ If any check fails, treat as a blocker — return to the loop (cycle counter doe
 - ...
 
 ### Test review outcome
-- Tests reviewed: <list of test files reviewed in step 2b>
+- Tests reviewed: <list of test files reviewed in step 2a>
 - Quality tickets created: N (list IDs)
 - Quality tickets fixed: N
 - Deferred quality findings (below floor): N — see Deferred section
@@ -254,7 +240,7 @@ If any check fails, treat as a blocker — return to the loop (cycle counter doe
  with a lower floor to address them.]
 - [Low | cycle 3 | /bug-hunt] <description> — see finding artifact
 - [Low | cycle 5 | /bug-hunt] <description>
-- [Low | termination 2b | /review-test] <description> — test quality
+- [Low | termination 2a | /review-test] <description> — test quality
 - ...
 
 ### Contested or breaking-change findings (if any escalated)
@@ -270,7 +256,6 @@ If any check fails, treat as a blocker — return to the loop (cycle counter doe
 - Base: <base branch> (SHA <short>)
 - Commits on branch: N
 - Net lines: +X/-Y
-- Finisher: <none | Low | High | Maximum>
 
 ### Run metadata
 - Hunt cycles: N of 10
@@ -308,17 +293,6 @@ Hard limits beyond the always-on guardrails (no breaking changes, no main/master
 - "Do not touch generated code under `gen/`."
 - "Must remain Go 1.22 compatible."
 
-### Refactor finisher
-
-Aggression ceiling for the optional finisher. Options (matching `/refactor`'s vocabulary):
-
-| Setting       | Effect                                                                                                          |
-|---------------|-----------------------------------------------------------------------------------------------------------------|
-| no finisher   | Default. Bug fixes ship as-is. Operator may run `/refactor` separately.                                         |
-| Low           | Cleanup of obviously-redundant code introduced by fixes. Low diff.                                              |
-| High          | Standard `/refactor` aggression. Moderate diff.                                                                 |
-| Maximum       | Full `/refactor` Maximum — aggressive changes plus the generative simplification stage (blind module rewrites). |
-
 ## Severity & Triage
 
 Triage is mechanical, not judgment-based. The severity floor is the only knob.
@@ -352,9 +326,9 @@ Pull the cord when:
 - **Regression introduced.** A batch fix made the test suite fail in ways unrelated to the targeted bug. Record the failing tests, the cycle, and the batch SHAs.
 - **Sub-skill cord cascaded up.** `/implement-batch`, `/implement`, or `/bug-fix` pulled its own cord for a reason this skill cannot resolve.
 - **Reproducing test stale at triage.** A `/bug-hunt` finding's reproducing test does not actually fail on current HEAD. This indicates either the hunter was wrong or the test exercises the wrong path. Worth operator review before continuing.
-- **Contested test-quality finding.** During termination step 2b, `/review-test` proposed a change the skill believes is wrong on substance (e.g., delete a test that is genuinely load-bearing, rewrite an assertion in a way that weakens coverage).
+- **Contested test-quality finding.** During termination step 2a, `/review-test` proposed a change the skill believes is wrong on substance (e.g., delete a test that is genuinely load-bearing, rewrite an assertion in a way that weakens coverage).
 - **Breaking test change required.** A `/review-test` quality fix would alter test signatures or imports in ways that affect external consumers — rare for test files but possible for shared test helpers.
-- **Regression in reproducing test.** A test-quality fix during step 2b invalidated a reproducing test that was the acceptance criterion for an earlier-cycle bug fix. The fix may need to be revisited or the quality change reverted.
+- **Regression in reproducing test.** A test-quality fix during step 2a invalidated a reproducing test that was the acceptance criterion for an earlier-cycle bug fix. The fix may need to be revisited or the quality change reverted.
 - **Hunt produces no actionable findings but has high uncertainty.** `/bug-hunt`'s assessment surfaced high-risk hotspots but hunters could not produce confirmed findings. The skill should not declare convergence in this case; operator should decide whether to deepen the hunt or accept the uncertainty.
 - **Hard cap hit.** 10 hunt-cycles elapsed without convergence. Something is likely structurally wrong (severity floor set too low, codebase has a class of recurring bug the hunters keep finding, etc.).
 - **Resume-time HEAD divergence.** On resume, recorded branch SHA does not match current HEAD.
@@ -391,9 +365,6 @@ Status: <active | paused-on-andon | complete>
 ### Constraints
 - <constraint 1>
 
-### Refactor finisher
-<no finisher | Low | High | Maximum>
-
 ## Cycle log
 
 ### Cycle N — <timestamp> — HEAD <short SHA>
@@ -421,7 +392,7 @@ Status: <active | paused-on-andon | complete>
 ### Breaking-change-required
 - [cycle 5] <description> — andon cord pulled, see § Andon Cord history
 
-## Test review (termination 2b)
+## Test review (termination 2a)
 
 Scope: <test files reviewed, from `git diff --name-only <base SHA>..HEAD`>
 Findings above floor: N — tickets <#N..#M>, fixed at SHAs <short>..<short>
@@ -461,9 +432,9 @@ Ensure `LEAD_BUG_HUNT_STATE.md` is ignored. Commit the `.gitignore` change on th
 
 `/lead-project` is the open-ended orchestrator — it takes broad commander's intent and decides which skills to invoke. `/lead-bug-hunt` is a fixed-shape loop for one specific outcome. Use `/lead-project` when bug-hunting is one of several concerns; use `/lead-bug-hunt` when bug elimination is the sole objective. `/lead-project` may invoke `/lead-bug-hunt` as a sub-skill when its Decide phase identifies a bug-sweep as the next move.
 
-**Relationship to `/refactor` and `/lead-refactor`:**
+**Relationship to `/refactor`:**
 
-The optional finisher invokes `/refactor` (not `/lead-refactor`) — bug-fix cleanup does not benefit from `/lead-refactor`'s architectural-review loop. If you want comprehensive cleanup after bug elimination, run `/lead-refactor` separately after `/lead-bug-hunt` completes.
+It is not in this skill's repertoire; bug fixes ship as-is. `/refactor` is a standalone redesign skill that the operator runs directly — it works on its own isolated branch and has an operator checkpoint, so orchestrators do not call it. If you want cleanup after bug elimination, run `/refactor` separately after `/lead-bug-hunt` completes.
 
 **Relationship to `/review-test`:**
 

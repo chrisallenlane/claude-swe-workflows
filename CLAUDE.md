@@ -65,12 +65,9 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
 │   └── /implement (per ticket)
 └── quality pipeline: /refactor, /review-arch, /review-test, /tidy-docs, /review-release
 
-/lead-refactor
-└── /refactor → loop: /review-arch + /implement-batch (until convergence) → /refactor
-
 /lead-bug-hunt
 └── loop: /bug-hunt → /implement-batch (until convergence)
-    └── termination: /review-test (new tests) → /refactor (optional)
+    └── termination: /review-test (new tests)
 
 /lead-review
 └── /review-health → /review-dead → /review-arch → /review-security → /review-perf
@@ -106,7 +103,6 @@ Supporting workflows available at any level:
 - `/review-dead` — focused dead-code audit (advisory; per-finding confidence tiers calibrated against the codebase's dynamic-dispatch patterns; runs as `/lead-review`'s phase 2)
 - `/review-namespace` — empirical namespace-legibility review (advisory; cold reader agents probe the file tree by navigation task, misses become evidence-backed findings; optional heavy search mode evolves hypothetical trees to a measured champion; excluded from `/lead-review` — overlaps `/review-arch` in-pipeline, and search mode needs the operator for calibration)
 - `/test-mutation` — mutation testing
-- `/lead-refactor` — autonomous comprehensive refactoring (orchestrator-family; Phase 1 tactical `/refactor` → Phase 2 loop of `/review-arch` + `/implement-batch` until convergence below severity floor → Phase 3 final `/refactor`)
 - `/lead-review` — autonomous comprehensive review (orchestrator-family; runs its eight-phase review pipeline — health, dead code, arch, security, perf, a11y, test, release — in sequence; `/review-code`, `/review-value`, and `/review-namespace` are structurally excluded; operator-configurable ticket creation at startup)
 
 **Releases:**

@@ -1,13 +1,13 @@
 # Lead-* Startup Protocol
 
-This document codifies the startup procedure shared by the `/lead-*` orchestrator-family skills (`/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/lead-review`). Each `/lead-*` SKILL.md cites this document and supplies only its skill-specific values: branch-name pattern, state-doc filename, the semantics of "Resume as-is," and any bespoke push-back examples during intent elicitation.
+This document codifies the startup procedure shared by the `/lead-*` orchestrator-family skills (`/lead-project`, `/lead-bug-hunt`, `/lead-review`). Each `/lead-*` SKILL.md cites this document and supplies only its skill-specific values: branch-name pattern, state-doc filename, the semantics of "Resume as-is," and any bespoke push-back examples during intent elicitation.
 
 The protocol is fixed across the family. The operator experience depends on uniformity — one `/lead-*` skill should feel like the others at startup.
 
 ## 0a. Branch and working-tree check
 
 - Identify the main branch (`main` or `master`).
-- If currently on `main`/`master`: create the skill's working branch from current HEAD and check it out. Confirm the branch name with the operator before creating. The branch-name pattern is skill-specific (e.g., `lead-bug-hunt/<date>`, `lead-refactor/<date>`, `lead-review/<date>`, `lead-project/<descriptive-name>`).
+- If currently on `main`/`master`: create the skill's working branch from current HEAD and check it out. Confirm the branch name with the operator before creating. The branch-name pattern is skill-specific (e.g., `lead-bug-hunt/<date>`, `lead-review/<date>`, `lead-project/<descriptive-name>`).
 - Check working tree status:
   - Clean → proceed.
   - Dirty → **ask the operator** how to handle uncommitted work: commit as-is, stash, discard, or abort. Do not guess.

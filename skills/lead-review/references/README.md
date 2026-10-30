@@ -28,7 +28,7 @@ This skill is a member of the **orchestrator family** and implements the autonom
 **Don't use `/lead-review` for:**
 - Targeted single-dimension review — use the individual `/review-*` skill directly
 - Bug hunting — use `/bug-hunt` or `/lead-bug-hunt`
-- Change-oriented cleanup — use `/lead-refactor`
+- Change-oriented cleanup — use `/refactor`
 
 **Rule of thumb:** if the goal is "audit the codebase across every dimension before shipping (or before deciding what to fix)," `/lead-review` is the right entry point. If the goal is targeted (one dimension, one area), invoke the relevant `/review-*` skill directly.
 
@@ -62,7 +62,6 @@ If you want the interactive walkthrough that `/review-deep` provided, invoke ind
 |--------------------|-------------------------------------------------------------------|------------------------------------------------------------------------------------|
 | `/lead-project`    | Open-ended commander's intent → OODA loop                         | May invoke `/lead-review` as a comprehensive validation pass                       |
 | `/lead-bug-hunt`   | Iterate `/bug-hunt` → fix until bugs converge                     | Sibling — different outcome contract                                                |
-| `/lead-refactor`   | Tactical + architectural + tactical refactor                      | Shares `/review-arch` with `/lead-review`; pick one based on goal                  |
 | `/implement-project`  | Implement a multi-batch ticket project                            | Natural pair: `/lead-review` (backlog) → `/implement-project` (execution)             |
 
 ## Workflow Diagram
@@ -219,7 +218,7 @@ Skills explicitly **not** in the repertoire (out-of-axis):
 - `/tidy-docs` — mechanical mutations, not advisory. Run separately if doc cleanup is wanted.
 - `/scope-*`, `/test-mutation`, `/tidy-git`, `/bug-*`, `/refactor`, `/implement-*` — adjacent concerns.
 
-If your goal mixes review with implementation, refactoring, or doc tidying, use `/lead-project` instead, or chain `/lead-review` with `/implement-project` / `/lead-refactor`.
+If your goal mixes review with implementation, refactoring, or doc tidying, use `/lead-project` instead, or chain `/lead-review` with `/implement-project`.
 
 ## Examples
 
@@ -392,8 +391,6 @@ below. Operator decides next steps.
 **Individual `/review-*` skills:** the workhorses. Each keeps its native contract; `/lead-review` adds orchestration (scope passthrough, auto-approve/decline, consolidated reporting).
 
 **`/implement-project`:** natural pair. `/lead-review` (tickets ON) → backlog → `/implement-project` → work through backlog.
-
-**`/lead-refactor`:** shares `/review-arch` with `/lead-review`. Pick one based on goal.
 
 **`/lead-project`:** may invoke `/lead-review` as a comprehensive validation pass, or invoke individual `/review-*` skills earlier when specific concerns arise.
 

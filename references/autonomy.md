@@ -1,6 +1,6 @@
 # Autonomy — Design Discipline for Orchestrator-Family Skills
 
-This document states the autonomy discipline that governs the orchestrator-family skills in this plugin: `/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/lead-review`, `/implement-project`, `/implement-batch`. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
+This document states the autonomy discipline that governs the orchestrator-family skills in this plugin: `/lead-project`, `/lead-bug-hunt`, `/lead-review`, `/implement-project`, `/implement-batch`. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
 
 It is opinionated, plugin-wide for the orchestrator family, and cited from each applicable skill. New escalation points or handoff formats invented by a single skill should be reconciled against this document; the goal is a coherent operator experience across the family.
 
@@ -120,7 +120,6 @@ How each orchestrator-family skill handles the contract shift:
 |----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `/lead-project`      | Auto-approves with Decide-phase judgment. Severity-threshold handling lives in the loop's Decide phase, not at the approval moment.                                     |
 | `/lead-bug-hunt`     | Auto-approves all `/bug-hunt` and `/review-test` proposals. The commander's-intent severity floor is applied at the triage step, not at the approval moment.            |
-| `/lead-refactor`     | Auto-approves all `/review-arch` proposals. The commander's-intent severity floor is applied at the Phase-2 triage step (2b), not at the approval moment.               |
 | `/lead-review`       | Mode-dependent. Tickets ON → auto-approve at/above the severity floor, decline below. Tickets OFF → auto-decline uniformly. Mode is fixed at startup.                   |
 | `/implement-project` | Auto-approves proposals from quality-pipeline review sub-skills; severity handling is governed by the project acceptance bar rather than a separate floor.              |
 
@@ -166,25 +165,15 @@ This schema is the canonical implementation referenced from the rest of this doc
 
 ### `/implement-project`
 
-Four fields:
+Five fields:
 
 - **Tickets** — already gathered during step 1 (batched, fetched from tracker).
 - **Acceptance bar** — what defines "ready to merge for this project." Defaults to "all tickets implemented, full pipeline passes." Operator may extend (e.g., "and CHANGELOG mentions every user-visible change").
 - **Constraints** — cross-cutting constraints not encoded in individual tickets (e.g., "must remain compatible with library version X").
 - **Non-goals** — explicit out-of-scope items.
+- **Stakes** — the answers to `/refactor`'s two stakes questions (*what happens if this breaks?* and *who maintains it, for how long?*), recorded verbatim. No default. The quality pipeline's `/refactor` pass answers its requirements menu from this field, the constraints, and the tickets, so the stakes are the one part of that menu only the operator can supply.
 
 Purpose and end state are implicit: purpose is "ship this project's tickets"; end state is the acceptance bar plus the quality pipeline.
-
-### `/lead-refactor`
-
-Four fields:
-
-- **Scope** — entire codebase or user-specified subset, with exclusions (e.g., generated code, vendored code). Same shape as `/refactor`'s scope.
-- **Severity floor** — the lowest `/review-arch` severity that gates Phase 2 convergence (CRITICAL only / HIGH+ / MEDIUM+ / All). Defaults to HIGH+. Too low and Phase 2 won't converge within the 5-iteration cap; too high and the run ships with HIGH-severity architectural findings deferred.
-- **Constraints** — hard limits beyond the always-on guardrails (no breaking changes, no main/master writes). Examples: don't modify a specific module's public API, must remain compatible with a particular language version.
-- **Refactor aggression** — aggression ceiling for both `/refactor` passes in Phases 1 and 3, in `/refactor`'s vocabulary (Low / High / Maximum; Maximum includes the generative simplification stage — module rewrites, stated explicitly at elicitation). Defaults to High.
-
-Purpose, key tasks, end state, and non-goals are implicit: purpose is "comprehensive refactoring above the floor"; key task is Phase-2 convergence; end state is Phase 3 completion with tests passing; non-goals are anything outside the bounded sub-skill repertoire (`/refactor`, `/review-arch`, `/implement-batch`, `/implement`). The skill drops these fields because the three-phase shape is fixed and the implicit values are stable across runs.
 
 ### `/lead-review`
 
@@ -201,12 +190,11 @@ This schema's binary ticket-creation field is unusual in the family — other or
 
 ### `/lead-bug-hunt`
 
-Four fields:
+Three fields:
 
 - **Scope** — entire codebase or user-specified subset, with exclusions (e.g., generated code, vendored code). Same shape as `/bug-hunt`'s scope.
 - **Severity floor** — the lowest severity that gates termination (Critical only / Critical+High / Critical+High+Medium / All). Defaults to Critical+High. This is the dominant judgment call this skill exposes: too low and the loop never converges; too high and the run ships with known bugs.
 - **Constraints** — hard limits beyond the always-on guardrails (no breaking changes, no main/master writes). Examples: don't modify a specific module's public API, must remain compatible with a particular language version.
-- **Refactor finisher** — aggression ceiling for an optional post-convergence `/refactor` pass, in `/refactor`'s vocabulary (no finisher / Low / High / Maximum; Maximum includes the generative simplification stage). Defaults to "no finisher."
 
 Purpose, key tasks, end state, and non-goals are implicit: purpose is "eliminate bugs above the floor"; key task is convergence; end state is two consecutive `/bug-hunt` passes producing no findings above the floor; non-goals are anything outside the bounded sub-skill repertoire (other `/review-*` skills, `/scope-project`, etc.). The skill drops these fields because the work is fixed-shape and the implicit values are stable across runs.
 
@@ -282,7 +270,7 @@ Skills may add fields below "Current state" that are specific to their workflow 
 
 Each orchestrator-family skill extends the shared template in two predictable ways:
 
-1. **Title** — `## Andon Cord — /<skill> — <phase identifier>` where the phase identifier varies per skill (cycle number for `/lead-project` and `/lead-bug-hunt`; phase name for `/lead-refactor` and `/lead-review`; batch identifier for `/implement-batch` and `/implement-project`). The phase identifier is load-bearing — the same skill may pull the cord at different points and the operator needs to know which one.
+1. **Title** — `## Andon Cord — /<skill> — <phase identifier>` where the phase identifier varies per skill (cycle number for `/lead-project` and `/lead-bug-hunt`; phase name for `/lead-review`; batch identifier for `/implement-batch` and `/implement-project`). The phase identifier is load-bearing — the same skill may pull the cord at different points and the operator needs to know which one.
 2. **Current-state additions** — skill-specific fields appended after the shared baseline (typically convergence counters, findings-ledger summaries, a state-doc pointer). Skills should not add fields *between* "Pre-loaded options" and "Recommendation" — that ordering is load-bearing.
 
 After pulling the cord, the skill stops. It does not attempt additional cycles or phases. It waits for operator input.

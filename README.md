@@ -25,10 +25,9 @@ lower-level ones. Enter at the layer that matches your task. The deepest stack:
             └── SME agents                 ← language-specific specialists
 ```
 
-Three other entry points orchestrate bounded autonomous loops:
+Two other entry points orchestrate bounded autonomous loops:
 
 - `/lead-bug-hunt` — loops `/bug-hunt` → `/implement-batch` until bugs converge below a severity floor.
-- `/lead-refactor` — `/refactor` → loops `/review-arch` + `/implement-batch` → `/refactor`.
 - `/lead-review` — runs its eight-phase review pipeline once.
 
 Planning feeds implementation: `/scope-project` → `/implement-project`, or
@@ -42,7 +41,7 @@ skills with a related purpose.
 
 | Namespace      | Purpose                                     | Skills                                                                                                                                                                                        |
 |----------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/lead-*`      | Autonomous orchestrators                    | `/lead-project`, `/lead-bug-hunt`, `/lead-refactor`, `/lead-review`                                                                                                                           |
+| `/lead-*`      | Autonomous orchestrators                    | `/lead-project`, `/lead-bug-hunt`, `/lead-review`                                                                                                                                             |
 | `/implement-*` | Implement tickets (mutate the working tree) | `/implement`, `/implement-batch`, `/implement-project`                                                                                                                                        |
 | `/scope-*`     | Plan and produce tickets                    | `/scope`, `/scope-project`                                                                                                                                                                    |
 | `/review-*`    | Advisory audits — no code changes           | `/review-arch`, `/review-code`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-health`, `/review-security`, `/review-release`, `/review-value`, `/review-dead`, `/review-namespace` |
@@ -75,7 +74,6 @@ task:
 | Fix a bug with diagnosis and root-cause analysis                                            | `/bug-fix`           |
 | Proactively hunt for bugs before they're reported                                           | `/bug-hunt`          |
 | Iterate hunt → fix until bugs converge below a severity floor (autonomous)                  | `/lead-bug-hunt`     |
-| Comprehensively refactor (tactical + architectural + tactical, autonomous)                  | `/lead-refactor`     |
 | Pressure-test a problem's framing before solving it                                         | `/think-reframe`     |
 | Brainstorm approaches to a goal                                                             | `/think-brainstorm`  |
 | Reason about why a phenomenon is happening                                                  | `/think-diagnose`    |
@@ -84,7 +82,7 @@ task:
 | Imagine how a plan could fail, or how a hypothetical catastrophe could hit a running system | `/think-premortem`   |
 | Scrutinize an idea or plan before committing to it                                          | `/think-scrutinize`  |
 | Reflect on a completed experience to update beliefs                                         | `/think-reflect`     |
-| Clean up code quality (DRY, dead code, naming)                                              | `/refactor`          |
+| Shrink a codebase: strip and redesign it with behavior pinned                               | `/refactor`          |
 | Rethink module boundaries and architecture                                                  | `/review-arch`       |
 | Price the requirements and propose behavior-for-simplicity trades                           | `/review-value`      |
 | Audit for dead code without removing it                                                     | `/review-dead`       |
@@ -118,13 +116,12 @@ One-line summaries grouped by namespace. Click through to each skill's detailed 
 
 - **`/lead-project`** — Autonomous tech lead. Runs an OODA loop over project state given a commander's intent, invoking lower-level skills until end-state is met or it pulls an andon cord. ([details](skills/lead-project/references/README.md))
 - **`/lead-bug-hunt`** — Loops `/bug-hunt` → `/implement-batch` until bugs converge below a stated severity floor; runs `/review-test` on the new reproducing tests at termination. ([details](skills/lead-bug-hunt/references/README.md))
-- **`/lead-refactor`** — Three-phase comprehensive refactoring: tactical `/refactor` → loop of `/review-arch` + `/implement-batch` until convergence → final tactical `/refactor`. ([details](skills/lead-refactor/references/README.md))
 - **`/lead-review`** — Runs every repo-scoped `/review-*` sub-skill autonomously with an operator-set toggle for whether sub-skill ticket proposals are written to the tracker (diff-scoped `/review-code` is excluded — an audit has no diff under review). ([details](skills/lead-review/references/README.md))
 
 ### `/implement-*` — Working-tree mutators
 
 - **`/implement-project`** — Full-lifecycle project execution. Implements batched tickets, runs the quality pipeline (refactor, review-arch, review-test, tidy-docs, review-release), produces a review-ready branch. ([details](skills/implement-project/SKILL.md))
-- **`/implement-batch`** — Plans execution order of a batch of tickets, implements each via `/implement` autonomously, runs cross-cutting `/refactor` and `/tidy-docs` passes. ([details](skills/implement-batch/SKILL.md))
+- **`/implement-batch`** — Plans execution order of a batch of tickets, implements each via `/implement` autonomously, runs a cross-cutting `/tidy-docs` pass. ([details](skills/implement-batch/SKILL.md))
 - **`/implement`** — Single-ticket development cycle: requirements → planning → implementation → QA → code review → documentation. Dispatches to language SMEs. ([details](skills/implement/SKILL.md))
 
 ### `/scope-*` — Planning
@@ -177,7 +174,7 @@ All `/think-*` skills produce feedback only — no code, no tickets, no artifact
 
 ### Standalone
 
-- **`/refactor`** — Tactical code-quality improvement (DRY, dead code, naming, complexity). Loops until no improvements remain. At the Maximum ceiling, finishes with a generative simplification stage: eligible modules are regenerated from their contracts by a blind rewriter under a code-line budget. For structural changes, use `/review-arch`. Mutates. ([details](skills/refactor/SKILL.md))
+- **`/refactor`** — Redesigns a codebase with reduction as the goal: question the requirements, delete the part, simplify what survives. One interactive requirements menu, then autonomous. Behavior is pinned by running the original implementation as a differential oracle at the user-visible boundary, not by the existing test suite; each pass strips what can be removed and regenerates the rest from a blind designer, and candidates are adopted by mechanical gates (behavior, correctness, structure). Works on an isolated `refactor/<slug>` branch; merging is your call. For an advisory structural blueprint, use `/review-arch`. Mutates (on its own branch). ([details](skills/refactor/references/README.md))
 - **`/pre-compact`** — Pre-compaction housekeeping: persist memory, audit git, clean trash, end with SBAR + resume prompt. Does not invoke `/compact`. ([details](skills/pre-compact/SKILL.md))
 - **`/release`** — Cuts a project release. Discovers the release procedure, invokes `/review-release` as preflight, plans every step with reversibility annotations, executes step-by-step, halts on first failure. No skip-preflight or force-release flag. ([details](skills/release/references/README.md))
 

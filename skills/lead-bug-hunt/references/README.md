@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `/lead-bug-hunt` skill drives a codebase toward "no bugs above a stated severity floor" without operator involvement between startup and termination. The operator states **scope, severity floor, constraints, and finisher preference** at startup; the skill then loops `/bug-hunt` → triage → `/implement-batch` until two consecutive hunt passes produce no findings above the floor, or until a hard cap or andon cord halts the run.
+The `/lead-bug-hunt` skill drives a codebase toward "no bugs above a stated severity floor" without operator involvement between startup and termination. The operator states **scope, severity floor, and constraints** at startup; the skill then loops `/bug-hunt` → triage → `/implement-batch` until two consecutive hunt passes produce no findings above the floor, or until a hard cap or andon cord halts the run.
 
 This skill is a narrower sibling of `/lead-project`. `/lead-project` takes open-ended commander's intent and decides which skills to invoke from a broad repertoire. `/lead-bug-hunt` has a fixed loop shape (hunt → fix → re-hunt) and a bounded sub-skill repertoire. It exists because "iterate until bugs converge" is a recurring workflow worth canonizing.
 
@@ -14,7 +14,6 @@ This skill is a member of the **orchestrator family** and implements the autonom
 - Mechanical triage against a stated severity floor — no rationalization
 - Convergence on a fixed-point (no findings above floor), not on a ticket list
 - `LEAD_BUG_HUNT_STATE.md` as persistent state across sessions
-- Optional `/refactor` finisher to clean up defensive code introduced by fixes
 - Always-on `/review-test` at termination — reproducing tests are durable regression artifacts and get the same quality care as fixes
 
 ## When to Use
@@ -50,9 +49,9 @@ This skill is a member of the **orchestrator family** and implements the autonom
 
 | Dimension                | `/lead-project`                                       | `/lead-bug-hunt`                                                 |
 |--------------------------|-------------------------------------------------------|------------------------------------------------------------------|
-| Input                    | Five-field commander's intent (broad)                 | Four-field commander's intent (narrow, bug-specific)             |
+| Input                    | Five-field commander's intent (broad)                 | Three-field commander's intent (narrow, bug-specific)            |
 | Loop shape               | OODA, open-ended action space                         | Fixed: hunt → triage → batch-fix → verify → repeat               |
-| Sub-skill repertoire     | All implement/refactor/review/think/bug skills        | `/bug-hunt`, `/implement-batch`, `/implement`, `/bug-fix`, `/think-diagnose`, `/refactor` (optional finisher), `/review-test` (termination, scoped to new tests) |
+| Sub-skill repertoire     | All implement/refactor/review/think/bug skills        | `/bug-hunt`, `/implement-batch`, `/implement`, `/bug-fix`, `/think-diagnose`, `/review-test` (termination, scoped to new tests) |
 | Termination              | Mechanical end-state conditions + quiescence          | 2 consecutive empty passes above severity floor                  |
 | Hard cap                 | 50 cycles                                             | 10 hunt-cycles                                                   |
 | Use when                 | Bug-hunting is one of several concerns                | Bug elimination is the sole objective                            |
@@ -71,7 +70,7 @@ This skill is a member of the **orchestrator family** and implements the autonom
  │  ────────────────────────────────────────    │
  │  0a. Branch and working-tree check           │
  │  0b. Resume existing run or start fresh      │
- │  0c. Elicit commander's intent (4 fields)    │
+ │  0c. Elicit commander's intent (3 fields)    │
  │  0d. Seed LEAD_BUG_HUNT_STATE.md             │
  └──────────────────────────────────────────────┘
                       │
@@ -101,18 +100,17 @@ This skill is a member of the **orchestrator family** and implements the autonom
  ┌──────────────────────────────────────────────┐
  │  2. TERMINATION                              │
  │  ────────────────────────────────────────    │
- │  2a. Optional /refactor finisher             │
- │  2b. /review-test on new reproducing tests   │
+ │  2a. /review-test on new reproducing tests   │
  │      - auto-approved, scoped to run's tests  │
  │      - fix above-floor findings              │
- │  2c. Final verification pass                 │
- │  2d. Completion report                       │
+ │  2b. Final verification pass                 │
+ │  2c. Completion report                       │
  └──────────────────────────────────────────────┘
 ```
 
 ## Commander's Intent
 
-Elicited interactively at startup, frozen for the duration of the run. Four fields:
+Elicited interactively at startup, frozen for the duration of the run. Three fields:
 
 ### Scope
 
@@ -142,17 +140,6 @@ Examples:
 - "Do not modify the public API of package `auth`."
 - "Do not touch generated code under `gen/`."
 - "Must remain Go 1.22 compatible."
-
-### Refactor finisher
-
-Aggression ceiling for the optional post-convergence `/refactor` pass.
-
-| Setting       | Effect                                                                                          |
-|---------------|-------------------------------------------------------------------------------------------------|
-| no finisher   | **Default.** Bug fixes ship as-is. Operator may run `/refactor` separately.                     |
-| Low           | Cleanup of obviously-redundant code introduced by fixes. Low diff.                              |
-| High          | Standard `/refactor` aggression. Moderate diff.                                                 |
-| Maximum       | Full `/refactor` Maximum — aggressive changes plus the generative simplification stage.         |
 
 ## The Hunt Cycle
 
@@ -215,12 +202,6 @@ Otherwise → return to 1a.
 
 ## Termination
 
-### Optional `/refactor` finisher
-
-If commander's intent specified a finisher aggression: invoke `/refactor` with the specified aggression ceiling, scoped to the bug-hunt scope. Verify tests still pass after. Record outcome.
-
-If "no finisher": skip.
-
 ### `/review-test` on new reproducing tests
 
 Always runs (not opt-in). The reproducing tests committed by `/bug-hunt` become permanent regression tests — their quality matters more than typical test code.
@@ -237,7 +218,7 @@ Always runs (not opt-in). The reproducing tests committed by `/bug-hunt` become 
 
 If the test-review finds nothing above the floor, the step is a near-no-op and the run proceeds to final verification.
 
-**Why always-on (not opt-in like the refactor finisher):** the reproducing tests are this skill's unique durable output. Bug fixes are valuable but transient; the tests stay forever and bias future test authors who read them as examples. Treating their quality as adjacent rather than core would be inconsistent.
+**Why always-on:** the reproducing tests are this skill's unique durable output. Bug fixes are valuable but transient; the tests stay forever and bias future test authors who read them as examples. Treating their quality as adjacent rather than core would be inconsistent.
 
 **Why no re-hunt after this step:** if test-review's fixes have changed behavior enough to introduce new bugs above the floor, the test suite catches it during verify. Otherwise we'd be susceptible to an infinite loop (re-hunt → find → fix → re-review → re-hunt …).
 
@@ -313,8 +294,7 @@ The bounded repertoire:
 | `/implement`       | 1d for single-ticket batches when `/implement-batch` would be ceremony.                            |
 | `/bug-fix`         | 1d when a finding's root cause is unclear and `/implement` from the ticket alone is cargo-culting. |
 | `/think-diagnose`  | Pre-fix in 1d when bug cause needs structured reasoning before `/bug-fix`.                         |
-| `/refactor`        | Termination 2a, if finisher was opted in.                                                          |
-| `/review-test`     | Termination 2b. Always runs, scoped to test files modified on this branch. Ticket proposals auto-approved; above-floor fixes routed through `/implement-batch`. |
+| `/review-test`     | Termination 2a. Always runs, scoped to test files modified on this branch. Ticket proposals auto-approved; above-floor fixes routed through `/implement-batch`. |
 
 Skills explicitly **not** in the repertoire (out-of-axis):
 - Other `/review-*` skills (`/review-arch`, `/review-security`, etc.) — broader review work is `/lead-project` territory.
@@ -342,12 +322,8 @@ Constraints — hard limits beyond breaking changes and main/master?
 > Don't touch pkg/legacy (slated for removal next quarter).
   Must remain Go 1.22 compatible.
 
-Refactor finisher — clean up after fixes?
-> High. The bug fixes tend to leave defensive code I'd rather
-  not ship.
-
 Read back:
-[four-field intent]
+[three-field intent]
 
 Confirm?
 > Yes
@@ -386,10 +362,6 @@ Triage: 0 above floor, 2 below (deferred)
 Decide: skip to convergence check
 Convergence: 1 → 2 → CONVERGED
 
-[Termination — /refactor finisher]
-/refactor with High aggression, scoped to production code ...
-  18 commits, 412 lines net change, tests pass
-
 [Termination — /review-test on new reproducing tests]
 Test files modified this run (via git diff): 6 files
 Invoking /review-test scoped to those files ...
@@ -418,12 +390,11 @@ Verify: tests pass, reproducing test still fails on the pre-fix
 
 ### Outcome
 Converged in 4 hunt-cycles. 6 bug-fix tickets fixed (2 Critical, 4 High).
-Moderate refactor finisher made 18 commits cleaning up defensive
-guards introduced during fixes. /review-test on the run's 6 new
-reproducing tests surfaced 1 above-floor quality issue (brittle
-assertion in test for #413), fixed via ticket #418. 8 findings below
-floor (6 from /bug-hunt, 2 from /review-test) deferred to the report
-— operator may run another iteration with a lower floor to address them.
+/review-test on the run's 6 new reproducing tests surfaced 1
+above-floor quality issue (brittle assertion in test for #413), fixed
+via ticket #418. 8 findings below floor (6 from /bug-hunt, 2 from
+/review-test) deferred to the report — operator may run another
+iteration with a lower floor to address them.
 
 ### Convergence evidence
 - Cycles run: 4 of 10
@@ -450,8 +421,8 @@ floor (6 from /bug-hunt, 2 from /review-test) deferred to the report
 ### Deferred findings (below severity floor)
 - [Low | cycle 1 | /bug-hunt] Unchecked error in logger.Flush
 - [Low | cycle 1 | /bug-hunt] Magic number in retry backoff (3000ms)
-- [Low | termination 2b | /review-test] Docstring missing on test for #412
-- [Low | termination 2b | /review-test] Redundant setup helper in test for #415
+- [Low | termination 2a | /review-test] Docstring missing on test for #412
+- [Low | termination 2a | /review-test] Redundant setup helper in test for #415
 - ...
 
 ### Constraint adherence
@@ -459,9 +430,8 @@ No commits to pkg/legacy. Go 1.22 compatibility preserved.
 
 ### Changes summary
 - Branch: lead-bug-hunt/2026-05-12 (SHA xyz)
-- Commits on branch: 43 (24 bug fixes + 18 refactor + 1 test quality)
+- Commits on branch: 25 (24 bug fixes + 1 test quality)
 - Tickets fixed: 7 (6 bugs + 1 test quality)
-- Finisher: moderate
 
 ### Run metadata
 - Hunt cycles: 4 of 10
@@ -481,7 +451,7 @@ No commits to pkg/legacy. Go 1.22 compatibility preserved.
 
 **Andon cords are not failures.** Hitting a contested finding or a breaking-change requirement is the skill doing its job — surfacing decisions that need operator judgment. The cost of asking is much smaller than the cost of a silently bad fix.
 
-**Pair with `/lead-refactor` separately if you want comprehensive cleanup.** The optional finisher is a tactical `/refactor`, not the architectural-review loop. For deep cleanup, run `/lead-refactor` after `/lead-bug-hunt` completes.
+**Run cleanup separately.** This skill ships bug fixes as-is and invokes no cleanup pass. If the fixes leave code you would rather not keep, run `/refactor` yourself after `/lead-bug-hunt` completes.
 
 ## Integration with Other Skills
 
@@ -493,7 +463,7 @@ No commits to pkg/legacy. Go 1.22 compatibility preserved.
 
 **`/lead-project`:** the broader sibling. Use `/lead-project` when bug-hunting is one of several concerns; use `/lead-bug-hunt` when bug elimination is the sole objective. `/lead-project` may invoke `/lead-bug-hunt` from its Decide phase.
 
-**`/refactor`:** the optional finisher. Not `/lead-refactor` — the architectural-review loop adds scope that isn't on this skill's axis.
+**`/refactor`:** not invoked. It is a standalone redesign skill the operator runs directly — it works on its own isolated branch and has an operator checkpoint, so orchestrators do not call it.
 
 ## Agent Coordination
 

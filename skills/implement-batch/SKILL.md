@@ -1,12 +1,12 @@
 ---
 name: implement-batch
-description: Multi-ticket batch workflow. Takes a batch of tickets, plans execution order, implements each via /implement in autonomous mode, runs cross-cutting quality passes, and presents results for final review.
+description: Multi-ticket batch workflow. Takes a batch of tickets, plans execution order, implements each via /implement in autonomous mode, runs a cross-cutting documentation pass, and presents results for final review.
 model: opus
 ---
 
 # Implement-Batch - Multi-Ticket Orchestration Workflow
 
-Orchestrates a batch of tickets as a cohesive unit. Creates a project branch, implements each ticket sequentially using the `/implement` workflow in autonomous mode, runs cross-cutting quality passes, and presents results for final human review.
+Orchestrates a batch of tickets as a cohesive unit. Creates a project branch, implements each ticket sequentially using the `/implement` workflow in autonomous mode, runs a cross-cutting documentation pass, and presents results for final human review.
 
 ## Philosophy
 
@@ -34,9 +34,7 @@ Orchestrates a batch of tickets as a cohesive unit. Creates a project branch, im
 │     ├─ 5c. Merge topic branch → project branch       │
 │     ├─ 5d. Post-merge verification gate              │
 │     └─ 5e. Delete topic branch                       │
-│  6. Cross-cutting quality passes                     │
-│     ├─ 6a. /refactor (SAFE aggression)               │
-│     └─ 6b. /tidy-docs                               │
+│  6. Cross-cutting documentation pass (/tidy-docs)    │
 │  7. Final review (present to user)                   │
 └──────────────────────────────────────────────────────┘
 ```
@@ -121,10 +119,10 @@ Follow the `/implement` workflow with these overrides for autonomous operation:
 | `/implement` Step                             | Autonomous Override                                                                                                                                                                                              |
 |---------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Step 1** (requirements)                   | Pre-loaded from ticket body. Do not prompt user for requirements. If the ticket lacks explicit acceptance criteria, derive them from the description. If the description is empty or incoherent, **andon cord**. |
-| **Step 2** (planning)                       | Follow normal conditional logic — invoke `swe-planner` for complex tasks, skip for simple ones.                                                                                                                  |
+| **Step 2** (design and planning)            | Step 2a (concept inventory) always runs. Step 2b follows normal conditional logic — invoke `swe-planner` for complex tasks, skip for simple ones.                                                                |
 | **Steps 3-4** (implementation + acceptance) | Follow normal logic. If acceptance verification fails 3 times, **andon cord** (do not escalate to user within `/implement` — escalate here at the batch level).                                                    |
 | **Step 5a** (security review)               | Follow normal logic. If critical/high findings cannot be resolved by the implementation agent, **andon cord**.                                                                                                   |
-| **Steps 5b-5c** (refactoring/perf review)   | Follow normal logic — these are advisory.                                                                                                                                                                        |
+| **Steps 5b-5c** (refactoring/perf review)   | Follow normal logic — advisory, except inventory departures from step 5b, which must be resolved in step 6.                                                                                                      |
 | **Step 6** (implement review feedback)      | Follow normal logic.                                                                                                                                                                                             |
 | **Step 7** (peer review)                    | Follow normal logic. Handle deep issues autonomously — trust agents. If peer review breaks tests, revert peer review changes per standard `/implement` logic.                                                      |
 | **Step 8** (coverage/quality verification)  | Follow normal logic. Handle autonomously — if tests pass, proceed. Do not prompt user for approval of minor issues.                                                                                              |
@@ -153,21 +151,9 @@ Follow the `/implement` workflow with these overrides for autonomous operation:
 - Delete the merged topic branch: `git branch -d feat/issue-<number>-<brief-slug>`
 - Update orchestrator state: mark ticket as done
 
-### 6. Cross-Cutting Quality Passes
+### 6. Cross-Cutting Documentation Pass
 
-After all tickets are implemented and merged into the project branch:
-
-#### 6a. Refactoring
-
-Run the `/refactor` workflow with these parameters:
-- **Aggression ceiling:** SAFE (conservative — only SAFEST and SAFE changes)
-- **Custom QA instructions:** None (standard test suite verification)
-- **Scope:** Entire codebase
-- The `/refactor` workflow handles its own iteration loop, commits, and QA verification
-
-#### 6b. Documentation Review
-
-Run the `/tidy-docs` workflow:
+After all tickets are implemented and merged into the project branch, run the `/tidy-docs` workflow:
 - Full documentation audit (not git-diff scoped)
 - Fixes committed separately
 
@@ -189,8 +175,7 @@ Present comprehensive summary to user:
 - Tests added/modified: N
 - Documentation files updated: N
 
-### Quality Passes
-- Refactoring: N improvements, net -N lines
+### Documentation Pass
 - Documentation: N updates
 
 ### Branch Status
@@ -232,12 +217,12 @@ The orchestrator maintains:
 **Relationship to `/implement`:**
 - `/implement-batch` is a higher-level orchestrator that runs `/implement` for each ticket
 - `/implement` handles the full development cycle for a single ticket
-- `/implement-batch` adds: batching, ordering, branching strategy, cross-cutting quality passes
+- `/implement-batch` adds: batching, ordering, branching strategy, a cross-cutting documentation pass
 
 **Relationship to `/scope`:**
 - `/scope` creates tickets; `/implement-batch` consumes them
 - Typical flow: `/scope` to plan and create tickets, then `/implement-batch` to implement the batch
 
-**Relationship to `/refactor`, `/tidy-docs`:**
-- These run as cross-cutting quality passes after all tickets are implemented
-- They catch issues that span multiple tickets or emerge from their interaction
+**Relationship to `/tidy-docs`:**
+- Runs as the cross-cutting documentation pass after all tickets are implemented
+- It catches issues that span multiple tickets or emerge from their interaction
