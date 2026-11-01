@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v11.0.0
 
 ### Removed
 
