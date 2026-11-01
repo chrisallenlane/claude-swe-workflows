@@ -20,7 +20,7 @@ This is `claude-swe-workflows`, a Claude Code plugin for software engineering wo
 │       └── references/
 │           └── README.md     # Human-readable guide for the skill
 ├── references/          # Cross-cutting reference and discipline docs
-│   ├── autonomy.md          # Discipline for the orchestrator namespaces
+│   ├── autonomy.md          # Discipline for skills that act on granted authority
 │   ├── think.md             # Design discipline for the /think-* namespace
 │   └── ...
 ├── CHANGELOG.md
@@ -39,7 +39,7 @@ claude --plugin-dir .
 ## Writing Skills and Agents
 
 **Skills** (in `skills/*/SKILL.md`):
-- YAML frontmatter: `name`, `description`, `model` (opus/sonnet/haiku - lowercase)
+- YAML frontmatter: `name`, `description`, `model` (opus/sonnet/haiku/fable - lowercase)
 - Invoked by user with `/skill-name`
 - Define workflows, processes, or specialized behaviors
 
@@ -48,7 +48,7 @@ claude --plugin-dir .
 - Spawned programmatically via `Task` tool with `subagent_type`
 - Operate autonomously within defined scope
 
-**Model names must be lowercase** (`opus`, `sonnet`, `haiku`) - capitalized names are not recognized.
+**Model names must be lowercase** (`opus`, `sonnet`, `haiku`, `fable`) - capitalized names are not recognized.
 
 **New `/think-*` skills must pass the five tests in [`references/think.md`](references/think.md).** When proposing or designing a new `/think-*` skill, read `references/think.md` first and check the proposal against the tests there. Skills outside the `/think-*` namespace are admitted by different criteria — primarily, whether they earn their keep in real software-engineering work — though the practitioner-methodology and structured-discipline values described in `references/think.md` apply across the plugin.
 
@@ -88,6 +88,10 @@ Supporting workflows available at any level:
 
 - `/bug-fix` — diagnosis-first bug fixing
 - `/bug-hunt` — proactive bug discovery (commander's intent with optional ticket/fix authority; iterates rounds until nothing is confirmed above a severity floor; advisory by default, fixes via `/implement` only when authorized)
+
+**Redesign:**
+
+- `/refactor` — simplification-first redesign (Musk's five steps; behavior pinned by a differential oracle against the incumbent; runs on its own `refactor/<slug>` branch with one checkpoint, the requirements menu; `/implement` runs it unattended with the menu answered from commander's intent)
 
 **Quality pipelines:**
 

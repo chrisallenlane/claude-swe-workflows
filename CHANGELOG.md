@@ -48,6 +48,12 @@
 
 - **`/review-health` can run the reviews it recommends.** Its preflight now asks for two grants alongside the lens: running follow-up reviews, and creating tickets at or above a severity floor. Both default to no, and without them the skill is the same cheap orientation pass. With follow-up authority, a new Phase 5 runs the specialist reviews the map calls for (`/review-dead`, `/review-arch`, `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release`), each scoped to where its findings point and ordered so earlier reviews inform later ones. A specialist that plausibly applied but wasn't run gets a one-line reason. Phase 5 then dedupes the findings across reviews and reconciles them with the map; tickets are created with ticket authority, or proposed as one consolidated set for approval without it. This replaces `/lead-review`'s fixed eight-phase pipeline: the map, not a list, decides which reviews are worth their cost. The skill still never changes code.
 
+- **`/review-health`'s follow-up runs `/review-value` only when intent asks.** Its output is a menu of product decisions the operator must rule on, so it is never run by default.
+
+- **`ux-reviewer` now serves `/scope`.** Its description and framing were retargeted from the removed `/scope-project`.
+
+- **`.gitignore` ignores `PROJECT_STATE.md` instead of `PROJECT_PROGRESS.md`,** matching `/implement`'s multi-ticket state file.
+
 - **BREAKING: `/review-requirements` renamed to `/review-value`.** One release after shipping — the cheapest moment a skill rename will ever have. The new name is truer to what the skill audits: value-for-cost, which exists in every codebase, where "requirements" faintly promised a document artifact most projects don't have (the skill's provenance-tier discovery exists precisely because requirements must be excavated, not read). It also aligns with the value-engineering discipline the skill explicitly practices and with its backing `swe-value-engineer` agent. The discoverability cost of the more opaque name is carried by the README capability table and skill description. Per the "skills are user-facing" contract, the rename is a breaking change and gates the next release to a MAJOR bump. Historical changelog entries below retain the original name.
 
 ## v10.5.0
