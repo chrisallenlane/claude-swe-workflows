@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- **`/review-health` locates technical debt by the interest it charges.** A snapshot shows cruft, not debt: ugly code nobody changes costs nothing. The Observe phase gains change-cost signals — per-file complexity (`scc`, `lizard`, or line count) crossed with 12-month change frequency into a ranked hotspot list, change-coupled file pairs with or without a static dependency between them, fix density in hotspots, and a history-adequacy check. A new Orient step reads them as a quadrant (debt being paid / dormant cruft / active / settled): hotspots are called debt only when fix density or cross-cutting findings corroborate them, hidden coupling routes to `/review-arch`, and confirmed hotspots become scoped `/refactor` recommendations. `/refactor` and `/implement` are recommended, never run, so the skill still never changes code. Drawn from Tornhill's behavioral code analysis.
+
 ## v11.0.0
 
 ### Removed

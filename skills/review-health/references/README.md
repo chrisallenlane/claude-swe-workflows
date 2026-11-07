@@ -16,6 +16,8 @@ Use it when you want to step back and assess a repo *strategically*, and optiona
 
 **Coverage Manifest as first-class output.** Tools that couldn't run, signals that couldn't be computed, and dimensions that couldn't be assessed are explicitly named with the reasons they couldn't be resolved. Named unknowns beat silent unknowns.
 
+**Debt located by its interest, not its look.** Technical debt can't be read off a snapshot: ugly code that nobody changes costs nothing. The Observe phase crosses per-file complexity with change frequency from git history to find *hotspots* — complex code that keeps changing, where every change pays interest — and finds *change coupling*: files that keep changing together with no static dependency between them, a hidden contract. Orient reads them as a quadrant: debt being paid (engage), dormant cruft (usually leave alone), active healthy code, settled code. Confirmed hotspots become scoped `/refactor` recommendations; hidden coupling routes to `/review-arch`. On thin or squash-merged history the signals are weak, and the Coverage Manifest says so.
+
 **Lens-aware output.** The skill elicits your context at invocation (inheriting a work repo / evaluating FOSS / revisiting your own / onboarding a teammate / other) and shapes the Decide-phase options accordingly.
 
 **The map decides the depth.** There is no fixed sequence of specialist reviews. With follow-up authority, the skill runs a specialist because the map gives it something to look at, scoped to the region the findings point at — and gives a one-line reason for every specialist that plausibly applied but did not run.
@@ -47,9 +49,11 @@ Granting tickets *is* the approval to create them. Without the grant, nothing is
 │  Phase 0 — Preflight                                         │
 │    • Lens, scope, and the two grants                         │
 │  Phase 1 — OBSERVE (no interpretation)                       │
-│    • Repo, git history, tooling, docs; Coverage Manifest     │
+│    • Repo, git history, change cost, tooling, docs; Coverage │
+│      Manifest                                                │
 │  Phase 2 — ORIENT                                            │
-│    • Reference class; rubric per dimension; severity tiers   │
+│    • Reference class; rubric per dimension; severity tiers;  │
+│      where the debt interest is paid                         │
 │  Phase 3 — DECIDE                                            │
 │    • 2-4 strategic options for your lens                     │
 │  Phase 4 — ACT                                               │
@@ -76,6 +80,7 @@ Granting tickets *is* the approval to create them. Without the grant, nothing is
 
 | Skill                        | Why                                                                   |
 |------------------------------|-----------------------------------------------------------------------|
+| `/refactor`, `/implement`    | They change code; recommended in Phase 4, never run                   |
 | `/review-code`               | It reviews a diff; a repository review has none                       |
 | `/review-value`              | Only if your intent asks for it — its trade menu is product decisions |
 | `/review-namespace` (search) | Search mode needs operator calibration                                |
@@ -106,6 +111,7 @@ Granting tickets *is* the approval to create them. Without the grant, nothing is
 - Revisiting your own project to decide where to invest effort
 - Generating an onboarding map for a new teammate
 - A comprehensive review that produces a backlog — grant follow-up and ticket authority
+- Finding where technical debt is costing you — and where to aim `/refactor`
 - Any "where am I, where should I start, what should I avoid" question
 
 **Don't use `/review-health` for:**
@@ -123,7 +129,7 @@ The skill presents its report inline as structured markdown, in this order:
 
 1. **Context** — your lens, scope, grants, and the repo's reference class (with evidence and override instructions)
 2. **Observation Record** — factual signals grouped by category, ID-referenced (`O1`, `O2`, ...)
-3. **Findings (Orient)** — per-dimension rubric placement (Foundational / Adequate / Strong) with cited evidence; severity-tiered individual findings within each dimension; cross-cutting synthesis
+3. **Findings (Orient)** — per-dimension rubric placement (Foundational / Adequate / Strong) with cited evidence; severity-tiered individual findings within each dimension; cross-cutting synthesis; where the debt interest is paid (hotspots, hidden coupling, dormant cruft)
 4. **Coverage Manifest** — what couldn't be assessed, with reasons
 5. **Strategic Options (Decide)** — lens-specific engagement options, each citing Orient findings
 6. **Next Steps (Act)** — top 3-5 prioritized recommendations, including sibling-skill invocations with scoped arguments
@@ -218,6 +224,7 @@ The skill draws on practitioner traditions that have solved "rapid assessment of
 - **Medical differential diagnosis** — enumerate candidates with evidence for/against before committing
 - **Home inspection (ASHI)** — severity-tiered findings with mandatory evidence
 - **Marine surveying** — reference-class calibration ("good for a 30-year cargo ship" ≠ "good for a 2-year yacht")
+- **Behavioral code analysis** (Tornhill, *Your Code as a Crime Scene*) — change history prices complexity: hotspots and change coupling
 - **Technical due diligence (M&A)** — decision-oriented report structure; known-risks and known-unknowns both surfaced
 - **Intelligence situational-awareness briefings** — BLUF + confidence-calibrated assessments + collection gaps
 

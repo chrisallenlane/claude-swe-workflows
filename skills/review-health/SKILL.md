@@ -1,6 +1,6 @@
 ---
 name: review-health
-description: Holistic review of a repository. Produces an evidence-cited map (not a grade) calibrated to a reference class, helping the user decide where to engage, where to tread carefully, and where to leave alone. Given authority in its commander's intent, follows up by running the specialist reviews the map calls for (/review-arch, /review-dead, /review-security, /review-perf, /review-a11y, /review-test, /review-release), consolidates their findings, and creates tickets. Never changes code.
+description: Holistic review of a repository. Produces an evidence-cited map (not a grade) calibrated to a reference class, helping the user decide where to engage, where to tread carefully, and where to leave alone — including where technical debt is actually costing them, located by crossing complexity with change history (hotspots, hidden change coupling). Given authority in its commander's intent, follows up by running the specialist reviews the map calls for (/review-arch, /review-dead, /review-security, /review-perf, /review-a11y, /review-test, /review-release), consolidates their findings, and creates tickets. Never changes code.
 model: opus
 ---
 
@@ -32,7 +32,7 @@ New-repo orientation has a small set of predictable cognitive failures. The skil
 - **Expert deference** — accepting prior-author choices without questioning. *Countermeasure: differential-diagnosis classification forces candidate alternatives to be considered with evidence for and against each.*
 - **Free-floating adjectives** — "health: good" with no reference point. *Countermeasure: reference-class calibration with cited per-class rubrics.*
 
-The practitioner traditions this skill draws from — OODA (Boyd), medical differential diagnosis, home inspection (ASHI severity tiers), marine surveying (reference-class calibration), technical due diligence (M&A), intelligence situational-awareness briefings — are all codifications of these countermeasures in domains that have had to solve "rapid assessment of unfamiliar systems under uncertainty" at higher stakes than software review.
+The practitioner traditions this skill draws from — OODA (Boyd), medical differential diagnosis, home inspection (ASHI severity tiers), marine surveying (reference-class calibration), technical due diligence (M&A), behavioral code analysis (Tornhill — change history as the price of complexity), intelligence situational-awareness briefings — are all codifications of these countermeasures in domains that have had to solve "rapid assessment of unfamiliar systems under uncertainty" at higher stakes than software review.
 
 ## Workflow Overview
 
@@ -47,6 +47,7 @@ The practitioner traditions this skill draws from — OODA (Boyd), medical diffe
 │  Phase 1 — OBSERVE (no interpretation allowed)                 │
 │    • Repo enumeration (size, structure, entry points)          │
 │    • Git-history signals (cadence, churn, bus factor)          │
+│    • Change-cost signals (hotspots, change coupling)           │
 │    • Tooling signals (lint, coverage, CI, deps, secrets)       │
 │    • Documentation signals (README, inline, architectural)     │
 │    • Coverage Manifest: what couldn't be collected and why     │
@@ -121,6 +122,14 @@ Collect signals. **Interpretation is not allowed in this phase.** Output languag
 - Churn concentration: files with highest commit count (`git log --name-only --pretty=format: | sort | uniq -c | sort -rn | head -20`)
 - Bus factor proxy: files with single-author commit history in core modules
 
+**Change-cost signals** (where technical debt charges interest — see Step 2f):
+- Per-file complexity: `scc --by-file -f json` (its `Complexity` field counts branch and loop tokens — a cheap cyclomatic proxy), or `lizard` for per-function CCN; fall back to code-line count. Record which measure was used.
+- Change frequency: commits touching each file in the last 12 months (`git log --since="12 months ago" --no-merges --name-only --pretty=format: | sort | uniq -c`). Exclude generated files, lockfiles, vendored code, CHANGELOGs, and commits touching more than ~25 files (formatting sweeps, renames, bulk imports) — they record mechanical touches, not change cost.
+- Hotspots: the top ~10 files by complexity × change frequency, each with both factors recorded.
+- Change coupling: file pairs that changed together in at least ~5 commits and in at least half of either file's commits over the same window, same exclusions. For each pair, record whether a static dependency (import, include, call) links them.
+- Fix density in hotspots: share of each hotspot's commits whose messages read as fixes (`fix`, `bug`, `revert`, `regression`, `hotfix`).
+- History adequacy: if the window holds fewer than ~50 commits, or history is dominated by squash merges or bulk commits, record it — the signals are weak, and the Coverage Manifest says so.
+
 **Tooling signals (best-effort; record absences):**
 - Test framework: detect via manifests and directory presence (`tests/`, `*_test.go`, `spec/`)
 - Test-to-code LOC ratio
@@ -192,7 +201,25 @@ Look across dimensions and modules for patterns no single dimension would reveal
 
 Cross-cutting findings are often the highest-leverage observations in the whole review. They're the ones per-dimension or per-language reviewers miss structurally.
 
-**Step 2f: Coverage Manifest.**
+**Step 2f: Locate the interest.**
+
+Technical debt is not visible in a snapshot. Cunningham's metaphor is about *interest* — the extra cost of every change made to code whose design no longer fits — and interest accrues only where change happens. What a snapshot shows is *cruft* (Fowler's term); change history prices it. This is Tornhill's behavioral code analysis. Read the change-cost signals as a quadrant:
+
+| Complexity | Change frequency | Reading                                                                                     |
+|------------|------------------|---------------------------------------------------------------------------------------------|
+| High       | High             | **Debt being paid** — every change costs interest. Engage here first                        |
+| High       | Low              | **Dormant cruft** — ugly but stable; costs nothing until touched. Usually leave it alone    |
+| Low        | High             | Active code — usually healthy; act only if Step 2e flagged it                               |
+| Low        | Low              | Settled. Ignore                                                                             |
+
+- **Corroborate before calling it debt.** Churn has innocent causes — a feature under active development, a config table, a registry every feature touches. A hotspot is debt when its fix density is high or Step 2e found divergence in it. A hotspot without corroboration is reported as a hotspot, not as debt.
+- **Hidden coupling.** A change-coupled pair with no static dependency is a hidden contract: change one, you must remember the other. These are architecture-hygiene findings and the strongest `/review-arch` routing signal this skill produces.
+- **Dormant cruft is a finding too.** "This module is ugly; leave it alone" is a strategic call the user can act on — it stops effort from going where it pays nothing back.
+- **Weak history means named uncertainty.** Where the History adequacy signal flagged weak history, say so here and in the Coverage Manifest, and don't rank hotspots on it.
+
+Interest-weighted findings feed Phase 4's `/refactor` routing: its runs are expensive, and aiming one at a confirmed hotspot instead of dormant cruft is where the payoff is.
+
+**Step 2g: Coverage Manifest.**
 
 Carry forward the Phase 1 Coverage Manifest entries, and add any new ones surfaced during interpretation. Name what the skill couldn't assess. This section is not a caveat; it is first-class output.
 
@@ -247,6 +274,9 @@ Produce a concrete next-step queue: top 3-5 recommendations, prioritized by seve
 > Dependency audit surfaced high-severity CVEs:
 > Run `/review-security` with focus on direct and transitive dependencies.
 
+> Confirmed hotspot `src/engine/scheduler.go` (top complexity × churn, 40% fix commits):
+> Run `/refactor src/engine/` — it redesigns on its own branch; merging is your call.
+
 Route to a sibling skill *only* when the sibling does exactly what needs to be done at the depth warranted. If the finding needs shallow follow-up, recommend the action directly rather than routing.
 
 ### Phase 5 — FOLLOW UP (only with authority)
@@ -257,7 +287,7 @@ Route to a sibling skill *only* when the sibling does exactly what needs to be d
 
 - **Candidates:** `/review-dead`, `/review-arch`, `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release`.
 - **Order** so that earlier reviews inform later ones — dead code before architecture, so `/review-arch` isn't analyzing code that should be deleted; release readiness last.
-- **Never run here:** `/review-code` (it reviews a diff, and a repository review has none); `/review-value` unless intent asks for it (its trade menu is product decisions); `/review-namespace` in search mode (it needs the operator).
+- **Never run here:** `/refactor` and `/implement` (they change code; recommend them in Phase 4 instead); `/review-code` (it reviews a diff, and a repository review has none); `/review-value` unless intent asks for it (its trade menu is product decisions); `/review-namespace` in search mode (it needs the operator).
 
 **Ticket proposals from the specialists.** Each specialist ends by proposing tickets. With ticket authority, approve those at or above the floor and decline the rest, recording them for the report, per [`references/advisory-tickets.md`](../../references/advisory-tickets.md). Without it, decline them all within the run, and propose one consolidated ticket set at the end — every finding, ordered by severity, for the user to trim — created only on approval.
 
@@ -293,6 +323,8 @@ Do not routinely spawn per-language SMEs. That is the prior failure mode this re
  | Finding type                               | Sibling skill      | When to route                                                          |
  |--------------------------------------------|--------------------|------------------------------------------------------------------------|
  | Architectural coupling / module boundaries | `/review-arch`     | Architecture hygiene at Foundational + cross-cutting coupling findings |
+ | Hidden change coupling                     | `/review-arch`     | Change-coupled pairs with no static dependency (Step 2f)               |
+ | Confirmed hotspots (debt being paid)       | `/refactor`        | Recommend only, scoped to the hotspot's module; never run here         |
  | Dead or unreachable code                   | `/review-dead`     | Dead-code signals in Observe, or before any architectural review       |
  | Test coverage or test quality gaps         | `/review-test`     | Test health at Foundational, or specific coverage gaps                 |
  | Security findings (CVEs, secrets, auth)    | `/review-security` | Safety-tier findings involving security                                |
@@ -311,7 +343,7 @@ Route with a scoped argument when possible: `/review-arch services/billing/` is 
 
 1. **Context** — lens, scope, classification (with evidence and override instruction)
 2. **Observation Record** — the factual Phase 1 signals, grouped by category, ID-referenced
-3. **Findings (Orient)** — per-dimension rubric placement with cited evidence; severity-tiered findings within; cross-cutting synthesis
+3. **Findings (Orient)** — per-dimension rubric placement with cited evidence; severity-tiered findings within; cross-cutting synthesis; where the interest is paid (hotspots, hidden coupling, dormant cruft)
 4. **Coverage Manifest** — what couldn't be assessed, with reasons
 5. **Strategic Options (Decide)** — lens-specific options with supporting findings
 6. **Next Steps (Act)** — top 3-5 recommendations; sibling-skill routing with scoped arguments
