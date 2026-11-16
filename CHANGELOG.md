@@ -4,7 +4,7 @@
 
 ### Removed
 
-- **BREAKING: `/review-health` is renamed `/review-repo` and absorbs `/review-arch`, `/review-dead`, `/review-value`, and `/review-namespace` as focuses. `/review-code` is removed.** Six whole-codebase review commands become one. Most of the folded skills were thin wrappers around one agent, and in practice their methods reached users through the agents: `/scope` dispatches the value engineer, and the map's follow-up runs the dead-code and architecture reviewers. All of that method lives in the agents, and the agents are unchanged.
+- **BREAKING: `/review-health` is renamed `/review-repo` and absorbs `/review-arch`, `/review-dead`, `/review-value`, and `/review-namespace` as focuses. `/review-code` is removed.** Six whole-codebase review commands become one. Most of the folded skills were thin wrappers around one agent, and in practice their methods reached users through the agents: `/scope` dispatches the value engineer, and the map's follow-up runs the dead-code and architecture reviewers. All of that method lives in the agents, which the consolidation keeps whole; their later contract fixes are listed under Fixed.
   - **Migration:**
 
     | Before                       | After                                                                                                                                                    |
@@ -17,7 +17,7 @@
     | `/review-code [range]`       | Removed. `/implement` and `/bug-fix` still run `swe-correctness-reviewer` as a blocking gate; for other diffs, use Claude Code's built-in `/code-review` |
 
   - **What each focus keeps.**
-    - `architecture` presents the blueprint in three parts: noun analysis, proposed changes, and the modules left alone.
+    - `architecture` presents the blueprint in four parts: noun analysis, proposed changes, the modules left alone, and behavior-altering changes flagged for approval.
     - `dead-code` presents its calibration first and sends uncertain findings to verification tickets, never removal tickets.
     - `value` never advocates, never lets an orchestrator rule on a flagged trade, and makes amending the requirement's record the first acceptance criterion of every approved trade.
     - `namespace` keeps its whole instrument, Laws of the Instrument included, and search mode still runs only on explicit opt-in.
@@ -27,7 +27,7 @@
 - **BREAKING: `/think-reframe` and `/think-ach` become phases of the skills they always fed.** Under `references/think.md`'s "skill versus phase" test, neither earned its own command: reframing only ever ran upstream of brainstorming, and ACH only ever narrowed diagnose's candidates.
   - **`/think-reframe` is now `/think-brainstorm`'s framing check.** It runs when assumption validation leaves the framing itself in doubt, when the problem is stuck or the debate won't converge, or when you ask "is this even the right problem?". It spawns the same isolated `thk-reframer` agents with the same eight lenses, classifies each reframing (shifts / refines / holds), and you choose the framing to brainstorm. `/scope` can also spawn reframers while it is still understanding a contested problem, before it explores the code.
   - **`/think-ach` is now `/think-diagnose`'s narrowing step.** It runs when 3 or more candidates survive at moderate fit or better, or are tied, and evidence can discriminate among them. It keeps Heuer's procedure intact: null and deceptive hypotheses added, isolated `thk-ach-evidence-gatherer` agents per evidence class, the C / I / N/A matrix with independent cells, diagnosticity, ranking by **least** disconfirmation (non-negotiable), sensitivity analysis, and falsification milestones.
-  - **`thk-ach-hypothesizer` is removed.** Diagnose's own diagnosticians generate the candidates, and the two angles they rarely produce (null and deceptive) are now required additions in the narrowing step.
+  - **`thk-ach-hypothesizer` is removed.** Diagnose's own diagnosticians generate the candidates, and the two angles they rarely produce (null and deceptive) are added in the narrowing step: null unless something demonstrably needs explaining, deceptive when trust, security, or manipulable signals are involved.
   - **Lost:** standalone ACH for non-causal questions (forecasting, attribution among actors). To approximate it, frame the competing explanations as candidates for `/think-diagnose`.
 
 ### Fixed
@@ -69,7 +69,7 @@
     - `/bug-fix` passes the diagnostician's related failure modes to QA as acceptance criteria;
     - the namespace focus asks readers for the confidence its severity rules depend on.
 - **Trimmed.**
-  - `/review-security` went from 701 lines to 435, `/review-test` from 643 to 433, and `/bug-fix` from 412 to 317.
+  - `/review-security` went from 701 lines to 435, `/review-test` from 643 to 433, and `/bug-fix` from 412 to 315.
   - The example sessions in `/test-mutation` and `/release` that repeated their steps are cut.
   - The `/think-premortem` README went from 618 lines to 387.
   - Every SKILL.md is now within the house 500-line limit.
@@ -104,7 +104,7 @@
 
 - **The ten `swe-sme-*` agents are replaced by a single `swe-implementer`.** The SMEs (Ansible, CSS, Docker, Go, GraphQL, HTML, JavaScript, Makefile, TypeScript, Zig) mostly restated best practice the model already knows. Some taught stale APIs: Zig's pre-0.15 build API, golangci-lint v1 config, Apollo v2/v3 imports, and long-outdated Docker base-image tags. The Makefile agent contained technical errors. The Go and Zig agents imposed one maintainer's conventions on every project they touched, such as always vendoring, docopt, and adding a Makefile when none existed. Delegating to them also moved implementation from the caller's model down to Sonnet. The new agent is language-agnostic and targets the ways implementation agents actually fail. It grounds APIs in the installed toolchain version, reading the module cache, `node_modules` types, or std-library source rather than recalling them. It follows the project's conventions and adds no tooling unasked. It builds only the concepts its brief calls for. It reports nothing as done that it has not run. Its modes cover every former SME use: implement, reproduce a bug, kill mutants, peer review, and cold-read tickets. `/implement`, `/bug-fix`, `/test-mutation`, and `/scope` dispatch it in place of the per-language table, and `references/swe-sme-pattern.md` is removed. Agent names are internal, so this is not a breaking change.
 
-- **`/review-health` locates technical debt by the interest it charges.** A snapshot shows cruft, not debt: ugly code nobody changes costs nothing. The Observe phase gains change-cost signals — per-file complexity (`scc`, `lizard`, or line count) crossed with 12-month change frequency into a ranked hotspot list, change-coupled file pairs with or without a static dependency between them, fix density in hotspots, and a history-adequacy check. A new Orient step reads them as a quadrant (debt being paid / dormant cruft / active / settled): hotspots are called debt only when fix density or cross-cutting findings corroborate them, hidden coupling routes to `/review-arch`, and confirmed hotspots become scoped `/refactor` recommendations. `/refactor` and `/implement` are recommended, never run, so the skill still never changes code. Drawn from Tornhill's behavioral code analysis.
+- **`/review-repo`'s map (formerly `/review-health`) locates technical debt by the interest it charges.** A snapshot shows cruft, not debt: ugly code nobody changes costs nothing. The Observe phase gains change-cost signals — per-file complexity (`scc`, `lizard`, or line count) crossed with 12-month change frequency into a ranked hotspot list, change-coupled file pairs with or without a static dependency between them, fix density in hotspots, and a history-adequacy check. A new Orient step reads them as a quadrant (debt being paid / dormant cruft / active / settled): hotspots are called debt only when fix density or cross-cutting findings corroborate them, hidden coupling routes to the `architecture` focus, and confirmed hotspots become scoped `/refactor` recommendations. `/refactor` and `/implement` are recommended, never run, so the skill still never changes code. Drawn from Tornhill's behavioral code analysis.
 
 ## v11.0.0
 

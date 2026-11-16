@@ -212,7 +212,7 @@ before cutover.
 | Skill               | Relationship                                                                                  |
 | ------------------- | --------------------------------------------------------------------------------------------- |
 | `/think-deliberate` | Chooses between N options; `/think-scrutinize` stress-tests 1 idea. Same adversarial pattern. |
-| `/scope`            | If the idea should proceed, translates it into a ticket                                       |
+| `/scope`            | If the idea should proceed, translates it into tickets                                        |
 | `/bug-hunt`         | Points at existing code; `/think-scrutinize` points at ideas                                  |
 | `/review-security`  | Points at existing code; `/think-scrutinize` points at ideas                                  |
 

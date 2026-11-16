@@ -24,11 +24,11 @@ The skill is **advisory only** as of v8.0.0: it produces findings and proposes t
 - When you need to understand both what's exploitable and why the defenses failed
 
 **Don't use `/review-security` for:**
-- Routine development (the blue-teamer runs automatically during `/implement` and `/bug-fix`)
+- Routine development (`/implement` and `/bug-fix` run the blue-teamer on their diffs when security-sensitive code changed)
 - Quick security sanity checks (spawn `sec-blue-teamer` directly)
 - Runtime security testing (this is static source analysis only)
 
-**Rule of thumb:** If you'd hire a pentester for this, `/review-security` is the right tool. If you just want a security review of your latest changes, `/implement` and `/bug-fix` already include one.
+**Rule of thumb:** If you'd hire a pentester for this, `/review-security` is the right tool. If you just want a security review of your latest changes, `/implement` and `/bug-fix` run one when the change touches security-sensitive code.
 
 ## Why NGT Isolation
 
@@ -98,7 +98,7 @@ The unified target list is capped (typically at 25). The orchestrator triages by
 
 Each prioritized target gets a dedicated `sec-red-teamer` agent with a full context window focused on that single attack vector. Agents run sequentially so findings accumulate for chain analysis.
 
-**Blue-team context is passed selectively.** Focused red-teamers receive relevant blue-team observations only for targets whose origin includes blue-team data (convergent and blue-flagged-unverified categories). Targets discovered solely by the red team (anchoring-suppressed) get no blue-team context — the discipline of independent perspective continues into the deep-investigation phase for these targets.
+**Blue-team context is passed selectively.** Focused red-teamers receive relevant blue-team observations only for targets whose origin includes blue-team data (convergent, blue-flagged-unverified, and blue-origin divergent targets). Targets discovered solely by the red team (anchoring-suppressed, and red-only divergent targets) get no blue-team context — the discipline of independent perspective continues into the deep-investigation phase for these targets.
 
 ### 5. Chain Analysis
 

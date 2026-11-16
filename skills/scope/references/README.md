@@ -144,7 +144,8 @@ You: /scope — add API tokens so scripts can call the server
 5. Review:
    - ux-reviewer: the CLI shows the token once, at creation, with
      no way to tell tokens apart later — add a user-chosen label.
-     Approved: `token create --label`, token shown once. Locked.
+     Approved: `token create --label`, token shown once, and a
+     token prefix in `token list`. Locked.
    - sec-blue-teamer (spec-time): tokens must be stored hashed;
      constant-time comparison; scope checked on every request.
      Locked.

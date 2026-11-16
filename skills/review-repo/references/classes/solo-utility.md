@@ -9,7 +9,7 @@ A CLI tool, internal utility, automation script, or single-purpose helper mainta
 - No published package on a public registry, or published but low-visibility
 - README audience addresses the author ("TODO list") or a small group, not strangers
 - Few or no external issues/PRs from outside the core committers
-- User's invocation lens is `revisiting own repo`, `onboarding teammate`, `inheriting internal project`
+- User's review context is `revisiting own repo`, `onboarding teammate`, `inheriting internal project`
 
 ## Counter-Signals (If Observed, Consider Another Class)
 

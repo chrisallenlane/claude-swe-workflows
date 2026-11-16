@@ -9,7 +9,7 @@ A library, SDK, or package published to a public registry (npm, PyPI, crates.io,
 - `CHANGELOG.md` or release notes present
 - External issues or PRs in history (inbound contributions from outside the core committers)
 - Documentation is written for strangers ("Installation," "Getting Started," "API Reference")
-- User's invocation lens is `evaluating foss` or `maintaining shared library`
+- User's review context is `evaluating foss` or `maintaining shared library`
 
 ## Counter-Signals (If Observed, Consider Another Class)
 

@@ -10,7 +10,7 @@ A team-maintained backend service, web application, API server, or long-running 
 - Environment separation: `config/production.yml`, `.env.example`, `environments/`, or equivalent
 - Database migration infrastructure in commit history
 - On-call rotation artifacts: runbooks, `RUNBOOK.md`, incident-response docs, alerting configs
-- User's invocation lens is `inheriting work project`, `onboarding teammate`, `evaluating for acquisition`
+- User's review context is `inheriting work project`, `onboarding teammate`, `evaluating for acquisition`
 
 ## Counter-Signals (If Observed, Consider Another Class)
 

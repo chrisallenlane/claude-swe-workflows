@@ -22,7 +22,7 @@ The skill lives in the `/tidy-*` namespace because the find→fix seam is small 
 - When you suspect docs have drifted from the code
 
 **Don't use `/tidy-docs` for:**
-- Updating docs for a specific change (the `/implement` and `/bug-fix` workflows do this as part of their flow)
+- Updating docs for a specific change (`/bug-fix` does this as part of its flow, and `/implement` does when the work calls for it)
 - Writing new documentation from scratch (just ask directly)
 
 ## Workflow
@@ -77,4 +77,4 @@ Committed: "docs: tidy project documentation"
 
 2. **Run before releases.** Stale docs in a release are embarrassing. A quick `/tidy-docs` pass catches drift. Pair with `/review-repo` (with follow-up authority) for a full pre-release sweep across every review dimension — it never changes files, so run `/tidy-docs` separately.
 
-3. **Different from `/implement`'s documentation pass.** When `/implement` runs `doc-maintainer`, it is scoped to the git diff. `/tidy-docs` audits everything regardless of recent changes.
+3. **Different from `/implement`'s documentation pass.** When `/implement` or `/bug-fix` runs `doc-maintainer`, it is in targeted mode, scoped to what changed. `/tidy-docs` runs full-audit mode and checks everything regardless of recent changes.

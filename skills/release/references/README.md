@@ -249,6 +249,6 @@ See [SKILL.md](../SKILL.md) for the plan block the operator confirms (step 8) an
 
 **`gh` command not available.** GitHub release creation step is dropped from the plan with a note. The user can create the release manually via the web UI.
 
-**Working tree was clean at step 1 but is now dirty at execution time.** This is unusual (the user would have had to make changes during the planning phase). The skill detects this on step 1 of execution and halts — the plan was built against a different tree state.
+**Working tree was clean at step 1 but is now dirty at execution time.** This is unusual (the user would have had to make changes during the planning phase). The skill re-checks before the first execution step and halts — the plan was built against a different tree state.
 
 **`/review-release` reports BLOCKERs.** The skill aborts with the suggestion to address them and re-run. No force-through option exists.

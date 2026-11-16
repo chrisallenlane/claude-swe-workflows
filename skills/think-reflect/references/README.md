@@ -338,10 +338,10 @@ reduction 35% post-launch; error rate unchanged.
 - **Choose event-sourcing** — **Good decision.** Correct given what was
   knowable; architectural match to the problem was sound. Outcome was
   better-than-even despite team learning overhead.
-- **Set latency target at 20%** — **Fortunate decision.** Target was
-  conservative but defensible; actual outcome exceeded it. Would look
-  overly conservative in hindsight but was appropriate given information
-  at the time.
+- **Set latency target at 20%** — **Good decision.** Target was
+  conservative but defensible; actual outcome exceeded it. Looks overly
+  conservative in hindsight but was appropriate given information at the
+  time — a sound call, so not merely fortunate.
 - **Cut 2 features mid-project** — **Good decision.** Correct given the
   design ambiguity at the point of cutting.
 - **Not tracking team energy / morale** — **Bad decision** (implicit rather

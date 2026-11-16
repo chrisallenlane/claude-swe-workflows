@@ -67,7 +67,7 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
 /review-repo [focus] (commander's intent: context, scope, follow-up and ticket authority)
 ├── no focus: map (observe → orient → decide → act) → (with authority) the deeper
 │   reviews the map calls for, consolidated → tickets created (with authority) or proposed
-└── focus: architecture | dead-code | value → one deep review → ticket proposal
+└── focus: architecture | dead-code | value | namespace → one deep review → ticket proposal
 ```
 
 Planning feeds implementation: `/scope` → `/implement`. `/implement` takes one ticket, a batch, or an open-ended goal, and decides by judgment which of the below skills to invoke and when, over a small fixed floor (concept inventory, practical verification, tests green, an independent correctness review, no irreversible actions).
@@ -95,6 +95,10 @@ Supporting workflows available at any level:
 **Quality pipelines:**
 
 - `/test-mutation` — mutation testing
+- `/review-test` — five-phase test-suite survey (unit, integration, E2E for webapps, fuzz, test quality; advisory)
+- `/review-perf` — performance review (compute and/or web reviewers by project type; advisory)
+- `/review-a11y` — WCAG 2.2 Level AA accessibility audit (advisory)
+- `/review-security` — white-box security audit (isolated blue/red first pass, synthesized target list, focused red-teamers, iterates on exploit chains; advisory)
 - `/review-repo` — the entry point for whole-codebase review (advisory; never changes code). With no focus, it produces an evidence-cited map calibrated to a reference class. With follow-up authority, it runs the deeper reviews the map calls for and consolidates them; with ticket authority, it creates tickets, otherwise it proposes them. Focuses go straight to one deep review:
   - `architecture`: noun-analysis blueprint.
   - `dead-code`: confidence-tiered audit calibrated against dynamic dispatch.
@@ -105,9 +109,11 @@ Supporting workflows available at any level:
 
 **Releases:**
 
+- `/review-release` — pre-release readiness review (debug artifacts, version mismatches, changelog gaps, git hygiene, breaking changes, license compliance; advisory)
 - `/release` — cut a project release (discovers release procedure, always invokes `/review-release` as preflight, plans before executing, halts on first failure rather than attempting rollback)
 
 **Utility:**
 
 - `/pre-compact` — pre-compaction housekeeping (memory, git, trash, SBAR, resume prompt)
+- `/tidy-docs` — mechanical documentation hygiene (full audit by the `doc-maintainer` agent; fixes within its authority, surfaces judgment calls)
 - `/tidy-git` — mechanical local repo hygiene (prune stale refs, delete merged branches, report stashes/untracked/unpushed)

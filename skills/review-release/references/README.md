@@ -22,7 +22,7 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
 - Routine development checks (use `/implement` or `/refactor`)
 - Test quality concerns (use `/review-test` or `/test-mutation`)
 - Documentation updates (use `/tidy-docs`)
-- Security audits (the sec-blue-teamer agent handles that during `/implement`; use `/review-security` for deep audits)
+- Security audits (`/implement` runs the sec-blue-teamer on security-sensitive diffs; use `/review-security` for deep audits)
 
 **Pairing with `/release`:** `/review-release` and `/release` sit on opposite sides of the act/check seam. `/review-release` is advisory — it tells you whether the release is ready. `/release` is the mutator — it actually cuts the release, and always runs `/review-release` as preflight before doing anything irreversible. If your intent is to ship, go directly to `/release`. If your intent is to audit readiness without committing to a cut, run `/review-release` alone.
 
@@ -30,20 +30,20 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
 
 ## What It Checks
 
-| Check                   | What it looks for                                           | Severity        |
-| ----------------------- | ----------------------------------------------------------- | --------------- |
-| **Debug artifacts**     | console.log, print(), breakpoint(), debugger statements     | BLOCKER         |
-| **Work markers**        | TODO, FIXME, HACK, XXX, REMOVEME                            | WARNING         |
-| **Hardcoded URLs**      | localhost, 127.0.0.1 in production code                     | WARNING         |
-| **Version consistency** | Mismatched versions across manifests and source             | BLOCKER         |
-| **Changelog coverage**  | Changelog not updated since last tag                        | WARNING         |
-| **Git hygiene**         | Merge conflict markers, tracked secrets                     | BLOCKER         |
-| **Working tree**        | Uncommitted changes, large binaries outside Git LFS         | WARNING         |
-| **Breaking changes**    | Removed public API without changelog mention                | BLOCKER         |
-| **License compliance**  | New copyleft or unknown-license deps (human review)         | WARNING         |
-| **Test suite**          | Test failures                                               | BLOCKER         |
-| **Build verification**  | Build failures                                              | BLOCKER         |
-| **Doc freshness**       | Documentation referencing removed/renamed code              | WARNING         |
+| Check                   | What it looks for                                                | Severity |
+| ----------------------- | ---------------------------------------------------------------- | -------- |
+| **Debug artifacts**     | console.log, print(), breakpoint(), debugger statements          | BLOCKER  |
+| **Work markers**        | TODO, FIXME, HACK, XXX, REMOVEME                                 | WARNING  |
+| **Hardcoded URLs**      | localhost, 127.0.0.1 in production code                          | WARNING  |
+| **Version consistency** | Mismatched versions across manifests (source constants: WARNING) | BLOCKER  |
+| **Changelog coverage**  | Changelog not updated since last tag                             | WARNING  |
+| **Git hygiene**         | Merge conflict markers, tracked secrets                          | BLOCKER  |
+| **Working tree**        | Uncommitted changes, large binaries outside Git LFS              | WARNING  |
+| **Breaking changes**    | Removed public API without changelog mention                     | BLOCKER  |
+| **License compliance**  | New copyleft or unknown-license deps (human review)              | WARNING  |
+| **Test suite**          | Test failures                                                    | BLOCKER  |
+| **Build verification**  | Build failures                                                   | BLOCKER  |
+| **Doc freshness**       | Documentation referencing removed/renamed code                   | WARNING  |
 
 ## Workflow Diagram
 

@@ -32,7 +32,7 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ /bug-fix Workflow                                                │
+│ /bug-fix Workflow                                               │
 └─────────────────────────────────────────────────────────────────┘
 
  ┌──────────────────────────────────────────────┐
@@ -48,7 +48,7 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
  ┌──────────────────────────────────────────────┐
  │  2. WRITE FAILING TEST(S)                    │
  │  ────────────────────────────────────────    │
- │  Agent: swe-implementer (reproduce mode)     │
+ │  Agent: swe-implementer (reproduce a bug)    │
  │                                              │
  │  • Write test encoding expected behavior     │
  │  • Verify test actually fails (proves bug)   │

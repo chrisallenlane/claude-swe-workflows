@@ -164,10 +164,10 @@ With both authority fields at their defaults the skill is advisory and changes n
 
 ### `/review-repo`
 
-The lens (what the operator is doing — inheriting, evaluating, revisiting, onboarding), the scope, and two grants, both defaulting to no:
+The context (what the operator is doing — inheriting, evaluating, revisiting, onboarding), the scope, and two grants, both defaulting to no:
 
 - **Follow-up reviews** — authority to run the deeper reviews the map calls for (the `dead-code`, `architecture`, and `namespace` (audit mode) focuses, `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release`). Without it, they are recommended only.
-- **Tickets** — authority to create tickets at or above a severity floor (default High) without asking again. Without it, one consolidated ticket set is proposed for approval.
+- **Tickets** — authority to create tickets at or above a severity floor (default High) without asking again; asked only when follow-ups are granted. Architecture, dead-code, and value items are always proposed, never auto-created. Without it, one consolidated ticket set is proposed for approval.
 
 With neither grant the skill is a fast orientation pass that changes nothing.
 

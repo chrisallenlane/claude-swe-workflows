@@ -30,7 +30,7 @@ The three-level scale is deliberately coarse. The purpose is to place a repo on 
 
 The skill uses a differential-diagnosis procedure to classify:
 
-1. **Enumerate candidate classes** based on observable signals (metadata, repo structure, publishability, deployment artifacts, commit patterns) and the lens the user supplied at invocation.
+1. **Enumerate candidate classes** based on observable signals (metadata, repo structure, publishability, deployment artifacts, commit patterns) and the review context the user supplied at invocation.
 2. **Gather evidence for and against** each candidate.
 3. **Rank by weight of evidence** with an explicit confidence hedge.
 4. **Report the classification as cited output** — the user sees both the chosen class and the signals that placed the repo there.

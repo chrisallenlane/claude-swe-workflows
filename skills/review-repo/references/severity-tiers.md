@@ -8,7 +8,7 @@ Severity tiers are **independent of reference class**. A finding's severity is a
 
 ### Safety Hazard
 
-A condition that creates material risk of harm to the project, its users, or its maintainers if left as-is. Typically: exploitable in production, causes data loss or corruption, legally exposes the project, or will predictably cause outages. Safety findings warrant immediate attention regardless of the user's lens.
+A condition that creates material risk of harm to the project, its users, or its maintainers if left as-is. Typically: exploitable in production, causes data loss or corruption, legally exposes the project, or will predictably cause outages. Safety findings warrant immediate attention regardless of the user's context.
 
 **Criteria:**
 - Known-exploitable vulnerability in a directly reachable code path

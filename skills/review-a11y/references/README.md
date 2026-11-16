@@ -55,7 +55,7 @@ For small scopes, a single accessibility auditor agent. For large scopes, partit
 
 ### 4. Audit Report
 
-Consolidated report with issues classified as CRITICAL (blocks access entirely), HIGH (significantly degrades experience), or LOW (minor issue or enhancement). Each finding includes the affected user group, the relevant WCAG criterion, and a specific remediation recommendation.
+Consolidated report with issues classified as CRITICAL (blocks access entirely), HIGH (significantly degrades experience), or LOW (minor issue or enhancement). Each finding includes the affected user group, the relevant WCAG criterion, and a specific remediation recommendation. AAA opportunities, if any, are listed separately and never counted against AA conformance.
 
 ## Agents Used
 

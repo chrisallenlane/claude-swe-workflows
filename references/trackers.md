@@ -1,6 +1,6 @@
 # Issue Tracker Detection and Operations
 
-Shared convention for detecting the project's issue tracker and operating against it. Cited by skills that read, create, comment on, or close tickets — including `/scope`, `/implement`, and `/bug-fix`.
+Shared convention for detecting the project's issue tracker and operating against it. Cited by skills that read, create, comment on, or close tickets — including `/scope`, `/implement`, `/bug-fix`, `/bug-hunt`, and the advisory reviews that create tickets.
 
 ## Detection Procedure
 
@@ -39,7 +39,7 @@ Fetch each ticket individually rather than relying on a search payload — searc
 
 ### Create
 
-For `/scope`:
+For `/scope`, and for `/bug-hunt` and the advisory reviews once their tickets are approved:
 
 - Pass `title` and `body` to the integration.
 - Apply default labels if specified in `CLAUDE.md` (e.g., `bug`, `arch`).
@@ -48,7 +48,7 @@ For `/scope`:
 
 ### Comment / update (close-out)
 
-For `/implement` and `/bug-fix` after merging:
+For `/bug-fix` after committing the fix. (`/implement` never comments on or closes tickets; its commits reference them with `Fixes #N` so the tracker closes them when the user merges.)
 
 - **Determine ticket number** in this order:
   1. Extract from current branch name (e.g., `feature/123-add-auth` → `#123`, `fix/456-pagination` → `#456`).

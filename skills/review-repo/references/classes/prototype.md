@@ -9,7 +9,7 @@ An exploratory codebase: a research project, a spike, an experiment, a proof-of-
 - No published releases, no versioning discipline
 - Often notebook-heavy (`.ipynb`, `notebooks/`) or script-driven
 - Short history, or long history with frequent architectural resets
-- User's invocation lens is `evaluating for production-hardening` or `revisiting own repo` after explicit acknowledgment that the repo was exploratory
+- User's review context is `evaluating for production-hardening` or `revisiting own repo` after explicit acknowledgment that the repo was exploratory
 
 ## Counter-Signals (If Observed, Consider Another Class)
 

@@ -314,6 +314,8 @@ Select items to address:
 
 Removing debug statement from src/api/handler.go:15... done.
 Updating version to 2.0.0 in package.json... done.
+src/version.go holds a source constant (1.9.0). Update it to 2.0.0? [y/N]
+> y
 Updating version to 2.0.0 in src/version.go... done.
 Removing TODO markers from src/migrate.go:12, src/config.go:55... done.
 

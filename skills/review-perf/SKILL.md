@@ -112,6 +112,7 @@ Spawn a `swe-perf-reviewer` agent:
 
 ```
 Review this project for computational performance issues.
+Mode: full review
 Scope: [scope]
 
 Perform your full review:

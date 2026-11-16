@@ -110,42 +110,42 @@ One-line summaries grouped by namespace. Click through to each skill's detailed 
 
 All `/review-*` skills are advisory — they audit and propose, never mutate.
 
-- **`/review-test`** — Five-phase test-suite survey: unit, integration, E2E (browser, webapps only), fuzz, test quality. Proposes a ticket structure for gaps. ([details](skills/review-test/SKILL.md))
-- **`/review-perf`** — Performance review across compute (hot paths costed at their actual scale) and web (caching, asset delivery, Core Web Vitals) domains. ([details](skills/review-perf/SKILL.md))
-- **`/review-a11y`** — WCAG 2.2 Level AA audit of detected web content. ([details](skills/review-a11y/SKILL.md))
-- **`/review-repo`** — The entry point for reviewing a codebase as a whole. With no focus: an evidence-cited map, not a grade, calibrated to the repo's reference class — useful when inheriting a project, evaluating a library, or revisiting your own repo; it locates technical debt by the interest it charges (complexity hotspots that keep changing, files coupled only by change history) and recommends where to aim `/refactor`. With a focus, straight to a deep review: `architecture` (noun-analysis blueprint), `dead-code` (calibrated audit with confidence tiers), `value` (a trade menu of requirement relaxations that dissolve disproportionate machinery), or `namespace` (cold readers who see only the file listing answer navigation questions against verified ground truth, and their misses become findings; an optional heavy search mode evolves a better tree). Given authority, the map runs the deeper reviews it calls for, consolidates them, and creates tickets. Never changes code. ([details](skills/review-repo/SKILL.md))
-- **`/review-security`** — White-box security audit. Blue-teamer evaluates defensive posture first; red-teamers then attack informed by the gaps. Iterates until no new exploit chains emerge. ([details](skills/review-security/SKILL.md))
-- **`/review-release`** — Pre-release readiness check: debug artifacts, version mismatches, changelog gaps, git hygiene, breaking changes, license compliance. ([details](skills/review-release/SKILL.md))
+- **`/review-test`** — Five-phase test-suite survey: unit, integration, E2E (browser, webapps only), fuzz, test quality. Proposes a ticket structure for gaps. ([details](skills/review-test/references/README.md))
+- **`/review-perf`** — Performance review across compute (hot paths costed at their actual scale) and web (caching, asset delivery, Core Web Vitals) domains. ([details](skills/review-perf/references/README.md))
+- **`/review-a11y`** — WCAG 2.2 Level AA audit of detected web content. ([details](skills/review-a11y/references/README.md))
+- **`/review-repo`** — The entry point for reviewing a codebase as a whole. With no focus: an evidence-cited map, not a grade, calibrated to the repo's reference class — useful when inheriting a project, evaluating a library, or revisiting your own repo; it locates technical debt by the interest it charges (complexity hotspots that keep changing, files coupled only by change history) and recommends where to aim `/refactor`. With a focus, straight to a deep review: `architecture` (noun-analysis blueprint), `dead-code` (calibrated audit with confidence tiers), `value` (a trade menu of requirement relaxations that dissolve disproportionate machinery), or `namespace` (cold readers who see only the file listing answer navigation questions against verified ground truth, and their misses become findings; an optional heavy search mode evolves a better tree). Given authority, the map runs the deeper reviews it calls for, consolidates them, and creates tickets. Never changes code. ([details](skills/review-repo/references/README.md))
+- **`/review-security`** — White-box security audit. Blue-teamer and lead red-teamer make an independent first pass in parallel isolation; their findings are synthesized into one target list, and focused red-teamers deep-dive each target. Iterates until no new exploit chains emerge. ([details](skills/review-security/references/README.md))
+- **`/review-release`** — Pre-release readiness check: debug artifacts, version mismatches, changelog gaps, git hygiene, breaking changes, license compliance. ([details](skills/review-release/references/README.md))
 
 ### `/think-*` — Reasoning
 
 All `/think-*` skills produce feedback only — no code, no tickets, no artifacts. See [references/think.md](references/think.md) for the namespace's design discipline.
 
-- **`/think-brainstorm`** — Divergent idea generation across techniques (first-principles, working-backwards, lateral, analogical, etc.). When the framing itself is in doubt, it first runs a framing check: parallel reframers across lenses (problem-vs-symptom, scope-shift, inversion, …) so the right problem gets brainstormed. ([details](skills/think-brainstorm/SKILL.md))
-- **`/think-diagnose`** — Abductive reasoning about why a phenomenon is happening. Diagnosticians across lenses (technical, human-factors, process, etc.); when candidates tie, it narrows them by Analysis of Competing Hypotheses (Heuer), ranking on least disconfirming evidence. ([details](skills/think-diagnose/SKILL.md))
-- **`/think-deliberate`** — Adversarial decision-making. Advocates argue and rebut before a judge renders a verdict. ([details](skills/think-deliberate/SKILL.md))
-- **`/think-premortem`** — Treats catastrophic failure as already-happened and reasons backward to causes. Plan mode (not-yet-committed plan) or scenario mode (running system). ([details](skills/think-premortem/SKILL.md))
-- **`/think-scrutinize`** — Stress-tests an idea before commitment. Skeptics across angles paired with an advocate; reports faults that survive cross-examination. ([details](skills/think-scrutinize/SKILL.md))
-- **`/think-reflect`** — Retrospective learning. Updated mental models from a completed experience; observations and recollections gathered separately. ([details](skills/think-reflect/SKILL.md))
+- **`/think-brainstorm`** — Divergent idea generation across techniques (first-principles, working-backwards, lateral, analogical, etc.). When the framing itself is in doubt, it first runs a framing check: parallel reframers across lenses (problem-vs-symptom, scope-shift, inversion, …) so the right problem gets brainstormed. ([details](skills/think-brainstorm/references/README.md))
+- **`/think-diagnose`** — Abductive reasoning about why a phenomenon is happening. Diagnosticians across lenses (technical, human-factors, process, etc.); when candidates tie, it narrows them by Analysis of Competing Hypotheses (Heuer), ranking on least disconfirming evidence. ([details](skills/think-diagnose/references/README.md))
+- **`/think-deliberate`** — Adversarial decision-making. Advocates argue and rebut before a judge renders a verdict. ([details](skills/think-deliberate/references/README.md))
+- **`/think-premortem`** — Treats catastrophic failure as already-happened and reasons backward to causes. Plan mode (not-yet-committed plan) or scenario mode (running system). ([details](skills/think-premortem/references/README.md))
+- **`/think-scrutinize`** — Stress-tests an idea before commitment. Skeptics across angles paired with an advocate; reports faults that survive cross-examination. ([details](skills/think-scrutinize/references/README.md))
+- **`/think-reflect`** — Retrospective learning. Updated mental models from a completed experience; observations and recollections gathered separately. ([details](skills/think-reflect/references/README.md))
 
 ### `/bug-*` — Bug work
 
-- **`/bug-fix`** — Diagnosis-first bug fix: reproduce with a failing test, root-cause via git archaeology, targeted fix, verify. Mutates. ([details](skills/bug-fix/SKILL.md))
+- **`/bug-fix`** — Diagnosis-first bug fix: reproduce with a failing test, root-cause via git archaeology, targeted fix, verify. Mutates. ([details](skills/bug-fix/references/README.md))
 - **`/bug-hunt`** — Proactive bug discovery. Risk-ranks hotspots and deep-dives each with reproducing tests, round after round until nothing is confirmed above a severity floor. Advisory by default — proposes tickets for confirmed findings; with authority in its commander's intent, creates tickets and fixes via `/implement`. ([details](skills/bug-hunt/references/README.md))
 
 ### `/tidy-*` — Mechanical hygiene
 
-- **`/tidy-docs`** — Documentation audit and repair via the `doc-maintainer` agent. Fixes within agent authority; surfaces judgment calls. ([details](skills/tidy-docs/SKILL.md))
-- **`/tidy-git`** — Local repo hygiene: prunes stale refs, deletes merged branches (with preview), reports stashes/untracked/unpushed. Never touches the remote. ([details](skills/tidy-git/SKILL.md))
+- **`/tidy-docs`** — Documentation audit and repair via the `doc-maintainer` agent. Fixes within agent authority; surfaces judgment calls. ([details](skills/tidy-docs/references/README.md))
+- **`/tidy-git`** — Local repo hygiene: prunes stale refs, deletes merged branches (with preview), reports stashes/untracked/unpushed. Never touches the remote. ([details](skills/tidy-git/references/README.md))
 
 ### `/test-*` — Testing utilities
 
-- **`/test-mutation`** — Mutation testing. Introduces mutations, then writes tests to catch survivors — revealing coverage gaps that line coverage misses. Multi-session via a state file. ([details](skills/test-mutation/SKILL.md))
+- **`/test-mutation`** — Mutation testing. Introduces mutations, then writes tests to catch survivors — revealing coverage gaps that line coverage misses. Multi-session via a state file. ([details](skills/test-mutation/references/README.md))
 
 ### Standalone
 
 - **`/refactor`** — Redesigns a codebase with reduction as the goal: question the requirements, delete the part, simplify what survives. One interactive requirements menu, then autonomous. Behavior is pinned by running the original implementation as a differential oracle at the user-visible boundary, not by the existing test suite; each pass strips what can be removed and regenerates the rest from a blind designer, and candidates are adopted by mechanical gates (behavior, correctness, structure). Works on an isolated `refactor/<slug>` branch; merging is your call. For an advisory structural blueprint, use `/review-repo architecture`. Mutates (on its own branch). ([details](skills/refactor/references/README.md))
-- **`/pre-compact`** — Pre-compaction housekeeping: persist memory, audit git, clean trash, end with SBAR + resume prompt. Does not invoke `/compact`. ([details](skills/pre-compact/SKILL.md))
+- **`/pre-compact`** — Pre-compaction housekeeping: persist memory, audit git, clean trash, end with SBAR + resume prompt. Does not invoke `/compact`. ([details](skills/pre-compact/references/README.md))
 - **`/release`** — Cuts a project release. Discovers the release procedure, invokes `/review-release` as preflight, plans every step with reversibility annotations, executes step-by-step, halts on first failure. No skip-preflight or force-release flag. ([details](skills/release/references/README.md))
 
 ## Versioning
