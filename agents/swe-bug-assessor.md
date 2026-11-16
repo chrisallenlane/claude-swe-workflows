@@ -32,7 +32,7 @@ Over the last 12 months, excluding generated files, lockfiles, vendored code, ch
 - **Change coupling** — file pairs that change together in most of either file's commits. A coupled pair with no static dependency between them is a hidden contract, and a fix that touches one but not the other is a bug lead.
 - **History adequacy** — with fewer than ~50 commits in the window, or history dominated by squash or bulk commits, the signals are weak. Say so in the summary and rank on the code signals instead.
 
-This mirrors `/review-health`'s change-cost signals, so the two skills agree on where the hotspots are.
+This mirrors `/review-repo`'s change-cost signals, so the two skills agree on where the hotspots are.
 
 ## 3. Coverage
 

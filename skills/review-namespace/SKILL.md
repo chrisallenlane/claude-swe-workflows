@@ -127,8 +127,8 @@ Runs the audit first (round 0 = the incumbent's baseline + noise floor: battery 
 
 ## Integration with Other Skills
 
-**vs `/review-arch`:** `/review-arch` analyzes structure (noun frequency, blueprints — the analyst's view); `/review-namespace` *tests* it (reader task performance — the user study). They can disagree; when they do, prefer the measurement. The catalog's longer-term direction is `/review-arch` as a wrapper dispatching this skill plus a stack-tier review; until then they run independently.
+**vs `/review-repo architecture`:** `/review-repo architecture` analyzes structure (noun frequency, blueprints — the analyst's view); `/review-namespace` *tests* it (reader task performance — the user study). They can disagree; when they do, prefer the measurement. The catalog's longer-term direction is `/review-repo architecture` as a wrapper dispatching this skill plus a stack-tier review; until then they run independently.
 
-**Never run in search mode by `/review-health`'s follow-up:** search mode's operator-calibration checkpoints (vetoes, self-tests) cannot be answered by an autonomous run, and audit mode overlaps `/review-arch`'s noun analysis. Run it deliberately.
+**Never run in search mode by `/review-repo`'s follow-up:** search mode's operator-calibration checkpoints (vetoes, self-tests) cannot be answered by an autonomous run, and audit mode overlaps `/review-repo architecture`'s noun analysis. Run it deliberately.
 
 **Feeds `/implement`:** the migration ticket routes there; this skill never mutates the tree itself.

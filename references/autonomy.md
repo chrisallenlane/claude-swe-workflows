@@ -1,6 +1,6 @@
 # Autonomy — Design Discipline for Skills That Act on Granted Authority
 
-This document states the autonomy discipline that governs the plugin's autonomous skills — the ones that act on authority granted up front: `/implement` when it runs multi-ticket or unattended work, `/bug-hunt` when its commander's intent grants ticket or fix authority, and `/review-health` when its intent grants follow-up or ticket authority. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
+This document states the autonomy discipline that governs the plugin's autonomous skills — the ones that act on authority granted up front: `/implement` when it runs multi-ticket or unattended work, `/bug-hunt` when its commander's intent grants ticket or fix authority, and `/review-repo` when its intent grants follow-up or ticket authority. These skills are designed to run for long stretches without operator involvement. The discipline below codifies how they decide when to escalate, what an escalation looks like, and what to do when they can't.
 
 It is opinionated, plugin-wide for these autonomous skills, and cited from each of them. New escalation points or handoff formats invented by a single skill should be reconciled against this document; the goal is a coherent operator experience across them.
 
@@ -102,7 +102,7 @@ The deepest skill never goes around its caller. The caller has more context abou
 
 ## Auto-approval of sub-skill ticket proposals
 
-Advisory sub-skills (`/bug-hunt` by default, `/review-arch`, `/review-dead`, `/review-security`, `/review-test`, `/review-health`) produce ticket *proposals* that require operator approval in their native contract. Under an autonomous skill, those approvals are answered automatically by the orchestrator rather than escalated to the operator.
+Advisory sub-skills (`/bug-hunt` by default, `/review-repo` and its focused reviews, `/review-security`, `/review-test`) produce ticket *proposals* that require operator approval in their native contract. Under an autonomous skill, those approvals are answered automatically by the orchestrator rather than escalated to the operator.
 
 This is a deliberate contract shift consistent with the autonomy discipline:
 
@@ -112,11 +112,11 @@ This is a deliberate contract shift consistent with the autonomy discipline:
 
 How each autonomous skill handles the contract shift:
 
-| Skill            | Behavior                                                                                                                                                                              |
-|------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/bug-hunt`      | With ticket authority, creates tickets for its own confirmed findings at or above the severity floor; without it, proposes them for operator approval.                                |
-| `/review-health` | With ticket authority, approves its specialists' proposals at or above the floor and declines the rest; without it, declines them all and proposes one consolidated set for approval. |
-| `/implement`     | Approves, edits, or declines with judgment; prefers cutting a ticket when in doubt, since a decline commits the run to doing the work inline.                                         |
+| Skill          | Behavior                                                                                                                                                                                 |
+|----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/bug-hunt`    | With ticket authority, creates tickets for its own confirmed findings at or above the severity floor; without it, proposes them for operator approval.                                   |
+| `/review-repo` | With ticket authority, approves its deeper reviews' proposals at or above the floor and declines the rest; without it, declines them all and proposes one consolidated set for approval. |
+| `/implement`   | Approves, edits, or declines with judgment; prefers cutting a ticket when in doubt, since a decline commits the run to doing the work inline.                                            |
 
 Sub-skills surface contested findings and breaking-change requirements as andon-cord triggers rather than auto-approval candidates. The contract shift covers ordinary approval prompts; substantive disagreement still routes through the operator.
 
@@ -162,11 +162,11 @@ Five fields:
 
 With both authority fields at their defaults the skill is advisory and changes nothing outside its report until the operator approves. Purpose and end state are implicit: find the bugs above the floor; end when a hunt round confirms nothing above it, or at the 10-round cap.
 
-### `/review-health`
+### `/review-repo`
 
 The lens (what the operator is doing — inheriting, evaluating, revisiting, onboarding), the scope, and two grants, both defaulting to no:
 
-- **Follow-up reviews** — authority to run the specialist reviews the map calls for (`/review-dead`, `/review-arch`, `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release`). Without it, they are recommended only.
+- **Follow-up reviews** — authority to run the deeper reviews the map calls for (the `dead-code` and `architecture` focuses, `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release`). Without it, they are recommended only.
 - **Tickets** — authority to create tickets at or above a severity floor (default High) without asking again. Without it, one consolidated ticket set is proposed for approval.
 
 With neither grant the skill is a fast orientation pass that changes nothing.
@@ -237,7 +237,7 @@ Skills may add fields below "Current state" that are specific to their workflow 
 
 Each autonomous skill extends the shared template in two predictable ways:
 
-1. **Title** — `## Andon Cord — /<skill> — <phase identifier>` where the phase identifier varies per skill (round number for `/bug-hunt`; current phase or specialist for `/review-health`; current action for `/implement`). The phase identifier is load-bearing — the same skill may pull the cord at different points and the operator needs to know which one.
+1. **Title** — `## Andon Cord — /<skill> — <phase identifier>` where the phase identifier varies per skill (round number for `/bug-hunt`; current phase or deeper review for `/review-repo`; current action for `/implement`). The phase identifier is load-bearing — the same skill may pull the cord at different points and the operator needs to know which one.
 2. **Current-state additions** — skill-specific fields appended after the shared baseline (typically convergence counters, findings-ledger summaries, a state-doc pointer). Skills should not add fields *between* "Pre-loaded options" and "Recommendation" — that ordering is load-bearing.
 
 After pulling the cord, the skill stops. It does not attempt additional cycles or phases. It waits for operator input.
@@ -255,7 +255,7 @@ The altitude rule (lever 1) says "implementation-detail forks get the skill's be
  | Test review surfaces a coverage gap on a non-critical helper, severity low            | Defer to final report. Do not block termination.                                | "Deferred: low-coverage helper `pkg/util/format`; rationale: non-critical, no recent changes." |
  | Two implementers return functionally equivalent implementations                       | Pick one (the simpler diff).                                                    | "Chose implementer A's version; B's was equivalent but had two more lines."                    |
  | `/tidy-docs` flags wording as unclear; the agent didn't propose a rewrite             | Improve wording with judgment; commit if improvement is clear.                  | "Rewrote intro paragraph; `/tidy-docs` flagged ambiguity in two sentences."                    |
- | Severity classification of a finding is borderline (medium vs low)                    | Use the lower severity if either is defensible.                                 | "Classified `<finding>` as low; review-arch borderline medium."                                |
+ | Severity classification of a finding is borderline (medium vs low)                    | Use the lower severity if either is defensible.                                 | "Classified `<finding>` as low; architecture review borderline medium."                                |
 
 The log entry is the contract: the operator can grep the state doc post-run to see what the skill decided unilaterally and why. If the operator disagrees, they can revert the specific commit or revisit the decision. The cost of a log entry is much less than the cost of an interruption.
 
@@ -265,15 +265,14 @@ Direction, not strictly enforced today. Review skills should produce reports and
 
 Status as of this document:
 
- | Skill              | Status                                                        |
- |--------------------|---------------------------------------------------------------|
- | `/review-arch`     | Advisory as of v8.0.0. First concrete step.                   |
- | `/review-test`     | Advisory as of v9.0.0.                                        |
- | `/review-a11y`     | Already advisory.                                             |
- | `/review-health`   | Already advisory.                                             |
- | `/review-perf`     | Already advisory.                                             |
- | `/review-security` | Advisory as of v8.0.0.                                        |
- | `/review-release`  | Effectively advisory (presents findings for operator review). |
+ | Skill              | Status                                                                                                     |
+ |--------------------|------------------------------------------------------------------------------------------------------------|
+ | `/review-test`     | Advisory as of v9.0.0.                                                                                     |
+ | `/review-a11y`     | Already advisory.                                                                                          |
+ | `/review-repo`     | Advisory; absorbed `/review-arch` (advisory since v8.0.0), `/review-dead`, and `/review-value` in v12.0.0. |
+ | `/review-perf`     | Already advisory.                                                                                          |
+ | `/review-security` | Advisory as of v8.0.0.                                                                                     |
+ | `/review-release`  | Effectively advisory (presents findings for operator review).                                              |
 
 The path forward: when a `/review-*` skill becomes advisory, its findings should name specific implementation skills with scope hints so the operator (or a calling orchestrator) can chain the right next step. Example: "Dead code in `src/foo/`: work the sweep ticket with `/implement`."
 

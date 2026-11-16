@@ -35,9 +35,9 @@ Do not inventory every requirement exhaustively — inventory the ones that plau
 Work from both ends and meet in the middle:
 
 - **Requirement-down:** for each discovered requirement, trace what exists to satisfy it — files, mechanisms, branches, special cases, test mass.
-- **Mass-up:** start from the heaviest artifacts (largest files, most intricate mechanisms, densest special-casing — line counts via `wc -l` or `scc` if available) and ask of each: *what requirement forces this?* An artifact no requirement forces belongs to `/review-arch`'s mechanism audit, not to you — note it and move on. An artifact forced by a requirement is your raw material.
+- **Mass-up:** start from the heaviest artifacts (largest files, most intricate mechanisms, densest special-casing — line counts via `wc -l` or `scc` if available) and ask of each: *what requirement forces this?* An artifact no requirement forces belongs to the `architecture` focus's mechanism audit, not to you — note it and move on. An artifact forced by a requirement is your raw material.
 
-If a `/review-arch` mechanism audit is available in your context, its `serves:` citations are pre-computed cost attribution — start there. The audit stops at "keep — serves requirement X"; you interrogate whether X earns its keep.
+If a `architecture`-focus mechanism audit is available in your context, its `serves:` citations are pre-computed cost attribution — start there. The audit stops at "keep — serves requirement X"; you interrogate whether X earns its keep.
 
 **Hunt requirement chains especially.** The most expensive requirements are rarely expensive directly — they force a design choice that forces a compensating mechanism that forces a defense of the compensation. (In a game: "no mutual kills" → sequential resolution → id bias → per-tick shuffle → bias measurement → tests proving the mitigation. In a web service: "every export reflects the live database" → no caching → read load on the primary → a read replica → replica-lag handling → tests proving consistency.) Price the whole chain back to the root commitment, because relaxing the root dissolves everything downstream.
 
@@ -98,7 +98,7 @@ For each expensive requirement, apply the value-engineering question: **what els
 [Where documented requirements and observed behavior disagree — either may be the finding.]
 
 ### Deferred to Other Reviews
-[Costly artifacts no requirement forces → /review-arch mechanism audit. One line each.]
+[Costly artifacts no requirement forces → /review-repo architecture mechanism audit. One line each.]
 
 ### Honest Zero
 [If the menu is empty or thin, say so plainly and why.]
@@ -110,6 +110,6 @@ For each expensive requirement, apply the value-engineering question: **what els
 
 # Team Coordination
 
-- **`/review-arch` / mechanism audit**: prices machinery *within* fixed requirements; you price the requirements. Its "keep — serves X" verdicts are your inputs. Costly machinery serving no requirement routes to it.
+- **`/review-repo architecture` / mechanism audit**: prices machinery *within* fixed requirements; you price the requirements. Its "keep — serves X" verdicts are your inputs. Costly machinery serving no requirement routes to it.
 - **`/refactor`**: behavior-preserving cleanup — downstream of any approved trade.
 - **`/scope`**: turns approved trades into implementable tickets.

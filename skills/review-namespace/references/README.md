@@ -52,8 +52,8 @@ Field-derived, all enforced by the skill:
 - A restructure is planned anyway, and testing five hypothetical trees is cheaper than performing one wrong one
 
 **Don't use it for:**
-- Structural analysis without measurement (`/review-arch`)
-- Mechanism/stack appropriateness (`/review-arch`'s mechanism audit, `/review-value`)
+- Structural analysis without measurement (`/review-repo architecture`)
+- Mechanism/stack appropriateness (the `architecture` focus's mechanism audit, `/review-repo value`)
 - Actually moving files (`/implement`, fed by this skill's tickets)
 
 ## The Owner Calibration Loop (search mode)
@@ -76,6 +76,6 @@ Audit: ~10-15 agents (probe writer, two 3-reader pools, optional extra batteries
 
 ## Integration
 
-- **`/review-arch`** — the analyst's view (noun frequency, blueprints) vs this skill's user study. When they disagree, prefer the measurement. Longer-term catalog direction: `/review-arch` becomes a wrapper dispatching this skill plus a stack-tier review.
-- **`/review-health` never runs search mode** in its follow-up — search mode's owner-calibration checkpoints cannot be answered without you. Audit mode overlaps `/review-arch`, so run it deliberately.
+- **`/review-repo architecture`** — the analyst's view (noun frequency, blueprints) vs this skill's user study. When they disagree, prefer the measurement. Longer-term catalog direction: `/review-repo architecture` becomes a wrapper dispatching this skill plus a stack-tier review.
+- **`/review-repo` never runs search mode** in its follow-up — search mode's owner-calibration checkpoints cannot be answered without you. Audit mode overlaps `/review-repo architecture`, so run it deliberately.
 - **`/implement`** — executes the migration ticket this skill proposes.

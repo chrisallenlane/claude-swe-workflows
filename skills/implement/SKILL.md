@@ -1,12 +1,12 @@
 ---
 name: implement
-description: Implements one ticket, a batch of tickets, or an open-ended goal, end to end. Uses judgment to choose which specialist agents and skills the work needs — planning, an implementer, reviews, /refactor, /review-arch, /bug-hunt — over a small fixed floor that always holds — concept inventory before code, practical verification of acceptance criteria, tests green at every commit, an independent correctness review, and no irreversible actions. One planned interaction scaled to the work, then autonomous; every pass not run is accounted for in the final report.
+description: Implements one ticket, a batch of tickets, or an open-ended goal, end to end. Uses judgment to choose which specialist agents and skills the work needs — planning, an implementer, reviews, /refactor, /review-repo architecture, /bug-hunt — over a small fixed floor that always holds — concept inventory before code, practical verification of acceptance criteria, tests green at every commit, an independent correctness review, and no irreversible actions. One planned interaction scaled to the work, then autonomous; every pass not run is accounted for in the final report.
 model: opus
 ---
 
 # Implement — From Tickets to a Review-Ready Branch
 
-Implements whatever it is given — one ticket, a batch of tickets, or a goal that still needs scoping — and hands back a branch and a report. The skill decides how much process the work needs. A typo-sized fix gets a concept inventory of "no new concepts," a verification run, and a commit; a twelve-ticket feature may get planning, delegated implementation, `/refactor`, `/review-arch`, and a smoke test. The work decides, not a checklist.
+Implements whatever it is given — one ticket, a batch of tickets, or a goal that still needs scoping — and hands back a branch and a report. The skill decides how much process the work needs. A typo-sized fix gets a concept inventory of "no new concepts," a verification run, and a commit; a twelve-ticket feature may get planning, delegated implementation, `/refactor`, `/review-repo architecture`, and a smoke test. The work decides, not a checklist.
 
 ## Philosophy
 
@@ -105,14 +105,14 @@ Use what the work needs. Each pass that plausibly applied and did not run gets a
 
 **Skills, mostly at project scale:**
 - `/refactor` — shrinks the machine with behavior pinned. Best after the tickets are done, before other reviews. Runs with its menu answered from intent (below).
-- `/review-arch`, `/review-test`, `/review-dead`, `/review-security`, `/review-perf`, `/review-a11y` — when the work touched their territory. They propose tickets; approve what should be tracked, decline what you will handle inline — then handle it — and prefer a ticket when in doubt.
+- `/review-repo architecture`, `/review-test`, `/review-repo dead-code`, `/review-security`, `/review-perf`, `/review-a11y` — when the work touched their territory. They propose tickets; approve what should be tracked, decline what you will handle inline — then handle it — and prefer a ticket when in doubt.
 - `/bug-hunt` — substantial new surface with thin coverage.
 - `/bug-fix` — a failure that resists a direct fix.
 - The smoke-testing procedure — before declaring multi-ticket work done.
 - `/review-release` — last, when the work is headed for a release.
 - `/think-deliberate`, `/think-reframe`, `/think-diagnose`, `/think-scrutinize` — close calls, wrong-seeming framings, unclear failures, risky plans.
 
-**Only when intent asks:** `/review-value` — its trade menu is product decisions, so surface it rather than act on it. **Never:** `/release`.
+**Only when intent asks:** `/review-repo value` — its trade menu is product decisions, so surface it rather than act on it. **Never:** `/release`.
 
 **Severity handling.** Critical/High: resolve before finishing. Medium: resolve if bounded and local, else defer with a note. Low/Info: defer with a note. **Don't thrash:** re-run a review only if files it flagged have changed; if two reviews contradict each other on the same code, escalate rather than oscillate.
 

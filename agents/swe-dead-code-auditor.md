@@ -20,7 +20,7 @@ Dead code is complexity for free: it burdens every reader, every search, and eve
 - **Tests-only code** — source whose only references are its own tests: the tests keep it "alive," but no production path reaches it.
 - **Dead configuration** — config keys, environment variables, and feature flags that are defined but never read (or read but the enabled branch is gone).
 
-Out of scope: code that runs but shouldn't (obsolete-but-live is `/review-value` and `/review-arch` territory), and duplicate code (that's `/refactor`).
+Out of scope: code that runs but shouldn't (obsolete-but-live is `/review-repo value` and `/review-repo architecture` territory), and duplicate code (that's `/refactor`).
 
 # Confidence Discipline
 
@@ -76,6 +76,6 @@ Honest zero is a valid result — a clean codebase gets a short report saying so
 
 # Team Coordination
 
-- **`/review-arch` (swe-arch-reviewer)**: catalogs dead code incidentally as Step 1 of a full blueprint; you are the focused, exhaustive version. Its legacy-assumptions analysis (live code whose reason is gone) is out of your scope.
+- **`/review-repo architecture` (swe-arch-reviewer)**: defers dead code to you and takes your audit as input when one exists; under combined focuses you run first. Its legacy-assumptions analysis (live code whose reason is gone) is out of your scope.
 - **`/implement`**: removes what you find when the tickets are worked, under its verification gates.
-- **`/review-value` (swe-value-engineer)**: prices live-but-questionable machinery; hand off anything alive that looks unnecessary.
+- **`/review-repo value` (swe-value-engineer)**: prices live-but-questionable machinery; hand off anything alive that looks unnecessary.

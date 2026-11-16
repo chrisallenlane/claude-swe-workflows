@@ -1,6 +1,6 @@
 # Advisory Skill Ticket-Proposal Pattern
 
-This document codifies the runtime ticket-proposal pattern shared by the advisory review-shaped skills: `/bug-hunt`, `/review-arch`, `/review-code`, `/review-dead`, `/review-namespace`, `/review-value`, `/review-security`, `/review-test`. Each cites this document and supplies only its bespoke content — the ticket-shape catalog applicable to its findings, the per-ticket body schema, and any skill-specific fallback when the operator declines.
+This document codifies the runtime ticket-proposal pattern shared by the advisory review-shaped skills: `/bug-hunt`, `/review-repo` (its focused reviews and its follow-up), `/review-namespace`, `/review-security`, `/review-test`. Each cites this document and supplies only its bespoke content — the ticket-shape catalog applicable to its findings, the per-ticket body schema, and any skill-specific fallback when the operator declines.
 
 The pattern exists because review-shaped skills produce findings that need to be durably documented in the tracker for any subsequent fix work — but the operator (or invoking orchestrator) must approve the proposed structure. The skill does not unilaterally cut tickets; it proposes and waits.
 
@@ -34,13 +34,13 @@ The dispatcher accepts exactly three outcomes:
 Skill-specific behavior on decline:
 
 - `/bug-hunt` — falls through to a reproducing-test commit step. The tests have standalone coverage value regardless of ticket creation, so the skill offers to commit them even after a declined ticket proposal — bug-confirming tests marked as expected failures, so the suite stays green. (With ticket authority in its commander's intent, `/bug-hunt` creates its tickets without a proposal step.)
-- `/review-arch`, `/review-code`, `/review-dead`, `/review-security`, `/review-test` — exit cleanly with the analysis report; no further actions.
-- `/review-value` — exit cleanly; the priced trade menu stands as a planning artifact (knowing what the commitments cost is itself the product).
+- `/review-repo` (`architecture`, `dead-code` focuses), `/review-security`, `/review-test` — exit cleanly with the analysis report; no further actions.
+- `/review-repo value` — exit cleanly; the priced trade menu stands as a planning artifact (knowing what the commitments cost is itself the product).
 - `/review-namespace` — exit cleanly; findings (and in search mode, the champion tree + mapping) stand as a planning artifact.
 
 ## Orchestrator-invoked behavior
 
-When invoked by an orchestrator (`/implement`, `/bug-hunt`, `/review-health`), the workflow above is unchanged. The skill proposes the ticket structure to the orchestrator, which applies its own autonomy judgment per [`autonomy.md`](autonomy.md) § "Auto-approval of sub-skill ticket proposals" — approving, editing, or declining the proposal, then deciding which of any created tickets to work in the current flow versus defer.
+When invoked by an orchestrator (`/implement`, `/bug-hunt`, `/review-repo`), the workflow above is unchanged. The skill proposes the ticket structure to the orchestrator, which applies its own autonomy judgment per [`autonomy.md`](autonomy.md) § "Auto-approval of sub-skill ticket proposals" — approving, editing, or declining the proposal, then deciding which of any created tickets to work in the current flow versus defer.
 
 The skill does not branch on "interactive operator vs orchestrator." The proposal is the same. The receiver decides.
 

@@ -1,6 +1,6 @@
-# Reference Classes for /review-health
+# Reference Classes for /review-repo
 
-This directory contains per-class rubrics used by `/review-health` during the Orient phase. The skill classifies the target repository into a reference class and applies the matching rubric to each dimension.
+This directory contains per-class rubrics used by `/review-repo` during the Orient phase. The skill classifies the target repository into a reference class and applies the matching rubric to each dimension.
 
 ## Why Reference Classes
 

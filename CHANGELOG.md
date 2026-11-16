@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+### Removed
+
+- **BREAKING: `/review-health` is renamed `/review-repo` and absorbs `/review-arch`, `/review-dead`, and `/review-value` as focuses. `/review-code` is removed.** Five whole-codebase review commands become one. Each folded skill was mostly a thin wrapper around one agent, and in practice their methods reached users through the agents: `/scope` dispatches the value engineer, and the map's follow-up runs the dead-code and architecture reviewers. All of that method lives in the agents, and the agents are unchanged.
+  - **Migration:**
+
+    | Before                   | After                                                                                                                                                    |
+    |--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+    | `/review-health [scope]` | `/review-repo [scope]`, the same orientation map. Its "lens" question is now called the review *context*                                                 |
+    | `/review-arch [scope]`   | `/review-repo architecture [scope]`                                                                                                                      |
+    | `/review-dead [scope]`   | `/review-repo dead-code [scope]`                                                                                                                         |
+    | `/review-value [scope]`  | `/review-repo value [scope]`                                                                                                                             |
+    | `/review-code [range]`   | Removed. `/implement` and `/bug-fix` still run `swe-correctness-reviewer` as a blocking gate; for other diffs, use Claude Code's built-in `/code-review` |
+
+  - **What each focus keeps.**
+    - `architecture` presents the blueprint in three parts: noun analysis, proposed changes, and the modules left alone.
+    - `dead-code` presents its calibration first and sends uncertain findings to verification tickets, never removal tickets.
+    - `value` never advocates, never lets an orchestrator rule on a flagged trade, and makes amending the requirement's record the first acceptance criterion of every approved trade.
+  - **Several focuses together** (`/review-repo value dead-code architecture`) run in dependency order, each receiving the previous one's output.
+  - **Also:** `REVIEW_HEALTH_STATE.md` is now `REVIEW_REPO_STATE.md`. `/implement`'s repertoire, the autonomy and advisory-ticket references, the README, and `CLAUDE.md` are updated.
+
 ### Changed
 
 - **The remaining agents are realigned with the skills that call them.** In v10 and v11 the skills were redesigned while many of their agents kept the old contracts, and most real defects sat in that gap. Agent names are internal, so none of these changes is breaking.
@@ -20,7 +40,7 @@
     - `swe-arch-reviewer` defers dead code to `swe-dead-code-auditor`.
     - `qa-test-reviewer` defers missing coverage to `qa-test-coverage-reviewer`.
     - `qa-test-fuzz-reviewer` produces candidates even when there is no fuzz tooling, and emits the LOW tier `/review-test` expects.
-    - `swe-bug-assessor` treats change history as a primary signal, matching `/review-health`.
+    - `swe-bug-assessor` treats change history as a primary signal, matching `/review-repo`'s map.
     - `thk-advocate` has explicit compete and defend modes.
     - `thk-premortemer`'s general method applies to every lens, not just `first-principles`.
     - `ux-reviewer` no longer tries to pause and ask mid-run.

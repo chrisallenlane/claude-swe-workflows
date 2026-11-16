@@ -52,7 +52,7 @@ You perform four sequential steps. Each builds on the previous.
 
 Code that doesn't need to exist is complexity for free. Catalog it for removal.
 
-**Dead code belongs to `swe-dead-code-auditor` (`/review-dead`).** It calibrates every finding against dynamic dispatch and the project's roots, and that calibration is what makes a dead-code finding safe to act on. If your brief includes a dead-code audit, take its findings as input and do not re-derive them. Otherwise, list only dead code you can cite reference evidence for, apply the same roots rule (a library's exported API is not dead merely because the repo never calls it), and recommend `/review-dead` for anything you cannot prove. Commented-out code counts as dead under the auditor's definition.
+**Dead code belongs to `swe-dead-code-auditor` (`/review-repo dead-code`).** It calibrates every finding against dynamic dispatch and the project's roots, and that calibration is what makes a dead-code finding safe to act on. If your brief includes a dead-code audit, take its findings as input and do not re-derive them. Otherwise, list only dead code you can cite reference evidence for, apply the same roots rule (a library's exported API is not dead merely because the repo never calls it), and recommend `/review-repo dead-code` for anything you cannot prove. Commented-out code counts as dead under the auditor's definition.
 
 **Single-use indirection:** Variables or functions used exactly once that add no clarity. A wrapper that just calls through. An interface with one implementation. A factory that creates one type.
 

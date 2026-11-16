@@ -4,7 +4,7 @@
 
 The `/review-test` skill performs a five-phase test suite survey: unit coverage gaps, integration coverage gaps, E2E (browser) coverage gaps when applicable, fuzz coverage gaps, and test quality issues. It is **advisory only** — the skill does not implement test changes. After all phases run, it presents consolidated findings and proposes a ticket structure for the recommended work; the operator (human or orchestrator) approves, edits, or declines. On approval, tickets land in the issue tracker.
 
-The plugin is moving `/review-*` skills toward advisory-only over time; `/review-test` joined `/review-arch`, `/review-security`, and `/bug-hunt` in this direction in v9.0.0. See the "Advisory aspiration" section of [`references/autonomy.md`](../../../references/autonomy.md) for the broader direction.
+The plugin is moving `/review-*` skills toward advisory-only over time; `/review-test` joined `/review-repo architecture`, `/review-security`, and `/bug-hunt` in this direction in v9.0.0. See the "Advisory aspiration" section of [`references/autonomy.md`](../../../references/autonomy.md) for the broader direction.
 
 **Key benefits:**
 - Systematic: surveys unit, integration, E2E, fuzz, and quality in deliberate order
@@ -203,7 +203,7 @@ The operator approves / edits / declines:
 
 ## Orchestrator-Invoked Behavior
 
-When `/review-test` is invoked by an orchestrator (`/implement`, `/review-health`), the workflow above is unchanged. The orchestrator receives the ticket-structure proposal and applies its own judgment per [`references/autonomy.md`](../../../references/autonomy.md) — typically declining items it intends to implement inline and approving items it wants tracked for follow-up.
+When `/review-test` is invoked by an orchestrator (`/implement`, `/review-repo`), the workflow above is unchanged. The orchestrator receives the ticket-structure proposal and applies its own judgment per [`references/autonomy.md`](../../../references/autonomy.md) — typically declining items it intends to implement inline and approving items it wants tracked for follow-up.
 
 ## Agent Coordination
 

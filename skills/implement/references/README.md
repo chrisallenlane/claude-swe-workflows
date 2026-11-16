@@ -4,7 +4,7 @@
 
 `/implement` builds whatever you hand it — one ticket, a batch of tickets, or a goal that still needs scoping — and gives you back a branch and a report. It covers what `/implement-batch` and `/implement-project` used to do; there is now one skill at every scale.
 
-**Judgment over checklists.** The skill does not walk a fixed sequence of review steps. It holds a repertoire of agents and skills and uses the ones the work needs, when it needs them. A typo-sized fix gets a one-line concept inventory, a verification run, and a commit. A twelve-ticket feature may get planning, delegated implementation, `/refactor`, `/review-arch`, and a smoke test.
+**Judgment over checklists.** The skill does not walk a fixed sequence of review steps. It holds a repertoire of agents and skills and uses the ones the work needs, when it needs them. A typo-sized fix gets a one-line concept inventory, a verification run, and a commit. A twelve-ticket feature may get planning, delegated implementation, `/refactor`, `/review-repo architecture`, and a smoke test.
 
 **A small floor is fixed.** Five things hold on every run, at every scale:
 
@@ -136,19 +136,19 @@ Everything here is chosen by judgment. Anything that plausibly applied but didn'
 
 **Skills, mostly at project scale:**
 
-| Pass                                                                                               | When                                                               |
-|----------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|
-| `/refactor`                                                                                        | After the tickets, before other reviews; menu answered from intent |
-| `/review-arch`, `/review-test`, `/review-dead`, `/review-security`, `/review-perf`, `/review-a11y` | The work touched their territory                                   |
-| `/bug-hunt`                                                                                        | Substantial new surface with thin coverage                         |
-| `/bug-fix`                                                                                         | A failure that resists a direct fix                                |
-| Smoke-testing procedure                                                                            | Before declaring multi-ticket work done                            |
-| `/review-release`                                                                                  | Last, when the work is headed for a release                        |
-| `/think-*` (deliberate, reframe, diagnose, scrutinize)                                             | Close calls, wrong framings, unclear failures, risky plans         |
+| Pass                                                                                                                      | When                                                               |
+|---------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| `/refactor`                                                                                                               | After the tickets, before other reviews; menu answered from intent |
+| `/review-repo architecture`, `/review-test`, `/review-repo dead-code`, `/review-security`, `/review-perf`, `/review-a11y` | The work touched their territory                                   |
+| `/bug-hunt`                                                                                                               | Substantial new surface with thin coverage                         |
+| `/bug-fix`                                                                                                                | A failure that resists a direct fix                                |
+| Smoke-testing procedure                                                                                                   | Before declaring multi-ticket work done                            |
+| `/review-release`                                                                                                         | Last, when the work is headed for a release                        |
+| `/think-*` (deliberate, reframe, diagnose, scrutinize)                                                                    | Close calls, wrong framings, unclear failures, risky plans         |
 
 Review skills that propose tickets are handled with orchestrator judgment: approve what should be tracked, decline what the run will handle inline (and then handle it), and prefer a ticket when in doubt.
 
-`/review-value` runs only when your intent asks for it, and its trade menu is surfaced to you rather than acted on. `/release` is never run.
+`/review-repo value` runs only when your intent asks for it, and its trade menu is surfaced to you rather than acted on. `/release` is never run.
 
 **Severity handling:** Critical/High resolved before finishing; Medium resolved if bounded and local, else deferred with a note; Low/Info deferred with a note.
 
@@ -254,7 +254,7 @@ You: /implement #301 #302 #303 (export command: CSV, JSON, --fields flag)
 
 Report — Passes not run:
 - /refactor: ~180 new lines in a small, fresh module; nothing to shrink yet
-- /review-arch: no module boundaries changed
+- /review-repo architecture: no module boundaries changed
 - sec-blue-teamer: output only, no new input handling beyond flags
 ```
 
@@ -264,7 +264,7 @@ Report — Passes not run:
 You: /implement milestone v2.0 (11 tickets, sync engine rewrite)
 
 1. Plan: three dependency groups; probable passes /refactor,
-   /review-arch, /review-test, smoke test. Stakes asked:
+   /review-repo architecture, /review-test, smoke test. Stakes asked:
    "Breaks: users lose unsynced edits. Maintained by me, for years."
    Smoke procedure: run `sync --dry-run` against the fixtures repo,
    diff against golden output. Approved.
@@ -274,7 +274,7 @@ You: /implement milestone v2.0 (11 tickets, sync engine rewrite)
    all acceptance criteria; documented requirements kept; no trades
    taken. 3 iterations; concepts 52 → 41, code lines 7,900 → 6,300;
    oracle green; merged --no-ff; tests and smoke re-run, pass.
-   /review-arch on the reduced design: proposes 3 items — 2 tickets
+   /review-repo architecture on the reduced design: proposes 3 items — 2 tickets
    cut (#340, #341), 1 handled inline (conflict-resolver split, SHA a1b2c3d).
    /review-test: coverage gap in retry paths — filled inline.
    Smoke test passes.
