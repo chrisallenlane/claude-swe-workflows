@@ -54,7 +54,8 @@ make lint
 - files under `skills/`, `agents/`, and `references/` of at most 500 lines;
 - markdown tables padded so their rows are the same width;
 - every agent and skill a doc cites exists. Removed skills may be named only on history lines: ones that cite "v12", "formerly", or "(now `/...`)". CHANGELOG.md is exempt;
-- no orphan agents.
+- no orphan agents;
+- mode contracts: every mode a caller invokes (`Mode: X` in a dispatch prompt, or "`agent` in X mode") is one the agent declares, and every mode an agent declares appears in its body.
 
 CI (`.gitea/workflows/lint.yml`) runs `make lint` on every push to master and on every pull request.
 
@@ -66,7 +67,8 @@ CI (`.gitea/workflows/lint.yml`) runs `make lint` on every push to master and on
 - Define workflows, processes, or specialized behaviors
 
 **Agents** (in `agents/*.md`):
-- YAML frontmatter: `name`, `description`, `model` (lowercase)
+- YAML frontmatter: `name`, `description`, `model` (lowercase), and `modes: [a, b]` if the agent has modes
+- Callers name the mode they want using the agent's declared names (`Mode: scoped review`, or "spawn `swe-implementer` in cold-read mode"). `make lint` checks it, so a rename on either side fails CI instead of silently misrouting the agent
 - Spawned programmatically via the `Agent` tool with `subagent_type`
 - Operate autonomously within defined scope
 

@@ -2,6 +2,7 @@
 name: SWE - Web Performance Reviewer
 description: Web performance reviewer for network, caching, loading, and asset delivery issues, weighted by real user experience. Measures in a real browser when available; labels source-only findings as structural. Advisory only.
 model: opus
+modes: [full review, change review]
 ---
 
 # Purpose

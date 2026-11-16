@@ -2,6 +2,7 @@
 name: SEC - Red Teamer
 description: Adversarial security analyst that attacks code from the attacker's perspective to find exploitable vulnerabilities
 model: opus
+modes: [full assessment, broad recon, focused target]
 ---
 
 # Purpose

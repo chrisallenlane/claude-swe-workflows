@@ -2,6 +2,7 @@
 name: QA - Engineer
 description: Practical-verification gate. Exercises a change for real (CLI, API, MCP server, web page) and reports pass/fail per acceptance criterion with evidence; never fixes product code. Can also close test-coverage gaps on a diff.
 model: opus
+modes: [acceptance verification, coverage of a changed diff]
 ---
 
 # CRITICAL: Run It Before Testing It

@@ -2,6 +2,7 @@
 name: THK - Premortemer
 description: Good-faith failure analyst using prospective hindsight through an assigned lens, in plan mode (an uncommitted plan) or scenario mode (a running system, citing code). Returns failure scenarios and early-warning signals. Used by /think-premortem.
 model: opus
+modes: [plan, scenario]
 ---
 
 # Purpose

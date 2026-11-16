@@ -35,6 +35,12 @@ AGENT_NAME = re.compile(r"""[`"]((?:SWE|QA|SEC|THK|UX|DOC) - [A-Z][A-Za-z0-9]*(?
 HISTORICAL = re.compile(r"v12|formerly|\(now `/", re.IGNORECASE)
 
 errors = []
+agent_modes = {}  # agent id -> normalized mode names it declares in frontmatter
+
+
+def norm(text):
+    """Compare mode names case- and hyphen-insensitively."""
+    return re.sub(r"\s+", " ", text.lower().replace("-", " ").replace("*", ""))
 
 
 def fail(path, line, check, msg):
@@ -80,6 +86,17 @@ for path in skills + agents:
         fail(path, fm["name"][1], "frontmatter", f"name `{fm['name'][0]}` != directory `{path.parent.name}`")
     if path in agents and "name" in fm:
         agent_display[fm["name"][0]] = path.stem
+    if path in agents and "modes" in fm:
+        raw, n = fm["modes"]
+        if not (raw.startswith("[") and raw.endswith("]")):
+            fail(path, n, "modes", "modes must be a flow list: modes: [a, b]")
+        else:
+            declared = [m.strip() for m in raw[1:-1].split(",") if m.strip()]
+            agent_modes[path.stem] = {norm(m) for m in declared}
+            body = norm(path.read_text().split("---", 2)[2])
+            for m in declared:
+                if norm(m) not in body:
+                    fail(path, n, "modes", f"declared mode `{m}` never appears in the agent body")
 
 # Files whose length is held to the house limit: prompts and reference docs.
 bounded = skills + agents + sorted(ROOT.glob("references/*.md")) + sorted(ROOT.glob("skills/*/references/**/*.md"))
@@ -140,6 +157,51 @@ for path in docs:
             if name not in skill_names and not HISTORICAL.search(line):
                 fail(path, n, "skill-refs", f"`/{name}` is not a skill (name the version if this is history)")
 
+# Mode contracts: a caller that names an agent's mode must name one the agent
+# declares. Two caller forms are checked, in skill prompts and runtime refs:
+#   `Mode: X` in a dispatch prompt -> the nearest agent cited in the 30 lines above
+#   "<agent> ... in X mode" prose  -> an agent cited on the same line
+MODE_LINE = re.compile(r"\bMode:\s*\**([a-z][a-z -]*?)\**\s*(?:$|[.;,)—`]| —)")
+MODE_PROSE = re.compile(r"\bin (?:its )?([a-z]+(?:-[a-z]+)*(?: [a-z]+)?) mode\b")
+MODE_WINDOW = 30
+
+
+def agents_on(line):
+    found = [m.group(1) for m in AGENT_ID.finditer(line) if m.group(1) in agent_ids]
+    found += [agent_display[m.group(1)] for m in AGENT_NAME.finditer(line) if m.group(1) in agent_display]
+    return found
+
+
+mode_refs = 0
+
+
+def check_mode(path, n, agent, mode):
+    global mode_refs
+    mode_refs += 1
+    if agent not in agent_modes:
+        fail(path, n, "modes", f"invokes `{agent}` in mode `{mode}`, but the agent declares no modes")
+    elif norm(mode) not in agent_modes[agent]:
+        fail(path, n, "modes", f"`{agent}` has no mode `{mode}` (declares: {', '.join(sorted(agent_modes[agent]))})")
+
+
+callers = sorted(ROOT.glob("skills/*/SKILL.md")) + sorted(ROOT.glob("skills/*/references/**/*.md"))
+for path in callers:
+    lines = path.read_text().split("\n")
+    for n, line in enumerate(lines, start=1):
+        m = MODE_LINE.search(line)
+        if m:
+            near = []
+            for k in range(n, max(0, n - 1 - MODE_WINDOW), -1):
+                near = agents_on(lines[k - 1]) if k != n else agents_on(line[: m.start()])
+                if near:
+                    break
+            if near:
+                check_mode(path, n, near[-1], m.group(1).strip())
+        for m in MODE_PROSE.finditer(line):
+            on_line = agents_on(line[: m.start()])
+            if on_line:
+                check_mode(path, n, on_line[-1], m.group(1))
+
 for ident in sorted(agent_ids - cited):
     fail(ROOT / "agents" / f"{ident}.md", 1, "orphans", "no skill, agent, or doc cites this agent")
 
@@ -147,4 +209,4 @@ if errors:
     print("\n".join(errors))
     print(f"\nlint: {len(errors)} problem(s)")
     sys.exit(1)
-print(f"lint: ok ({len(skills)} skills, {len(agents)} agents, {len(docs)} docs)")
+print(f"lint: ok ({len(skills)} skills, {len(agents)} agents, {len(docs)} docs, {mode_refs} mode references)")

@@ -80,6 +80,11 @@
   - **What it checks:** `scripts/lint.py` (standard library only) checks skill and agent frontmatter, description length, the 500-line limit, markdown table alignment, that every agent and skill a doc cites exists, and that no agent is orphaned.
   - **Where it runs:** `.gitea/workflows/lint.yml` runs it on every push to master and on every pull request.
   - **Why:** every check it runs was done by hand repeatedly during the v12 consolidation, and the two reference checks still caught stale `/review-*` references that had survived several review passes.
+- **Explicit mode contracts for agents.** The 12 agents that have modes declare them in frontmatter (`modes: [...]`), and `make lint` checks both sides of the contract.
+  - **Callers:** every mode a skill invokes, as a `Mode: X` line in a dispatch prompt or as "`agent` in X mode" prose, must be a mode the agent declares.
+  - **Agents:** every declared mode must appear in the agent's own body.
+
+  Mismatched mode names were the most common defect in the v12 agent-fit pass, and they are now caught mechanically. The check covers 25 mode references. `swe-perf-reviewer`'s "Spec-time review" is renamed "Spec-time" to match what callers say.
 - **Each skill's `references/README.md` is now a guide, not a second copy of the procedure.** The 22 guides drop from about 5,800 lines to about 3,300. They keep:
   - the rationale and lineage;
   - when to use and not to use the skill;

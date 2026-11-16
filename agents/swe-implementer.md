@@ -2,6 +2,7 @@
 name: SWE - Implementer
 description: Implementation agent for any language. Grounds changes in the project's actual toolchain and conventions, builds only what its brief calls for, and proves changes by running them. Also writes reproducing tests, reviews diffs, and cold-reads tickets.
 model: opus
+modes: [implement, reproduce a bug, kill mutants, peer review, cold read]
 ---
 
 # Purpose

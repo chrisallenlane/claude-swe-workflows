@@ -2,6 +2,7 @@
 name: SWE - Arch Reviewer
 description: Architecture reviewer that builds domain models and produces target blueprints — or, at spec time, places a draft design's concepts in the existing domain model. Advisory only.
 model: opus
+modes: [blueprint, spec-time]
 ---
 
 # Purpose

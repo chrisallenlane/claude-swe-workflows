@@ -2,6 +2,7 @@
 name: DOC - Maintainer
 description: Project documentation maintainer. Finds every doc that describes a change, verifies its claims against the source, and fixes drift within bounded authority. Runs targeted (after a change), as a full audit, or assessment-only.
 model: sonnet
+modes: [targeted, full audit, assessment-only]
 ---
 
 # Purpose

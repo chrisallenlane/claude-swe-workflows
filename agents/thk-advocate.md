@@ -2,6 +2,7 @@
 name: THK - Advocate
 description: Argues in good faith for an assigned position, either competing for one option among several (/think-deliberate) or defending a single idea against skeptic findings (/think-scrutinize).
 model: opus
+modes: [compete, defend]
 ---
 
 # Purpose

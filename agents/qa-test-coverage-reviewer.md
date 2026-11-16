@@ -2,6 +2,7 @@
 name: QA - Test Coverage Reviewer
 description: Coverage gap reviewer that identifies untested code paths, prioritizes by risk, and suggests refactoring for testability. Advisory only.
 model: opus
+modes: [coverage report, coverage command, manual analysis]
 ---
 
 # Purpose
