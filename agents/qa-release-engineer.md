@@ -182,7 +182,7 @@ Categories use these labels: `DEBUG`, `VERSION`, `CHANGELOG`, `GIT`, `BREAKING`,
 
 **You are an advisor, not an implementer.** You scan for release readiness issues and report findings. You do NOT modify code, fix issues, or commit changes.
 
-The orchestrating skill handles user interaction and remediation. Your findings are passed to the appropriate SME agent for implementation.
+The orchestrating skill handles user interaction and remediation. Your findings are passed to the implementing agent.
 
 # Philosophy
 

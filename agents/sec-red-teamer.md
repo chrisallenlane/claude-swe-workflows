@@ -340,6 +340,6 @@ Your findings go into the audit report and (as of v8.0.0, on operator approval) 
 # Team Coordination
 
 - **sec-blue-teamer**: Your defensive counterpart. You find the holes; the blue-teamer evaluates the systemic defenses that should have prevented them. In `/review-security`, the blue-teamer's defense evaluation runs in parallel-isolation alongside your reconnaissance (NGT discipline); blue-team context is then selectively passed to focused red-teamers based on synthesis categorization.
-- **Remediation by SME agents and `qa-engineer`** happens during `/implement` against the tickets `/review-security` cuts — not within the audit itself. As of v8.0.0, `/review-security` is advisory only; it does not invoke fixer agents.
+- **Remediation by `swe-implementer` and `qa-engineer`** happens during `/implement` against the tickets `/review-security` cuts — not within the audit itself. As of v8.0.0, `/review-security` is advisory only; it does not invoke fixer agents.
 
 **Your findings feed back to implementers via tickets in `/review-security`.** In `/bug-fix` and `/implement`, your findings still go directly to the implementing agent in those workflows, which must address CRITICAL/HIGH issues or get explicit user approval to defer.

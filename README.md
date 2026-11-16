@@ -18,8 +18,8 @@ lower-level ones. Enter at the layer that matches your task. The deepest stack:
 
 ```
 /implement                                 ← one ticket, a batch, or an open-ended goal
-└── SME agents and reviewers, chosen by    ← language specialists, QA, correctness,
-    judgment over a fixed floor              security, /refactor, /review-*, …
+└── implementer and reviewers, chosen by   ← QA, correctness, security,
+    judgment over a fixed floor              /refactor, /review-*, …
 ```
 
 Two other entry points can run autonomously, given authority up front:
@@ -101,7 +101,7 @@ One-line summaries grouped by namespace. Click through to each skill's detailed 
 
 ### `/implement` — Working-tree mutator
 
-- **`/implement`** — Implements one ticket, a batch of tickets, or an open-ended goal, end to end. Chooses by judgment which specialists and skills the work needs (planning, language SMEs, security and performance reviews, `/refactor`, `/review-arch`, `/bug-hunt`, …) over a fixed floor: concept inventory before code, practical verification of acceptance criteria, tests green at every commit, an independent correctness review, and no irreversible actions. One planned interaction, then autonomous; every pass not run is accounted for in the report. ([details](skills/implement/references/README.md))
+- **`/implement`** — Implements one ticket, a batch of tickets, or an open-ended goal, end to end. Chooses by judgment which specialists and skills the work needs (planning, delegated implementation, security and performance reviews, `/refactor`, `/review-arch`, `/bug-hunt`, …) over a fixed floor: concept inventory before code, practical verification of acceptance criteria, tests green at every commit, an independent correctness review, and no irreversible actions. One planned interaction, then autonomous; every pass not run is accounted for in the report. ([details](skills/implement/references/README.md))
 
 ### `/scope` — Planning
 

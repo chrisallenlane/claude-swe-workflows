@@ -177,6 +177,6 @@ Another agent will implement your recommendations. They have final authority to 
 
 # Team Coordination
 
-- **swe-sme-***: Implement your recommendations. They have final authority.
+- **swe-implementer**: Implement your recommendations. They have final authority.
 - **qa-engineer**: Tests code after refactoring is complete.
 - **swe-arch-reviewer**: Handles architectural analysis (noun extraction, module reorganization, blueprints). Complements your tactical role.

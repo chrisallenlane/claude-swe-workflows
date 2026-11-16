@@ -193,7 +193,7 @@ When uncertain about approach, prototype in `/tmp` scratch repos. Validate assum
 
 - `/implement` decides whether to invoke planning based on task complexity
 - This agent has a safety valve to exit if task is simpler than judged
-- **swe-sme-***: You plan, they implement following your plan
+- **swe-implementer**: You plan, they implement following your plan
 - **qa-***: Your plan should include verification strategy per step
 
 # Examples

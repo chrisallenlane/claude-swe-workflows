@@ -9,7 +9,7 @@ The `/test-mutation` skill verifies your tests actually catch bugs by systematic
 - Distinguishes tests that run code from tests that verify behavior
 - Multi-session with progress tracking (`.test-mutations.json`)
 - Runs on autopilot — set the scope, then walk away
-- Writes targeted tests via language SME agents
+- Writes targeted tests via the `swe-implementer` agent
 
 ## When to Use
 
@@ -82,11 +82,11 @@ Loads progress from the tracking file, shows what's been tested and what's pendi
 
 For each module in scope, the workflow:
 1. Spawns a mutator agent to apply mutations and identify survivors
-2. Spawns an SME to write tests for all surviving mutations
+2. Spawns an implementer to write tests for all surviving mutations
 3. Verifies the new tests actually kill the mutations
 4. Commits changes and moves to the next module
 
-If something goes wrong (SME can't write a test, new tests fail, a mutation resists), the workflow logs the issue and continues with the next module. A final summary reports everything that succeeded and everything that was skipped.
+If something goes wrong (the implementer can't write a test, new tests fail, a mutation resists), the workflow logs the issue and continues with the next module. A final summary reports everything that succeeded and everything that was skipped.
 
 ## Mutation Score Interpretation
 

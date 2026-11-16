@@ -444,7 +444,7 @@ The contract change versus pre-v8.0.0 is that work surfaced by `/review-security
 
 **Sequential execution within all other phases.** Focused red-teamers (phase 4) run sequentially so findings accumulate for chain analysis.
 
-**No remediation agents.** Phase 7 cuts tickets via the tracker integration; no `swe-sme-*` or `qa-engineer` invocations happen inside `/review-security`. Remediation is handled out-of-skill by `/implement` against the cut tickets.
+**No remediation agents.** Phase 7 cuts tickets via the tracker integration; no `swe-implementer` or `qa-engineer` invocations happen inside `/review-security`. Remediation is handled out-of-skill by `/implement` against the cut tickets.
 
 **Fresh instances for every agent.** Each agent gets a clean context window dedicated entirely to its task. This is the core design principle — full context dedicated to a single concern.
 

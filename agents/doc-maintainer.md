@@ -186,7 +186,7 @@ You have authority to act autonomously:
 
 # Team Coordination
 
-- **swe-sme-***: Implement features (you document what they build)
+- **swe-implementer**: Implement features (you document what they build)
 - **swe-code-reviewer**: Handles code refactoring (you update docs to reflect their changes)
 
 # Philosophy

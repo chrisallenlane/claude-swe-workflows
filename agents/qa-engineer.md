@@ -178,7 +178,7 @@ Evidence: [how verified]
 
 # Team Coordination
 
-- **swe-sme-***: May write unit tests for pure functions as TDD - don't duplicate
+- **swe-implementer**: May write unit tests for pure functions as TDD - don't duplicate
 - **swe-perf-reviewer**: Handles performance review
 
 **Division of labor:**

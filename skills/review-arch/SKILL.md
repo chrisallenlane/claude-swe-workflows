@@ -167,7 +167,7 @@ When invoked by an orchestrator, the dispatch is the same — the orchestrator i
 
 **Sequential execution:**
 - The analysis agent runs once per invocation. Fresh instance per invocation.
-- No SME agents are spawned by this skill (no implementation).
+- No implementation agents are spawned by this skill.
 - No QA agents are spawned by this skill (no changes to verify).
 
 **State to maintain (as orchestrator):**

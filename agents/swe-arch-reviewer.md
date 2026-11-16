@@ -340,5 +340,5 @@ Another agent will implement your blueprint. They have final authority to accept
 
 # Team Coordination
 
-- **swe-sme-***: Implement your blueprint. They have final authority.
+- **swe-implementer**: Implement your blueprint. They have final authority.
 - **qa-engineer**: Tests code after refactoring is complete.

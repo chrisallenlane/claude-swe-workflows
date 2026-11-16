@@ -467,7 +467,7 @@ After all tickets are created, report the URLs to the operator and exit.
 
 See [`references/advisory-tickets.md`](../../references/advisory-tickets.md) § "Orchestrator-invoked behavior" — the proposal is presented identically to operator and orchestrator; the orchestrator's auto-approval contract is documented in [`references/autonomy.md`](../../references/autonomy.md) § "Auto-approval of sub-skill ticket proposals".
 
-The contract change versus pre-v9.0.0 is that test work surfaced by `/review-test` is now durably documented in the tracker rather than implemented in-skill via SME routing.
+The contract change versus pre-v9.0.0 is that test work surfaced by `/review-test` is now durably documented in the tracker rather than implemented in-skill via language-specialist routing.
 
 ## Agent Coordination
 
@@ -477,7 +477,7 @@ The contract change versus pre-v9.0.0 is that test work surfaced by `/review-tes
 **Phase 4 analysis:** Spawn single `qa-test-fuzz-reviewer` agent.
 **Phase 5 analysis:** Spawn `qa-test-reviewer` agent(s). For large scopes, partition and run in parallel.
 
-**No remediation agents.** Step 8 cuts tickets via the tracker integration; no `swe-sme-*` or `qa-engineer` invocations happen inside `/review-test`. Test design and implementation are handled out-of-skill by `/implement` against the cut tickets.
+**No remediation agents.** Step 8 cuts tickets via the tracker integration; no `swe-implementer` or `qa-engineer` invocations happen inside `/review-test`. Test design and implementation are handled out-of-skill by `/implement` against the cut tickets.
 
 **Fresh instances:** Every agent spawn is a fresh instance. No state carried between invocations.
 

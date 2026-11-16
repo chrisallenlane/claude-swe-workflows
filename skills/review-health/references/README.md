@@ -233,10 +233,10 @@ The skill draws on practitioner traditions that have solved "rapid assessment of
 The map is primarily produced by the main Claude instance. Subagents are used narrowly:
 
 - **Observe-phase scouts (optional):** parallel subagents for discrete signal-collection tasks on large repos
-- **SME consultation (optional, narrow):** for single dimensions requiring specialized language/domain knowledge
+- **Focused consultation (optional, narrow):** a fresh subagent briefed on a single dimension that needs a deeper look
 - **Specialist reviews (Phase 5, with authority):** each runs as its own skill with its own agents
 
-Per-language SME dispatch is *not* the default. That was an earlier version's failure mode.
+Per-language dispatch is *not* the default. That was an earlier version's failure mode.
 
 ## Resource Profile
 

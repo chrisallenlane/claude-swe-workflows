@@ -60,7 +60,7 @@ For a multi-ticket set, state each ticket's dependencies explicitly and give the
 
 Spawn fresh-context reviewers on the drafts — at least one, always (rule 1). Choose by what the work needs:
 
-- **Implementer** — the default cold reader. Spawn the project's language SME (`swe-sme-golang`, `swe-sme-zig`, `swe-sme-typescript`, …) or a general-purpose agent, told to review every ticket as if assigned to implement it tomorrow: every gap, ambiguity, missing dependency, wrong code reference, and unanswered question, with a specific fix for each.
+- **Implementer** — the default cold reader. Spawn `swe-implementer` in cold-read mode, told to review every ticket as if assigned to implement it tomorrow: every gap, ambiguity, missing dependency, wrong code reference, and unanswered question, with a specific fix for each.
 - **`ux-reviewer`** — whenever the work changes what a user (of a CLI, MCP server, web app, or library API) sees or does: mental-model fit, dead ends, missing recovery paths, naming. Asks "should we build this?"
 - **`sec-blue-teamer`** — when the work shapes authentication, authorization, trust boundaries, or data handling at the design level. Frame it as a spec-time review: the controls the design needs, not an audit of existing code.
 - **`swe-perf-reviewer`** — when the design has architectural performance implications: data structures at scale, caching strategy, hot-path shape.

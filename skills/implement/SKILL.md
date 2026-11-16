@@ -1,12 +1,12 @@
 ---
 name: implement
-description: Implements one ticket, a batch of tickets, or an open-ended goal, end to end. Uses judgment to choose which specialist agents and skills the work needs — planning, language SMEs, reviews, /refactor, /review-arch, /bug-hunt — over a small fixed floor that always holds — concept inventory before code, practical verification of acceptance criteria, tests green at every commit, an independent correctness review, and no irreversible actions. One planned interaction scaled to the work, then autonomous; every pass not run is accounted for in the final report.
+description: Implements one ticket, a batch of tickets, or an open-ended goal, end to end. Uses judgment to choose which specialist agents and skills the work needs — planning, an implementer, reviews, /refactor, /review-arch, /bug-hunt — over a small fixed floor that always holds — concept inventory before code, practical verification of acceptance criteria, tests green at every commit, an independent correctness review, and no irreversible actions. One planned interaction scaled to the work, then autonomous; every pass not run is accounted for in the final report.
 model: opus
 ---
 
 # Implement — From Tickets to a Review-Ready Branch
 
-Implements whatever it is given — one ticket, a batch of tickets, or a goal that still needs scoping — and hands back a branch and a report. The skill decides how much process the work needs. A typo-sized fix gets a concept inventory of "no new concepts," a verification run, and a commit; a twelve-ticket feature may get planning, SMEs, `/refactor`, `/review-arch`, and a smoke test. The work decides, not a checklist.
+Implements whatever it is given — one ticket, a batch of tickets, or a goal that still needs scoping — and hands back a branch and a report. The skill decides how much process the work needs. A typo-sized fix gets a concept inventory of "no new concepts," a verification run, and a commit; a twelve-ticket feature may get planning, delegated implementation, `/refactor`, `/review-arch`, and a smoke test. The work decides, not a checklist.
 
 ## Philosophy
 
@@ -73,7 +73,7 @@ Implements whatever it is given — one ticket, a batch of tickets, or a goal th
 
 ## 3. Build
 
-**Choose the implementation agent** by what the change touches: `swe-sme-golang`, `swe-sme-zig`, `swe-sme-typescript`, `swe-sme-javascript`, `swe-sme-html`, `swe-sme-css`, `swe-sme-graphql`, `swe-sme-docker`, `swe-sme-makefile`, `swe-sme-ansible` — or implement directly when no specialist fits. Pass it the ticket, the inventory, and any plan.
+**Delegate the build to `swe-implementer`** — or implement directly when the change is small enough that a handoff costs more than it saves. Pass it the ticket, the inventory, any plan, and the target runtime and versions when you know them.
 
 **Plan when the work is unclear.** `swe-planner` sequences complex changes (cross-cutting concerns, migrations, many modules, several viable approaches) into verifiable sub-tasks; it plans the inventoried concepts and adds none. Prototype risky approaches in a scratch directory first.
 
@@ -100,7 +100,7 @@ Use what the work needs. Each pass that plausibly applied and did not run gets a
 **Reviews of the change:**
 - `sec-blue-teamer` — auth, crypto, input handling, trust boundaries. Critical/High findings must be fixed or explicitly waived by the user.
 - `swe-perf-reviewer` — hot paths, queries, loops at scale.
-- A fresh instance of the same SME — "would I accept this PR?" nits on non-trivial diffs; small fixes only, never re-architecture. If its edits break tests, revert them.
+- A fresh `swe-implementer` in peer-review mode — "would I accept this PR?" nits on non-trivial diffs; small fixes only, never re-architecture. If its edits break tests, revert them.
 - `doc-maintainer` or `/tidy-docs` — documentation for what changed; targeted for one ticket, a full pass for a project.
 
 **Skills, mostly at project scale:**

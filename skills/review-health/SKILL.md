@@ -312,9 +312,9 @@ The skill's credibility is load-bearing. These rules are structural, not stylist
 The skill is primarily executed by the main Claude instance — OODA cadence is inherently sequential and benefits from synthesis within a single context. Subagents are used narrowly:
 
 - **Observe-phase scouts (optional, parallelizable):** for large repos, parallel subagents can be dispatched to run discrete signal-collection tasks (git-history analysis, dep-audit, lint-run, complexity-scan). Each returns structured signals, not prose. Use only when Observe-phase signal gathering is heavy enough to benefit from parallelism.
-- **SME consultation (optional, narrow):** if a single dimension requires specialized knowledge the main instance lacks (e.g., idiom-correctness in Zig, or GraphQL schema coherence), a language/domain SME may be consulted for that dimension only. The SME returns a rubric-placement with evidence; it does not write prose summary.
+- **Focused consultation (optional, narrow):** if a single dimension needs a deeper look than the map can afford (e.g., idiom-correctness against the installed Zig version, or GraphQL schema coherence), a fresh subagent may be briefed on that dimension only. It returns a rubric-placement with evidence; it does not write prose summary.
 
-Do not routinely spawn per-language SMEs. That is the prior failure mode this redesign corrects.
+Do not routinely spawn per-language consultants. That is the prior failure mode this redesign corrects.
 
 ## Sibling-Skill Composition
 

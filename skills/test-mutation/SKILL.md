@@ -31,7 +31,7 @@ Systematically introduces small changes (mutations) to source code, runs the tes
 │  For each module in scope:                          │
 │    4. Spawn qa-test-mutator agent                   │
 │    5. Update tracking file with results             │
-│    6. Spawn SME to write tests for ALL survivors    │
+│    6. Spawn implementer: tests for ALL survivors    │
 │    7. Verify (new tests pass + re-mutate confirms)  │
 │    8. Commit changes                                │
 │  9. Final summary                                   │
@@ -155,27 +155,15 @@ Parse the mutator agent's results and update `.test-mutations.json`:
 
 Write the updated tracking file.
 
-### 6. Spawn SME to Write Tests
+### 6. Spawn Implementer to Write Tests
 
 **If no survivors (100% mutation score):** Log the result and proceed to step 8 (commit).
 
 **If survivors exist:** Write tests for ALL surviving mutations.
 
-**Detect the appropriate SME based on project language:**
-- Go → `swe-sme-golang`
-- Dockerfile → `swe-sme-docker`
-- Makefile → `swe-sme-makefile`
-- GraphQL → `swe-sme-graphql`
-- Ansible → `swe-sme-ansible`
-- Zig → `swe-sme-zig`
-- TypeScript → `swe-sme-typescript`
-- JavaScript → `swe-sme-javascript`
-- HTML → `swe-sme-html`
-- CSS → `swe-sme-css`
+**Spawn `swe-implementer` in kill-mutants mode.** For a small number of simple survivors, writing the tests directly as orchestrator is fine.
 
-**For languages without a dedicated SME**, implement the tests directly as orchestrator.
-
-**Prompt the SME with:**
+**Prompt the implementer with:**
 
 ```
 Write tests to catch the following surviving mutations in [source file]:
@@ -200,7 +188,7 @@ Each test should:
 
 **Run the test suite** to confirm new tests pass with the correct (unmutated) code.
 
-**If new tests fail:** Give the SME (or yourself) one chance to fix. If still failing, log the failure, revert the failing tests (`git restore`), and continue with the next module.
+**If new tests fail:** Give the implementer (or yourself) one chance to fix. If still failing, log the failure, revert the failing tests (`git restore`), and continue with the next module.
 
 **Re-mutate to confirm kills:** For each addressed surviving mutation:
 
@@ -267,7 +255,7 @@ After all modules in scope have been processed:
 - ghi9012 test: improve mutation coverage for config module
 ```
 
-Report any modules that were skipped due to errors (SME failures, test failures, etc.) and why.
+Report any modules that were skipped due to errors (implementer failures, test failures, etc.) and why.
 
 ## Tracking File Format
 
@@ -321,7 +309,7 @@ Report any modules that were skipped due to errors (SME failures, test failures,
 
 ## Agent Coordination
 
-**All subagents MUST be executed sequentially — NEVER in parallel.** Mutation testing works by modifying source files and running tests against those modifications. Parallel agents will simultaneously edit the same files, corrupt each other's mutations, and produce meaningless results. This applies to every agent spawn in this workflow: mutator agents, SME agents, and verification steps. One agent at a time, wait for it to finish, then spawn the next.
+**All subagents MUST be executed sequentially — NEVER in parallel.** Mutation testing works by modifying source files and running tests against those modifications. Parallel agents will simultaneously edit the same files, corrupt each other's mutations, and produce meaningless results. This applies to every agent spawn in this workflow: mutator agents, implementer agents, and verification steps. One agent at a time, wait for it to finish, then spawn the next.
 
 **State management:**
 - Orchestrator maintains the tracking file
@@ -339,7 +327,7 @@ Report any modules that were skipped due to errors (SME failures, test failures,
 **Do NOT abort for:**
 - Individual mutation failures (record and continue)
 - Partial completion (save progress, can resume next session)
-- SME fails to write a test (log the failure, revert, continue with next module)
+- Implementer fails to write a test (log the failure, revert, continue with next module)
 - Some re-applied mutations still survive after new tests (log as unresolved, continue)
 - New tests fail and cannot be fixed (log, revert, continue with next module)
 

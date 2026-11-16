@@ -90,7 +90,7 @@ At least one fresh-context reviewer reads the drafts, always. Beyond that, the s
 
 | Reviewer                                    | When                                                                            | Asks                                                                    |
 |---------------------------------------------|---------------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| Implementer (language SME or general agent) | The default cold reader                                                         | "Could I build this tomorrow?" — gaps, ambiguity, wrong references      |
+| Implementer (`swe-implementer`)            | The default cold reader                                                         | "Could I build this tomorrow?" — gaps, ambiguity, wrong references      |
 | `ux-reviewer`                               | The work changes what a user of a CLI, MCP server, web app, or API sees or does | "Should we build this?" — mental-model fit, dead ends, recovery, naming |
 | `sec-blue-teamer`                           | The design shapes auth, authorization, trust boundaries, or data handling       | What controls does this design need? (spec-time, not a code audit)      |
 | `swe-perf-reviewer`                         | The design has architectural performance implications                           | Data structures at scale, caching, hot-path shape                       |
@@ -122,7 +122,7 @@ You: /scope — the `--since` flag ignores timezones
 4. Draft: bug-fix ticket with root cause, fix, and acceptance
    criteria ("TZ=America/New_York log --since 2026-01-01 includes
    an entry at 2026-01-01T02:00-05:00").
-5. Review: swe-sme-golang cold-reads it — flags that a third call
+5. Review: swe-implementer cold-reads it — flags that a third call
    site in cmd/export.go also parses --since. Added; fresh reviewer
    finds nothing further.
 6. You approve; ticket #88 created.
@@ -145,7 +145,7 @@ You: /scope — add API tokens so scripts can call the server
    - sec-blue-teamer (spec-time): tokens must be stored hashed;
      constant-time comparison; scope checked on every request.
      Locked.
-   - Implementer (swe-sme-golang): hashed storage means the CLI
+   - Implementer (swe-implementer): hashed storage means the CLI
      can't list a token's value — fine — but the ux-locked "show
      a token prefix in `token list`" needs a stored, unhashed prefix,
      which security asked to avoid.

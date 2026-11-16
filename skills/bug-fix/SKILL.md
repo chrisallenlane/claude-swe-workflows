@@ -28,24 +28,9 @@ Loop back to user until the bug is clearly understood. You need enough informati
 
 ### 2. Write Failing Test(s)
 
-**Detect project language/framework:**
-- Check for language-specific files (go.mod, package.json, Cargo.toml, Dockerfile, Makefile, etc.)
-- Determine which specialist agent to use
+**Spawn `swe-implementer` in reproduce-a-bug mode** (or write the tests directly when the bug is small and local).
 
-**Spawn appropriate SME agent:**
-- If Golang project: spawn `swe-sme-golang` agent
-- If GraphQL schema/resolvers: spawn `swe-sme-graphql` agent
-- If Dockerfile changes: spawn `swe-sme-docker` agent
-- If Makefile changes: spawn `swe-sme-makefile` agent
-- If Ansible playbooks/roles: spawn `swe-sme-ansible` agent
-- If Zig project: spawn `swe-sme-zig` agent
-- If TypeScript project: spawn `swe-sme-typescript` agent
-- If JavaScript project: spawn `swe-sme-javascript` agent
-- If HTML/markup changes: spawn `swe-sme-html` agent
-- If CSS/styling changes: spawn `swe-sme-css` agent
-- Otherwise: write tests directly with general best practices
-
-**SME agent task:**
+**Implementer task:**
 - Write test(s) that reproduce the reported bug
 - Tests should encode the *expected* behavior (so they fail against the *current* buggy behavior)
 - Run the tests and **verify they actually fail**
@@ -78,12 +63,12 @@ Loop back to user until the bug is clearly understood. You need enough informati
 
 ### 4. Implement the Fix
 
-**Re-invoke the same SME agent from step 2:**
+**Re-invoke the implementer from step 2:**
 - Pass the diagnosis report as guidance
-- SME implements the fix following the diagnostician's recommended approach
-- SME writes additional tests for related failure modes identified in step 3
-- SME verifies: the originally-failing test(s) from step 2 now pass
-- SME runs the full test suite to check for regressions
+- It implements the fix following the diagnostician's recommended approach
+- It writes additional tests for related failure modes identified in step 3
+- It verifies: the originally-failing test(s) from step 2 now pass
+- It runs the full test suite to check for regressions
 
 **Implementation agent responsibilities:**
 - Fix the bug as narrowly and precisely as possible
@@ -160,42 +145,33 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 
 **Aggregate all review feedback from step 6 and provide to implementation agent.**
 
-**If specialist was used in steps 2/4 (swe-sme-golang, swe-sme-graphql, etc.):**
-- Re-invoke the same specialist agent
+**Re-invoke the implementation agent from step 4** (`swe-implementer`, or yourself if you implemented directly):
 - Provide all review feedback (security, refactoring, performance)
-- Specialist reviews all feedback and **uses own discretion** to implement
+- The implementer reviews all feedback and **uses its own discretion** to implement
 - **Security findings**: Must address or get explicit user approval to skip
-- **Other feedback**: Advisory only - specialist has final authority
-- Specialist may decline recommendations that conflict with language idioms
-- Specialist implements accepted changes and commits
-
-**If no specialist (general implementation):**
-- Re-invoke the same agent that did implementation in step 4
-- Provide all review feedback
-- Agent addresses security issues and implements accepted recommendations
-- Agent commits changes
+- **Other feedback**: Advisory only - the implementer has final authority, and may decline recommendations that conflict with the project's conventions
+- The implementer implements accepted changes and commits
 
 **Note**: Security issues have authority to block; other feedback is advisory. Implementation agent makes final decisions on advisory feedback.
 
-### 8. SME Peer Review (Conditional)
+### 8. Peer Review (Conditional)
 
 **Condition:** Non-trivial changes (>50 lines changed, multiple files, or complex logic).
 
 **Skip if:**
 - Changes are trivial (single file, <50 lines, simple logic)
-- No language-specific SME was used in step 2 (general implementation)
 
-**If applicable, spawn a fresh instance of the same SME type used in step 2:**
+**If applicable, spawn a fresh `swe-implementer` in peer-review mode:**
 - Fresh context window - reviewer sees only current code state via git diff
 - Reviews with "would I accept this PR" lens
-- Focuses on: minor oversights, idiomatic patterns, naming, small cleanups
+- Focuses on: minor oversights, idiom, naming, small cleanups
 - **Has authority to make small fixes directly**
 
 **Scope constraints (critical):**
 - Small cleanups and nits only
 - No architectural changes
 - No re-implementing features
-- No changing approaches or patterns chosen by original SME
+- No changing approaches or patterns chosen by the original implementer
 - If something seems wrong at a deeper level, flag it rather than fix it
 
 **Expected output:** Small fixes committed, or "no changes needed" if code is clean.
@@ -231,13 +207,13 @@ The default is to run. Skip only when the diff is trivial — typo fixes, commen
 
 **Spawn `swe-correctness-reviewer` agent (fresh context):**
 - Provide: the full diff (or branch/commit range), target runtime and framework versions if known, the **original bug report** (the user's symptom description from step 1), and the round number if looping
-- Do **not** provide: the step-3 diagnosis report, implementation history, or prior agents' outputs. The bug report is user-supplied ground truth — symptom, not rationale. The diagnosis is the implementing SME's adopted theory of the bug; passing it would anchor the reviewer to the same frame that produced the fix. The reviewer's question is not "did we fix the bug" (the reproducing test answers that empirically) but "does this diff rest on false assumptions or break anything else."
+- Do **not** provide: the step-3 diagnosis report, implementation history, or prior agents' outputs. The bug report is user-supplied ground truth — symptom, not rationale. The diagnosis is the implementer's adopted theory of the bug; passing it would anchor the reviewer to the same frame that produced the fix. The reviewer's question is not "did we fix the bug" (the reproducing test answers that empirically) but "does this diff rest on false assumptions or break anything else."
 - The agent assumes a bug already shipped and works backward to find it, walking a six-concern spine (assumptions, runtime semantics, call sites, data flow, error paths, first-principles residual) with mechanical verification of every assumption the diff makes
 
 **Convergence loop (blocking):**
 1. Reviewer reports findings (blocking) and residual risks (non-blocking)
 2. **Zero findings:** proceed to step 11. Carry any residual risks forward to the final summary (step 12) so a human sees them.
-3. **Findings:** re-invoke the implementation agent (same SME as steps 2/4) to resolve each one — fix it, or refute it with cited evidence
+3. **Findings:** re-invoke the implementation agent (same one as steps 2/4) to resolve each one — fix it, or refute it with cited evidence
 4. Re-run mechanical verification — **the step-2 reproducing test explicitly** (it is the contract artifact and must still pass after correctness fixes), plus the full test suite and linters
 5. Spawn a **fresh** `swe-correctness-reviewer` instance to re-review the updated diff in full
 6. Repeat until a round reports zero findings
@@ -279,7 +255,7 @@ The default is to run. Skip only when the diff is trivial — typo fixes, commen
 
 **Correctness review findings (step 10):**
 - All findings are blocking — advisory discretion does not apply
-- Each finding is resolved by fixing it or refuting it with cited evidence; fixes route to the implementation SME, then mechanical re-verification (reproducing test, full suite, linters), then a fresh reviewer instance
+- Each finding is resolved by fixing it or refuting it with cited evidence; fixes route to the implementation agent, then mechanical re-verification (reproducing test, full suite, linters), then a fresh reviewer instance
 - 3 rounds maximum, then escalate to user with surviving findings
 - Residual risks (non-blocking) carry forward to the final summary
 
@@ -407,15 +383,15 @@ Detect tracker, recover the ticket number, and post the close-out per [`referenc
 - Agents should skip work if not applicable
 - Report "nothing to do" rather than making unnecessary changes
 
-**SME continuity:**
-- The same SME type is used across steps 2 (failing test), 4 (fix), 7 (review feedback), and 8 (peer review)
+**Implementer continuity:**
+- The same implementation agent is used across steps 2 (failing test), 4 (fix), 7 (review feedback), and 8 (peer review)
 - Steps 2 and 4 should ideally be the same instance or carry forward context
 - Step 8 (peer review) must be a fresh instance for independent perspective
 
 **Diagnosis pass-through:**
-- The diagnostician's report from step 3 is passed to the SME in step 4
-- The SME should acknowledge the diagnosis and follow its recommended approach
-- The SME should write tests for each related failure mode the diagnostician identified
+- The diagnostician's report from step 3 is passed to the implementer in step 4
+- The implementer should acknowledge the diagnosis and follow its recommended approach
+- The implementer should write tests for each related failure mode the diagnostician identified
 
 ## Iteration Limits
 

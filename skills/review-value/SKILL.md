@@ -123,7 +123,7 @@ requirements changes the blueprint. Then /refactor to shrink what remains."]
 ## Agent Coordination
 
 - One `swe-value-engineer` agent per invocation, fresh instance.
-- No SME or QA agents — the skill changes nothing.
+- No implementation or QA agents — the skill changes nothing.
 
 **State to maintain (as orchestrator):** scope, the agent's menu, per-trade rulings, ticket URLs created.
 

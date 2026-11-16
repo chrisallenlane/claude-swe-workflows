@@ -216,7 +216,7 @@ When `/review-test` is invoked by an orchestrator (`/implement`, `/review-health
 | Phase 4 | `qa-test-fuzz-reviewer`        | No (single)     |
 | Phase 5 | `qa-test-reviewer`             | Yes (>15 files) |
 
-**No implementation agents.** `/review-test` does not spawn `swe-sme-*` or `qa-engineer` agents. Test design and implementation are handled out-of-skill by `/implement` against the cut tickets.
+**No implementation agents.** `/review-test` does not spawn `swe-implementer` or `qa-engineer` agents. Test design and implementation are handled out-of-skill by `/implement` against the cut tickets.
 
 **Fresh instances:** Every agent spawn is a fresh instance. No state carried between invocations.
 

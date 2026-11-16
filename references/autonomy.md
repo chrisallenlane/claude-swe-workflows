@@ -250,10 +250,10 @@ The altitude rule (lever 1) says "implementation-detail forks get the skill's be
 
  | Situation                                                                             | Resolution                                                                      | Log entry                                                                                      |
  |---------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
- | SME proposes function name `parseInput` vs `parseRequest` — conventions don't dictate | Pick the more specific one.                                                     | "Named `parseRequest` for clarity; `parseInput` was equally idiomatic."                        |
+ | Implementer names a function `parseInput` vs `parseRequest`; no convention decides    | Pick the more specific one.                                                     | "Named `parseRequest` for clarity; `parseInput` was equally idiomatic."                        |
  | Code reviewer suggests deleting a helper; another invocation argues to keep           | Apply default policy (deletion wins if no caller references and no test fails). | "Removed `unusedHelper`; code reviewer flagged unused; no callers found."                      |
  | Test review surfaces a coverage gap on a non-critical helper, severity low            | Defer to final report. Do not block termination.                                | "Deferred: low-coverage helper `pkg/util/format`; rationale: non-critical, no recent changes." |
- | Two SMEs return functionally equivalent implementations                               | Pick one (the simpler diff).                                                    | "Chose SME A's implementation; SME B's was equivalent but had two more lines."                 |
+ | Two implementers return functionally equivalent implementations                       | Pick one (the simpler diff).                                                    | "Chose implementer A's version; B's was equivalent but had two more lines."                    |
  | `/tidy-docs` flags wording as unclear; the agent didn't propose a rewrite             | Improve wording with judgment; commit if improvement is clear.                  | "Rewrote intro paragraph; `/tidy-docs` flagged ambiguity in two sentences."                    |
  | Severity classification of a finding is borderline (medium vs low)                    | Use the lower severity if either is defensible.                                 | "Classified `<finding>` as low; review-arch borderline medium."                                |
 
@@ -284,7 +284,7 @@ Skills whose find→fix seam is small enough to keep find-and-fix fused live in 
 - **It does not apply to user-facing exploration skills.** `/scope` is intrinsically interactive; the operator is figuring out what to build. The discipline of pre-loaded options and pre-rebutted recommendations may still be valuable in those skills, but the autonomy framing does not.
 - **It applies to `/implement` only at scale.** A single ticket run with the operator at the keyboard needs none of this; the operator is right there. The discipline matters when `/implement` runs multi-ticket work after its one planned interaction, or is invoked unattended by another skill.
 - **It does not eliminate operator touchpoints.** It eliminates *granular* operator touchpoints. Commander's intent at startup is a touchpoint. The completion report is a touchpoint. Andon-cord pulls are touchpoints — they're just structured to be cheap to answer.
-- **It does not pursue agent-side completeness.** Sub-agents (`swe-sme-*`, `qa-engineer`, etc.) are workers, not orchestrators. They report findings and complete tasks; they do not escalate. Escalation logic lives at the skill layer.
+- **It does not pursue agent-side completeness.** Sub-agents (`swe-implementer`, `qa-engineer`, etc.) are workers, not orchestrators. They report findings and complete tasks; they do not escalate. Escalation logic lives at the skill layer.
 
 ## Sources
 

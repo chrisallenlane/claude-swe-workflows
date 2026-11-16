@@ -157,7 +157,7 @@ See SKILL.md for the exact template.
 
 ## Agent Coordination
 
-**Single agent invocation.** The skill spawns `swe-arch-reviewer` once per invocation. No SMEs are spawned (no implementation). No QA agents are spawned (no changes to verify).
+**Single agent invocation.** The skill spawns `swe-arch-reviewer` once per invocation. No implementation agents are spawned. No QA agents are spawned (no changes to verify).
 
 **State maintained by the skill:**
 - Scope

@@ -123,7 +123,7 @@ The skill offers ticket creation regardless of caller. When an orchestrator invo
 | `sec-blue-teamer` | Defensive posture evaluation (independent first pass)                         |
 | `sec-red-teamer`  | Offensive reconnaissance and exploitation (lead first pass + focused targets) |
 
-Remediation is handled by `/implement` against the tickets this skill cuts — `swe-sme-*` and `qa-engineer` are no longer invoked from within the security audit.
+Remediation is handled by `/implement` against the tickets this skill cuts — `swe-implementer` and `qa-engineer` are not invoked from within the security audit.
 
 ## Resource Usage
 

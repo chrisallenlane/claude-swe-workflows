@@ -62,7 +62,7 @@ Ticket shapes follow the shared advisory pattern (`references/advisory-tickets.m
 
 ## Agent Coordination
 
-**Single agent invocation.** The skill spawns `swe-dead-code-auditor` once per invocation. No SME agents (no implementation), no QA agents (no changes to verify).
+**Single agent invocation.** The skill spawns `swe-dead-code-auditor` once per invocation. No implementation agents, no QA agents (no changes to verify).
 
 ## Abort Conditions
 

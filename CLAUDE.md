@@ -59,7 +59,7 @@ The skills form a layered system. Higher-level workflows orchestrate lower-level
 ```
 /implement (one ticket, a batch, or an open-ended goal)
 ├── fixed floor: concept inventory → build → practical verification → correctness review
-└── judgment-chosen repertoire: SMEs, reviewers, /refactor, /review-*, /bug-hunt, /scope, …
+└── judgment-chosen repertoire: implementer, reviewers, /refactor, /review-*, /bug-hunt, /scope, …
 
 /bug-hunt (commander's intent: scope, severity floor, constraints, ticket/fix authority)
 └── loop: assess → hunt → triage → (fix via /implement, if authorized) until no finding above the floor

@@ -80,7 +80,7 @@ On approval, create tickets per [`references/trackers.md`](../../references/trac
 
 ## Agent Coordination
 
-One `swe-dead-code-auditor` per invocation, fresh instance. No SME or QA agents — the skill changes nothing.
+One `swe-dead-code-auditor` per invocation, fresh instance. No implementation or QA agents — the skill changes nothing.
 
 ## Abort Conditions
 

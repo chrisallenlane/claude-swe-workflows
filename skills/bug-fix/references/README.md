@@ -48,7 +48,7 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
  ┌──────────────────────────────────────────────┐
  │  2. WRITE FAILING TEST(S)                    │
  │  ────────────────────────────────────────    │
- │  Agent: Language-specific SME                │
+ │  Agent: swe-implementer (reproduce mode)     │
  │                                              │
  │  • Write test encoding expected behavior     │
  │  • Verify test actually fails (proves bug)   │
@@ -77,7 +77,7 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
  ┌──────────────────────────────────────────────┐
  │  4. IMPLEMENT THE FIX                        │
  │  ────────────────────────────────────────    │
- │  Agent: Same SME as step 2                   │
+ │  Agent: Same implementer as step 2           │
  │                                              │
  │  • Follow diagnostician's recommended fix    │
  │  • Write tests for related failure modes     │
@@ -122,7 +122,7 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
  ┌──────────────────────────────────────────────┐
  │  7. IMPLEMENT REVIEW FEEDBACK                │
  │  ────────────────────────────────────────    │
- │  Agent: Same SME as steps 2/4                │
+ │  Agent: Same implementer as steps 2/4        │
  │                                              │
  │  • Aggregate all review feedback             │
  │  • Security: Must address or get approval    │
@@ -130,12 +130,12 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  8. SME PEER REVIEW (conditional)            │
+ │  8. PEER REVIEW (conditional)                │
  │  ────────────────────────────────────────    │
- │  Agent: Fresh instance of same SME           │
+ │  Agent: Fresh swe-implementer (peer review)  │
  │                                              │
  │  Non-trivial changes?                        │
- │  ├─ Yes → Fresh SME reviews, makes nit fixes │
+ │  ├─ Yes → Fresh reviewer makes nit fixes     │
  │  └─ No  → Skip to QA                         │
  └──────────────────┬───────────────────────────┘
                     ▼
@@ -198,9 +198,9 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
 
 Key differences:
 - **Test first, then fix.** `/implement` implements then tests. `/bug-fix` writes a failing test before any fix attempt.
-- **Diagnosis before implementation.** The diagnostician performs root-cause analysis so the SME implements a targeted fix, not a guess.
-- **Git archaeology.** The diagnostician traces when and how the bug was introduced, providing context the SME wouldn't otherwise have.
-- **Related failure modes.** The diagnostician identifies patterns, and the SME writes tests for all of them — not just the reported bug.
+- **Diagnosis before implementation.** The diagnostician performs root-cause analysis so the implementer makes a targeted fix, not a guess.
+- **Git archaeology.** The diagnostician traces when and how the bug was introduced, providing context the implementer wouldn't otherwise have.
+- **Related failure modes.** The diagnostician identifies patterns, and the implementer writes tests for all of them — not just the reported bug.
 
 ## Workflow Details
 
@@ -215,22 +215,10 @@ The workflow starts by ensuring the bug is clearly understood:
 Loops until there's enough information to write a reproducing test.
 
 ### 2. Write Failing Test(s)
-A language-specific SME writes test(s) that encode the expected behavior:
+`swe-implementer` writes test(s) that encode the expected behavior:
 - Tests fail against the current buggy code (proving the bug is real and reproducible)
 - This is the "contract" — when these tests pass, the bug is fixed
 - If the bug can't be reproduced after 2 attempts, escalates to user
-
-**Specialists available:**
-- `swe-sme-golang` - Go projects
-- `swe-sme-graphql` - GraphQL schemas/resolvers
-- `swe-sme-docker` - Dockerfiles and containers
-- `swe-sme-makefile` - Makefiles and build systems
-- `swe-sme-ansible` - Ansible playbooks and roles
-- `swe-sme-zig` - Zig projects
-- `swe-sme-html` - HTML/markup
-- `swe-sme-css` - CSS/styling
-- `swe-sme-javascript` - Vanilla JavaScript
-- `swe-sme-typescript` - TypeScript
 
 ### 3. Diagnosis
 The `swe-bug-investigator` agent performs read-only root-cause analysis:
@@ -246,7 +234,7 @@ The `swe-bug-investigator` agent performs read-only root-cause analysis:
 The diagnostician does not modify any code. It produces a diagnosis report that guides the implementation agent.
 
 ### 4. Implement the Fix
-The same SME from step 2 implements the fix:
+The same implementer from step 2 implements the fix:
 - Follows the diagnostician's recommended approach
 - Fixes the bug as narrowly and precisely as possible
 - Writes additional tests for each related failure mode
@@ -263,15 +251,15 @@ If verification fails, returns to step 4 (max 3 attempts before escalating).
 
 ### 6-13. Reviews, Correctness Gate, Documentation, Completion
 
-- **6-7. Conditional reviews and feedback.** `sec-blue-teamer` (security-sensitive changes; Critical/High findings must be addressed or explicitly waived), `swe-code-reviewer` (non-trivial changes; advisory), and `swe-perf-reviewer` (performance-critical changes; advisory). The implementing SME addresses the feedback.
-- **8. SME peer review.** A fresh instance of the same SME makes small fixes on non-trivial changes; reverted if it breaks tests.
+- **6-7. Conditional reviews and feedback.** `sec-blue-teamer` (security-sensitive changes; Critical/High findings must be addressed or explicitly waived), `swe-code-reviewer` (non-trivial changes; advisory), and `swe-perf-reviewer` (performance-critical changes; advisory). The implementer addresses the feedback.
+- **8. Peer review.** A fresh `swe-implementer` in peer-review mode makes small fixes on non-trivial changes; reverted if it breaks tests.
 - **9. QA coverage and quality.** `qa-engineer` fills coverage gaps, runs linters, and confirms steps 7-8 broke nothing.
 - **10. Correctness review** (below).
 - **11-13. Documentation, final verification, completion.** `doc-maintainer` runs a targeted pass; the full suite and linters run; with your confirmation the skill commits, updates or closes the ticket, and offers a rebase.
 
 One step deserves bug-fix-specific mention — **step 10, the correctness review**. A fresh `swe-correctness-reviewer` reads the diff assuming a bug already shipped and mechanically verifies every assumption the fix makes (paths, signatures, runtime-version semantics, call sites). Its findings are blocking and resolve through a fix-and-fresh-re-review loop (max 3 rounds). Two contracts differ from the rest of the pipeline:
 
-- **The reviewer gets the diff and the original bug report, but not the diagnosis.** The bug report is the user's symptom — ground truth. The diagnosis is the implementing SME's adopted theory; passing it would anchor the reviewer to the frame that produced the fix. The reviewer isn't re-answering "is the bug fixed" (the reproducing test answers that); it's answering "does this fix rest on false assumptions or break anything else."
+- **The reviewer gets the diff and the original bug report, but not the diagnosis.** The bug report is the user's symptom — ground truth. The diagnosis is the implementer's adopted theory; passing it would anchor the reviewer to the frame that produced the fix. The reviewer isn't re-answering "is the bug fixed" (the reproducing test answers that); it's answering "does this fix rest on false assumptions or break anything else."
 - **The gate is mandatory when empirical verification degrades.** In a repo with no test infrastructure, the step-2 reproduction contract itself collapses — there may be no failing test at all — and this gate becomes the only correctness check between the fix and production.
 
 ## Examples
@@ -282,13 +270,13 @@ User: "The last item on each page is duplicated on the next page"
 
 Workflow:
 1. Clarify: Which endpoint? Happens with all page sizes? Started after recent changes?
-2. Failing test: swe-sme-golang writes TestPaginationBoundary that asserts
+2. Failing test: swe-implementer writes TestPaginationBoundary that asserts
    no duplicates — test fails against current code
 3. Diagnosis: swe-bug-investigator traces pagination logic, finds boundary
    comparison uses < instead of <=, git blame shows it was introduced
    in commit abc123 during a refactor. Also identifies: same pattern
    exists in the cursor-based pagination path.
-4. Fix: swe-sme-golang fixes both comparison operators, adds tests for
+4. Fix: swe-implementer fixes both comparison operators, adds tests for
    cursor pagination boundary too
 5. QA: qa-engineer actually paginates through test data, confirms no dupes
 6-9. Reviews and coverage QA
@@ -308,7 +296,7 @@ User: "Intermittent 500 errors under load, started after adding caching"
 
 Workflow:
 1. Clarify: Which endpoint? Error logs? Frequency? Load characteristics?
-2. Failing test: swe-sme-golang writes TestConcurrentCacheAccess using
+2. Failing test: swe-implementer writes TestConcurrentCacheAccess using
    goroutines — test fails with data race detector
 3. Diagnosis: swe-bug-investigator finds unsynchronized map access in cache,
    git log shows cache was added without mutex protection. Related: the
@@ -328,12 +316,12 @@ User: "App crashes on startup"
 
 Workflow:
 1. Clarify: Error message? OS? Configuration file? Recent updates?
-2. Failing test: swe-sme-golang tries to reproduce — test passes (no crash).
+2. Failing test: swe-implementer tries to reproduce — test passes (no crash).
    Reports: tested with default config, various invalid configs, missing
    config file. Cannot reproduce.
    → Back to step 1.
    User provides: "Only happens with YAML config, not TOML"
-2. (retry): swe-sme-golang writes TestYAMLConfigParsing — fails! Bug reproduced.
+2. (retry): swe-implementer writes TestYAMLConfigParsing — fails! Bug reproduced.
 3-13. Continue with diagnosis and fix...
 ```
 
@@ -343,7 +331,7 @@ Workflow:
 
 2. **Trust the diagnostician's depth.** It chooses shallow or deep git archaeology based on the bug's complexity. Don't worry about it spending too much time on simple bugs.
 
-3. **The failing test is the contract.** Once the SME writes a failing test, that test defines "fixed." This is more reliable than manual verification alone.
+3. **The failing test is the contract.** Once the implementer writes a failing test, that test defines "fixed." This is more reliable than manual verification alone.
 
 4. **Related failure modes are valuable.** The diagnostician looks for patterns, not just the single reported bug. This often catches adjacent bugs that would have been reported next.
 
@@ -353,9 +341,9 @@ Workflow:
 
 **Sequential execution:** One agent at a time, each completes before the next starts.
 
-**SME continuity:** The same SME type is used across steps 2 (failing test), 4 (fix), and 7 (review feedback). Step 8 (peer review) uses a fresh instance for independent perspective.
+**Implementer continuity:** The same implementation agent is used across steps 2 (failing test), 4 (fix), and 7 (review feedback). Step 8 (peer review) uses a fresh instance for independent perspective.
 
-**Diagnosis pass-through:** The diagnostician's report from step 3 is passed to the SME in step 4. The SME follows the recommended approach and writes tests for each identified related failure mode. The report is deliberately **not** passed to the correctness reviewer in step 10 — see above.
+**Diagnosis pass-through:** The diagnostician's report from step 3 is passed to the implementer in step 4. The implementer follows the recommended approach and writes tests for each identified related failure mode. The report is deliberately **not** passed to the correctness reviewer in step 10 — see above.
 
 ## Iteration Limits
 

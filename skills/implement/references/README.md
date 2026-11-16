@@ -4,7 +4,7 @@
 
 `/implement` builds whatever you hand it — one ticket, a batch of tickets, or a goal that still needs scoping — and gives you back a branch and a report. It covers what `/implement-batch` and `/implement-project` used to do; there is now one skill at every scale.
 
-**Judgment over checklists.** The skill does not walk a fixed sequence of review steps. It holds a repertoire of agents and skills and uses the ones the work needs, when it needs them. A typo-sized fix gets a one-line concept inventory, a verification run, and a commit. A twelve-ticket feature may get planning, language SMEs, `/refactor`, `/review-arch`, and a smoke test.
+**Judgment over checklists.** The skill does not walk a fixed sequence of review steps. It holds a repertoire of agents and skills and uses the ones the work needs, when it needs them. A typo-sized fix gets a one-line concept inventory, a verification run, and a commit. A twelve-ticket feature may get planning, delegated implementation, `/refactor`, `/review-arch`, and a smoke test.
 
 **A small floor is fixed.** Five things hold on every run, at every scale:
 
@@ -45,7 +45,7 @@
 │     ├─ Present understanding + plan; wait for approval       │
 │     └─ Branch (never main); PROJECT_STATE.md if multi-ticket │
 │  2. Concept inventory — per ticket (floor)                   │
-│  3. Build — SME or direct; swe-planner when unclear          │
+│  3. Build — swe-implementer or direct; planner when unclear  │
 │  4. Verify (floor)                                           │
 │     ├─ qa-engineer: practical verification, then tests       │
 │     ├─ Tests and linters green                               │
@@ -96,21 +96,7 @@ The inventory scales with the change — a small fix may record "no new concepts
 
 ### 3. Build
 
-The implementation agent is chosen by what the change touches:
-
-| Change touches     | Agent                |
-|--------------------|----------------------|
-| Go                 | `swe-sme-golang`     |
-| Zig                | `swe-sme-zig`        |
-| TypeScript         | `swe-sme-typescript` |
-| Vanilla JavaScript | `swe-sme-javascript` |
-| HTML               | `swe-sme-html`       |
-| CSS                | `swe-sme-css`        |
-| GraphQL            | `swe-sme-graphql`    |
-| Dockerfiles        | `swe-sme-docker`     |
-| Makefiles          | `swe-sme-makefile`   |
-| Ansible            | `swe-sme-ansible`    |
-| Anything else      | Implemented directly |
+The build goes to `swe-implementer`, a single language-agnostic agent, or is done directly when the change is too small to be worth a handoff. The implementer's value is not language expertise, which the model already has. Its value is discipline against the ways implementation agents fail: it checks APIs against the installed toolchain version rather than recalling them, follows the project's conventions instead of imposing defaults, builds only the inventoried concepts, and reports nothing as done that it hasn't run.
 
 The agent receives the ticket, the inventory, and any plan. When the work is unclear — cross-cutting concerns, migrations, many modules, several viable approaches — `swe-planner` sequences it into verifiable sub-tasks first, planning only the inventoried concepts. Risky approaches are prototyped in a scratch directory.
 
@@ -145,7 +131,7 @@ Everything here is chosen by judgment. Anything that plausibly applied but didn'
 |---------------------------------|------------------------------------------------|--------------------------------------------------------------|
 | `sec-blue-teamer`               | Auth, crypto, input handling, trust boundaries | Critical/High findings fixed or explicitly waived by you     |
 | `swe-perf-reviewer`             | Hot paths, queries, loops at scale             |                                                              |
-| Fresh instance of the SME       | Non-trivial diffs                              | "Would I accept this PR?" nits only; reverted if tests break |
+| Fresh `swe-implementer` review  | Non-trivial diffs                              | "Would I accept this PR?" nits only; reverted if tests break |
 | `doc-maintainer` / `/tidy-docs` | Documentation affected                         | Targeted for one ticket; full pass for a project             |
 
 **Skills, mostly at project scale:**
@@ -230,7 +216,7 @@ You: /implement #212 (pagination returns one item too few on the last page)
 1. Plan: "Off-by-one in paginate() bounds; fix the slice end, add a
    boundary test. On branch fix/212-pagination." You: just do it.
 2. Inventory: no new concepts.
-3. Build: swe-sme-golang fixes the slice bound, adds a table test.
+3. Build: swe-implementer fixes the slice bound, adds a table test.
 4. Verify: qa-engineer runs the CLI against a 21-item fixture with
    page size 10 — page 3 now shows 1 item. go test ./... and
    golangci-lint green. Correctness review runs (boundary logic is
@@ -240,7 +226,7 @@ You: /implement #212 (pagination returns one item too few on the last page)
 
 Report — Passes not run:
 - sec-blue-teamer: no trust boundary touched
-- SME peer review: 3-line diff
+- Implementer peer review: 3-line diff
 - /refactor, /review-*: single-ticket fix, no new surface
 - doc-maintainer: no documented behavior changed
 ```
@@ -262,7 +248,7 @@ You: /implement #301 #302 #303 (export command: CSV, JSON, --fields flag)
         fixed, fresh reviewer approves round 2; merged.
    #303 inventory: field selection; audit flags an exported
         ParseFields with no outside caller — made private. Merged.
-5. Repertoire: SME peer review on #301 (largest diff); doc-maintainer
+5. Repertoire: implementer peer review on #301 (largest diff); doc-maintainer
    updates the README's export section.
 6. Three commits with Fixes #301/#302/#303.
 
@@ -302,7 +288,7 @@ reading, frees ~400 lines) — not taken; your call.
 ```
 [During #18 of a project run]
 Correctness review, round 3: the reviewer still holds that migration
-0042 drops a column existing clients read. The SME refutes — but
+0042 drops a column existing clients read. The implementer refutes — but
 the refutation rests on an assumption about client versions the
 repo can't confirm.
 

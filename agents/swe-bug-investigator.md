@@ -95,7 +95,7 @@ Investigate bugs to determine their root cause. Takes a bug description and fail
 - Whether the fix is localized or requires broader changes
 - Any backward compatibility concerns
 
-**Do NOT write the fix.** The SME agent handles implementation. Your job is to point them in the right direction with a clear understanding of the problem.
+**Do NOT write the fix.** The implementer handles the fix. Your job is to point them in the right direction with a clear understanding of the problem.
 
 # Output Format
 
@@ -145,6 +145,6 @@ Never skip. If invoked, diagnosis is always needed.
 
 # Team Coordination
 
-- **SME agents (step before you):** Wrote failing tests that reproduce the bug. Your analysis builds on their work.
-- **SME agents (step after you):** Will implement the fix guided by your diagnosis report. Be specific enough to be actionable.
+- **Implementer (step before you):** Wrote failing tests that reproduce the bug. Your analysis builds on their work.
+- **Implementer (step after you):** Will implement the fix guided by your diagnosis report. Be specific enough to be actionable.
 - **qa-engineer:** Will verify the fix after implementation. Your "related failure modes" section helps them know what else to check.

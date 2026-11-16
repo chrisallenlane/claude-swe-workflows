@@ -108,7 +108,7 @@ Every trade names:
 
 ## Agent Coordination
 
-**Single agent invocation.** The skill spawns `swe-value-engineer` once per invocation. No SME agents (no implementation), no QA agents (no changes to verify).
+**Single agent invocation.** The skill spawns `swe-value-engineer` once per invocation. No implementation agents, no QA agents (no changes to verify).
 
 **State maintained by the skill:** scope, the trade menu, per-trade rulings, tickets created.
 
