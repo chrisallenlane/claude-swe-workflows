@@ -39,7 +39,7 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
 | **Changelog coverage**  | Changelog not updated since last tag                        | WARNING         |
 | **Git hygiene**         | Merge conflict markers, tracked secrets, dirty working tree | BLOCKER         |
 | **Breaking changes**    | Removed public API without changelog mention                | BLOCKER         |
-| **License compliance**  | New deps with incompatible or unknown licenses              | BLOCKER/WARNING |
+| **License compliance**  | New copyleft or unknown-license deps (human review)         | WARNING         |
 | **Test suite**          | Test failures                                               | BLOCKER         |
 | **Build verification**  | Build failures                                              | BLOCKER         |
 | **Doc freshness**       | Documentation referencing removed/renamed code              | WARNING         |

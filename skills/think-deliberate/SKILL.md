@@ -64,7 +64,7 @@ Uses adversarial representation to ensure all options are robustly explored befo
 ### 3. Spawn Advocates (Parallel)
 
 **For each option, spawn an advocate agent:**
-- Use `Task` tool with `subagent_type: "THK - Advocate"`
+- Use the `Agent` tool with `subagent_type: "THK - Advocate"`, in **compete** mode
 - Pass the option they represent
 - Pass the decision context and criteria
 - Pass any relevant background information
@@ -72,6 +72,8 @@ Uses adversarial representation to ensure all options are robustly explored befo
 
 **Advocate prompt template:**
 ```
+Mode: compete
+
 You represent: [OPTION]
 
 Decision context: [WHAT IS BEING DECIDED]
@@ -94,6 +96,8 @@ Present your initial argument for why [OPTION] is the best choice.
 
 **Rebuttal prompt template:**
 ```
+Mode: compete
+
 You represent: [OPTION]
 
 Here are the arguments made by all advocates:
@@ -119,6 +123,8 @@ Present your rebuttal. Address the strongest points made against your option and
 
 **Question prompt:**
 ```
+Mode: compete
+
 You represent: [OPTION]
 
 The judge asks: [QUESTION]
@@ -137,6 +143,8 @@ Respond directly and honestly.
 
 **Give advocates a final opportunity to respond:**
 ```
+Mode: compete
+
 You represent: [OPTION]
 
 The judge is leaning toward [OTHER OPTION] for the following reasons:

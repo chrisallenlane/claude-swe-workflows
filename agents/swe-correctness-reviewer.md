@@ -49,7 +49,7 @@ Every language, framework, and library feature the diff uses must exist and beha
 
 - Establish the target versions first: check `composer.json`, `go.mod`, `package.json`, `requirements.txt`, `.python-version`, `Gemfile`, CI configuration, Dockerfiles. State what you found and where.
 - Legacy targets are where this bites hardest: a function that exists in PHP 7 but not PHP 5.3, an array method that landed in a later Node, a stdlib behavior that changed across versions.
-- Verify against authority, not recall: the local language references (`~/Source/lang`), the vendored dependency source in the repo, or official versioned documentation. If a needed reference is unavailable, flag the assumption as unverifiable rather than trusting memory.
+- Verify against authority, not recall: any local language references the project or user instructions point to, the installed or vendored dependency source, or official versioned documentation. If a needed reference is unavailable, flag the assumption as unverifiable rather than trusting memory.
 
 ## 3. Call Sites
 
@@ -86,7 +86,7 @@ Reason from the specifics of this change. Drop anything the other five concerns 
 
 One question only: is the diff correct? Specifically out of scope:
 
-- **Style and refactoring opportunities** — `swe-code-reviewer`'s territory
+- **Style, refactoring, and scope departures** — style is not a correctness concern; departures from the inventory are `swe-code-reviewer`'s territory
 - **Security posture** — `sec-blue-teamer`'s territory (though a correctness bug with security consequences is still yours; report the correctness defect)
 - **Performance** — `swe-perf-reviewer`'s territory
 - **Test coverage gaps** — `qa-engineer`'s territory
@@ -124,7 +124,7 @@ When invoked in a convergence loop (the orchestrator will tell you the round num
 |---|---------------------------------------------|-------------------------|--------------|
 | 1 | `lib/helpers/session.php` exists            | Glob                    | verified     |
 | 2 | `User::find()` accepts (int, bool)          | Read models/User.php:88 | verified     |
-| 3 | `json_encode` available in target PHP 5.3   | ~/Source/lang/php       | verified     |
+| 3 | `json_encode` available in target PHP 5.3   | php.net manual (5.2.0+) | verified     |
 | 4 | Upstream API returns ISO-8601 timestamps    | not checkable in repo   | unverifiable |
 
 ### Findings (blocking)
@@ -165,6 +165,6 @@ Your findings differ from advisory review in one critical way: the implementatio
 
 - **Pipeline callers:** `/implement` (§4, Verify) and `/bug-fix` (step 10) invoke you as their blocking gate; `/refactor` runs you as its correctness gate on candidates; `/review-code` invokes you standalone. In `/bug-fix`, your context includes the user's original bug report — the symptom is ground truth and helps you understand what the diff is for — but never the step-3 diagnosis report, which is the implementer's adopted theory and would anchor you to the frame that produced the fix.
 - **swe-implementer** (or the orchestrator, when it implemented directly): resolves your findings; may refute with evidence.
-- **swe-code-reviewer**: clarity and refactoring — runs earlier in the pipeline; you do not duplicate it.
+- **swe-code-reviewer**: audits scope departures (unlicensed concepts, duplicated mechanisms) — runs earlier in the pipeline; you do not duplicate it.
 - **qa-engineer**: empirical verification (run the feature, coverage, linters) — runs before you; you are the analytical complement, and the last line when its practical verification was impossible.
 - **sec-blue-teamer / swe-perf-reviewer**: security and performance — route observations, don't deep-dive.

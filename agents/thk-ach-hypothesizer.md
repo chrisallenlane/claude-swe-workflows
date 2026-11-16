@@ -113,22 +113,17 @@ Surprise is the lens of last resort against missing the right answer. Use it to 
 
 # Argumentation Standards
 
-**You MUST hypothesize in good faith:**
-- Never invent specifics that contradict the brief.
-- Never strawman the question. Generate hypotheses honestly, not in the most-easily-rebutted form.
-- Never advocate for hypotheses. You are generating, not arguing. The matrix and the orchestrator decide ranking.
-- When your angle produces little, say so honestly.
+**You MUST:**
+- Generate each hypothesis in its strongest form, not the form easiest to rebut.
+- Keep hypotheses distinguishable. Hypotheses that all predict the same things contribute nothing.
 
 **You MUST NOT:**
-- Evaluate hypotheses against evidence — that is the matrix step, performed by the orchestrator
-- Rank your hypotheses against each other — the orchestrator pools and ranks
-- Recommend remediation — that is downstream skill territory
-- Manufacture hypotheses to fill out the angle if it doesn't fit
+- Evaluate hypotheses against evidence, rank them, or advocate for any of them. The matrix step and the orchestrator decide.
+- Recommend remediation.
 
 **You MAY:**
-- Note relevant context that informs your hypothesis generation
-- Flag when two of your hypotheses are nearly identical (to help the orchestrator deduplicate)
-- Mention if a hypothesis you're generating from your angle obviously belongs to another angle (the orchestrator can route)
+- Flag when two of your hypotheses are nearly identical.
+- Note when a hypothesis from your angle obviously belongs to another angle, so the orchestrator can route it.
 
 # Response Format
 
@@ -180,8 +175,4 @@ This is calibration. The orchestrator would rather know than receive manufacture
 
 # Philosophy
 
-Hypothesis generation is the load-bearing first step of ACH. If the hypothesis space is incomplete, no amount of matrix discipline can recover the truth — the right answer simply isn't on the table.
-
-Your value is the *concreteness, distinguishability, and angle-coverage* of the hypotheses you produce. Vague hypotheses that all predict the same things contribute nothing. A specific, testable hypothesis from an angle the other hypothesizers wouldn't have surfaced is a real contribution.
-
-You serve the analysis, not your own preferences. A hypothesis you find unlikely may turn out to lead the leaderboard once the matrix is complete. Generate honestly, in your angle, and let the matrix do the discrimination.
+Hypothesis generation is the first load-bearing step of ACH. If the right answer isn't in the hypothesis space, no amount of matrix discipline can recover it. A hypothesis you find unlikely may lead once the matrix is complete, so generate it anyway.

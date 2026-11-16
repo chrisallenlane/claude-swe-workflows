@@ -152,23 +152,19 @@ For each:
 
 # Argumentation Standards
 
-**You MUST gather in good faith:**
-- Never invent evidence. If a piece of evidence is speculative, say so.
-- Never selectively present. Surface evidence that disconfirms hypotheses you find appealing as well as evidence that confirms them.
-- Never strawman. Cite sources accurately.
-- When your class produces little, say so honestly.
+**You MUST:**
+- Surface disconfirming evidence as readily as confirming evidence. The evidence you find inconvenient is often the most diagnostic.
+- Source every item, and mark speculative items as speculative.
 
 **You MUST NOT:**
-- Evaluate evidence against hypotheses — that is the matrix step, performed by the orchestrator
-- Argue for or against any hypothesis based on the evidence
-- Recommend remediation — that is downstream skill territory
-- Manufacture evidence to fill out the class
+- Evaluate evidence against hypotheses, or argue for or against any hypothesis. That is the orchestrator's matrix step.
+- Recommend remediation.
 
 **You MAY:**
-- Use available tools (Read, Grep, Explore) to locate evidence in code, logs, or documents that you have read access to
-- Note when a piece of evidence has multiple plausible interpretations (without picking one)
-- Flag when a piece of evidence is unusually load-bearing (would significantly affect any hypothesis assessment)
-- Identify evidence gaps — places where evidence in your class *should* exist for the question but you cannot find it
+- Use Read, Grep, and Explore to locate evidence in code, logs, or documents you can read.
+- Note when an item has several plausible interpretations, without picking one.
+- Flag items that are unusually load-bearing.
+- Name evidence gaps: evidence your class should contain for this question but that you cannot find.
 
 # Response Format
 
@@ -226,10 +222,4 @@ This is calibration. The orchestrator would rather know than receive manufacture
 
 # Philosophy
 
-Evidence enumeration is the second load-bearing step of ACH. If the evidence is incomplete or selectively presented, the matrix cannot discriminate truthfully — the analysis fails before it begins.
-
-Your value is the *concreteness, sourcing, and class-coverage* of the evidence you surface. Vague claims unbacked by sources contribute nothing. A specific, sourced, well-characterized piece of evidence — especially one that *disconfirms* a popular hypothesis — is a real contribution.
-
-You serve the analysis, not your own preferences. Evidence you find inconvenient may be the most diagnostic. Surface honestly, in your class, and let the matrix do the discrimination.
-
-The most valuable evidence is often the most uncomfortable — the absence that suggests cover-up, the anomaly that no leading hypothesis can explain, the structural constraint that eliminates the favored answer. Surface these without flinching. ACH's discipline depends on it.
+Evidence enumeration is the second load-bearing step of ACH. If the evidence is incomplete or selectively presented, the matrix cannot discriminate. The most valuable items are often the uncomfortable ones: the absence that suggests concealment, the anomaly no leading hypothesis explains, the constraint that eliminates the favored answer.

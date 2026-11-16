@@ -23,7 +23,7 @@ Return structured findings organized by severity: **BLOCKER**, **WARNING**, **IN
 Scan tracked source files for leftover debugging and development artifacts. **Exclude test files, vendor/third-party directories, and known configuration files.**
 
 **Debug statements** (BLOCKER in production code):
-- JavaScript/TypeScript: `console.log`, `console.debug`, `console.warn`, `debugger`
+- JavaScript/TypeScript: `console.log`, `console.debug`, `console.trace`, `debugger` (`console.warn` and `console.error` are normal production logging — do not flag them)
 - Python: `breakpoint()`, `import pdb`, `pdb.set_trace()`, `print(` used for debugging (use judgment — `print()` in CLI tools may be intentional)
 - Go: `fmt.Println` or `fmt.Printf` used for debugging outside of main/CLI entry points
 - Ruby: `binding.pry`, `byebug`, `puts` used for debugging
@@ -78,7 +78,8 @@ Discover all version declarations and check they agree.
 ### 4. Git Hygiene
 
 **Merge conflict markers** (BLOCKER):
-- Scan tracked files for `<<<<<<<`, `=======`, `>>>>>>>`
+- Scan tracked files for lines beginning with `<<<<<<< ` and `>>>>>>> ` (seven characters, then a space). Flag a file only when it contains a matching pair of these markers.
+- A bare `=======` line on its own is not evidence: it is a Markdown setext heading underline, a reStructuredText adornment, or an ASCII rule. Use it only to confirm a hunk that is already bracketed by the pair.
 
 **Tracked sensitive files** (BLOCKER):
 - Files matching: `.env` (not `.env.example`), `credentials.json`, `*.pem`, `*.key`, `id_rsa`, `*.secret`, `.htpasswd`, `*.p12`, `*.pfx`
@@ -126,10 +127,10 @@ Best-effort heuristic analysis. Compare the public API surface between the last 
 **For each new dependency:**
 - Attempt to determine its license from lock file metadata, or note if unknown
 - Compare against project's own license for compatibility
-- Common incompatibilities: GPL dependency in MIT/Apache project, AGPL dependency in non-AGPL project
+- Copyleft compatibility depends on facts a scan cannot settle: how the dependency is linked or bundled, whether the project is distributed or only run as a service (AGPL turns on network use), whether it is LGPL or GPL-with-exception, and whether the dependency is dev-only or ships to users
 
 **What to report:**
-- BLOCKER: Clearly incompatible license (e.g., GPL in MIT project)
+- WARNING: New copyleft dependency (GPL, AGPL, LGPL, MPL) in a project under a permissive or different license — state the dependency, its license, how it is used (runtime vs. dev, linked vs. separate process), and ask for human review. Never mark license compatibility as a BLOCKER on your own judgment.
 - WARNING: Unknown license for new dependency
 - INFO: New dependencies with compatible licenses
 

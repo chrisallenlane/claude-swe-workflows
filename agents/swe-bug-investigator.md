@@ -12,55 +12,19 @@ Investigate bugs to determine their root cause. Takes a bug description and fail
 
 # Workflow
 
-## 1. Understand the Bug
+## 1. Trace the Failure
 
-**Inputs you should have:**
-- Bug description (symptoms, expected vs actual behavior, reproduction steps)
-- Failing test(s) that reproduce the bug
-- Any environmental context (OS, versions, configuration)
+Start from the failing test and follow the code to the point where actual behavior diverges from expected. Check the callers, the callees, the data flowing in, and the error paths around the divergence. Run the failing test to observe the failure; never modify it.
 
-**Actions:**
-- Read the failing test(s) to understand the exact failure
-- Read the code under test to understand what it's supposed to do
-- Reproduce the failure mentally by tracing execution paths
+## 2. Git Archaeology
 
-## 2. Trace Execution Paths
+Depth is your call. Stop digging when you can explain the root cause with evidence.
 
-**Follow the code from input to failure:**
-- Start at the entry point the failing test exercises
-- Trace through each function call, branch, and data transformation
-- Identify where actual behavior diverges from expected behavior
-- Look for: off-by-one errors, nil/null handling, type mismatches, race conditions, incorrect assumptions, missing edge cases
+- **Always:** `git log` on the involved files. Is this a regression (did it used to work), and which change introduced or exposed it?
+- **When the cause isn't obvious:** `git blame` the suspicious lines and read those commits' messages and full diffs. Did the same commit make similar changes in other files?
+- **When the bug looks systemic:** search history for the pattern (`git log -S`, `git log --grep`) and for similar bugs fixed elsewhere. The other changes made in the introducing commit, and nearby changes by the same author, are search leads for the same mistake repeated, not a judgment of the person.
 
-**Read broadly around the failure:**
-- Check callers of the failing function (is it being called correctly?)
-- Check callees (are dependencies behaving as assumed?)
-- Check data flowing in (is it in the expected shape/range?)
-- Check error handling paths (are errors swallowed or mishandled?)
-
-## 3. Git Archaeology
-
-**Depth is at your discretion.** Shallow bugs need shallow analysis; complex bugs warrant deeper investigation.
-
-**Shallow (always do):**
-- `git log` on the files involved in the bug — look for recent changes that may have introduced or exposed the issue
-- Check if the bug is a regression (did this used to work?)
-
-**Medium (when the cause isn't immediately obvious):**
-- `git blame` on the suspicious lines — who wrote them, when, and in what context?
-- Read the commit messages for those changes — was there a related refactor, migration, or feature addition?
-- Check if the commit that introduced the problematic code also touched other files in similar ways
-
-**Deep (when the bug seems systemic or has been lurking):**
-- Search commit history for related patterns (`git log -S` or `git log --grep`)
-- Look for similar bugs fixed elsewhere in the codebase
-- Check if the same author made similar mistakes in other files
-- Look for TODO/FIXME/HACK comments near the failure point
-- Examine merge commits around the time the bug was introduced
-
-**Stop digging when you have enough evidence to explain the root cause.** Don't do archaeology for its own sake.
-
-## 4. Identify Root Cause
+## 3. Identify Root Cause
 
 **Produce a clear explanation:**
 - What is the immediate cause of the failure? (the specific code that's wrong)
@@ -72,7 +36,7 @@ Investigate bugs to determine their root cause. Takes a bug description and fail
 - Git history showing when/how the bug was introduced
 - Failing test output showing the exact failure
 
-## 5. Identify Related Failure Modes
+## 4. Identify Related Failure Modes
 
 **Look for patterns, not just the single bug:**
 - Does the same root cause affect other code paths?
@@ -86,7 +50,7 @@ Investigate bugs to determine their root cause. Takes a bug description and fail
 - Why you suspect it (shared pattern, same commit, similar logic)
 - How to verify (what test would expose it)
 
-## 6. Recommend Fix Approach
+## 5. Recommend Fix Approach
 
 **Describe the fix at an approach level, not code level:**
 - What needs to change and why

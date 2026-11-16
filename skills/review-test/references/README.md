@@ -89,7 +89,7 @@ The plugin is moving `/review-*` skills toward advisory-only over time; `/review
  │  ────────────────────────────────────────    │
  │  5a. Scan for issues (qa-test-reviewer)      │
  │  5b. Record findings by category             │
- │      (DELETE / REWRITE / SIMPLIFY / ADD;     │
+ │      (DELETE / REWRITE / SIMPLIFY;           │
  │       redundant = informational)             │
  └──────────────────┬───────────────────────────┘
                     ▼
@@ -161,7 +161,7 @@ The reviewer reports in one of two modes:
 
 A single `qa-test-fuzz-reviewer` agent checks whether fuzz testing infrastructure exists and identifies functions that are good fuzz candidates.
 
-If no fuzz infrastructure is detected, the phase records the agent's tooling recommendation as an informational entry that may be cut as a ticket per the runtime ticket-structure proposal. No attempt is made to set up fuzz tooling within `/review-test`.
+If no fuzz infrastructure is detected, the agent still lists fuzz candidates, because they are the case for adopting the tooling. The phase records the starter-tooling recommendation (which may be cut as a ticket per the runtime ticket-structure proposal) alongside the candidates, which depend on it. No attempt is made to set up fuzz tooling within `/review-test`.
 
 ### Phase 5: Test Quality Audit
 
@@ -175,7 +175,6 @@ Issue categories and recommended actions on the resulting ticket(s):
 | Brittle          | REWRITE  | Tests coupled to implementation details        |
 | False confidence | REWRITE  | Tests that don't verify what they claim        |
 | Inconsistent     | SIMPLIFY | Mixed assertion strategies                     |
-| Missing          | ADD      | Important gaps not caught in Phases 1–4        |
 | Redundant        | (info)   | Duplicate coverage — reported but not actioned |
 
 The implementer working a Phase 5 ticket retains the discretion to REWRITE rather than DELETE if the test covers real behavior that could regress — this caveat is included in every DELETE-containing ticket body.

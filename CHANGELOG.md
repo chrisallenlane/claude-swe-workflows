@@ -4,6 +4,32 @@
 
 ### Changed
 
+- **The remaining agents are realigned with the skills that call them.** In v10 and v11 the skills were redesigned while many of their agents kept the old contracts, and most real defects sat in that gap. Agent names are internal, so none of these changes is breaking.
+  - **`swe-code-reviewer` is now a scope auditor.** `/implement` had used it for the concept-inventory audit, but the agent never mentioned an inventory: it searched the whole codebase for refactoring ideas. It now checks a diff against its license, which is the inventory in `/implement` and the diagnosis's narrow fix in `/bug-fix`. It reports unlicensed concepts, elaborated forms, duplicated mechanisms (citing the search that found the original), and exports with no outside caller. Step 6b of `/bug-fix` uses it that way.
+  - **`qa-engineer` is independent of what it verifies.** It no longer fixes product code or adds test infrastructure; failures go back to the implementer. It drives MCP servers over JSON-RPC itself, because a subagent cannot spawn one. It uses browser tooling when available, and UNVERIFIED is now a valid result. It runs on Opus.
+  - **`/test-mutation` no longer reports false kills.** Before mutating, the mutator checks that the file is clean and that a timed baseline run passes. Its timeout is now a multiple of the baseline instead of a fixed 60 seconds. Likely-equivalent mutants are flagged rather than sent to the implementer as tasks it can't complete. Failed new test files are deleted, not just restored.
+  - **`swe-planner` is removed.** `/implement` writes its own plan as ordered, verifiable sub-tasks over the inventoried concepts.
+  - **Rewritten:**
+    - `swe-perf-reviewer` is built on proportionality ("what is n?" at actual scale). It runs the project's existing benchmarks when they exist and labels static estimates as such.
+    - `swe-web-perf-reviewer` judges by application context, without fixed byte thresholds or HTTP/1-era advice.
+    - `qa-web-a11y-reviewer` covers the criteria new in WCAG 2.2, with corrected legal claims.
+    - `doc-maintainer` searches for every doc that describes a changed file or symbol, not just docs near the diff, and has explicit targeted, full-audit and assessment-only modes.
+    - `sec-blue-teamer` gains a spec-time mode for `/scope`.
+  - **Contract fixes:**
+    - The blue and red teamers drop their dead modes and share one four-level severity scale matching `/review-security`.
+    - `swe-arch-reviewer` defers dead code to `swe-dead-code-auditor`.
+    - `qa-test-reviewer` defers missing coverage to `qa-test-coverage-reviewer`.
+    - `qa-test-fuzz-reviewer` produces candidates even when there is no fuzz tooling, and emits the LOW tier `/review-test` expects.
+    - `swe-bug-assessor` treats change history as a primary signal, matching `/review-health`.
+    - `thk-advocate` has explicit compete and defend modes.
+    - `thk-premortemer`'s general method applies to every lens, not just `first-principles`.
+    - `ux-reviewer` no longer tries to pause and ask mid-run.
+  - **Overfitting and staleness:**
+    - A user-specific `~/Source/lang` path is removed from nine agents.
+    - Stale tool advice is corrected: `ts-prune` is now `knip`, `jsfuzz` is now Jazzer.js, `yarn audit` is now `yarn npm audit`, and `safety` is now `pip-audit`.
+    - `qa-release-engineer` no longer treats `console.warn` or a bare `=======` as blockers, and copyleft dependencies are a warning for human review.
+    - The repeated boilerplate tails in the `thk-*` agents are trimmed.
+
 - **The ten `swe-sme-*` agents are replaced by a single `swe-implementer`.** The SMEs (Ansible, CSS, Docker, Go, GraphQL, HTML, JavaScript, Makefile, TypeScript, Zig) mostly restated best practice the model already knows. Some taught stale APIs: Zig's pre-0.15 build API, golangci-lint v1 config, Apollo v2/v3 imports, and long-outdated Docker base-image tags. The Makefile agent contained technical errors. The Go and Zig agents imposed one maintainer's conventions on every project they touched, such as always vendoring, docopt, and adding a Makefile when none existed. Delegating to them also moved implementation from the caller's model down to Sonnet. The new agent is language-agnostic and targets the ways implementation agents actually fail. It grounds APIs in the installed toolchain version, reading the module cache, `node_modules` types, or std-library source rather than recalling them. It follows the project's conventions and adds no tooling unasked. It builds only the concepts its brief calls for. It reports nothing as done that it has not run. Its modes cover every former SME use: implement, reproduce a bug, kill mutants, peer review, and cold-read tickets. `/implement`, `/bug-fix`, `/test-mutation`, and `/scope` dispatch it in place of the per-language table, and `references/swe-sme-pattern.md` is removed. Agent names are internal, so this is not a breaking change.
 
 - **`/review-health` locates technical debt by the interest it charges.** A snapshot shows cruft, not debt: ugly code nobody changes costs nothing. The Observe phase gains change-cost signals — per-file complexity (`scc`, `lizard`, or line count) crossed with 12-month change frequency into a ranked hotspot list, change-coupled file pairs with or without a static dependency between them, fix density in hotspots, and a history-adequacy check. A new Orient step reads them as a quadrant (debt being paid / dormant cruft / active / settled): hotspots are called debt only when fix density or cross-cutting findings corroborate them, hidden coupling routes to `/review-arch`, and confirmed hotspots become scoped `/refactor` recommendations. `/refactor` and `/implement` are recommended, never run, so the skill still never changes code. Drawn from Tornhill's behavioral code analysis.

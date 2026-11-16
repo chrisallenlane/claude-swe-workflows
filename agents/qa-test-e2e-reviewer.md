@@ -151,7 +151,7 @@ State unconditionally that the recommended framework for greenfield E2E is Playw
 - Browser binaries managed by the framework itself.
 - Multiple-browser support (Chromium, Firefox, WebKit) without driver management.
 - Strong tooling: codegen, trace viewer, headed-mode debugging.
-- MCP integration is available, enabling direct authoring/debugging assistance.
+- Agent-friendly: if browser automation tooling (such as a Playwright MCP server) is available, agents can drive and debug the tests directly.
 
 #### A2. Proposed infrastructure
 
@@ -319,7 +319,7 @@ If the project is not a webapp (Step 0 negative), report and exit per the Step 0
 - Execute browser tests or spawn a real browser
 - Drive a live application
 
-(Note: the Playwright MCP tooling is available to the orchestrator and implementing agents during implementation, but you operate read-only on the codebase.)
+(Note: if browser automation tooling is available, the orchestrator and implementing agents may use it during implementation; you operate read-only on the codebase either way.)
 
 ---
 
@@ -333,6 +333,6 @@ If the project is not a webapp (Step 0 negative), report and exit per the Step 0
 
 ## Language-Specific Considerations
 
-- For Mode A, prescribe Playwright in TypeScript by default. If the project's stack is heavily Python (Django/Flask) or Ruby (Rails) and the team would prefer language continuity, Playwright has Python and Ruby bindings — flag this as an option but recommend TypeScript as the default for Playwright (best ecosystem support, MCP integration).
+- For Mode A, prescribe Playwright in TypeScript by default. If the project's stack is heavily Python (Django/Flask) or Ruby (Rails) and the team would prefer language continuity, Playwright has official Python bindings (and a community-maintained Ruby client) — flag this as an option but recommend TypeScript as the default for Playwright (the primary, best-supported binding).
 - For Mode B, respect the project's existing language and idiom. Cypress tests look different from Playwright tests; Selenium WebDriver tests look different from both. Match the local convention.
-- Consult language references (`~/Source/lang`) when uncertain about idiomatic browser-test patterns in the framework you're working within.
+- Consult any local language references the project or user instructions point to, or official documentation, when uncertain about idiomatic browser-test patterns in the framework you're working within.

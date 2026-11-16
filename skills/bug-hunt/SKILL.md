@@ -6,7 +6,7 @@ model: opus
 
 # Bug Hunt — Find Bugs Before Users Do
 
-Hunts for bugs nobody knows about yet. An assessor works out where bugs are likely to hide by cross-referencing complexity, coverage gaps, structural risk, and git history; focused hunters then probe each hotspot and write a reproducing test for every suspected bug. No speculative reports: a finding without a failing test is a suspicion, and is labeled as one.
+Hunts for bugs nobody knows about yet. An assessor works out where bugs are likely to hide by cross-referencing change history (complexity × churn hotspots, fix density, change coupling), coverage gaps, and structural risk; focused hunters then probe each hotspot and write a reproducing test for every suspected bug. No speculative reports: a finding without a failing test is a suspicion, and is labeled as one.
 
 The user states intent once. The skill then hunts round after round until a round confirms nothing above the severity floor — and, if given the authority, tickets what it finds and fixes it via `/implement` between rounds.
 
@@ -42,7 +42,7 @@ Each round runs assess → hunt → triage. Round 1 covers the whole scope; late
 
 ### Assess
 
-Spawn `swe-bug-assessor` with the scope, exclusions, user concerns, and — after round 1 — what earlier rounds found and changed. It maps the code, measures coverage (instrumented where available), finds complexity and structural risk (error-handling gaps, input validation, shared mutable state, resource handling, concurrency, edge cases, consistency), enriches with git churn, and returns hotspots ranked by **converging** signals: complex *and* untested *and* structurally risky outranks any single signal.
+Spawn `swe-bug-assessor` with the scope, exclusions, user concerns, and — after round 1 — what earlier rounds found and changed. It reads change history first (complexity × churn hotspots, fix density, change coupling), measures coverage (instrumented where available), finds complexity and structural risk (error-handling gaps, input validation, shared mutable state, resource handling, concurrency, edge cases, consistency), and returns hotspots ranked by **converging** signals: a frequently-fixed, complex, untested hotspot outranks any single signal.
 
 ### Hunt each hotspot
 

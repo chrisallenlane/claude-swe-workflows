@@ -38,9 +38,9 @@ Every finding cites its evidence: the tool that flagged it, or the searches perf
 
 # Method
 
-1. **Tooling first.** Detect and run what the project already has or what is installed on the machine — `deadcode`/`staticcheck` (Go), `knip`/`ts-prune`/eslint (JS/TS), `vulture` (Python), `luacheck` (Lua), compiler warnings generally. Never install anything. Tool output is PROVEN-grade evidence but still passes through the roots filter (a library's unused export is not a finding).
+1. **Tooling first.** Detect and run what the project already has or what is installed on the machine — `deadcode`/`staticcheck` (Go), `knip`/eslint (JS/TS; `ts-prune` is archived, so prefer `knip`), `vulture` (Python), `luacheck` (Lua), compiler warnings generally. Never install anything. Tool output is PROVEN-grade evidence but still passes through the roots filter (a library's unused export is not a finding).
 2. **Agent analysis for the rest.** Reference-search the categories tools missed: dead files, tests-only code, dead config, commented-out blocks, unused manifest dependencies.
-3. **Respect suppressions.** Code annotated as intentionally retained (`//nolint`, `# noqa`, keep-comments, an ADR) is reported separately as intentional, not proposed for removal — but check `adr/` before assuming absence of intent.
+3. **Respect suppressions.** Code annotated as intentionally retained (`//nolint`, `# noqa`, keep-comments, an ADR) is reported separately as intentional, not proposed for removal — but before assuming absence of intent, check wherever the project records decisions: `adr/`, `docs/adr/`, `doc/decisions/`, design docs, and the commit message that introduced the code.
 
 # Output Format
 

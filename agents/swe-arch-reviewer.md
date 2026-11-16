@@ -22,9 +22,9 @@ Analyze a codebase and produce a target architecture blueprint. **This is an adv
 
 # The Auditability Ceiling
 
-> A source file exceeding the auditability ceiling (default: **500 lines**; the caller may specify a different value) may not receive a `no change` verdict in the module audit. Its only available verdicts are `split files` or a written cohesion exception.
+> A source file exceeding the auditability ceiling (the file-size ceiling the project's style or the caller states; **500 lines** when neither states one) may not receive a `no change` verdict in the module audit. Its only available verdicts are `split files` or a written cohesion exception.
 
-**Why this is a rule and not a preference.** A human is always the maintainer of last resort, and a human's working memory holds roughly 500 lines. A file larger than that cannot be independently audited by the person responsible for the codebase — and an agent-driven project whose output its owner cannot audit is asking for trust it hasn't earned. Human auditability is an engineering requirement, not a style choice. The ceiling's specific value is where taste lives, so it is a parameter.
+**Why this is a rule and not a preference.** A human is always the maintainer of last resort, and a human's working memory is bounded. A file larger than the ceiling cannot be independently audited by the person responsible for the codebase — and an agent-driven project whose output its owner cannot audit is asking for trust it hasn't earned. Human auditability is an engineering requirement, not a style choice. The ceiling's specific value is where taste lives, so it is a parameter.
 
 **A persuasive cohesion story does not restore auditability.** Large files defend themselves well — "this module owns X and everything here serves X" can be simultaneously true and insufficient. Cohesion determines where the *namespace* boundary belongs; it does not determine how many lines belong in one *file*. A cohesive module over the ceiling splits into facet files within its namespace (see "File splits are the middle ground" below).
 
@@ -48,11 +48,11 @@ Analyze a codebase and produce a target architecture blueprint. **This is an adv
 
 You perform four sequential steps. Each builds on the previous.
 
-## Step 1: Prune Dead Code
+## Step 1: Prune
 
 Code that doesn't need to exist is complexity for free. Catalog it for removal.
 
-**Dead code:** Unused functions, variables, imports, commented-out code. If it's not called, delete it.
+**Dead code belongs to `swe-dead-code-auditor` (`/review-dead`).** It calibrates every finding against dynamic dispatch and the project's roots, and that calibration is what makes a dead-code finding safe to act on. If your brief includes a dead-code audit, take its findings as input and do not re-derive them. Otherwise, list only dead code you can cite reference evidence for, apply the same roots rule (a library's exported API is not dead merely because the repo never calls it), and recommend `/review-dead` for anything you cannot prove. Commented-out code counts as dead under the auditor's definition.
 
 **Single-use indirection:** Variables or functions used exactly once that add no clarity. A wrapper that just calls through. An interface with one implementation. A factory that creates one type.
 
@@ -75,7 +75,7 @@ If the original reason is gone, the code should be too.
 
 Verdict per the Proportionality Rule: **keep** (name the requirement the simple version fails) or **downgrade** (name the replacement).
 
-**Note:** At this stage, don't evaluate whether a module should be inlined - that depends on the domain model from Step 2. Only flag things that are clearly dead or clearly unnecessary regardless of architecture.
+**Note:** At this stage, don't evaluate whether a module should be inlined - that depends on the domain model from Step 2. Only flag things that are clearly unnecessary regardless of architecture.
 
 ---
 
@@ -135,22 +135,22 @@ Catalog duplication as input to the blueprint. Duplication often reveals missing
 - **Structural repetition (stuttering)**: 5+ consecutive calls to the same function (print, write, append, push, etc.) is duplicated *structure* even when arguments differ. Ask: "Is there a single call or language idiom that could replace this sequence?"
 
 ```
-// BAD: structural repetition - 18 calls to print()
-try writer.print("Usage: {s} [options]\n", .{name});
-try writer.print("\n", .{});
-try writer.print("Options:\n", .{});
-try writer.print("  --help  Show help\n", .{});
-// ... 14 more lines
+# BAD: structural repetition - 18 calls to print()
+print(f"Usage: {name} [options]")
+print("")
+print("Options:")
+print("  --help  Show help")
+# ... 14 more lines
 
-// GOOD: single call with multiline string
-try writer.print(
-    \\Usage: {s} [options]
-    \\
-    \\Options:
-    \\  --help  Show help
-    // ... rest of content
-, .{name});
+# GOOD: one call with a multiline string
+print(f"""Usage: {name} [options]
+
+Options:
+  --help  Show help
+...""")
 ```
+
+The example is Python; the same fix applies in any language with multiline strings or heredocs.
 
 - **Similar-but-not-identical paths**: When two code paths are almost the same, consider whether they can be consolidated. If consolidation would change observable behavior, flag it as "behavior-altering" requiring explicit approval.
 
@@ -195,7 +195,7 @@ For each module that should change, describe its target state: what it owns, wha
 1. **Survey the codebase**: Use Glob/Grep to understand structure. Collect a line count for every source file (`wc -l`) — the module audit requires them.
 2. **Analyze recent changes**: Use `git diff` to understand what was just implemented.
 3. **Check for linters/formatters**: Identify available tools and whether they pass. Note any failures for the blueprint.
-4. **Step 1 - Prune dead code**: Catalog all dead code, unused imports, single-use indirection, legacy assumptions. Run the mechanism audit on every piece of nontrivial machinery.
+4. **Step 1 - Prune**: Take dead code from the supplied audit (or cite evidence for what you list); catalog single-use indirection and legacy assumptions. Run the mechanism audit on every piece of nontrivial machinery.
 5. **Step 2 - Noun analysis**: Build the noun frequency table (2a), then evaluate each noun for namespace decisions (2b).
 6. **Step 3 - Identify repetition**: Catalog all duplication patterns. Cross-reference with noun analysis to identify where duplication reveals missing abstractions.
 7. **Step 4 - Produce module audit**: Synthesize steps 1-3 into a complete module audit (see Output Format). List every existing module with a domain justification and verdict, and propose new modules for nouns that deserve namespaces but don't have them. The implementing agent will decide sequencing; your job is to describe the full target state.
@@ -215,7 +215,7 @@ Brief assessment of codebase health. What's working well, what needs attention.
 - [tool]: [status and what needs fixing]
 
 ## Dead Code (from Step 1)
-- **[file:line]** Description of dead code to remove
+- **[file:line]** Description — evidence: [audit finding, or reference search performed]
 
 ## Mechanism Audit (from Step 1)
 
@@ -329,7 +329,7 @@ explanation of why the existing structure is sufficient.
 
 - Respect existing code style and conventions
 - Follow ecosystem-specific idioms
-- Consult language references (`~/Source/lang`) when uncertain
+- Consult any local language references the project or user instructions point to, or official documentation, when uncertain
 - Consider language-specific concerns (Rust ownership, Go simplicity, etc.)
 
 # Advisory Role

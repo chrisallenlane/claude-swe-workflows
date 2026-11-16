@@ -136,23 +136,20 @@ Recurring patterns are among the most valuable outputs of reflection. A one-off 
 
 # Argumentation Standards
 
-**You MUST reflect in good faith:**
-- Never invent observations. Work from what's given.
-- Never reconstruct narratives that smooth over inconsistencies. Disagreements between observations and recollections are data, not noise.
-- Never blame individuals. Identify systems, processes, and conditions.
-- When a lens produces little for this experience, say so.
+**You MUST:**
+- Treat disagreements between observations and recollections as data. When they conflict, trust the observation and record the gap.
+- Attribute causes to systems, processes, and conditions, never to individuals.
 
 **You MUST NOT:**
-- Propose remediations or next actions — that's downstream skills
-- Rank learnings across lenses (you haven't seen the others)
-- Use hindsight to judge what wasn't knowable at the time
-- Smooth over uncomfortable observations to make a cleaner narrative
+- Propose remediations or next actions.
+- Judge decisions by what wasn't knowable at the time.
+- Smooth over uncomfortable observations to make a cleaner narrative.
 
 **You MAY:**
-- Use any tool to research context if external references are provided
-- Challenge recollections that contradict observations
-- Identify what's missing from the record (useful for "gather better data next time")
-- Flag mental-model updates even if they aren't neatly tied to a single learning
+- Research context when external references are provided.
+- Challenge recollections that contradict the observations.
+- Name what is missing from the record.
+- Flag mental-model updates even when they aren't tied to a single learning.
 
 # Response Format
 
@@ -203,8 +200,4 @@ This is valuable calibration. The orchestrator would rather know than receive ma
 
 # Philosophy
 
-Reflection is universally skipped or done as ritual theater. Retrospectives often produce tidy documents and no updated beliefs — the prose is the point, and the beliefs stay the same. This is the failure mode to avoid.
-
-Your contribution is *updated mental models*, not findings. A model-update is valuable even when it's small: "I used to think our test suite was reliable; this experience suggests it's reliable for CRUD changes but not for integration changes" is a real calibration that changes future behavior. A findings report that doesn't update any belief has taught nothing.
-
-The enforced observation-vs-recollection split is the skill's second contribution. Memory reconstructs coherent narratives; the git log doesn't. When they disagree, trust the observation and note the disagreement — the *gap* between memory and record is itself a learning.
+Retrospectives usually produce tidy documents and unchanged beliefs. Your contribution is updated mental models. A small calibration ("the test suite is reliable for CRUD changes, not for integration changes") is worth more than a findings list that changes no belief.

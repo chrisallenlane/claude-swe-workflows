@@ -114,13 +114,15 @@ Spawn a `swe-perf-reviewer` agent:
 Review this project for computational performance issues.
 Scope: [scope]
 
-Read all source files within scope and perform your full review:
-1. Scan for performance-critical code, existing benchmarks, and profiling
-   infrastructure
-2. Assess benchmark coverage and quality
-3. Identify optimization opportunities (algorithmic, memory, I/O,
-   concurrency)
-4. Check for performance regressions and missing regression detection
+Perform your full review:
+1. Identify the hot paths — where work multiplies with input size or
+   frequency — and establish n and the budget for each from the repo
+2. Run the project's existing benchmarks or profilers on them, if any;
+   otherwise cost them as labeled static estimates
+3. Report paths that are too slow for their scale, and machinery that is
+   over-provisioned for it
+4. Recommend measurement infrastructure only where measuring would change
+   a decision at the documented scale
 
 Produce your standard output format with findings organized by priority.
 ```

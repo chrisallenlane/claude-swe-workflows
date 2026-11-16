@@ -282,7 +282,7 @@ Identify:
 
 ### 4b. Record Phase 4 Findings
 
-**If the agent reports no fuzz infrastructure:** Record "No fuzz testing infrastructure detected for [language]" plus the agent's tooling recommendation. The tooling recommendation appears as an informational entry in the consolidated report and may be cut as a ticket per the runtime ticket-structure proposal (step 8). Do not attempt to set up fuzz tooling.
+**If the agent reports no fuzz infrastructure:** Record "No fuzz testing infrastructure detected for [language]" plus the agent's starter-tooling recommendation, then record its candidates as below: the candidates are the case for adopting the tooling. The tooling recommendation may be cut as a ticket per the runtime ticket-structure proposal (step 8), and candidate tickets depend on it. Do not attempt to set up fuzz tooling.
 
 **If the agent reports no candidates or all candidates are covered:** Record "No fuzz coverage gaps" with the brief explanation.
 
@@ -317,11 +317,11 @@ Look for:
 - Brittle tests (coupled to implementation, weak assertions when stronger ones exist)
 - Redundant tests (duplicate coverage — informational only, no action recommended)
 - False confidence tests (don't verify what they claim)
-- Missing coverage (important gaps only)
 - Test smells (structural problems)
 - Inconsistent assertion strategies (mixed error checking approaches, varied assertion styles)
 
-Return structured findings with recommended actions (DELETE, REWRITE, ADD, SIMPLIFY).
+Return structured findings with recommended actions (DELETE, REWRITE, SIMPLIFY).
+Missing coverage is out of scope here (Phases 1-4 own it).
 Redundant tests should be reported as informational only (no action recommended).
 ```
 
@@ -329,7 +329,7 @@ Redundant tests should be reported as informational only (no action recommended)
 
 ### 5b. Record Phase 5 Findings
 
-Record findings grouped by category (Tautological / Brittle / False-confidence / Inconsistent / Missing / Redundant) with the per-finding recommended action (DELETE / REWRITE / SIMPLIFY / ADD / informational). The redundant category stays informational.
+Record findings grouped by category (Tautological / Brittle / False-confidence / Test smells / Inconsistent / Redundant) with the per-finding recommended action (DELETE / REWRITE / SIMPLIFY / informational). The redundant category stays informational.
 
 Proceed to step 7.
 
@@ -368,7 +368,7 @@ Baseline coverage: XX% (if measured) — or "manual analysis — not measured"
 - [N candidates with priority and properties to verify]
 
 ## Phase 5: Test Quality Audit
-- N findings: X to DELETE, Y to REWRITE, Z to ADD, W to SIMPLIFY, V redundant (info)
+- N findings: X to DELETE, Y to REWRITE, W to SIMPLIFY, V redundant (info)
 - [Findings by category]
 
 ## Refactoring for Testability (informational)
@@ -411,7 +411,7 @@ Phase 1: 8 gaps (2 CRITICAL, 3 HIGH, 3 LOW)
 Phase 2: Mode B — 4 gaps within strategy
 Phase 3: Mode A — Playwright not present; 5 starter tests + infrastructure
 Phase 4: 2 fuzz candidates (1 HIGH, 1 MEDIUM)
-Phase 5: 6 findings (2 DELETE, 3 REWRITE, 1 ADD; 2 redundant — informational)
+Phase 5: 5 findings (2 DELETE, 3 REWRITE; 2 redundant — informational)
 
 Proposed: 7 tickets
   - 1 ticket per CRITICAL unit gap (2 tickets)
@@ -419,7 +419,7 @@ Proposed: 7 tickets
   - 1 batch ticket: "Phase 2 — Integration gaps within existing strategy" (4 gaps)
   - 1 ticket: "Set up Playwright E2E infrastructure + 5 starter tests"
   - 1 batch ticket: "Phase 4 — Fuzz test additions" (2 candidates)
-  - 1 batch ticket: "Phase 5 — Test quality cleanup" (DELETE + REWRITE + ADD)
+  - 1 batch ticket: "Phase 5 — Test quality cleanup" (DELETE + REWRITE)
   - (Refactor-for-testability suggestions held as informational — no ticket)
 
 Approve / edit / decline?
@@ -457,7 +457,7 @@ Use the canonical tracker integration documented in [`references/trackers.md`](.
 - Preserve the per-test recommendation (DELETE / REWRITE / SIMPLIFY). For DELETE: include the "if the test covers real behavior, rewrite instead of delete" caveat from the reviewer so the implementer doesn't blindly remove tests with hidden value.
 
 **For the fuzz tooling recommendation (if Phase 4 reported absence):**
-- Optional ticket: "Adopt fuzz testing infrastructure for [language]" with the agent's tooling recommendation as the body. Cut only if the operator approves it during step 8a.
+- Optional ticket: "Adopt fuzz testing infrastructure for [language]" with the agent's tooling recommendation as the body. Cut only if the operator approves it during step 8a. Fuzz-candidate tickets list it as a dependency; if the operator declines it, decline the candidate tickets too.
 
 **Labels:** Apply phase-type labels (`test-coverage`, `integration-test`, `e2e`, `fuzz`, `test-quality`) when the tracker supports them. The implementation may apply a `test` umbrella label if one exists.
 
@@ -500,7 +500,7 @@ The contract change versus pre-v9.0.0 is that test work surfaced by `/review-tes
 - Coverage command failure (fall back to manual analysis)
 - Phase 2 reporting "no findings" (Mode B with no gaps; record and proceed)
 - Phase 3 webapp gate negative (skip cleanly to Phase 4)
-- Phase 4 finding no fuzz infrastructure (record tooling recommendation as informational; continue)
+- Phase 4 finding no fuzz infrastructure (record the starter-tooling recommendation and the candidates; continue)
 - Any single phase finding no issues (record and continue to next phase)
 - Operator declining to cut tickets at step 8 — review report stands alone
 - Tracker unavailable when the operator has approved ticket creation — surface the error; preserve the approved ticket set in the completion summary so the operator can create the tickets manually
@@ -591,14 +591,11 @@ Existing fuzz tests: 2
 
 ### Tautological (2 found) — DELETE
 - model_test.go:TestUserStruct — Checks struct field existence
-- config_test.go:TestDefaultConfig — Asserts hardcoded values against themselves
+- config_test.go:TestConfigFields — Builds a Config literal in the test, then asserts its own fields back (never calls the code)
 
 ### Brittle (2 found) — REWRITE
 - api_test.go:TestCreateUserError — Exact error string match
 - handler_test.go:TestNotFound — Asserts full JSON response body
-
-### Missing Coverage (1 found) — ADD
-- auth.go:RevokeToken — No tests for revocation path
 
 ### Redundant (1 noted — informational)
 - math_test.go:TestAddVariants — 5 cases hitting same code path
@@ -623,7 +620,7 @@ Proposed: 8 tickets
   - 1 ticket: "Set up integration test infrastructure + 5 starter tests"
   - 1 ticket: "Set up Playwright E2E infrastructure + 5 starter tests"
   - 1 batch ticket: "Phase 4 — Fuzz test additions" (2 candidates)
-  - 1 batch ticket: "Phase 5 — Test quality cleanup" (DELETE + REWRITE + ADD)
+  - 1 batch ticket: "Phase 5 — Test quality cleanup" (DELETE + REWRITE)
   - (Refactor-for-testability suggestion held as informational — no ticket
      unless you'd like one)
 

@@ -87,9 +87,9 @@ Merge findings into a single brief:
 Spawn a `THK - Advocate` agent with:
 - The idea brief
 - The consolidated critique
-- Mandate: **defend the idea in good faith**. This is not a competition against other options — there is one idea on the table. Concede genuine faults; refute weak critiques.
+- Mode: **defend** — one idea, no competitors. The agent's concession contract governs: concede genuine faults, refute weak critiques.
 
-The advocate returns a rebuttal per finding.
+The advocate returns a rebuttal per finding (Refute / Partially concede / Concede, with any residual fault).
 
 ### 7. Counter-Rebuttal (Parallel)
 

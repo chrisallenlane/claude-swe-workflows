@@ -187,7 +187,7 @@ The 11 prescribed failure classes, available in every pre-mortem:
 | incentive                  | Goodhart; system rewarded the wrong thing                                   |
 | detection                  | Failure went unnoticed; instrumentation gap; silent corruption              |
 | reversibility              | Couldn't roll back; sunk-cost trapped continuation                          |
-| adversarial                | Malicious or careless actor; trust assumption was load-bearing and unstated |
+| adversarial                | An actor exploited a weakness; trust assumption was load-bearing, unstated  |
 
 4-7 standard lenses is typical. Drop lenses that don't fit — forcing an unfit lens produces noise. **For software projects, technical, operational, and estimation are almost always present.**
 

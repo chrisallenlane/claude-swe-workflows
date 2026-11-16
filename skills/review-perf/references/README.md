@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `/review-perf` skill reviews a project for performance issues across two domains: **compute performance** (algorithms, memory, CPU, benchmarking) and **web performance** (caching, asset delivery, loading strategy, Core Web Vitals). It detects the project type and dispatches the appropriate specialist(s).
+The `/review-perf` skill reviews a project for performance issues across two domains: **compute performance** (algorithms, memory, CPU — costed at the codebase's actual scale) and **web performance** (caching, asset delivery, loading strategy, Core Web Vitals). It detects the project type and dispatches the appropriate specialist(s).
 
 **Key benefits:**
 - Automatic domain detection: dispatches web reviewer, compute reviewer, or both based on project content
@@ -59,7 +59,7 @@ Findings from both domains merged into a single report with a cross-cutting anal
 
 | Agent                   | Domain                                                          |
 | ----------------------- | --------------------------------------------------------------- |
-| `swe-perf-reviewer`     | Compute performance (algorithms, memory, benchmarks, profiling) |
+| `swe-perf-reviewer`     | Compute performance, costed at the codebase's actual scale      |
 | `swe-web-perf-reviewer` | Web performance (caching, assets, loading, Core Web Vitals)     |
 
 ## Resource Usage

@@ -1,6 +1,6 @@
 ---
 name: QA - Test Fuzz Reviewer
-description: Fuzz testing gap reviewer that identifies functions suitable for fuzz testing and checks for fuzz infrastructure. Advisory only.
+description: Fuzz testing gap reviewer that identifies functions suitable for fuzz testing, with or without existing fuzz infrastructure, and recommends starter tooling when none exists. Advisory only.
 model: sonnet
 ---
 
@@ -27,7 +27,7 @@ Before analyzing code, determine whether the project has fuzz testing support.
 | Go                    | `go.mod` version                                   | Go version ≥ 1.18 (native `testing.F` support)                               |
 | Rust                  | `Cargo.toml`                                       | `cargo-fuzz` or `afl` in dev-dependencies, or `fuzz/` directory exists       |
 | Python                | `requirements*.txt`, `pyproject.toml`, `setup.cfg` | `hypothesis`, `atheris`, or `pythonfuzz` listed as dependency                |
-| JavaScript/TypeScript | `package.json`                                     | `fast-check`, `jsfuzz`, or `@jazzer.js/core` in devDependencies              |
+| JavaScript/TypeScript | `package.json`                                     | `fast-check` or `@jazzer.js/core` in devDependencies                         |
 | C/C++                 | Build system files (`CMakeLists.txt`, `Makefile`)  | libFuzzer flags (`-fsanitize=fuzzer`), AFL integration, or `fuzz/` directory |
 | Java/Kotlin           | `build.gradle`, `pom.xml`                          | `jazzer` or `junit-quickcheck` in dependencies                               |
 
@@ -35,27 +35,11 @@ Also check for existing fuzz test files:
 - Go: files containing `func Fuzz` with `*testing.F` parameter
 - Rust: `fuzz/fuzz_targets/` directory
 - Python: files importing `hypothesis` or `atheris`
-- JS/TS: files importing `fast-check` or `jsfuzz`
+- JS/TS: files importing `fast-check` or `@jazzer.js/core`
 
-### If no infrastructure found
+### Either way, proceed to Step 2
 
-Return the following structured output and stop:
-
-```
-## Summary
-Fuzz infrastructure: NOT FOUND
-Language: [detected language]
-Available tooling: [what fuzz tooling exists for this language]
-
-No fuzz testing infrastructure detected. To enable fuzz testing, consider:
-- [language-specific setup instructions, 1-2 lines]
-```
-
-Do not proceed to Step 2. The orchestrator will handle user communication.
-
-### If infrastructure found
-
-Record what's available and proceed to Step 2.
+Record what you found and continue. **Absent infrastructure does not end the review.** The candidate list is the evidence for whether fuzz tooling is worth adopting, so produce it regardless. When infrastructure is absent, also recommend the starter tooling for the language (one to two lines: the tool, how it is declared, and where fuzz targets go) and mark every candidate as depending on it.
 
 ---
 
@@ -83,6 +67,10 @@ Functions that accept external, untrusted, or semi-structured input and transfor
 - Regular expression compilation or matching wrappers
 - Compression/decompression wrappers
 - State machine transition functions with string/byte inputs
+
+**Low priority** — structured input from trusted sources, with intricate logic:
+- Parsers of internal or generated formats (build manifests, cached state files) where a malformed input means a bug elsewhere, not an attack
+- Pure functions with large input domains where property-based testing would explore edge cases cheaply (sorting, diffing, interval arithmetic)
 
 ### What is NOT a good fuzz target (skip these)
 
@@ -120,6 +108,7 @@ For each candidate, suggest what the fuzz test should verify. Common properties:
 Fuzz infrastructure: [DETECTED / NOT FOUND]
 Language: [detected language]
 Tooling: [what's available — e.g., "native testing.F (Go 1.22)"]
+Starter tooling: [if NOT FOUND: the recommended tool, how to declare it, where targets go; otherwise omit]
 Existing fuzz tests: [count, with file locations]
 New candidates found: N
 
@@ -137,6 +126,9 @@ New candidates found: N
   - Should verify: [properties]
   - Suggested target: [test file]
 
+### LOW
+[same format]
+
 ## ALREADY COVERED
 - **[file:function_name]** — fuzz test exists in [test file:test_name]
 ```
@@ -147,7 +139,7 @@ Order by priority (HIGH first), then by exposure to external input within each t
 
 ## When to Report Nothing
 
-If fuzz infrastructure exists but all fuzz-worthy functions already have fuzz tests, or if no functions in scope are good fuzz candidates, report "No fuzz coverage gaps found" with a brief explanation. Don't manufacture findings.
+If all fuzz-worthy functions already have fuzz tests, or no functions in scope are good fuzz candidates, report "No fuzz coverage gaps found" with a brief explanation. Don't manufacture findings.
 
 ---
 
@@ -161,5 +153,5 @@ Another agent will implement your recommendations. They have final authority on 
 
 - Respect the project's existing fuzz test conventions and file organization
 - Understand language-specific fuzz idioms (Go's `testing.F` with `f.Fuzz()`, Rust's `fuzz_target!` macro, Python's `@given` decorator for hypothesis, etc.)
-- Consult language references (`~/Source/lang`) when uncertain about idiomatic fuzz patterns
+- Consult any local language references the project or user instructions point to, or official documentation, when uncertain about idiomatic fuzz patterns
 - Some languages have stronger fuzz ecosystems than others — calibrate expectations accordingly

@@ -2,7 +2,7 @@
 
 ## Overview
 
-`/bug-hunt` hunts for bugs nobody knows about yet. An assessor works out where bugs are likely to hide by cross-referencing complexity, coverage gaps, structural risk, and git history. Focused hunters then probe each hotspot and write a reproducing test for every suspected bug. You state your intent once; the skill hunts round after round until a round confirms nothing above your severity floor. If you give it the authority, it also tickets what it finds and fixes it via `/implement` between rounds — the work `/lead-bug-hunt` used to do.
+`/bug-hunt` hunts for bugs nobody knows about yet. An assessor works out where bugs are likely to hide by cross-referencing change history (complexity × churn hotspots, fix density, change coupling), coverage gaps, and structural risk. Focused hunters then probe each hotspot and write a reproducing test for every suspected bug. You state your intent once; the skill hunts round after round until a round confirms nothing above your severity floor. If you give it the authority, it also tickets what it finds and fixes it via `/implement` between rounds — the work `/lead-bug-hunt` used to do.
 
 Four ideas shape it:
 
@@ -104,7 +104,7 @@ With fix authority, it works on a branch — never main/master. If you're on mai
 
 Each round has three steps.
 
-**Assess.** A fresh `swe-bug-assessor` maps the code, measures coverage (instrumented where available), finds complexity and structural risk — error-handling gaps, input validation, shared mutable state, resource handling, concurrency, edge cases, consistency — and enriches it with git churn. It ranks hotspots by *converging* signals: complex and untested and structurally risky outranks any single signal. After round 1, it is told what earlier rounds found and changed.
+**Assess.** A fresh `swe-bug-assessor` reads change history first (complexity × churn hotspots, fix density, change coupling), measures coverage (instrumented where available), and finds complexity and structural risk — error-handling gaps, input validation, shared mutable state, resource handling, concurrency, edge cases, consistency. It ranks hotspots by *converging* signals: a frequently-fixed, complex, untested hotspot outranks any single signal. After round 1, it is told what earlier rounds found and changed.
 
 **Hunt.** A fresh `swe-bug-hunter` probes each hotspot, one at a time, each receiving the confirmed bugs and patterns found so far. A broken error-handling utility found in one module becomes a lead for every module that uses it. Hunters write tests that assert at the boundary a caller sees — return values, errors, output, persisted state — not internals, because the test becomes the fix's acceptance criterion:
 

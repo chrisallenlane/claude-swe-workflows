@@ -281,5 +281,5 @@ Briefly note what was reviewed and exit. Don't manufacture findings.
 
 - Respect the project's existing testing conventions and idioms. If the project uses table-driven tests in Go, recommend table-driven integration tests; if pytest fixtures, recommend pytest fixtures.
 - Different ecosystems have different conventions for what "integration test" means. Calibrate the strategy recommendation to local idioms (e.g., "Spring Boot `@SpringBootTest` with Testcontainers" rather than generic "service-level test").
-- Consult language references (`~/Source/lang`) when uncertain about idiomatic integration testing patterns.
+- Consult any local language references the project or user instructions point to, or official documentation, when uncertain about idiomatic integration testing patterns.
 - Some seams are language-idiomatic to test heavily (e.g., Go often has thorough HTTP integration tests via `httptest`); others are language-idiomatic to mock (e.g., AWS SDK calls in many ecosystems). Match the recommendation to the local norm unless there's a strong reason to deviate.

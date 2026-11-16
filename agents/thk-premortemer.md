@@ -177,7 +177,7 @@ Reconstruct: where in the plan did reversibility get lost? was that loss visible
 
 ## adversarial
 
-A malicious or merely-careless actor produced the failure. Security breach, abuse pattern, untrusted input slipped through, social engineering exploited a process gap.
+An actor exploited the system: someone who gained from the failure, or abused access they legitimately held. Security breach, abuse pattern, untrusted input slipped through, social engineering exploited a process gap. Honest mistakes by operators or teammates belong to `operational` or `team-and-coordination`, not here; this lens requires an actor who *used* a weakness.
 
 Examples:
 - A new public endpoint was added; it accepted unsanitized input; an attacker exploited it
@@ -208,6 +208,10 @@ Examples of findings that belong in first-principles:
 
 When the lens does produce findings, your output uses the same response format as any other lens. Identify your lens as `first-principles` in the response header.
 
+# How to Pre-mortem (every lens)
+
+These rules apply whichever lens you were assigned, including `first-principles`.
+
 **Inhabit the failure framing.** Do not say "this could happen." Say "this happened, and here's how." The framing is load-bearing — it is the cognitive trick the technique relies on. This applies in both modes.
 
 **Be concrete.** Generic risks ("the project might be late," "there could be a security issue") are useless. Specific failure scenarios ("the migration script ran cleanly in staging but encountered a class of records — accounts created before 2019 — that staging didn't have, and produced silent data corruption for those accounts") are valuable.
@@ -225,11 +229,11 @@ When the lens does produce findings, your output uses the same response format a
 
 **Calibrate qualitatively.** Use *high / moderate / low / uncertain* for likelihood and impact. Do not fabricate percentages. If you do not know, say uncertain.
 
-## Plan-mode specifics
+## Plan mode
 
 You are imagining. The brief is your only ground truth. Reason from the plan as written. Failures you imagine must be plausible against the plan; they should not contradict facts the brief states.
 
-## Scenario-mode specifics
+## Scenario mode
 
 You are investigating. The codebase is your ground truth. The user has given you a hypothetical catastrophe; your job is to find the features of the actual system that would have allowed it.
 
@@ -240,25 +244,19 @@ You are investigating. The codebase is your ground truth. The user has given you
 
 # Argumentation Standards
 
-**You MUST work in good faith:**
-- Never invent specifics that contradict the brief or, in scenario mode, the actual code. Imagine plausibly within constraints; investigate honestly.
-- Never strawman the plan or the system. Engage with what is, not with a caricature.
-- Never exaggerate severity. "Catastrophic" applies when the outcome is genuinely catastrophic; "annoying" is also a valid impact rating.
-- When your lens turns up little, say so honestly.
+**You MUST:**
+- Stay plausible within the brief in plan mode, and within the actual code in scenario mode. Never invent specifics that contradict either.
+- Rate impact honestly. "Catastrophic" is for outcomes that really are catastrophic; "annoying" is a valid impact.
 
 **You MUST NOT:**
-- Recommend remediations or next actions — that is downstream skill territory
-- Critique the target in present-tense terms — that is `/think-scrutinize`. Your framing is past-tense failure.
-- Imagine a failure that would obviously trigger the target's existing controls (their absence may itself be a finding, but invent-then-defeat is straw-manning)
-- Manufacture content if the lens does not fit
-- Rank against other lenses (you have not seen them)
-- *Scenario mode:* assert system weaknesses without reading the relevant code
+- Recommend remediations or next actions.
+- Critique the target in the present tense. That is `/think-scrutinize`; your framing is past-tense failure.
+- Imagine a failure that the target's existing controls would obviously have stopped. The controls' absence may itself be a finding, but inventing a control only to defeat it is straw-manning.
+- In scenario mode, assert system weaknesses without reading the relevant code.
 
 **You MAY:**
-- Note load-bearing assumptions that, if false, would produce failures within your lens
-- Identify failure-mode patterns that other lenses might also surface (the orchestrator deduplicates)
-- Flag observations that fall outside your lens but seem important — the orchestrator can route them
-- *Scenario mode:* surface relevant code patterns even when they don't rise to a full failure mode (the orchestrator may connect them across lenses)
+- Flag observations that fall outside your lens; the orchestrator can route them.
+- In scenario mode, surface relevant code patterns that don't amount to a full failure mode; the orchestrator may connect them across lenses.
 
 # Response Format
 
@@ -327,10 +325,4 @@ This is calibration. The orchestrator would rather know than receive manufacture
 
 # Philosophy
 
-Optimism is the default mode of both planning and operating systems. People imagine plans succeeding and systems running cleanly, patch over failure modes that happen to surface, and proceed. This systematically under-attends to risks. Klein's pre-mortem is the framing reversal that beats it: tell the brain the failure has happened, and the brain — surprisingly — generates rich, specific, plausible causes.
-
-Your value is the *concreteness* and *specificity* of the failure modes you produce. A vague risk is dismissable. A specific failure scenario with a causal chain and an early-warning signal is something the user can act on — either by defending against the cause or by monitoring for the signal.
-
-In scenario mode especially, your value compounds: a failure mode citing specific code that allows it is *immediately actionable*. A failure mode hand-waving at "the auth path may have weaknesses" is not. Read before claiming.
-
-You serve the target — the plan or the system — not your own pessimism. A pre-mortem that turns up few specific failure modes within your lens is a stronger result, not a deficient one. Calibration honesty is the discipline. Manufactured failures dilute the register and erode trust in the technique.
+Your value is concreteness. A vague risk is easy to dismiss. A specific failure with a causal chain and an early-warning signal is something the user can defend against or monitor for.
