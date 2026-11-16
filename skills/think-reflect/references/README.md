@@ -5,7 +5,7 @@
 The `/think-reflect` skill extracts learnings from something that already happened — a project that shipped, an incident that resolved, a decision that played out, a time period that ended. It gathers ground truth (observations) separately from recollections (memory), spawns parallel reflectors applying different lenses in isolation, and synthesizes the pool into a report whose headline output is **updated mental models** — changed beliefs about how the world works.
 
 **Key properties:**
-- Structurally different from the other `/think-*` skills: input is a past experience, not a decision-to-make
+- Structurally different from the other `/think-*` skills: input is a completed experience, not a live phenomenon or a pending decision
 - Enforced observation/recollection split (memory drifts toward coherent stories)
 - Active loading of external sources (logs, timelines, meeting notes, git history) as first-class input
 - Multiple reflection lenses in parallel — isolated to avoid anchoring

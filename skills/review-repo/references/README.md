@@ -52,6 +52,8 @@ For the map only, asked in the same exchange as the context. Both grants default
 
 Granting tickets *is* the approval to create them. Without the grant, nothing is created unasked.
 
+The follow-up reviews grade on different scales, so the floor is mapped across them: **High = CRITICAL/HIGH, ASHI Safety Hazard/Major, release BLOCKER.** Architecture, dead-code, and value items carry no comparable severity; they are always proposed, never auto-created.
+
 ## Workflow
 
 ```
@@ -84,9 +86,11 @@ Granting tickets *is* the approval to create them. Without the grant, nothing is
 
 ### Phase 5 — Follow Up
 
-**Candidates:** the `dead-code` and `architecture` focuses, `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release` — each run only if the map gives it something to look at, and scoped to the region its findings point at.
+**Candidates:** the `dead-code`, `architecture`, and `namespace` (audit mode) focuses, `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release` — each run only if the map gives it something to look at, and scoped to the region its findings point at.
 
 **Order** so that earlier reviews inform later ones: dead code before architecture, so the blueprint isn't built around code that should be deleted; release readiness last.
+
+**`/review-release` runs report-only.** The skill stops after its findings presentation — no fixes, no commit — so `/review-repo` still never changes code.
 
 **Never run here:**
 
@@ -96,7 +100,7 @@ Granting tickets *is* the approval to create them. Without the grant, nothing is
 | The `value` focus          | Only if your intent asks for it — its trade menu is product decisions |
 | `namespace` in search mode | Search mode needs operator calibration; audit mode may run            |
 
-**Tickets.** Each deeper review ends with a ticket proposal. With ticket authority, the skill approves proposals at or above the floor and declines the rest, recording them for the report. Without it, every proposal is declined within the run and one consolidated set is proposed at the end — every finding, ordered by severity, for you to trim — created only on approval.
+**Tickets.** Each deeper review with a ticket step ends with a ticket proposal. With ticket authority, the skill approves proposals at or above the floor and declines the rest, recording them for the report. Without it, every proposal is declined within the run and one consolidated set is proposed at the end — every finding, ordered by severity, for you to trim — created only on approval. `/review-perf`, `/review-a11y`, and `/review-release` have no ticket step; their findings go straight into the consolidated set, and with ticket authority those at or above the floor are created directly.
 
 **Consolidation.** Findings several reviews raised are deduped — a confirmation is not a second finding. Deeper findings are reconciled with the map; where a deeper review contradicts the map, the deeper review wins and the contradiction is reported.
 
@@ -106,10 +110,11 @@ Granting tickets *is* the approval to create them. Without the grant, nothing is
 
 Every focus runs one fresh agent through the same protocol: scope, analysis, presentation, iteration with you, a ticket offer per the shared advisory pattern, and a summary. During iteration, what you know about liveness, intent, or history counts as evidence. An honest zero is a valid result, and so is declining tickets; the analysis then stands as a planning artifact.
 
-**`architecture`** (`swe-arch-reviewer`) presents three things:
+**`architecture`** (`swe-arch-reviewer`) presents four things:
 - (a) the noun-frequency table and the per-noun namespace evaluation;
 - (b) proposed changes with their rationale: mechanism downgrades, renames, moves, absorptions, dissolutions, and new modules;
-- (c) the modules deliberately left alone.
+- (c) the modules deliberately left alone;
+- (d) behavior-altering changes, flagged for your approval — they escalate to you rather than becoming tickets automatically.
 
 It iterates until you're satisfied, because architectural decisions are consequential. It proposes one ticket per blueprint item, grouped where that makes the work cohesive; cross-module moves recommend `/scope` before `/implement`.
 
@@ -202,9 +207,9 @@ Grants: follow-up yes; tickets no.
 [Phases 1–4 as usual]
 [Phase 5]
 dead-code src/          — 14 PROVEN dead symbols, 3 dead files
-architecture services/billing/ — 2 Major coupling findings; built on the
+architecture services/billing/ — 2 blueprint items (coupling); built on the
                           dead-code audit rather than re-cataloging it
-/review-security        — 1 High (unvalidated redirect, web/auth.go:88); 2 CVEs confirmed
+/review-security        — 1 HIGH (unvalidated redirect, web/auth.go:88); 2 CVEs confirmed
 Not run:
   /review-a11y   — no web UI in scope (server-rendered JSON API only, O9)
   /review-perf   — no perf-sensitive signals in Observe
@@ -212,13 +217,13 @@ Not run:
   /review-release — not preparing a release
 
 Proposed ticket set (7 tickets):
-  - Rotate and remove committed credentials (Safety Hazard)
-  - Fix unvalidated redirect in web/auth.go (High)
-  - Upgrade lib-x and lib-y past CVE versions (High)
-  - Remove 14 dead symbols and 3 dead files
-  - Break billing → invoices cyclic dependency (Major)
-  - Extract pricing rules from billing handler (Major)
-  - Add tests for src/billing/ and src/invoices/ (Foundational test health)
+  - Rotate and remove committed credentials (map: Safety Hazard)
+  - Fix unvalidated redirect in web/auth.go (security: HIGH)
+  - Upgrade lib-x and lib-y past CVE versions (security: HIGH)
+  - Remove 14 dead symbols and 3 dead files (dead-code: PROVEN)
+  - Break billing → invoices cyclic dependency (architecture)
+  - Extract pricing rules from billing handler (architecture)
+  - Add tests for src/billing/ and src/invoices/ (map: test health Foundational)
 Create these?
 ```
 
@@ -228,15 +233,15 @@ Create these?
 Grants: follow-up yes; tickets yes, floor High.
 
 [Phase 5]
-/review-security — 1 High → ticket #212 created; 3 Medium recorded
-/review-test     — 2 High coverage gaps on payment paths → #213, #214; 5 Low recorded
+/review-security — 1 HIGH → ticket #212 created; 3 MEDIUM recorded
+/review-test     — 2 HIGH coverage gaps on payment paths → #213, #214; 5 LOW recorded
 architecture     — proposes moving pricing into its own module, which would
                    rename an exported package used by two other services:
                    breaking change → escalated, not ticketed
 
 Report ends with:
   Tickets created: #212, #213, #214
-  Below floor (reported, not ticketed): 3 Medium, 5 Low
+  Below floor (reported, not ticketed): 3 MEDIUM, 5 LOW
   Awaiting you: the architecture focus's breaking-change recommendation (both options laid out)
 ```
 

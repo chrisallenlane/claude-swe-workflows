@@ -12,7 +12,7 @@ Pre-flight checklist before cutting a release. Spawns a scanner agent for static
 
 ## Philosophy
 
-**Surface issues, don't silently fix them.** A release is a commitment to users. Every issue deserves human review before shipping. The only auto-fixes offered are mechanical debug artifact removals.
+**Surface issues, don't silently fix them.** A release is a commitment to users. Every issue deserves human review before shipping. The only fixes offered are mechanical: debug/marker removal and manifest version bumps.
 
 **Run everything, then report.** Run all checks — static analysis, tests, build, doc freshness — without interruption. Present the full picture at the end so the user can make informed decisions with complete information.
 
@@ -29,11 +29,10 @@ Pre-flight checklist before cutting a release. Spawns a scanner agent for static
 │  3. Run test suite                                       │
 │  4. Run build verification                               │
 │  5. Check documentation freshness                        │
-│  6. Present full consolidated report                     │
-│  7. User selects which items to address                  │
-│  8. Implement selected fixes                             │
-│  9. Re-verify affected checks                            │
-│ 10. Final summary with release recommendation            │
+│  6. Present full report; user selects items to address   │
+│  7. Implement selected fixes                             │
+│  8. Re-verify affected checks                            │
+│  9. Final summary with release recommendation            │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -49,7 +48,9 @@ Pre-flight checklist before cutting a release. Spawns a scanner agent for static
 
 **Ask the user two questions:**
 
-1. "What version are you releasing?" (Optional — enables version consistency checking against a target. If the user skips this, still check that all discovered versions agree with each other.)
+1. "What version are you releasing?" (Optional — enables version consistency checking against a target. If the user skips this, still check that all discovered versions agree with each other.) If the caller supplies the target version, skip this question.
+
+   **Record whether the bump is applied.** Assume it is unless the caller states otherwise: the manifests should already carry the target version. `/release` supplies the target *before* it bumps the manifests and says the bump is not applied yet.
 
 2. "Any checks you want to skip?" Present options:
    - **Run everything** (Recommended)
@@ -59,15 +60,21 @@ Pre-flight checklist before cutting a release. Spawns a scanner agent for static
 
 ### 2. Spawn qa-release-engineer Agent
 
+**Build the scan list** from the six static categories (debug artifacts, version consistency, changelog coverage, git hygiene, breaking changes, license compliance), leaving out any the user skipped in step 1.
+
 **Prompt:**
 ```
 Perform a release readiness scan of this codebase.
 Last tag: [tag or "none"]
 Target version: [version if provided, else "not specified"]
+Version bump applied: [yes | no — the caller bumps after this review]
 Scope: entire codebase
 
-Scan for: debug artifacts, version consistency, changelog coverage,
-git hygiene, breaking changes, license compliance.
+Scan for: [the scan list]. Do not scan the other categories.
+
+If the version bump is not applied, manifests and constants still at the
+last release's version are expected: report them as INFO, not as findings.
+Manifests that disagree with each other remain a BLOCKER.
 
 Return structured findings with severity levels (BLOCKER/WARNING/INFO).
 ```
@@ -148,6 +155,8 @@ Select items to address (e.g., "1-3", "all blockers", "all"):
 
 **Use `AskUserQuestion`** with multi-select. Support shortcuts: "all blockers", "all warnings", "all", or specific numbers.
 
+**Report-only callers.** When the caller asks for report-only (as `/review-repo`'s follow-up does), present the report without the selection prompt, add the recommendation per step 9's logic, and stop. Steps 7–9 do not run: no fixes, no commit.
+
 ### 7. Implement Selected Fixes
 
 Group selected items by type and handle appropriately:
@@ -171,7 +180,7 @@ Cannot auto-fix from here. Report the error and suggest investigating.
 Cannot auto-generate meaningful entries. Offer to scaffold a changelog entry by listing commits since last tag, organized by type (features, fixes, etc.). The user fills in the details.
 
 #### Version mismatches
-If the user provided a target version, offer to update version numbers in manifest files to match. This is mechanical and safe for manifests. For source code constants, show the file and line — the user confirms.
+If the user provided a target version and the bump is applied, offer to update stragglers in manifest files to match. (With the bump not applied, the caller owns the bump; offer nothing.) This is mechanical and safe for manifests. For source code constants, show the file and line — the user confirms.
 
 #### License issues
 Report only. The user must decide whether the dependency is acceptable.
@@ -264,24 +273,6 @@ EOF
 - Agent finding no issues (exit gracefully — "Release looks clean")
 - Test or build failures (report as BLOCKERs, continue with other checks)
 
-## Test/Build Command Detection
-
-**Test commands** (try in order):
-1. `Makefile` with `test` target → `make test`
-2. `package.json` with `test` script → `npm test`
-3. `go.mod` → `go test ./...`
-4. `Cargo.toml` → `cargo test`
-5. `pyproject.toml` or `setup.py` → `pytest`
-6. Ask user if none detected
-
-**Build commands** (try in order):
-1. `Makefile` with `build` target → `make build`
-2. `package.json` with `build` script → `npm run build`
-3. `go.mod` → `go build ./...`
-4. `Cargo.toml` → `cargo build --release`
-5. `pyproject.toml` with build config → `python -m build`
-6. Skip with INFO if none detected
-
 ## Example Session
 
 ```
@@ -302,13 +293,13 @@ Checking documentation freshness...
 
 Target: v2.0.0 (from v1.9.2, 89 commits)
 
-### BLOCKERS (2)
+### BLOCKERS (3)
 1. [DEBUG] src/api/handler.go:15 — fmt.Println debug statement
 2. [VERSION] Version not bumped to 2.0.0 (currently 1.9.2)
+3. [BREAKING] Removed ParseConfig() — not in changelog
 
-### WARNINGS (4)
-3. [CHANGELOG] Not updated since v1.9.2
-4. [BREAKING] Removed ParseConfig() — not in changelog
+### WARNINGS (3)
+4. [CHANGELOG] Not updated since v1.9.2
 5. [DEBUG] TODO markers in 2 files
 6. [DOCS] README.md references removed ParseConfig()
 
@@ -331,8 +322,8 @@ Re-verifying... no debug artifacts remain, versions consistent.
 ## Release Review Complete
 
 ### Status
-- BLOCKERS resolved: 2/2
-- WARNINGS addressed: 1/4
+- BLOCKERS resolved: 2/3
+- WARNINGS addressed: 1/3
 - Items skipped: 3 (user declined)
 
 ### Changes Made
@@ -341,12 +332,12 @@ Re-verifying... no debug artifacts remain, versions consistent.
 - Removed 2 TODO markers
 
 ### Remaining Issues
+- [BLOCKER] Removed ParseConfig() not documented as breaking change
 - [WARNING] CHANGELOG.md not updated
-- [WARNING] Removed ParseConfig() not documented as breaking change
 - [WARNING] README.md references removed function (run /tidy-docs)
 
 ### Recommendation
-PROCEED WITH CAUTION — 3 warnings remain
+HOLD — 1 unresolved BLOCKER remains
 
 Commit changes?
 > Yes

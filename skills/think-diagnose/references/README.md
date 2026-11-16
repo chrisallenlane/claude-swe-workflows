@@ -22,7 +22,7 @@ The `/think-diagnose` skill figures out *why* something is happening. Given a ph
 - Behavioral patterns ("why do customer calls go badly when X happens?")
 - Organizational issues ("why does our goal-setting keep producing missed goals?")
 - Anywhere `/bug-fix` doesn't apply because the phenomenon isn't code-specific
-- Rigorously narrowing several explanations you already have (pass them in; the ACH step runs)
+- Rigorously narrowing several explanations you already have. Pass them in as interpretations; if they survive step 6 without separating, step 7 narrows them.
 
 **Don't use `/think-diagnose` for:**
 - Code-specific diagnosis (use `/bug-fix` — has artifact output and execution tooling)
@@ -103,10 +103,11 @@ The `/think-diagnose` skill figures out *why* something is happening. Given a ph
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  7. NARROW BY ACH (when candidates tie)      │
+ │  7. NARROW BY ACH (if they won't separate)   │
  │  ────────────────────────────────────────    │
- │  Only if ≥3 candidates at moderate+ fit,     │
- │  or a tie, and evidence can discriminate     │
+ │  Only if 3+ candidates at moderate fit or    │
+ │  better, or an "unable to distinguish" tie,  │
+ │  and evidence can discriminate               │
  │  • Add null (+ deceptive) hypotheses         │
  │  • Evidence-gatherers per class (isolated)   │
  │  • Matrix C / I / N/A; diagnosticity         │
@@ -118,6 +119,7 @@ The `/think-diagnose` skill figures out *why* something is happening. Given a ph
  │  8. REPORT                                   │
  │  ────────────────────────────────────────    │
  │  Leading candidate(s) / Other candidates /   │
+ │  Narrowing (or one-line skip) /              │
  │  Distinguishing evidence / What remains      │
  │  unknown / Recommendation                    │
  └──────────────────────────────────────────────┘
@@ -125,10 +127,11 @@ The `/think-diagnose` skill figures out *why* something is happening. Given a ph
 
 ## Roles
 
-| Role           | What they do                                                              |
-| -------------- | ------------------------------------------------------------------------- |
-| Judge (you)    | Gather evidence, choose lenses, spawn diagnosticians, evaluate candidates |
-| Diagnosticians | Generate candidate causes through assigned lenses, in isolation           |
+| Role               | What they do                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------ |
+| Judge (you)        | Gather evidence, choose lenses, spawn diagnosticians, evaluate candidates, narrow by ACH when needed   |
+| Diagnosticians     | Generate candidate causes through assigned lenses, in isolation                                        |
+| Evidence-gatherers | Narrowing only: enumerate evidence for and against within one evidence class, in isolation; never pick |
 
 ## Reasoning Lenses
 
@@ -175,7 +178,8 @@ A structured report with:
 - **Unavailable evidence** — what constrains conclusions
 - **Leading candidate(s)** — 1-2 causes with strong fit; mechanism, evidence fit, plausibility, lens attribution
 - **Other candidates** — moderate and weak-fit causes with brief reasoning
-- **Distinguishing evidence** — concrete tests the user can run to distinguish among candidates (the most actionable part of the report)
+- **Narrowing** — when step 7 ran: hypotheses (including null and deceptive), evidence by class, the C / I / N/A matrix, diagnosticity, a leaderboard ordered by least disconfirmation, and sensitivity; otherwise one line saying why it was skipped
+- **Distinguishing evidence** — concrete tests the user can run to distinguish among candidates (the falsification milestones, when narrowing ran; the most actionable part of the report)
 - **What remains unknown** — honest uncertainty
 - **Recommendation** — Act on leading / Gather evidence first / Phenomenon may not be real / Insufficient evidence
 
@@ -317,6 +321,11 @@ if this exists.
 drop is large and senior-attendance drop is an independent signal —
 unlikely to be pure measurement.
 
+### Narrowing
+
+Skipped: only two candidates reached moderate fit or better, with no tie;
+the distinguishing checks below separate them directly.
+
 ### Distinguishing Evidence
 
 To distinguish **prep-doc collapse** from **meeting size**:
@@ -374,7 +383,7 @@ with reinstated prep docs to test.
   narrow by ACH)
 ```
 
-Diagnosis first casts a wide net for candidate causes. Then, only when candidates tie, its ACH step ranks them by which has the *fewest* contradictions with the evidence. It skips that step when a strong-fit leader has no close runners-up. Before v12 the ACH step was a separate skill, `/think-ach`. Its non-causal uses (forecasting, attribution among actors) no longer have a dedicated home; for a question shaped like that, frame the competing explanations as the phenomenon's candidates.
+Diagnosis first casts a wide net for candidate causes. Then, only when 3 or more candidates sit at moderate fit or better, or an "unable to distinguish" tie remains, its ACH step ranks them by which has the *fewest* contradictions with the evidence. Otherwise it skips that step and says so in one line. Before v12 the ACH step was a separate skill, `/think-ach`. Its non-causal uses (forecasting, attribution among actors) no longer have a dedicated home; for a question shaped like that, frame the competing explanations as the phenomenon's candidates.
 
 ## Philosophy
 

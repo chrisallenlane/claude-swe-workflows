@@ -6,7 +6,7 @@ model: opus
 
 # Release - Cut a Project Release
 
-Executes the project's release procedure with safety guards appropriate to a high-blast-radius operation. Discovers the procedure from the project itself rather than dictating one, always runs `/review-release` as preflight, and never pushes past a BLOCKER. Plans before executing; halts on first failure rather than guessing at recovery.
+Executes the project's release procedure with safety guards appropriate to a high-blast-radius operation. Discovers the procedure from the project itself rather than dictating one and always runs `/review-release` as preflight. Plans before executing; halts on first failure rather than guessing at recovery.
 
 **Scope of action:** local repo and configured remotes. The skill pushes commits, pushes tags, and (when the procedure includes them) publishes to package registries. It does not attempt automatic rollback of partially-executed releases.
 
@@ -117,7 +117,7 @@ If any artifact is found, surface it and present three options:
 
 Announce the action: "Running `/review-release` as preflight."
 
-Invoke `/review-release` with the target version. Wait for completion.
+Invoke `/review-release` with: "target vX.Y.Z; the bump is not applied yet — manifests at the previous release version are expected." The bump happens in step 9, so a version check against the target would otherwise flag every manifest. Wait for completion.
 
 **Fail-stop on red.** If `/review-release` reports unresolved BLOCKERs, abort the release workflow:
 
@@ -159,6 +159,8 @@ Typical plan (customized to the discovered procedure):
 7. Publish to package registry (`npm publish`, `cargo publish`, etc.) — **irreversible-on-publish**
 8. Create GitHub release (`gh release create vX.Y.Z --generate-notes`) — **partially-reversible**
 
+If `gh` is not available, drop the GitHub-release step from the plan with a note; the user can create the release by hand.
+
 If step 5's idempotence check found existing artifacts and the user chose "resume," mark already-done steps as `[skip]` rather than removing them — visible context for the user.
 
 ### 8. Present Plan + Confirm
@@ -197,6 +199,8 @@ Use `AskUserQuestion`. Options:
 Do not offer "edit the plan inline." If the user wants different steps, they update the procedure source (Makefile, RELEASING.md) and re-run.
 
 ### 9. Execute Step-by-Step
+
+Before the first step, re-run `git status --porcelain`. If the tree is dirty, halt: the plan was built against a different tree state.
 
 For each step:
 
@@ -289,7 +293,6 @@ These invariants are categorical. The skill does not offer flags to override the
 - Dirty working tree.
 - Branch behind origin and user declines to pull.
 - No release procedure discoverable and user declines to describe one.
-- `/review-release` reports unresolved BLOCKERs.
 - User declines the plan at step 8.
 - User declines the local→remote boundary confirmation at step 9.
 - Any step fails during execution.
@@ -305,92 +308,3 @@ These invariants are categorical. The skill does not offer flags to override the
 - **Always invokes** `/review-release` as preflight (step 6). No shortcut, no skip.
 - **Suggests** `/tidy-docs` if `/review-release` flagged stale documentation as a warning. Does not invoke automatically.
 - **Suggests** `/bug-fix` or `/implement` if the user wants to address `/review-release` BLOCKERs before re-running.
-
-`/release` is a leaf skill, not an orchestrator: it composes one sub-skill linearly. It does not iterate over multiple skills or make dynamic decisions across them.
-
-## Example Session
-
-```
-> /release
-
-Detected: main branch = "master", current = "master", working tree clean,
-up-to-date with origin.
-
-Discovering release procedure...
-  ✓ Makefile target `release` found
-  ✓ Tag convention from history: vX.Y.Z
-  ✓ Conventional commit pattern: "chore: pre-release cleanup for vX.Y.Z"
-
-Determining target version...
-  Last tag: v10.0.0
-  Commits since last tag: 12 (1 feat:, 3 fix:, 8 chore:/docs:)
-  Proposing: v10.1.0 (minor bump — 1 feat: commit)
-
-Confirm version?
-> v10.1.0
-
-Idempotence check... no prior artifacts for v10.1.0. Clean slate.
-
-Running /review-release as preflight...
-
-  [/review-release output streams]
-
-  Preflight result: PROCEED WITH CAUTION — 2 warnings, 0 blockers.
-
-## Release Plan: v10.1.0
-
-Branch:     master (clean, up-to-date with origin)
-Last tag:   v10.0.0
-Preflight:  /review-release passed (2 warnings — see below)
-
-Steps:
-  1. [reversible]               Update version in .claude-plugin/plugin.json → 10.1.0
-  2. [reversible]               Update version in .claude-plugin/marketplace.json → 10.1.0
-  3. [reversible]               Update CHANGELOG.md (set date to 2026-05-18)
-  4. [reversible-locally]       git commit -m "chore: release v10.1.0"
-  5. [reversible-locally]       git tag -a v10.1.0 -m "Release v10.1.0"
-  ───── local → remote boundary ─────
-  6. [irreversible-on-publish]  git push origin master
-  7. [irreversible-on-publish]  git push origin v10.1.0
-  8. [partially-reversible]     gh release create v10.1.0 --generate-notes
-
-Preflight warnings:
-  - CHANGELOG: minor formatting inconsistency in v10.0.0 entry (pre-existing)
-  - DOCS: README.md release count may be outdated
-
-Proceed?
-> Proceed
-
-Step 1 of 8: Updating .claude-plugin/plugin.json version → 10.1.0... done.
-Step 2 of 8: Updating .claude-plugin/marketplace.json version → 10.1.0... done.
-Step 3 of 8: Updating CHANGELOG.md date → 2026-05-18... done.
-Step 4 of 8: Committing... done (sha 4d5e6f7).
-Step 5 of 8: Tagging v10.1.0... done.
-
-Local steps complete (version bumped in both manifests, committed, tagged).
-About to push to remote — final confirmation?
-> Proceed
-
-Step 6 of 8: git push origin master... done.
-Step 7 of 8: git push origin v10.1.0... done.
-Step 8 of 8: gh release create v10.1.0 --generate-notes... done.
-
-## Release Complete: v10.1.0
-
-### Executed
-  1. Bumped version to 10.1.0 in .claude-plugin/plugin.json
-  2. Bumped version to 10.1.0 in .claude-plugin/marketplace.json
-  3. Updated CHANGELOG.md
-  4. Committed: "chore: release v10.1.0" (sha 4d5e6f7)
-  5. Tagged v10.1.0
-  6. Pushed master
-  7. Pushed tag v10.1.0
-  8. Created GitHub release v10.1.0
-
-### Links
-  - Tag: https://github.com/chrisallenlane/claude-swe-workflows/releases/tag/v10.1.0
-
-### Carry-over warnings
-  - CHANGELOG: minor formatting in v10.0.0 entry (pre-existing)
-  - DOCS: README.md release count may need update — consider /tidy-docs
-```

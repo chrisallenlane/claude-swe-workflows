@@ -2,7 +2,7 @@
 
 ## Overview
 
-`/implement` builds whatever you hand it — one ticket, a batch of tickets, or a goal that still needs scoping — and gives you back a branch and a report. It covers what `/implement-batch` and `/implement-project` used to do; there is now one skill at every scale.
+`/implement` builds whatever you hand it — one ticket, a batch of tickets, or a goal that still needs scoping — and gives you back a branch and a report.
 
 **Judgment over checklists.** The skill does not walk a fixed sequence of review steps. It holds a repertoire of agents and skills and uses the ones the work needs, when it needs them. A typo-sized fix gets a one-line concept inventory, a verification run, and a commit. A twelve-ticket feature may get planning, delegated implementation, `/refactor`, `/review-repo architecture`, and a smoke test.
 
@@ -146,7 +146,9 @@ Everything here is chosen by judgment. Anything that plausibly applied but didn'
 | `/review-release`                                                                                                         | Last, when the work is headed for a release                        |
 | `/think-*` (deliberate, brainstorm, diagnose, scrutinize)                                                                 | Close calls, wrong framings, unclear failures, risky plans         |
 
-Review skills that propose tickets are handled with orchestrator judgment: approve what should be tracked, decline what the run will handle inline (and then handle it), and prefer a ticket when in doubt.
+Review skills that propose tickets (`/review-repo`, `/review-test`, `/review-security`) are handled with orchestrator judgment: approve what should be tracked, decline what the run will handle inline (and then handle it), and prefer a ticket when in doubt.
+
+`/bug-hunt` runs with its intent answered from your approved intent: the new surface as scope, floor High, your constraints, and no ticket or fix authority. `/bug-fix` runs under its "Invoked by Another Skill" contract: the skill supplies the bug report and answers its questions, and `/bug-fix` closes no tickets and never rebases.
 
 `/review-repo value` runs only when your intent asks for it, and its trade menu is surfaced to you rather than acted on. `/release` is never run.
 
@@ -189,12 +191,12 @@ If the branch is behind main, the report says so and offers a rebase; it doesn't
 
 ### 7. Escalation
 
-The skill tries to resolve problems itself first — `/think-deliberate` for judgment calls, and a re-read of your intent in case a blocker means the intent needs clarifying. When you're present, it asks plainly. When unattended, it stops and hands off: what went wrong, what was tried, 2–3 named options, a recommendation and the trade-off that would flip it, and the branch state.
+The skill tries to resolve problems itself first — `/think-deliberate` for judgment calls, and a re-read of your intent in case a blocker means the intent needs clarifying. When you're present, it asks plainly. When unattended, it stops and hands off using the plugin's shared andon-cord template (`references/autonomy.md`), plus the branch state: what is merged, what is in flight.
 
 It escalates when:
 - An irreversible action is required
 - A decision needs product judgment the repo can't answer
-- The same failure recurs 3 times across strategies, or the correctness review exhausts 3 rounds
+- 3 failed attempts on the same ticket, or the correctness review exhausts 3 rounds
 - Two reviews contradict each other on the same code
 - A merge conflicts, or breaks tests for reasons that aren't local
 - A requirement appears to violate a constraint

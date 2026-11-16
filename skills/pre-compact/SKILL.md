@@ -18,19 +18,10 @@ report.
 
 ## Philosophy
 
-- **Persist before you compact.** If a fact will matter next session,
-  it goes into persistent memory now. If a change should be in the
-  project, it gets committed (with permission). If an artifact is
-  trash, it gets deleted.
-- **Surface uncertainty instead of guessing.** When unsure whether
-  something is trash, abandoned, or important, ask the user.
-- **Bias toward asking, not committing.** Never commit on the user's
-  behalf without per-invocation permission. Standing rules from
-  CLAUDE.md still apply.
-- **The checklist is a floor, not a ceiling.** Walk every item, but
-  also use judgment to spot session-specific cleanup the checklist
-  cannot anticipate.
-- **Do not invoke /compact yourself.** Compaction is the user's call.
+**Persist before you compact; ask rather than guess.** What will matter
+next session goes into memory, a commit (with permission), or the
+SBAR. When unsure whether something is trash, abandoned, or important,
+ask the user.
 
 ## Workflow
 
@@ -38,31 +29,10 @@ report.
 
 Updating persistent memory is the core reason this skill exists. The
 user invokes `/pre-compact` *because* they want memory written before
-compaction. Do not skip this step or treat it as conditional. Follow
-whatever memory conventions are documented in the user's global or
-project CLAUDE.md (auto-memory directory, project notes, etc.).
+compaction. Do not skip this step or treat it as conditional.
 
 Re-scan the session for facts worth saving across conversations.
-Look for:
-
-- **About the user**: role, expertise, preferences, current focus
-- **Feedback**: corrections received OR non-obvious approaches the
-  user confirmed worked. Capture the *why* the user gave, not just
-  the rule.
-- **Project state**: ongoing initiatives, constraints, deadlines,
-  decisions, stakeholder context. Convert relative dates to absolute
-  ones.
-- **External references**: pointers to issue trackers, dashboards,
-  channels, docs the user mentioned
-
-For each candidate:
-
-- Check existing memory files first. Update an existing memory rather
-  than writing a duplicate.
-- Skip anything already saved, derivable from `git log` / current
-  code, or ephemeral to this conversation.
-- Honor the exclusion rules in the user's memory instructions
-  (architecture, conventions, fix recipes, ephemeral state).
+Follow the memory conventions in effect; update rather than duplicate.
 
 ### 2. Git hygiene pass
 
@@ -73,8 +43,8 @@ Run `git status` and assess:
   approval before running `git commit`.
 - **Uncommitted in-progress changes**: surface them. The filesystem
   survives compaction, so the *files* are not at risk — but the
-  *context* about what is in flight may be. Either commit as WIP, or
-  capture the in-flight state in the SBAR.
+  *context* about what is in flight may be. Either commit as WIP (with
+  permission), or capture the in-flight state in the SBAR.
 - **Untracked files**: route each to step 3 (trash) or surface as
   work product that should be tracked.
 - **Branch state**: note any unusual condition (detached HEAD,
@@ -83,7 +53,7 @@ Run `git status` and assess:
 
 Do not commit or stage on the user's behalf without explicit
 per-invocation permission. Match the scope of any granted permission
-exactly.
+exactly. Standing rules from CLAUDE.md still apply.
 
 ### 3. Trash cleanup pass
 

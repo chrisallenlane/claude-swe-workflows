@@ -45,7 +45,7 @@ Scans for web indicators (HTML/JSX/TSX, web frameworks, build tool configs, serv
 
 ### 2. Determine Scope
 
-User chooses what to review: both domains (default), web only, compute only, or a specific directory.
+User chooses what to review: both domains (default), web only, compute only, or a specific directory. When the invocation or a caller (such as `/review-repo`'s follow-up) already supplies scope, the question is skipped.
 
 ### 3. Dispatch Reviewers
 
@@ -53,7 +53,7 @@ Applicable reviewers run in parallel. Each performs a comprehensive review withi
 
 ### 4. Consolidated Report
 
-Findings from both domains merged into a single report with a cross-cutting analysis section that identifies issues spanning both domains.
+Findings from both domains merged into a single report with a cross-cutting analysis section that identifies issues spanning both domains. The compute section carries the reviewer's hot paths (n, frequency, budget), over-provisioned machinery, and cold paths dismissed; over-provisioned machinery is routed to `/refactor` in the next steps.
 
 ## Agents Used
 

@@ -41,6 +41,7 @@ The plugin is moving `/review-*` skills toward advisory-only over time; `/review
  ┌──────────────────────────────────────────────┐
  │  1. DETERMINE SCOPE                          │
  │  ────────────────────────────────────────    │
+ │  (skipped when the caller supplies scope)    │
  │  • Entire project (default)                  │
  │  • Specific directory or files               │
  │  • Recent changes (git diff)                 │
@@ -61,19 +62,18 @@ The plugin is moving `/review-*` skills toward advisory-only over time; `/review
  │  PHASE 2: INTEGRATION COVERAGE               │
  │  ────────────────────────────────────────    │
  │  2a. Analyze (qa-test-integration-reviewer)  │
- │  2b. Mode A (none) → starter strategy        │
+ │  2b. Record findings:                        │
+ │      Mode A (none) → starter strategy        │
  │      Mode B (exists) → gaps + expansion      │
- │  2c. Record findings                         │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
  │  PHASE 3: E2E COVERAGE (webapps only)        │
  │  ────────────────────────────────────────    │
- │  3a. Webapp detection gate                   │
+ │  3a. Analyze (qa-test-e2e-reviewer), gated   │
  │      Not a webapp? → Skip to Phase 4         │
- │  3b. Analyze (qa-test-e2e-reviewer)          │
- │  3c. Confirm journey classification (USER)   │
- │  3d. Record findings                         │
+ │  3b. Confirm journey classification (USER)   │
+ │  3c. Record findings                         │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -174,8 +174,10 @@ Issue categories and recommended actions on the resulting ticket(s):
 | Tautological     | DELETE   | Tests that can't fail                          |
 | Brittle          | REWRITE  | Tests coupled to implementation details        |
 | False confidence | REWRITE  | Tests that don't verify what they claim        |
-| Inconsistent     | SIMPLIFY | Mixed assertion strategies                     |
+| Test smells      | SIMPLIFY | Structural problems in the test code           |
+| Inconsistent     | REWRITE  | Mixed assertion strategies; outliers rewritten |
 | Redundant        | (info)   | Duplicate coverage — reported but not actioned |
+| Other            | (varies) | Problems outside the categories above          |
 
 The implementer working a Phase 5 ticket retains the discretion to REWRITE rather than DELETE if the test covers real behavior that could regress — this caveat is included in every DELETE-containing ticket body.
 
@@ -217,16 +219,7 @@ When `/review-test` is invoked by an orchestrator (`/implement`, `/review-repo`)
 
 **No implementation agents.** `/review-test` does not spawn `swe-implementer` or `qa-engineer` agents. Test design and implementation are handled out-of-skill by `/implement` against the cut tickets.
 
-**Fresh instances:** Every agent spawn is a fresh instance. No state carried between invocations.
-
-**State maintained by orchestrator:**
-- Scope (shared across all phases)
-- Coverage command and baseline metrics
-- Webapp detection result (used to skip Phase 3 cleanly)
-- Confirmed journey classification (Phase 3, after user correction)
-- Per-phase findings (accumulating)
-- Refactoring suggestions (held for informational section)
-- Tickets created at step 8 (if any)
+Every agent spawn is a fresh instance. The orchestrator holds scope, the coverage baseline, the webapp gate result, the confirmed journey classification, and per-phase findings across phases.
 
 ## Tips for Effective Use
 

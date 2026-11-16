@@ -12,8 +12,6 @@ Orchestrates a comprehensive security assessment of the project's source code us
 
 **Advisory only.** The skill produces findings and proposes tickets; it does not implement remediation. The cognitive seam between "find vulnerability" and "fix vulnerability" is wide enough that mixing them under one workflow degrades both — security findings require fresh threat-model reasoning to remediate correctly, and the discovery agents shouldn't be biased toward findings they could easily fix. Tickets capture findings durably across that seam and compose with `/implement` for remediation.
 
-The parallel-isolated first pass is the load-bearing discipline of this skill. The previous design ran blue first, then red informed by blue. That design embedded an anchoring failure mode: whatever the blue team flagged as "the defensive territory" became the salient territory for the red team. Real attackers don't get a defensive briefing — they look at the system fresh and find what defenders missed. Independent reconnaissance surfaces the territory the old design suppressed.
-
 ## Workflow Overview
 
 ```
@@ -57,7 +55,7 @@ Inform the user of these exclusions when presenting the scope. If the user wants
 
 **If user specifies scope:** Respect it (directory, files, module, feature area). Pass scope to all spawned agents.
 
-**Ask the user:**
+If the invocation or caller supplies scope, use it and skip the scope question. Otherwise, **ask the user:**
 - "What is the scope of the audit?" (entire codebase, specific module, specific feature)
 - "Is there anything you're particularly concerned about?" (auth, file handling, a recent change, etc.)
 - "Are there any areas I should skip beyond the defaults?" (additional exclusions)
@@ -66,7 +64,7 @@ User concerns inform the prioritization of vectors in later steps, but the blue-
 
 ### 2. Independent First Pass — Parallel and Isolated
 
-**Spawn the blue-teamer and lead red-teamer in parallel.** Neither agent sees the other's output during this phase. This is the load-bearing discipline of the skill: independent reconnaissance prevents the blue team's defensive map from anchoring the red team's attack planning, and surfaces the territory each side alone would miss.
+**Spawn the blue-teamer and lead red-teamer in parallel.** Neither agent sees the other's output during this phase. This is the load-bearing discipline of the skill: a red team briefed by the blue team treats the blue team's defensive map as the salient territory. Real attackers get no defensive briefing; they look at the system fresh and find what defenders missed. Independent reconnaissance surfaces the territory each side alone would miss.
 
 #### 2a. Blue-Teamer — Defense Evaluation
 
@@ -77,23 +75,13 @@ You are the blue-teamer for a white-box security audit. You are running in
 parallel with the lead red-teamer; you will not see their output during
 this phase. Perform your evaluation from defenders' first principles.
 
+Mode: full review
 Scope: [entire codebase | user-specified scope]
 User concerns: [any areas of concern mentioned by user, or "none specified"]
 
-Perform your full methodology:
-1. Inventory security controls — map every defense that exists (auth, authz,
-   input validation, CSRF, headers, rate limiting, crypto, secrets, logging)
-2. Evaluate each control — correctness, consistency, failure mode
-3. Identify missing controls — what should exist but doesn't, given the
-   application type?
-4. Assess defense-in-depth — where does security rely on a single control?
-5. Review configuration — are security features properly configured?
-6. Dependency hygiene — run available tooling, check for CVEs and supply chain
-   concerns
-7. Secrets and credentials — check for secrets in the wrong places
-
-Pay special attention to CONSISTENCY. Gaps where a control exists but isn't
-applied universally are the highest-value defensive findings.
+Perform every step of your methodology. Pay special attention to
+CONSISTENCY. Gaps where a control exists but isn't applied universally are
+the highest-value defensive findings.
 
 Output your full report in your standard format.
 ```
@@ -108,19 +96,13 @@ in parallel with the blue-teamer; you will not see their output during this
 phase. Perform reconnaissance from attackers' first principles — fresh eyes
 on the codebase, no defensive briefing.
 
+Mode: broad recon
 Scope: [entire codebase | user-specified scope]
 User concerns: [any areas of concern mentioned by user, or "none specified"]
 
-Perform phases 1–3 of your methodology:
-1. Reconnaissance — map the full attack surface (every entry point, what it
-   accepts, who can reach it).
-2. Data flow tracing — for each entry point, trace input to its final
-   destination.
-3. Trust boundary mapping — identify where trust transitions occur, including
-   implicit / unguarded ones.
-
-Do NOT perform deep exploitation yet. Your job is to survey the landscape and
-produce a prioritized target list.
+Perform phases 1–3 of your methodology. Do NOT perform deep exploitation
+yet. Your job is to survey the landscape and produce a prioritized target
+list.
 
 Output a structured report:
 
@@ -138,6 +120,9 @@ For each promising attack vector, provide:
 - Context: [relevant framework protections, validation observed, transformations]
 - Priority: [CRITICAL / HIGH / MEDIUM / LOW]
 - Investigation approach: [what the focused red-teamer should try]
+
+## NON-SECURITY BUGS (if any)
+[One line each: file:line — what's wrong]
 
 Rank targets by a combination of exposure (how easy to reach) and potential
 impact (how bad if exploited). Include up to 25 targets — but this is a
@@ -157,7 +142,7 @@ Categorize each item from the combined material into one of four prescriptive bu
 
 #### anchoring-suppressed (highest-value bucket)
 
-Red team flagged this as a target, **but blue team did not account for it in their defensive map**. These are the gaps anchoring would have suppressed under the old sequential design. The red team found them precisely because they had no defensive briefing.
+Red team flagged this as a target, **but blue team did not account for it in their defensive map**. These are the gaps a briefed red team would have been anchored away from. The red team found them precisely because they had no defensive briefing.
 
 Examples:
 - File-upload path-traversal risk where the blue team's inventory listed "upload exists" but did not enumerate the path-construction sink
@@ -220,6 +205,7 @@ A short or empty unified list is a valid outcome. It means both teams found litt
 
 ```
 You are a focused red-teamer investigating a single attack vector.
+Mode: focused target
 
 ## YOUR TARGET
 Target: [from unified list]
@@ -239,13 +225,7 @@ Investigation approach: [from unified list]
 ## YOUR MISSION
 Go deep on this one target. You have the full methodology available, but your scope is narrow: this single attack vector. Dedicate your full attention to it.
 
-Perform phases 4–7 of your methodology on this target:
-4. Break assumptions — systematically challenge what the developer assumed about input to this entry point
-5. Exploit error paths — trigger errors in this code path and see what breaks
-6. Attack state and timing — look for race conditions, replay, sequence bypass specific to this target
-7. Git archaeology — check the history of these specific files for security smells
-
-For each finding:
+Perform phases 4–7 of your methodology on this target. For each finding:
 - Describe the concrete attack (specific enough to reproduce)
 - Assess exploitability (how hard is this to actually pull off?)
 - Assess impact (what does the attacker get?)
@@ -304,29 +284,10 @@ Exploit chains: N
 [Entry points discovered, ranked by exposure]
 
 ## RECONNAISSANCE SYNTHESIS
-
-### Anchoring-suppressed targets: N
-[Targets the red team flagged independently that the blue team's defensive
-map did not account for. Highest-value discipline output. List each with
-a one-line rationale for why blue team didn't surface it.]
-
-### Convergent targets: N
-[Targets both teams flagged independently. List each with the convergent
-evidence from both reports.]
-
-### Blue-flagged-unverified targets: N
-[Targets blue team called as defensive gaps that red team did not reach in
-first-pass recon. List each with the blue-team gap description and a note
-on why focused investigation was warranted.]
-
-### Divergent targets: N
-[Targets one team flagged that the other team examined and cleared. List
-each with both the flag and the clear rationale.]
-
-### Targets dropped during triage (if any): N
-[If the merged list exceeded the 25 cap, note which categories were
-triaged out. Anchoring-suppressed and convergent are kept first;
-blue-flagged-unverified and divergent are dropped first.]
+[One subsection per category from step 3 (anchoring-suppressed, convergent,
+blue-flagged-unverified, divergent), each with its count and one line per
+target giving the evidence that placed it there. Then any targets dropped
+in 25-cap triage.]
 
 ## FINDINGS
 
@@ -361,11 +322,12 @@ blue-flagged-unverified and divergent are dropped first.]
 
 ## AREAS NOT COVERED
 [Entry points that were deprioritized, limitations of static analysis, things that need runtime testing]
+
+## NON-SECURITY BUGS
+[One line each, from any agent's NON-SECURITY BUGS section; route to /bug-fix]
 ```
 
 **Present to user interactively.** Walk through CRITICAL findings first. For each, explain the attack, the impact, and the recommended fix. Let the user ask questions and discuss before moving to the next finding.
-
-The `Discovered by:` field is meant to make the discipline visible to the user. *Synthesis (anchoring-suppressed)* attribution is especially important — over time, this field provides empirical signal about whether the parallel-isolated first pass is producing value the old sequential design would have suppressed.
 
 ### 7. Cut Tickets
 
@@ -386,22 +348,7 @@ From that shape, propose a ticket structure. Common shapes:
 - **Defense-in-depth only:** 1 batch ticket listing all observations with a "hardening" framing — no individual tickets.
 - **No findings:** No tickets. The audit report stands alone.
 
-Present the proposed structure to the operator with the reasoning:
-
-```
-Proposed ticket structure for this audit:
-
-8 findings (3 CRITICAL, 2 HIGH, 1 MEDIUM, 1 LOW), 1 exploit chain.
-
-Proposed: 7 tickets
-  - 1 ticket per CRITICAL/HIGH finding (5 tickets)
-  - 1 ticket for the chain (combined attack, components, cheapest-link fix)
-  - 1 batch ticket: "Defense-in-depth observations" (1 MEDIUM + 1 LOW)
-
-Approve / edit / decline?
-```
-
-Wait for the response and dispatch per [`references/advisory-tickets.md`](../../references/advisory-tickets.md) § "Three outcomes". Approve → proceed to 7b. Edit → loop until approved. Decline → the audit report stands alone, no tracker writes.
+Present the proposed structure to the operator with the reasoning, in the shape given by [`references/advisory-tickets.md`](../../references/advisory-tickets.md) § "The proposal step". Wait for the response and dispatch per § "Three outcomes". Approve → proceed to 7b. Edit → loop until approved. Decline → the audit report stands alone, no tracker writes.
 
 #### 7b. Create Tickets
 
@@ -415,7 +362,7 @@ Use the canonical tracker integration documented in [`references/trackers.md`](.
 - **Data flow** — entry → transformations → sink.
 - **Defensive gap** (if blue-team data informed the finding) — the relevant blue-teamer observation.
 - **Fix guidance** — remediation direction (not concrete code).
-- **Discovered by** — preserves the v7.1.0 attribution: `red team independent`, `blue team independent`, `synthesis (anchoring-suppressed)`, `focused agent for <target>`, or `chain analysis`. This is load-bearing — the field provides empirical signal over time about whether the parallel-isolated first pass is producing value the old sequential design would have suppressed. Do not drop it.
+- **Discovered by** — `red team independent`, `blue team independent`, `synthesis (anchoring-suppressed)`, `focused agent for <target>`, or `chain analysis`. This is load-bearing: over time it shows whether the parallel-isolated first pass surfaces what a briefed red team would miss. Do not drop it.
 
 **For chain tickets:**
 - **Components** — the constituent findings (cite individual finding tickets if they were cut as separate tickets).
@@ -434,28 +381,11 @@ After all tickets are created, report the URLs to the operator and exit.
 
 See [`references/advisory-tickets.md`](../../references/advisory-tickets.md) § "Orchestrator-invoked behavior" — the proposal is presented identically to operator and orchestrator; the orchestrator's auto-approval contract is documented in [`references/autonomy.md`](../../references/autonomy.md) § "Auto-approval of sub-skill ticket proposals".
 
-The contract change versus pre-v8.0.0 is that work surfaced by `/review-security` is now durably documented in the tracker rather than handled in-skill via fixer routing.
-
 ## Agent Coordination
 
-**Parallel execution within phase 2 (independent first pass).** The blue-teamer and lead red-teamer run simultaneously, in isolation — neither receives the other's output. This is the discipline gate.
-
-**Orchestrator-direct synthesis at phase 3.** The reconnaissance synthesis is performed by the orchestrator, not a sub-agent. The categorization rules are mechanical, the orchestrator already holds both reports, and avoiding an extra agent saves cost and round-trip time.
-
-**Sequential execution within all other phases.** Focused red-teamers (phase 4) run sequentially so findings accumulate for chain analysis.
-
-**No remediation agents.** Phase 7 cuts tickets via the tracker integration; no `swe-implementer` or `qa-engineer` invocations happen inside `/review-security`. Remediation is handled out-of-skill by `/implement` against the cut tickets.
-
-**Fresh instances for every agent.** Each agent gets a clean context window dedicated entirely to its task. This is the core design principle — full context dedicated to a single concern.
-
-**State to maintain (as orchestrator):**
-- Blue-teamer's defense evaluation (from phase 2a; passed selectively to focused red-teamers in phase 4 and included in final report)
-- Lead red-teamer's attack surface report and target list (from phase 2b)
-- Synthesis categorization for each target on the unified list (from phase 3)
-- Each focused agent's findings (accumulating)
-- Chain analysis results
-- Current iteration count (for convergence limit)
-- Running totals for the summary
+- **Parallel and isolated** in step 2; **orchestrator-direct** synthesis in step 3; **sequential** focused red-teamers in step 4, so findings accumulate for chain analysis.
+- **Fresh instances for every agent**, each with its context dedicated to one concern. **No remediation agents:** step 7 cuts tickets; `/implement` remediates against them.
+- Hold both first-pass reports, each target's synthesis category, accumulating findings, and the chain-iteration count across steps.
 
 ## Abort Conditions
 
@@ -469,7 +399,7 @@ The contract change versus pre-v8.0.0 is that work surfaced by `/review-security
 
 **Do NOT abort for:**
 - Individual dead-end vectors (skip and continue)
-- Low confidence findings (include in report as LOW)
+- Low-confidence findings (report at their severity, marked unconfirmed)
 - An empty unified target list at phase 3 (this is a positive outcome — the codebase is well-defended; present the synthesis report and stop)
 
 ## Integration with Other Skills
@@ -478,224 +408,28 @@ The contract change versus pre-v8.0.0 is that work surfaced by `/review-security
 
 **`/review-security` vs `/review-release`:** `/review-release` includes basic security checks (secrets, debug artifacts) as part of its pre-release sweep. `/review-security` is the dedicated audit — run it when security assurance is the goal, not as part of routine release prep.
 
-## Example Session
+## Example Excerpt — Reconnaissance Synthesis
 
 ```
-> /review-security
+Blue-teamer: 8 controls; gaps include auth middleware missing on /internal/*
+  and /ws/*, CSRF on POST only, OAuth state generated but never validated.
+Lead red-teamer (no briefing): 14 entry points; 6 targets, including
+  /api/auth/callback, /api/upload, /api/export.
 
-What is the scope of the audit?
-> Entire codebase
+ANCHORING-SUPPRESSED (red found; blue's map didn't account for it):
+- POST /api/upload — blue listed "upload exists"; red saw the path-
+  construction sink. → focused red-teamer gets NO blue-team context.
+- GET /api/export — CSV formula injection; blue's output-encoding
+  inventory covered HTML only.
+CONVERGENT (both flagged independently):
+- POST /api/auth/callback — blue: "state not validated"; red: "no
+  validation visible". → focused red-teamer gets the blue-team slice.
+BLUE-FLAGGED-UNVERIFIED (blue flagged; red didn't reach):
+- /internal/* — no auth, but possibly not network-exposed; investigate
+  to tell a paper gap from a reachable one.
+DIVERGENT: none.
 
-Anything you're particularly concerned about?
-> We just added OAuth support and I'm worried about the token handling
-
-Any areas to skip?
-> vendor/ and testdata/
-
-Starting white-box security audit...
-
-[Phase 2 — Independent First Pass]
-Spawning blue-teamer and lead red-teamer in parallel (no cross-talk)...
-
-Blue-teamer report:
-  Controls inventoried: 8
-  Key gaps:
-  - Auth middleware missing on 3 of 14 routes (/internal/*, /ws/*, /api/export)
-  - No parameterized queries — ORM used for 11 of 14 queries, 3 use raw SQL
-  - CSRF protection on POST only, not PUT/DELETE
-  - No rate limiting on /api/auth/* endpoints
-  - OAuth state parameter generated but never validated on callback
-  Defense-in-depth: Single-layer defense on 4 critical paths
-
-Lead red-teamer report (independent recon, no blue-team briefing):
-  Attack surface: 14 entry points (8 API, 3 WebSocket, 2 CLI, 1 file upload)
-  Trust boundaries: 5 identified (2 implicit — database trust, env var trust)
-  Targets identified: 6
-    - POST /api/auth/callback — OAuth state handling looks suspicious;
-      no validation visible in code path
-    - POST /api/upload — file upload with path construction from user input
-    - POST /api/search — user input flows into a string-built query (raw SQL)
-    - GET /api/users/:id — IDOR candidate; auth middleware present but
-      ownership check not visible
-    - GET /api/export — CSV export with user-controlled column names
-    - GET /api/health — verbose error messages exposing internal paths
-
-[Phase 3 — Reconnaissance Synthesis]
-
-Pooling and categorizing...
-
-ANCHORING-SUPPRESSED (red team found, blue team didn't account for):
-- POST /api/upload (path traversal)
-  Blue-team inventory listed file upload but did not flag path-construction
-  risk. The defensive map had "upload exists"; the attacker view immediately
-  saw the path-construction sink.
-- GET /api/export (formula injection in CSV)
-  Blue-team report did not enumerate spreadsheet-formula sinks. Defenses
-  for output encoding focused on HTML; CSV was outside the inventory.
-- GET /api/health (verbose errors)
-  Blue-team report flagged "logging" but not error-response disclosure.
-  Defensive analysis didn't extend to what's leaked when things break.
-
-CONVERGENT (both teams flagged):
-- POST /api/auth/callback (OAuth state)
-  Blue: "state generated but not validated."
-  Red: "state handling looks suspicious; no validation visible."
-- POST /api/search (raw SQL)
-  Blue: "3 raw SQL queries bypassing ORM."
-  Red: "user input flows into string-built query."
-- GET /api/users/:id (IDOR)
-  Blue: "ownership check missing on resource access."
-  Red: "auth middleware present but no ownership validation visible."
-
-BLUE-FLAGGED-UNVERIFIED (blue team flagged, red team didn't reach):
-- WebSocket /ws/chat — blue team flagged middleware gap; red team's
-  recon focused on HTTP entry points and didn't probe WebSocket auth.
-- PUT /api/settings — blue team flagged inconsistent admin middleware
-  application; red team did not enumerate PUT endpoints in first pass.
-- /api/auth/* (no rate limiting) — blue team flagged absence; red team
-  did not probe brute-force scenarios in first pass.
-- /internal/* routes — blue team: "auth middleware missing"; red team
-  did not surface (network-level or deployment-level constraint may
-  prevent reach; warrants verification).
-
-DIVERGENT:
-- (no divergent items in this audit — both teams arrived at the same
-  conclusion on every area where their analysis overlapped. Divergent
-  items are the rarest of the four categories in practice; they emerge
-  when teams reach a shared conclusion through different reasoning,
-  with one team explicitly clearing what the other flagged.)
-
-Unified target list (13 targets, well under the 25 cap):
-  CRITICAL-1: POST /api/auth/callback (convergent)
-  CRITICAL-2: POST /api/upload (anchoring-suppressed)
-  CRITICAL-3: POST /api/search (convergent)
-  HIGH-1: GET /api/users/:id (convergent)
-  HIGH-2: PUT /api/settings (blue-flagged-unverified)
-  HIGH-3: WebSocket /ws/chat (blue-flagged-unverified)
-  MEDIUM-1: GET /api/export (anchoring-suppressed)
-  MEDIUM-2: /api/auth/* rate limiting (blue-flagged-unverified)
-  LOW-1: GET /api/health (anchoring-suppressed)
-  LOW-2: /internal/* routes (blue-flagged-unverified)
-  [3 lower-priority items abbreviated]
-
-[Phase 4 — Deep Investigation]
-
-Spawning focused red-teamers sequentially...
-
-CRITICAL-2: POST /api/upload (anchoring-suppressed)
-  No blue-team context passed (anchoring-suppressed targets receive none —
-  the blue team's map didn't include this territory).
-  Finding: Path traversal in upload destination. Filename from multipart
-  form used directly in path.join() — ../../etc/cron.d/backdoor writes
-  to arbitrary location.
-  Severity: CRITICAL
-
-CRITICAL-1: POST /api/auth/callback (convergent)
-  Blue-team context passed: "state generated but not validated."
-  Finding: OAuth state parameter not validated — CSRF on auth callback
-  allows attacker to link victim's account to attacker's OAuth identity.
-  Severity: CRITICAL
-
-CRITICAL-3: POST /api/search (convergent)
-  Blue-team context passed: "3 raw SQL queries bypassing ORM."
-  Finding: Search parameter reaches raw SQL via template string.
-  POST /api/search with body {"q": "' UNION SELECT * FROM users--"}
-  dumps user table.
-  Severity: CRITICAL (upgraded — endpoint is unauthenticated)
-
-HIGH-1: GET /api/users/:id (convergent)
-  Finding: Confirmed. Returns full user record including hashed password
-  and API keys for any valid user ID with valid auth.
-  Severity: HIGH
-
-HIGH-3: WebSocket /ws/chat (blue-flagged-unverified)
-  Blue-team context passed: "middleware gap on WebSocket handlers."
-  Finding: Dead end. WebSocket handler does check auth via upgrade headers.
-  Blue team's middleware gap finding referred to a different middleware
-  layer that doesn't apply to the WebSocket authentication path. No finding.
-
-HIGH-2: PUT /api/settings (blue-flagged-unverified)
-  Blue-team context passed: "admin middleware applied inconsistently to
-  PUT endpoints."
-  Finding: PUT /api/settings/theme has admin middleware. PUT
-  /api/settings/notifications does not. Regular user can modify
-  notification settings for all users.
-  Severity: HIGH
-
-MEDIUM-1: GET /api/export (anchoring-suppressed)
-  Finding: Column name parameter reflected in CSV output without escaping.
-  Formula injection possible — =CMD() in column name executes when opened
-  in Excel.
-  Severity: MEDIUM
-
-LOW-1: GET /api/health (anchoring-suppressed)
-  Finding: Confirmed. Stack traces in error responses expose internal
-  file paths and dependency versions. Information disclosure only.
-  Severity: LOW
-
-LOW-2: /internal/* routes (blue-flagged-unverified)
-  Blue-team context passed: "auth middleware missing."
-  Finding: Routes are mounted on a separate listener bound to localhost
-  only. Reachable only from within the host. Blue team's flag is correct
-  (no auth) but red team's first-pass non-reach was also correct (not
-  network-exposed). Defense-in-depth recommendation: add auth even on
-  internal routes for layered protection.
-  Severity: LOW (defense-in-depth concern, not exploitable as stated)
-
-[Phase 5 — Findings Synthesis and Chain Analysis]
-
-Analyzing 6 findings for chains...
-
-Chain found: IDOR (HIGH-1) + OAuth CSRF (CRITICAL-1)
-  → Attacker reads victim's email via IDOR, initiates OAuth link for that
-  email, sends CSRF callback to victim. Result: attacker gains OAuth
-  access to victim's account without knowing their password.
-
-Spawning chain investigator...
-  Chain confirmed. Full exploitation path validated.
-  Combined severity: CRITICAL
-
-No further chains discovered. Audit converging.
-
-## Security Audit Summary
-Scope: entire codebase (excluding vendor/, testdata/)
-Defense evaluation: 8 controls inventoried, 5 gaps found
-Attack surface: 14 entry points
-Reconnaissance synthesis: 13 targets (3 anchoring-suppressed, 3 convergent,
-                                       4 blue-flagged-unverified, 0 divergent,
-                                       3 abbreviated for brevity)
-Vectors investigated: 9 of 13 targets (4 abbreviated)
-Findings: 8 (3 critical, 2 high, 1 medium, 1 low)
-Exploit chains: 1
-
-[Detailed findings presented to user. The Discovered by: tags reveal
-that 3 of the 8 findings — including the upload path traversal and the
-CSV formula injection — emerged from the anchoring-suppressed bucket
-that the old sequential design would have suppressed.]
-
-Proposed ticket structure for this audit:
-
-8 findings (3 CRITICAL, 2 HIGH, 1 MEDIUM, 1 LOW), 1 exploit chain.
-
-Proposed: 7 tickets
-  - 1 ticket per CRITICAL/HIGH finding (5 tickets)
-  - 1 ticket for the chain (IDOR + OAuth CSRF → account takeover)
-  - 1 batch ticket: "Defense-in-depth observations" (1 MEDIUM + 1 LOW)
-
-Approve / edit / decline?
-> Approve
-
-Creating tickets...
-  #N — [CRITICAL] Path traversal in POST /api/upload destination
-  #N — [CRITICAL] OAuth state parameter not validated on /api/auth/callback
-  #N — [CRITICAL] SQL injection in POST /api/search (unauthenticated)
-  #N — [HIGH] IDOR + sensitive data exposure on GET /api/users/:id
-  #N — [HIGH] Privilege escalation via PUT /api/settings/notifications
-  #N — [CRITICAL] Chain: IDOR + OAuth CSRF → account takeover
-  #N — [LOW/MEDIUM] Defense-in-depth observations (CSV formula injection,
-                    verbose error responses)
-
-7 tickets created. Each ticket carries the Discovered by: attribution
-so the parallel-isolated first pass's empirical signal survives the
-handoff to the tracker. Audit complete.
+[Step 4 confirms the upload traversal (CRITICAL) and OAuth CSRF
+(CRITICAL); /internal/* proves localhost-only (LOW, defense in depth).
+Step 5 finds no chain among them; the audit converges.]
 ```

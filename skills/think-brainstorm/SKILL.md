@@ -227,7 +227,6 @@ This skill is one-shot. If the user wants to go deeper on a specific direction, 
 - Suspecting you're solving the wrong problem — the framing check runs before any ideas are generated
 - Escaping conventional thinking on a stuck problem
 - Wanting a diverse set of candidate approaches before choosing one
-- Pre-mortem alternative: "what could we even do here?"
 
 **Poor fit:**
 - Choosing between known options → use `/think-deliberate`
@@ -236,9 +235,5 @@ This skill is one-shot. If the user wants to go deeper on a specific direction, 
 - Goals so vague no meaningful assumptions can be extracted (refine the goal first)
 
 ## Philosophy
-
-Brainstorming is valuable when generation is constrained by convention, anchoring, or exhaustion. The skill formalizes techniques that deliberately break those constraints — and runs them in parallel, isolated, so each produces its own distinct contribution.
-
-The rule is divergence. Evaluation, ranking, and selection happen elsewhere. Here, the goal is to surface possibilities the user hadn't considered — including ones they might initially dismiss.
 
 Osborn's four rules still apply under the hood: defer judgment, quantity over quality, welcome wild ideas, build on others' ideas (the synthesis phase does this for us). But modern research favors Nominal Group Technique over classical group brainstorming — independent generation, then pooling. This skill is NGT with AI.

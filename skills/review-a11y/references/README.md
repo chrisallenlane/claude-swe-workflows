@@ -47,7 +47,7 @@ Scans for web content files: HTML, JSX/TSX, Vue, Svelte, CSS/SCSS/Less, and HTML
 
 ### 2. Determine Scope
 
-User chooses what to audit: entire project (default), a specific directory, or specific files.
+User chooses what to audit: entire project (default), a specific directory, or specific files. When the invocation or a caller (such as `/review-repo`'s follow-up) already supplies scope, the question is skipped.
 
 ### 3. Dispatch Auditors
 

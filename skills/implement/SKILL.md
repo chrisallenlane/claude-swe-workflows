@@ -105,9 +105,9 @@ Use what the work needs. Each pass that plausibly applied and did not run gets a
 
 **Skills, mostly at project scale:**
 - `/refactor` — shrinks the machine with behavior pinned. Best after the tickets are done, before other reviews. Runs with its menu answered from intent (below).
-- `/review-repo architecture`, `/review-test`, `/review-repo dead-code`, `/review-security`, `/review-perf`, `/review-a11y` — when the work touched their territory. They propose tickets; approve what should be tracked, decline what you will handle inline — then handle it — and prefer a ticket when in doubt.
-- `/bug-hunt` — substantial new surface with thin coverage.
-- `/bug-fix` — a failure that resists a direct fix.
+- `/review-repo architecture`, `/review-test`, `/review-repo dead-code`, `/review-security`, `/review-perf`, `/review-a11y` — when the work touched their territory. Those that propose tickets (`/review-repo`, `/review-test`, `/review-security`): approve what should be tracked, decline what you will handle inline — then handle it — and prefer a ticket when in doubt.
+- `/bug-hunt` — substantial new surface with thin coverage. Run `/bug-hunt` with its intent answered from approved intent: scope = the new surface; floor High; constraints from intent; tickets no; fix no.
+- `/bug-fix` — a failure that resists a direct fix. Run it per its "Invoked by Another Skill" contract: you supply the bug report and answer its questions.
 - The smoke-testing procedure — before declaring multi-ticket work done.
 - `/review-release` — last, when the work is headed for a release.
 - `/think-deliberate`, `/think-brainstorm` (framing check), `/think-diagnose`, `/think-scrutinize` — close calls, wrong-seeming framings, unclear failures, risky plans.
@@ -174,12 +174,12 @@ If the branch is behind main, say so and offer to rebase; don't rebase unasked.
 
 ## 7. Escalation
 
-Try to resolve problems first; for judgment calls, `/think-deliberate`; re-read the approved intent — an apparent blocker may mean the intent needs clarifying. When the user is present, ask plainly. When running unattended, stop all work and hand off with: what went wrong, what was tried, 2–3 named options, a recommendation and the trade-off that would flip it, and the branch state (what is merged, what is in flight).
+Try to resolve problems first; for judgment calls, `/think-deliberate`; re-read the approved intent — an apparent blocker may mean the intent needs clarifying. When the user is present, ask plainly. When running unattended, stop all work and hand off per [`references/autonomy.md`](../../references/autonomy.md)'s andon-cord template, adding the branch state (what is merged, what is in flight) under Current state.
 
 **Escalate when:**
 - An irreversible action is required (floor item 5).
 - A decision needs product judgment the repo cannot answer.
-- The same failure recurs 3 times across different strategies, or the correctness review exhausts its 3 rounds.
+- 3 failed attempts on the same ticket, or the correctness review exhausts its 3 rounds.
 - Two reviews contradict each other on the same code.
 - A merge conflicts, or a merge breaks tests for reasons that aren't local.
 - A requirement appears to violate a constraint.
@@ -190,9 +190,3 @@ Try to resolve problems first; for judgment calls, `/think-deliberate`; re-read 
 ## Invoked by Another Skill
 
 When a calling skill supplies the tickets and constraints, skip the planned interaction: the caller's intent is the approved intent. Apply the floor unchanged — a caller cannot waive it, and cannot authorize an irreversible action on the user's behalf. Escalations go to the caller, which decides whether to escalate further.
-
-## Relationship to Other Skills
-
-**`/scope` → `/implement`** is the planning-to-execution pair: `/scope` drafts and reviews tickets; this skill builds them.
-
-**`/refactor`** is normally run by the user. This skill runs it unattended only by answering its menu from approved intent, as above.

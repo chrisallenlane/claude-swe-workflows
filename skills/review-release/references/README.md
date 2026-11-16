@@ -37,7 +37,8 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
 | **Hardcoded URLs**      | localhost, 127.0.0.1 in production code                     | WARNING         |
 | **Version consistency** | Mismatched versions across manifests and source             | BLOCKER         |
 | **Changelog coverage**  | Changelog not updated since last tag                        | WARNING         |
-| **Git hygiene**         | Merge conflict markers, tracked secrets, dirty working tree | BLOCKER         |
+| **Git hygiene**         | Merge conflict markers, tracked secrets                     | BLOCKER         |
+| **Working tree**        | Uncommitted changes, large binaries outside Git LFS         | WARNING         |
 | **Breaking changes**    | Removed public API without changelog mention                | BLOCKER         |
 | **License compliance**  | New copyleft or unknown-license deps (human review)         | WARNING         |
 | **Test suite**          | Test failures                                               | BLOCKER         |
@@ -55,6 +56,7 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
  │  1. DETERMINE RELEASE CONTEXT                │
  │  ────────────────────────────────────────    │
  │  • Target version (optional)                 │
+ │  • Bump applied? (not yet, under /release)   │
  │  • Detect last tag, test/build commands      │
  │  • Any checks to skip?                       │
  └──────────────────┬───────────────────────────┘
@@ -64,7 +66,7 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
  │  ────────────────────────────────────────    │
  │  Agent: qa-release-engineer                  │
  │                                              │
- │  Scans for:                                  │
+ │  Scans for (minus skipped checks):           │
  │  • Debug/dev artifacts                       │
  │  • Version consistency                       │
  │  • Changelog coverage                        │
@@ -86,14 +88,12 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
  │  ────────────────────────────────────────    │
  │  All findings numbered by severity:          │
  │  BLOCKERS → WARNINGS → PASSED                │
+ │  User selects items to address               │
+ │  (report-only callers stop here)             │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  7. USER SELECTS ITEMS TO ADDRESS            │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  8. IMPLEMENT SELECTED FIXES                 │
+ │  7. IMPLEMENT SELECTED FIXES                 │
  │  ────────────────────────────────────────    │
  │  Auto-fixable:                               │
  │  • Debug artifact removal                    │
@@ -110,13 +110,13 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  9. RE-VERIFY                                │
+ │  8. RE-VERIFY                                │
  │  ────────────────────────────────────────    │
  │  Quick re-check of affected static checks    │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │ 10. FINAL SUMMARY                            │
+ │  9. FINAL SUMMARY                            │
  │  ────────────────────────────────────────    │
  │  • Items resolved vs remaining               │
  │  • Changes made                              │
@@ -184,13 +184,13 @@ Checking docs...
 Last tag: v1.9.2 → Target: v2.0.0
 89 commits, 42 files changed
 
-### BLOCKERS (2)
+### BLOCKERS (3)
 1. [DEBUG] src/api/handler.go:15 — debug statement
 2. [VERSION] Not bumped to 2.0.0
+3. [BREAKING] ParseConfig() removed, not in changelog
 
-### WARNINGS (4)
-3. [CHANGELOG] Not updated
-4. [BREAKING] ParseConfig() removed, not in changelog
+### WARNINGS (3)
+4. [CHANGELOG] Not updated
 5. [DEBUG] TODO markers in 2 files
 6. [DOCS] README references removed function
 
@@ -200,16 +200,16 @@ Select items to address:
 [Fixes applied]
 
 ## Release Review Complete
-- BLOCKERS resolved: 2/2
-- WARNINGS addressed: 1/4
-- Recommendation: PROCEED WITH CAUTION
+- BLOCKERS resolved: 2/3
+- WARNINGS addressed: 1/3
+- Recommendation: HOLD — undocumented breaking change remains
 ```
 
 ## Tips for Effective Use
 
 1. **Run on a clean branch.** The release review works best when your release branch is ready. Uncommitted work adds noise.
 
-2. **Provide the target version.** This enables version consistency checking against a known target, not just checking that versions agree with each other.
+2. **Provide the target version.** This enables version consistency checking against a known target, not just checking that versions agree with each other. Standalone, the manifests are expected to carry it already; under `/release`, which bumps after the preflight, manifests still at the previous version are reported as INFO.
 
 3. **Start from a clean state.** If you know there are obvious blockers (merge conflicts, tracked secrets), fix them before running the review to keep the report focused.
 

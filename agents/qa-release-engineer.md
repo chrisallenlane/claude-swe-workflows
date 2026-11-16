@@ -59,7 +59,7 @@ Discover all version declarations and check they agree.
 - BLOCKER: Manifest files disagree with each other on version
 - WARNING: Source code version constants disagree with manifests
 - INFO: All discovered versions agree (confirmation)
-- If a target version was provided by the user, check all versions against it
+- If a target version was provided, check every version against it. A mismatch is a BLOCKER — except when the caller states the bump is pending (not yet applied): then a manifest at the previous release version is expected and is INFO, not BLOCKER. Any other mismatch remains a BLOCKER.
 
 ### 3. Changelog/Release Notes
 

@@ -66,16 +66,18 @@ The plan may arrive as conversation context, a document (design doc, ticket, sco
 - **What is being attempted** — the deliverable in concrete terms
 - **Why** — the goal it serves
 - **By when** — the timeframe (if known)
+- **Time horizon** — when the failure is imagined to have occurred. Default: the plan's stated end-state; if the plan states none, ask the user or propose one and confirm it
 - **Who** — the parties involved
 - **Where it sits in the larger system** — dependencies, integrations, downstream consumers
 
 #### Scenario mode
 
-Capture two things:
+Capture three things:
 - **The scenario** — the specific catastrophic event the user is posing. Past-tense, concrete. ("The production database was destroyed by a critical design defect." "An undiscovered zero-day was used to attack our users via this app.")
 - **The target system** — what code, service, or component the scenario is posed against. Confirm scope: which directories, which services, which boundaries? Pre-mortemers will read this code; out-of-scope code should be excluded.
+- **System context** — what the system does, its deployment shape, and its trust boundaries.
 
-**Produce a written brief** that pairs the scenario with the system scope. Pre-mortemers operate on this brief and have read access to the scoped code.
+**Produce a written brief** that pairs the scenario with the system scope and context. Pre-mortemers operate on this brief and have read access to the scoped code.
 
 ### 2. Validate the Input Is Concrete Enough to Fail Concretely
 
@@ -93,7 +95,7 @@ Capture two things:
 - Is the scenario mechanistically plausible against the system as described, even if hypothetical?
 
 If the input fails its checks, **say so plainly and offer the alternative**:
-- Plan mode: refine the plan first (`/scope`, or `/think-brainstorm`'s framing check).
+- Plan mode: refine first via `/scope` or `/think-brainstorm`.
 - Scenario mode: refine the scenario into something mechanistically posable, or — if the user is asking about an *actually-occurring* failure rather than a hypothetical — redirect to `/think-diagnose` (causes of an observed phenomenon) or `/think-reflect` (learning from a resolved incident). Scenario-mode pre-mortem is for *hypothetical* catastrophes against running systems, not for incidents that have actually happened.
 
 ### 3. Choose Failure-Class Lenses
@@ -169,6 +171,7 @@ Spawn one `THK - Premortemer` agent per chosen lens, in parallel. Each receives:
 
 - The brief (from step 1)
 - The mode (plan or scenario)
+- **Plan mode:** the time horizon — when the failure is imagined (default: the plan's stated end-state). **Scenario mode:** system context — what the system does, its deployment shape, trust boundaries.
 - Its assigned lens, with the lens definition:
   - For **standard lenses**, the definition is built into the agent — pass the lens name only
   - For **ad-hoc lenses**, the orchestrator provides the lens name *and* a one-sentence definition
@@ -300,7 +303,7 @@ This skill is one-shot. If the user revises the plan based on the report, they *
 
 **Poor fit:**
 
-- Plans too vague to fail concretely (refine first via `/scope` or `/think-brainstorm`'s framing check)
+- Plans too vague to fail concretely (refine first via `/scope` or `/think-brainstorm`)
 - Currently-failing situations whose cause is unclear (use `/think-diagnose` — that skill handles real, observable failures with unknown causes; scenario-mode pre-mortem is for *hypothetical* catastrophes)
 - Already-resolved incidents the user wants to learn from (use `/think-reflect`)
 - Choosing between options (use `/think-deliberate`)
@@ -326,15 +329,3 @@ Natural follow-ups:
 - A specific mitigation or hardening proposal that needs stress-testing → `/think-scrutinize`
 - A choice between hardening approaches → `/think-deliberate`
 - A failure mode whose causal path isn't clear during synthesis → `/think-diagnose`
-
-## Philosophy
-
-The default mode of both planning and operating systems is optimistic. People imagine plans succeeding and systems running cleanly, then patch over failure modes that happen to surface. This systematically under-attends to risks and produces post-hoc surprise when those risks materialize.
-
-Klein's contribution is the framing reversal: instead of asking "what could go wrong?" — which the planning brain shrugs off — pre-mortem says "the failure has already happened; figure out why." Prospective hindsight bypasses the optimism filter. People are surprisingly good at imagining concrete failure causes when they are told a failure already occurred.
-
-The technique generalizes. It works on plans before commitment (Klein's original framing) and on running systems against hypothetical catastrophes (the same cognitive trick, applied to a different target). What changes is whether the pre-mortemers imagine causes broadly within the plan, or investigate the actual system for causes that could have produced a specific given scenario.
-
-The plugin operationalizes both with the NGT-isolated parallel-agents pattern that the other `/think-*` skills use. Independent imagination prevents anchoring on the first plausible failure cause; synthesis produces a register the user can act on — not a list of generic risks they can dismiss.
-
-The discipline is: imagine or investigate specifically, generate in isolation, calibrate honestly, surface the early-warning signals. The output is meant to make the plan stronger or the system harder, not to prevent the plan from being attempted or the system from being trusted.

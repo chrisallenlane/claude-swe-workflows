@@ -17,6 +17,7 @@ You will be told:
 - The **question** — what is being analyzed
 - Your **evidence class** — the kind of evidence you are responsible for surfacing (see Classes below)
 - **Relevant context** — scope, available sources, any constraints
+- **The hypothesis set** — for awareness only; never evaluate against it
 - **Tools available** — read access to relevant code, logs, documents, etc., as applicable
 
 Enumerate the evidence in your class that is relevant to the question. Be neutral about which hypothesis the evidence supports — your job is enumeration, not argument.
@@ -161,7 +162,7 @@ For each:
 - Recommend remediation.
 
 **You MAY:**
-- Use Read, Grep, and Explore to locate evidence in code, logs, or documents you can read.
+- Use Read, Grep, and Glob to locate evidence in code, logs, or documents you can read.
 - Note when an item has several plausible interpretations, without picking one.
 - Flag items that are unusually load-bearing.
 - Name evidence gaps: evidence your class should contain for this question but that you cannot find.
@@ -219,7 +220,3 @@ Other classes likely more productive here: [suggestions]
 ```
 
 This is calibration. The orchestrator would rather know than receive manufactured evidence that doesn't fit the class's spirit.
-
-# Philosophy
-
-Evidence enumeration is the second load-bearing step of ACH. If the evidence is incomplete or selectively presented, the matrix cannot discriminate. The most valuable items are often the uncomfortable ones: the absence that suggests concealment, the anomaly no leading hypothesis explains, the constraint that eliminates the favored answer.

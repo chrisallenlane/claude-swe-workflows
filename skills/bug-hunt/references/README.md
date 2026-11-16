@@ -2,7 +2,7 @@
 
 ## Overview
 
-`/bug-hunt` hunts for bugs nobody knows about yet. An assessor works out where bugs are likely to hide by cross-referencing change history (complexity × churn hotspots, fix density, change coupling), coverage gaps, and structural risk. Focused hunters then probe each hotspot and write a reproducing test for every suspected bug. You state your intent once; the skill hunts round after round until a round confirms nothing above your severity floor. If you give it the authority, it also tickets what it finds and fixes it via `/implement` between rounds — the work `/lead-bug-hunt` used to do.
+`/bug-hunt` hunts for bugs nobody knows about yet. An assessor works out where bugs are likely to hide by cross-referencing change history (complexity × churn hotspots, fix density, change coupling), coverage gaps, and structural risk. Focused hunters then probe each hotspot and write a reproducing test for every suspected bug. You state your intent once; the skill hunts round after round until a round confirms nothing at or above your severity floor. If you give it the authority, it also tickets what it finds and fixes it via `/implement` between rounds.
 
 Four ideas shape it:
 
@@ -30,7 +30,7 @@ The defaults make `/bug-hunt` an advisory audit: it changes nothing outside its 
 **Use `/bug-hunt` for:**
 - Hunting bugs proactively before a release, after a burst of development, or in a module you don't trust
 - Auditing unfamiliar or inherited code for latent bugs
-- Driving a codebase to "no bugs above High" without supervising each round (give it fix authority)
+- Driving a codebase to "no bugs at or above High" without supervising each round (give it fix authority)
 - Getting reproducing tests for whatever it finds, so fixes are verifiable
 
 **Don't use `/bug-hunt` for:**
@@ -60,14 +60,15 @@ The defaults make `/bug-hunt` an advisory audit: it changes nothing outside its 
 │  3. ACT (by authority)                                         │
 │     fix?     → /implement fixes at-or-above-floor findings;    │
 │                reproducing tests go green                      │
-│     tickets? → one per Critical/High bug, per pattern,         │
-│                batched below                                   │
+│     tickets? → one per unfixed bug at or above the floor,      │
+│                one per pattern                                 │
 │     unfixed reproducing tests → committed as expected failures │
 └────────────────────────────────┬───────────────────────────────┘
                                  ▼
                 ┌─────────────────────────────────┐
-                │ Round confirmed anything above  │── yes ──┐
-                │ the floor? (cap: 10 rounds)     │         │
+                │ Round confirmed anything at or  │── yes ──┐
+                │ above the floor?                │         │
+                │ (cap: 10 rounds)                │         │
                 └────────────────┬────────────────┘         │
                                  │ no                       ▼
                                  │          next round: code the fixes
@@ -131,7 +132,7 @@ Each round has three steps.
 
 **Next round.** The hunt goes where new bugs are likely: code the fixes changed, siblings of confirmed patterns, and the next tier of hotspots. Without fix authority, rounds still continue through siblings and the next tier — they just don't re-hunt fixes.
 
-**Convergence.** The run stops when a round confirms nothing above the floor, or after 10 rounds, reporting what remains. When the run has written many tests, the skill may run a `/review-test` pass over them.
+**Convergence.** The run stops when a round confirms nothing at or above the floor, or after 10 rounds, reporting what remains. When the run has written many tests, the skill may run a `/review-test` pass over them.
 
 ### 4. Report
 
@@ -156,11 +157,11 @@ Confirmed: N (X critical, Y high, Z medium, W low) — F fixed, T ticketed, D de
 ## Branch (if fixing)
 ```
 
-The skill walks you through Critical findings first: the bug, its impact, and the reproducing test. Without ticket authority, it ends by proposing a ticket structure shaped by the hunt and creates it only on your approval. Without fix authority, it offers to hand the confirmed bugs to `/implement`.
+The skill walks you through Critical findings first: the bug, its impact, and the reproducing test. Without ticket authority, it ends by proposing a ticket structure shaped by the hunt; on your approval it commits the reproducing tests first (expected failures referencing their findings), then creates the tickets citing them. If you decline the tickets, it offers to commit the tests anyway. Without fix authority, it offers to hand the confirmed bugs to `/implement`.
 
 ### 5. Escalation
 
-When you're present, the skill just asks. When running on authority, it stops and hands off — what was found, what was tried, two or three named options, and a recommendation — when:
+When you're present, the skill just asks. When running on authority, it stops and hands off using the plugin's shared andon-cord template (`references/autonomy.md`), titled with the round number, when:
 
 - A finding is **contested** on substance
 - A fix would need a **breaking change** or violate a constraint
@@ -187,12 +188,13 @@ Round 1: assessor ranks 6 hotspots. Hunters confirm 3 bugs:
   [MEDIUM] Negative amounts accepted by the refund path
 Pattern: payment-failure paths skip cleanup — lead for round 2.
 Round 2: siblings of the cleanup pattern; 1 more HIGH (subscription renewal).
-Round 3: next hotspot tier; nothing above High. Converged.
+Round 3: next hotspot tier; nothing at or above High. Converged.
 
 Report: 3 HIGH, 1 MEDIUM, 2 coverage tests.
 Proposed tickets: 3 per-bug (HIGH), 1 systemic pattern, 1 batched (MEDIUM).
-You approve; tickets #41–#45 created. Reproducing tests committed with
-xfail markers referencing #41–#45. Offer: "Hand these to /implement now?"
+You approve. Reproducing tests committed first, with xfail markers
+referencing their findings; then tickets #41–#45 created, each citing its
+test by path. Offer: "Hand these to /implement now?"
 ```
 
 ### Example 2: Tickets yes, fix no
@@ -205,7 +207,7 @@ Round 1: 2 CRITICAL (race in the cache invalidator; unchecked nil in the
   Tests committed as expected failures:
     t.Skip("bug #88: invalidator races with readers")
 Round 2: the nil pattern appears in two other loaders → ticket #90.
-Round 3: nothing above High. Converged.
+Round 3: nothing at or above High. Converged.
 
 Report: 3 tickets, each naming its skipped test; the suite stays green.
 Fixing #88 later with /implement: remove the t.Skip, make it pass.
@@ -221,7 +223,7 @@ Round 1: 4 HIGH confirmed. Handed to /implement with each reproducing test
   as acceptance criterion. Fixed; correctness review clean; tests green.
 Round 2: re-hunt code the fixes touched + siblings. 1 HIGH — the retry fix
   exposed a double-submit in the queue consumer. /implement fixes it.
-Round 3: nothing above High; 2 MEDIUM deferred.
+Round 3: nothing at or above High; 2 MEDIUM deferred.
 
 Report: 5 fixed (SHAs listed), 2 MEDIUM deferred. Offer: ticket the 2 deferred
 findings? The branch is yours to review and merge.

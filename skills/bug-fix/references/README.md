@@ -10,7 +10,7 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
 - Git archaeology uncovers when and why the bug was introduced
 - Related failure modes are identified and tested, not just the reported bug
 - Practical verification confirms the fix actually works
-- A full review pipeline: security, refactoring, performance, peer review, and a blocking correctness gate
+- A full review pipeline: security, scope audit, performance, peer review, and a blocking correctness gate
 
 ## When to Use
 
@@ -141,7 +141,7 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  9. QA - COVERAGE & QUALITY                  │
+ │  9. QA - COVERAGE OF THE CHANGED DIFF        │
  │  ────────────────────────────────────────    │
  │  Agent: qa-engineer (Mode 2)                 │
  │                                              │
@@ -171,9 +171,7 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
  │  ────────────────────────────────────────    │
  │  Agent: doc-maintainer                       │
  │                                              │
- │  • Update affected documentation             │
- │  • Verify code examples                      │
- │  • Check for broken links                    │
+ │  • Targeted pass over the diff               │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -254,9 +252,9 @@ If verification fails, returns to step 4 (max 3 attempts before escalating).
 
 - **6-7. Conditional reviews and feedback.** `sec-blue-teamer` (security-sensitive changes; Critical/High findings must be addressed or explicitly waived), `swe-code-reviewer` (non-trivial changes; audits the fix against the diagnosis's narrow fix, and each departure must be removed or justified), and `swe-perf-reviewer` (performance-critical changes; advisory). The implementer addresses the feedback.
 - **8. Peer review.** A fresh `swe-implementer` in peer-review mode makes small fixes on non-trivial changes; reverted if it breaks tests.
-- **9. QA coverage and quality.** `qa-engineer` fills coverage gaps with tests, runs the suite and linters, and confirms steps 7-8 broke nothing. Failures route back to the implementer; QA never fixes product code.
+- **9. QA coverage of the changed diff.** `qa-engineer` (Mode 2) fills coverage gaps with tests, runs the suite and linters, and confirms steps 7-8 broke nothing. Failures route back to the implementer; QA never fixes product code.
 - **10. Correctness review** (below).
-- **11-13. Documentation, final verification, completion.** `doc-maintainer` runs a targeted pass; the full suite and linters run; with your confirmation the skill commits, updates or closes the ticket, and offers a rebase.
+- **11-13. Documentation, final verification, completion.** `doc-maintainer` runs a targeted pass; the full suite and linters run; with your confirmation the skill commits, updates or closes the ticket, and offers a rebase. Nothing before step 13 commits.
 
 One step deserves bug-fix-specific mention — **step 10, the correctness review**. A fresh `swe-correctness-reviewer` reads the diff assuming a bug already shipped and mechanically verifies every assumption the fix makes (paths, signatures, runtime-version semantics, call sites). Its findings are blocking and resolve through a fix-and-fresh-re-review loop (max 3 rounds). Two contracts differ from the rest of the pipeline:
 
@@ -352,6 +350,9 @@ Workflow:
 - Reproduction loop (step 2): 2 attempts max
 - Fix verification loop (step 5): 3 attempts max
 - Correctness review convergence loop (step 10): 3 rounds max
-- Overall workflow: 16 agent spawns max
 
 If limits reached, workflow escalates to user with current state and specific blockers.
+
+## Invoked by Another Skill
+
+When another skill (such as `/implement`) runs `/bug-fix`, the caller supplies the bug report and answers the clarifying questions and the completion confirmation in place of the user. The workflow runs unchanged through the commit (13a), but it never updates or closes tickets (13b) and never rebases (13c). Escalations go to the caller, which decides whether to bring them to you.

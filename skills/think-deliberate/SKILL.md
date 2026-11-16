@@ -6,7 +6,7 @@ model: opus
 
 # Think-Deliberate - Adversarial Decision Making
 
-Uses adversarial representation to ensure all options are robustly explored before making a decision. Inspired by the legal adversarial system where truth emerges from the collision of well-argued positions.
+Uses adversarial representation to ensure all options are robustly explored before making a decision. Inspired by the legal adversarial system where truth emerges from the collision of well-argued positions. It counters premature closure and single-option railroading: no option is dismissed before its strongest case has been made.
 
 ## Roles
 
@@ -147,10 +147,12 @@ Mode: compete
 
 You represent: [OPTION]
 
-The judge is leaning toward [OTHER OPTION] for the following reasons:
+The judge is leaning toward [LEANING OPTION] for the following reasons:
 [REASONING]
 
-This is your final opportunity to make your case. Respond to the judge's reasoning.
+Remaining concerns: [CONCERNS]
+
+This is your final opportunity to make your case. Respond to the judge's reasoning. If [LEANING OPTION] is your option, address the remaining concerns.
 ```
 
 **Collect final arguments in parallel.**
@@ -169,7 +171,7 @@ This is your final opportunity to make your case. Respond to the judge's reasoni
 - Further deliberation is unlikely to change the outcome
 - You've reached the iteration limit
 
-**Iteration limit: 10 rounds maximum** (a "round" is one cycle through steps 4-6)
+**Iteration limit: 10 rounds maximum** (a "round" is one cycle through steps 5-6)
 
 ### 8. Render Judgment
 
@@ -193,7 +195,7 @@ This is your final opportunity to make your case. Respond to the judge's reasoni
 **Trade-offs:**
 [What you're sacrificing by not choosing alternatives]
 
-**Confidence:** [High/Medium/Low] - [Brief explanation]
+**Confidence:** [high / moderate / low / uncertain] - [Brief explanation]
 
 **Key factors:**
 - [Factor 1]
@@ -228,8 +230,6 @@ I cannot make a definitive recommendation because: [REASON]
 
 ## Constraints
 
-**Iteration limit:** Maximum 10 rounds of deliberation
-**Model:** All advocates use opus for best reasoning
 **Tool access:** Advocates have full tool access for research
 **Good faith:** Advocates must not fabricate facts or misrepresent options
 
@@ -249,11 +249,5 @@ I cannot make a definitive recommendation because: [REASON]
 - Ethical dilemmas (advocacy framing may be inappropriate)
 
 ## Philosophy
-
-The adversarial process ensures:
-- **All options get their best case made** - no option dismissed prematurely
-- **Weaknesses are exposed** - advocates attack each other's positions
-- **Evidence is gathered** - advocates research to support their cases
-- **Trade-offs are explicit** - the collision of arguments reveals what you're giving up
 
 The judge's job is not to be passive. Ask hard questions. Challenge weak arguments. Push advocates to address concerns. The quality of the judgment depends on the rigor of the process.

@@ -10,11 +10,11 @@ Systematically introduces small changes (mutations) to source code, runs the tes
 
 ## Philosophy
 
-**Mutation score > line coverage.** A test that executes code but doesn't assert on results gives 100% line coverage and 0% mutation score. Mutation testing answers the real question: if a bug were introduced here, would the tests catch it?
+**Mutation score > line coverage.** A test that runs code without asserting on it scores 100% line coverage and 0% mutation score.
 
-**Multi-session by design.** Mutation testing is slow — each mutation requires a full test run. Progress is tracked in `.test-mutations.json` so you can work through a codebase incrementally across sessions.
+**Multi-session by design.** Each mutation costs a full test run, so progress is tracked in `.test-mutations.json` and a codebase can be worked through across sessions.
 
-**Autopilot by default.** After initial setup, the workflow runs unattended through all in-scope modules. It addresses all surviving mutations, commits after each module, and moves on. Human intervention is only needed during setup (scope selection, test command verification) and if an unrecoverable error occurs.
+**Autopilot after setup.** Once scope is confirmed, the run is unattended: it addresses every survivor, commits per module, and stops only on an unrecoverable error.
 
 ## Workflow Overview
 
@@ -86,7 +86,7 @@ For each source file, attempt to identify covering test files using naming conve
 - `auth.py` → `test_auth.py` or `auth_test.py`
 - `Auth.ts` → `Auth.test.ts` or `Auth.spec.ts`
 
-Store discovered modules in the tracking file with status `pending`.
+Store discovered modules in the tracking file with status `pending`. If no source files are found, stop and tell the user.
 
 ### 3. Determine Scope
 
@@ -101,8 +101,8 @@ Overall: 3/10 modules tested (mutation score: 87%)
 - src/auth.go — score: 100% (45 mutations)
 - src/config.go — score: 92% (24 mutations, 2 survivors)
 
-### In Progress
-- src/payment.go — score: 80% (20/50 mutations tested)
+### Partial (mutator capped the site count; a re-run re-mutates the whole file)
+- src/payment.go — score: 80% (50 mutations)
 
 ### Pending
 - src/api/handler.go
@@ -115,11 +115,11 @@ Scope? Enter file names/numbers, or press Enter to test all pending modules.
 
 **User can:**
 - Pick specific files by name or number (e.g., "1, 3, 5" or "src/auth.go")
-- Resume an in-progress file
+- Re-run a partially covered file (there is no mid-file resume)
 - Re-test a completed file (useful after adding tests)
 - Press Enter / say "all" to test all pending modules (this is the default)
 
-**Default:** All pending modules, processed in alphabetical order. If a module is in-progress, it is processed first.
+**Default:** All pending modules, processed in alphabetical order.
 
 **Require a clean tree before autopilot.** Run `git status --porcelain --untracked-files=no`. If it prints anything, stop and ask the user to commit or stash first: the mutator reverts with `git restore`, and step 7 discards failed tests the same way, so any uncommitted edit to a tracked file would be silently destroyed. (The mutator re-checks its own file before each module.)
 
@@ -146,7 +146,7 @@ Wait for the agent to complete and collect its results.
 
 **If the agent returns `ABORTED`:**
 - `dirty file` — stop the run; something changed the tree mid-run. Report it to the user.
-- `baseline red` — the suite already fails, so mutation results would be meaningless. Mark the module `blocked` with the failing output as the reason, and continue with the next module.
+- `baseline red` — the shared suite is failing, so every module's results would be meaningless. Stop the run and report the failing output.
 
 ### 5. Update Tracking File
 
@@ -163,17 +163,22 @@ Write the updated tracking file.
 
 ### 6. Spawn Implementer to Write Tests
 
-**If no survivors (100% mutation score):** Log the result and proceed to step 8 (commit).
+**If no survivors (100% mutation score):** Log the result and proceed to step 8.
 
 **Likely-equivalent mutants are not test tasks.** The mutator marks survivors that no input can distinguish from the original, with a reason. Do not send them to the implementer; record them in the tracking file and list them in the final summary so a human can confirm. Review each reason as you pass it through — if the reason doesn't hold, treat the mutant as an ordinary survivor.
 
 **If survivors exist:** Write tests for ALL surviving mutations.
 
-**Spawn `swe-implementer` in kill-mutants mode.** For a small number of simple survivors, writing the tests directly as orchestrator is fine.
+**Spawn `swe-implementer`.** For a small number of simple survivors, writing the tests directly as orchestrator is fine.
+
+**Before spawning**, record the untracked files: `git ls-files --others --exclude-standard`. Step 7's rollback deletes only files that are new since this snapshot, never the user's pre-existing untracked files.
 
 **Prompt the implementer with:**
 
 ```
+Mode: kill mutants. Do not re-apply mutations or commit; the orchestrator
+re-mutates in step 7.
+
 Write tests to catch the following surviving mutations in [source file]:
 
 1. Line 42: `amount + fee` → `amount - fee`
@@ -196,7 +201,7 @@ Each test should:
 
 **Run the test suite** to confirm new tests pass with the correct (unmutated) code.
 
-**If new tests fail:** Give the implementer (or yourself) one chance to fix. If still failing, log the failure, remove the tests added for this module (delete new test files; `git restore` modified ones), and continue with the next module.
+**If new tests fail:** Give the implementer (or yourself) one chance to fix. If still failing, log the failure, remove the tests added for this module (delete untracked files absent from step 6's snapshot; `git restore` modified ones), and continue with the next module.
 
 **Re-mutate to confirm kills:** For each addressed surviving mutation:
 
@@ -211,10 +216,10 @@ Update the tracking file: mark confirmed kills, update mutation score.
 
 ### 8. Commit
 
-Automatically commit the changes for this module:
+Automatically commit the changes for this module. Stage the new or modified test files, plus `.test-mutations.json` unless step 1 gitignored it (`git check-ignore -q .test-mutations.json` succeeds; `git add` errors on an ignored path). If nothing is staged (`git diff --cached --quiet` succeeds), skip the commit.
 
 ```bash
-git add [test files] .test-mutations.json
+git add [test files]   # plus .test-mutations.json, unless ignored
 git commit -m "$(cat <<'EOF'
 test: improve mutation coverage for [module]
 
@@ -260,9 +265,6 @@ After all modules in scope have been processed:
 ### Likely-Equivalent (confirm by hand)
 - src/payment.go:61 — `i < n` → `i != n` (loop index only increments from below `n`)
 
-### Blocked Modules
-- src/legacy.go — baseline suite red (see tracking file)
-
 ### Commits Made
 - abc1234 test: improve mutation coverage for auth module
 - def5678 test: improve mutation coverage for payment module
@@ -304,7 +306,6 @@ Report any modules that were skipped due to errors (implementer failures, test f
         }
       },
       "mutation_score": 91.7,
-      "blocked_reason": null,
       "insights": []
     }
   },
@@ -324,120 +325,8 @@ Report any modules that were skipped due to errors (implementer failures, test f
 - `insights` are human-readable observations the mutator agent provides (e.g., "Strong error handling coverage" or "No tests for boundary conditions").
 - `global_statistics` are recalculated from module data on each update.
 - `mutation_score` is (killed + timeout) / (total − likely_equivalent). Skipped mutations are not counted in `total`.
-- `status` is one of `pending`, `in_progress`, `completed`, `blocked`; `blocked_reason` says why (e.g. baseline red).
+- `status` is one of `pending`, `in_progress`, `completed`. `in_progress` means the mutator capped its site count (partial coverage); re-testing re-mutates the whole file.
 
 ## Agent Coordination
 
 **All subagents MUST be executed sequentially — NEVER in parallel.** Mutation testing works by modifying source files and running tests against those modifications. Parallel agents will simultaneously edit the same files, corrupt each other's mutations, and produce meaningless results. This applies to every agent spawn in this workflow: mutator agents, implementer agents, and verification steps. One agent at a time, wait for it to finish, then spawn the next.
-
-**State management:**
-- Orchestrator maintains the tracking file
-- Agent returns structured results
-- No state carried between agent invocations
-
-## Abort Conditions
-
-**Abort workflow if:**
-- User interrupts
-- Test command doesn't work (can't run tests)
-- No source files found to mutate
-- Tracked files have uncommitted changes (`git status --porcelain --untracked-files=no` is non-empty) — checked before autopilot; ask the user to commit or stash
-- The mutator reports a dirty file mid-run
-
-**Do NOT abort for:**
-- Individual mutation failures (record and continue)
-- Partial completion (save progress, can resume next session)
-- Implementer fails to write a test (log the failure, revert, continue with next module)
-- Some re-applied mutations still survive after new tests (log as unresolved, continue)
-- New tests fail and cannot be fixed (log, revert, continue with next module)
-- A module's baseline suite is red (mark it `blocked`, continue)
-
-## Example Session
-
-```
-> /test-mutation
-
-No tracking file found. Detecting test command...
-Found go.mod — using `go test ./...`
-Verified: tests pass.
-
-Discovered 8 source files to mutate.
-Created .test-mutations.json
-
-Commit tracking file to git, or add to .gitignore?
-> Commit
-
-## Mutation Testing Progress
-
-8 modules pending.
-
-Scope? Enter file names/numbers, or press Enter to test all pending.
-
-1. src/api/handler.go
-2. src/auth.go
-3. src/config.go
-4. src/middleware.go
-5. src/models/user.go
-6. src/payment.go
-7. src/router.go
-8. src/utils/parser.go
-
-> [Enter]
-
-Starting autopilot run for 8 modules...
-
-[1/8] Spawning qa-test-mutator for src/api/handler.go...
-      Score: 92% (46/50 killed). Writing tests for 4 survivors...
-      3 killed, 1 unresolved. Score: 92% → 98%.
-      Committed: "test: improve mutation coverage for handler module"
-
-[2/8] Spawning qa-test-mutator for src/auth.go...
-      Score: 100% (38/38 killed). No survivors.
-      Committed: "test: record mutation coverage for auth module"
-
-[3/8] Spawning qa-test-mutator for src/config.go...
-      Score: 88% (21/24 killed). Writing tests for 3 survivors...
-      2 killed, 1 unresolved. Score: 88% → 96%.
-      Committed: "test: improve mutation coverage for config module"
-
-...
-
-[8/8] Spawning qa-test-mutator for src/utils/parser.go...
-      Score: 90% (27/30 killed). Writing tests for 3 survivors...
-      3 killed, 0 unresolved. Score: 90% → 100%.
-      Committed: "test: improve mutation coverage for parser module"
-
-## Mutation Testing Complete
-
-### Modules Tested This Session
-| Module                 | Before | After | Tests Added | Unresolved |
-|------------------------|--------|-------|-------------|------------|
-| src/api/handler.go     | —      | 98%   | 3           | 1          |
-| src/auth.go            | —      | 100%  | 0           | 0          |
-| src/config.go          | —      | 96%   | 2           | 1          |
-| src/middleware.go      | —      | 94%   | 2           | 1          |
-| src/models/user.go     | —      | 100%  | 1           | 0          |
-| src/payment.go         | —      | 95%   | 4           | 2          |
-| src/router.go          | —      | 91%   | 3           | 2          |
-| src/utils/parser.go    | —      | 100%  | 3           | 0          |
-
-### Project Progress
-- Modules complete: 8/8
-- Overall mutation score: 96%
-
-### Unresolved Survivors (7 total)
-- src/api/handler.go:88 — removed `log.Info(request)` (statement deletion)
-- src/config.go:45 — `timeout > 0` → `timeout >= 0` (relational)
-- ...
-
-### Likely-Equivalent (confirm by hand)
-- src/payment.go:61 — `i < n` → `i != n` (loop index only increments from below `n`)
-
-### Blocked Modules
-- src/legacy.go — baseline suite red (see tracking file)
-
-### Commits Made (8)
-- abc1234 test: improve mutation coverage for handler module
-- def5678 test: record mutation coverage for auth module
-- ...
-```

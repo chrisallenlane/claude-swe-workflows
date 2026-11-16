@@ -160,13 +160,13 @@ Five fields:
 - **Tickets** — authority to create tickets for confirmed findings without asking again. Defaults to no: a ticket proposal is presented for approval at the end.
 - **Fix** — authority to fix confirmed findings on a branch via `/implement` and re-hunt. Defaults to no.
 
-With both authority fields at their defaults the skill is advisory and changes nothing outside its report until the operator approves. Purpose and end state are implicit: find the bugs above the floor; end when a hunt round confirms nothing above it, or at the 10-round cap.
+With both authority fields at their defaults the skill is advisory and changes nothing outside its report until the operator approves. Purpose and end state are implicit: find the bugs at or above the floor; end when a hunt round confirms nothing at or above it, or at the 10-round cap.
 
 ### `/review-repo`
 
 The lens (what the operator is doing — inheriting, evaluating, revisiting, onboarding), the scope, and two grants, both defaulting to no:
 
-- **Follow-up reviews** — authority to run the deeper reviews the map calls for (the `dead-code` and `architecture` focuses, `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release`). Without it, they are recommended only.
+- **Follow-up reviews** — authority to run the deeper reviews the map calls for (the `dead-code`, `architecture`, and `namespace` (audit mode) focuses, `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release`). Without it, they are recommended only.
 - **Tickets** — authority to create tickets at or above a severity floor (default High) without asking again. Without it, one consolidated ticket set is proposed for approval.
 
 With neither grant the skill is a fast orientation pass that changes nothing.
@@ -248,14 +248,14 @@ The opening framing in each autonomous skill's andon-cord section is uniform: *t
 
 The altitude rule (lever 1) says "implementation-detail forks get the skill's best judgment plus a state-doc log entry." This section enumerates concrete examples so future skill maintainers know what *doesn't* warrant escalation.
 
- | Situation                                                                             | Resolution                                                                      | Log entry                                                                                      |
- |---------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
- | Implementer names a function `parseInput` vs `parseRequest`; no convention decides    | Pick the more specific one.                                                     | "Named `parseRequest` for clarity; `parseInput` was equally idiomatic."                        |
- | Code reviewer suggests deleting a helper; another invocation argues to keep           | Apply default policy (deletion wins if no caller references and no test fails). | "Removed `unusedHelper`; code reviewer flagged unused; no callers found."                      |
- | Test review surfaces a coverage gap on a non-critical helper, severity low            | Defer to final report. Do not block termination.                                | "Deferred: low-coverage helper `pkg/util/format`; rationale: non-critical, no recent changes." |
- | Two implementers return functionally equivalent implementations                       | Pick one (the simpler diff).                                                    | "Chose implementer A's version; B's was equivalent but had two more lines."                    |
- | `/tidy-docs` flags wording as unclear; the agent didn't propose a rewrite             | Improve wording with judgment; commit if improvement is clear.                  | "Rewrote intro paragraph; `/tidy-docs` flagged ambiguity in two sentences."                    |
- | Severity classification of a finding is borderline (medium vs low)                    | Use the lower severity if either is defensible.                                 | "Classified `<finding>` as low; architecture review borderline medium."                                |
+ | Situation                                                                          | Resolution                                                                      | Log entry                                                                                      |
+ |------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
+ | Implementer names a function `parseInput` vs `parseRequest`; no convention decides | Pick the more specific one.                                                     | "Named `parseRequest` for clarity; `parseInput` was equally idiomatic."                        |
+ | Code reviewer suggests deleting a helper; another invocation argues to keep        | Apply default policy (deletion wins if no caller references and no test fails). | "Removed `unusedHelper`; code reviewer flagged unused; no callers found."                      |
+ | Test review surfaces a coverage gap on a non-critical helper, severity low         | Defer to final report. Do not block termination.                                | "Deferred: low-coverage helper `pkg/util/format`; rationale: non-critical, no recent changes." |
+ | Two implementers return functionally equivalent implementations                    | Pick one (the simpler diff).                                                    | "Chose implementer A's version; B's was equivalent but had two more lines."                    |
+ | `/tidy-docs` flags wording as unclear; the agent didn't propose a rewrite          | Improve wording with judgment; commit if improvement is clear.                  | "Rewrote intro paragraph; `/tidy-docs` flagged ambiguity in two sentences."                    |
+ | Severity classification of a finding is borderline (medium vs low)                 | Use the lower severity if either is defensible.                                 | "Classified `<finding>` as low; architecture review borderline medium."                        |
 
 The log entry is the contract: the operator can grep the state doc post-run to see what the skill decided unilaterally and why. If the operator disagrees, they can revert the specific commit or revisit the decision. The cost of a log entry is much less than the cost of an interruption.
 
@@ -265,14 +265,14 @@ Direction, not strictly enforced today. Review skills should produce reports and
 
 Status as of this document:
 
- | Skill              | Status                                                                                                     |
- |--------------------|------------------------------------------------------------------------------------------------------------|
- | `/review-test`     | Advisory as of v9.0.0.                                                                                     |
- | `/review-a11y`     | Already advisory.                                                                                          |
- | `/review-repo`     | Advisory; absorbed `/review-arch` (advisory since v8.0.0), `/review-dead`, and `/review-value` in v12.0.0. |
- | `/review-perf`     | Already advisory.                                                                                          |
- | `/review-security` | Advisory as of v8.0.0.                                                                                     |
- | `/review-release`  | Effectively advisory (presents findings for operator review).                                              |
+ | Skill              | Status                                                                                                                          |
+ |--------------------|---------------------------------------------------------------------------------------------------------------------------------|
+ | `/review-test`     | Advisory as of v9.0.0.                                                                                                          |
+ | `/review-a11y`     | Already advisory.                                                                                                               |
+ | `/review-repo`     | Advisory; absorbed `/review-arch` (advisory since v8.0.0), `/review-dead`, `/review-value`, and `/review-namespace` in v12.0.0. |
+ | `/review-perf`     | Already advisory.                                                                                                               |
+ | `/review-security` | Advisory as of v8.0.0.                                                                                                          |
+ | `/review-release`  | Effectively advisory (presents findings for operator review).                                                                   |
 
 The path forward: when a `/review-*` skill becomes advisory, its findings should name specific implementation skills with scope hints so the operator (or a calling orchestrator) can chain the right next step. Example: "Dead code in `src/foo/`: work the sweep ticket with `/implement`."
 

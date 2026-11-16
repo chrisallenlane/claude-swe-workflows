@@ -15,20 +15,8 @@ Spawns a `doc-maintainer` agent to comprehensively audit all project documentati
 Spawn a `DOC - Maintainer` agent with the following prompt:
 
 ```
-Perform a comprehensive review of ALL project documentation. This is a
-standalone audit — do NOT scope to git diff. Instead, review every
-documentation file in the project.
-
-Steps:
-1. Discover all documentation files (README.md, CLAUDE.md, CONTRIBUTING.md,
-   CHANGELOG.md, doc/, docs/, adr/, and any other .md files)
-2. Review each for correctness, completeness, and freshness using your
-   full quality checklist (code-documentation consistency, completeness,
-   link validation, style consistency, freshness)
-3. Fix issues you find autonomously (within your authority)
-4. Report what you changed and any issues requiring user approval
-
-If no documentation issues are found, report that and exit.
+Mode: full audit. Check every doc in the project against the code.
+Report per your Report section.
 ```
 
 ### 2. Report results
@@ -36,7 +24,7 @@ If no documentation issues are found, report that and exit.
 After the agent completes, present its findings to the user:
 - What was reviewed
 - What was changed (if anything)
-- Issues requiring user approval (if any)
+- Items that need a decision (if any)
 
 ### 3. Commit (optional)
 

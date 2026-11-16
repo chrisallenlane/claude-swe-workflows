@@ -18,7 +18,7 @@ In both modes, the skill spawns parallel pre-mortemers in isolation across failu
 - Qualitative calibration — *high / moderate / low / uncertain*, no fabricated percentages
 - Output is a risk register prioritized by likelihood × impact, with early-warning signals
 - Produces feedback only — no code, no tickets, no artifacts
-- Natural follow-up to `/think-scrutinize` (stress-test mitigations) or `/scope` (ticket the defendable failure modes)
+- Natural handoff to `/think-scrutinize` (stress-test mitigations) or `/scope` (ticket the defendable failure modes)
 
 ## When to Use
 
@@ -39,7 +39,7 @@ In both modes, the skill spawns parallel pre-mortemers in isolation across failu
 
 **Don't use `/think-premortem` for:**
 
-- Plans too vague to fail concretely (refine first via `/scope` or `/think-brainstorm`'s framing check)
+- Plans too vague to fail concretely (refine first via `/scope` or `/think-brainstorm`)
 - Currently-failing situations whose cause is unclear (use `/think-diagnose` — that skill handles real, observable failures with unknown causes; scenario-mode pre-mortem is for *hypothetical* catastrophes)
 - Already-resolved incidents the user wants to learn from (use `/think-reflect`)
 - Choosing between options (use `/think-deliberate`)
@@ -67,8 +67,8 @@ In both modes, the skill spawns parallel pre-mortemers in isolation across failu
  │  Scenario mode: past-tense catastrophe        │
  │    against an existing system                 │
  │  Produce a written brief                      │
- │  Plan: what/why/when/who/where                │
- │  Scenario: scenario + system scope            │
+ │  Plan: what/why/when/who/where + horizon      │
+ │  Scenario: scenario + scope + system context  │
  └──────────────────┬────────────────────────────┘
                     ▼
  ┌───────────────────────────────────────────────┐
@@ -136,32 +136,7 @@ In both modes, the skill spawns parallel pre-mortemers in isolation across failu
 | Judge (you)   | Detect mode, capture target, validate concreteness, choose lenses, synthesize the risk register                                           |
 | Pre-mortemers | Plan mode: imagine catastrophic failure within an assigned lens. Scenario mode: investigate actual code for given scenario. In isolation. |
 
-## The Two Modes
-
-### Plan mode
-
-The user has not yet committed to a plan. The skill imagines how the plan could fail catastrophically across multiple lenses, broadly. Pre-mortemers reason from the plan brief alone — the brief is their ground truth.
-
-*Use when:* the work has not started, and the user wants to harden the plan before commitment.
-
-*Example trigger:* "Premortem this auth-service migration plan before we kick off."
-
-*Output emphasis:* mitigations to add to the plan; load-bearing assumptions to verify.
-
-### Scenario mode
-
-The user poses a specific catastrophic scenario against an existing system and asks how it could have happened. Pre-mortemers investigate the actual code, architecture, and configuration — looking for features of the system that would have allowed the given scenario. The codebase is their ground truth.
-
-*Use when:* the work is shipped or running, and the user wants to harden the system against a hypothetical catastrophe before it actually materializes.
-
-*Example triggers:*
-- "An undiscovered zero-day exploit was used to attack our users via this app. How did this happen?"
-- "A critical design defect destroyed the production database. How did this happen?"
-- "A design defect caused AWS to hyperscale, causing a runaway bill. How did this happen?"
-
-*Output emphasis:* hardening work to do on the system; specific code/config to fix; signals to monitor for.
-
-### Critical distinction: scenario mode is for *hypothetical* catastrophes
+## Scenario Mode Is for *Hypothetical* Catastrophes
 
 Scenario mode operates on catastrophes that have *not* occurred. The user uses prospective-hindsight framing as a stress-testing technique against a system that is currently fine.
 
@@ -220,31 +195,9 @@ The pre-mortemer assigned to `first-principles` is told which other lenses are b
 
 Honest "nothing here that the other lenses don't already catch" is a valid, calibrated outcome from the `first-principles` lens. Manufactured findings dilute the register; the lens earns its slot when it surfaces something the prescribed taxonomy missed, not by always producing.
 
-## The Prospective Hindsight Mechanism
-
-Pre-mortem methodology comes from Gary Klein's decision research (*Sources of Power*, 1998; *HBR*, 2007). The cognitive trick is *prospective hindsight*: imagining a failure as if it has already happened produces more concrete and better-calibrated cause identification than imagining failure as a forward-looking risk. Mitchell, Russo, and Pennington (1989) measured the effect: prospective hindsight produced roughly 30% better identification of correct reasons than risk-assessment framing.
-
-The skill operationalizes this. Each pre-mortemer is told the plan failed, given a specific failure mode to inhabit, and asked to reconstruct how it got there. The framing is load-bearing — pre-mortemers are explicitly forbidden from saying "this could happen" and required to say "this happened."
-
-## The Risk Register Output
-
-The synthesis differs from `/think-brainstorm` (catalog of options) and from `/think-scrutinize` (faults that survived adversarial cross-examination). The output here is a *risk register*: failure modes calibrated by likelihood and impact, paired with early-warning signals.
-
-Each failure mode includes:
-
-- **Failure scenario** — concrete narrative, past tense, specific
-- **Causal chain** — the path that produced it
-- **Causes (root)** — the upstream causes that allowed it
-- **Early-warning signals** — what an observer would have noticed *before* the catastrophic moment
-- **Likelihood** — qualitative (*high / moderate / low / uncertain*)
-- **Impact** — qualitative (*high / moderate / low*)
-- **Defendable / monitor-only** — can it be designed against now, or only watched for?
-
-The report headlines the top 3-5 by likelihood × impact, with a tabulated tail for completeness and a cross-cutting observations section that often matters more than any single finding.
-
 ## Output
 
-A structured report with:
+A prioritized risk register. Each headline failure mode carries a concrete past-tense failure scenario, its causes (with file:line evidence in scenario mode), qualitative likelihood and impact, early-warning signals, and a defendable / monitor-only label. The report sections are:
 
 - **Top Failure Modes** (headline) — 3-5 detailed entries, each with scenario, causes, signals, calibration
 - **Other Failure Modes Worth Tracking** — lower-priority entries in tabulated form
@@ -253,9 +206,7 @@ A structured report with:
 - **Lenses That Found Little** — honest reporting where a chosen lens produced limited value
 - **Suggested Next Steps** — natural follow-ups (`/think-scrutinize`, `/scope`, etc.)
 
-## Iteration
-
-The skill is **one-shot by design**. Each plan gets one clean consultation. To pre-mortem a revised plan, re-invoke. To stress-test a specific mitigation, hand off to `/think-scrutinize`. To turn defendable failure modes into work, hand off to `/scope`.
+The skill is **one-shot by design**: to pre-mortem a revised plan or a hardened system, re-invoke.
 
 ## Example Session (Plan Mode)
 
@@ -269,6 +220,7 @@ Capturing the plan brief:
 - Timeframe: 6 weeks
 - Team: 3 engineers
 - Approach: rolling deployment
+- Time horizon: 8 weeks from now — 2 weeks past the planned end
 - Currently in: planning (pre-implementation)
 
 A few questions before I spawn pre-mortemers:
@@ -293,7 +245,6 @@ security pass per the plan), incentive (no relevant measurement system),
 team-and-coordination (small co-located team), scope (well-defined replacement).
 
 [Spawning 6 pre-mortemers in parallel...]
-[Time horizon: 8 weeks from now — 2 weeks past the planned end]
 [Collecting outputs...]
 [Synthesizing...]
 
@@ -418,170 +369,7 @@ Time horizon: 8 weeks from now
 - To turn the defendable items above into tickets: `/scope`
 ```
 
-## Example Session (Scenario Mode)
-
-```
-> /think-premortem A critical design defect caused the destruction of
-  our production database. How did this happen?
-
-Detecting mode: scenario mode. The framing is past-tense catastrophic,
-posed against an existing system.
-
-Capturing the brief:
-- Scenario: production database was destroyed by a critical design defect
-- Target system: needs scoping
-
-Two questions before I spawn pre-mortemers:
-
-1. Which database / service is in scope? "The production database" is
-   too broad to investigate concretely.
-> The orders service. Postgres backend. The orders-svc/ directory plus
-  the migration scripts in db/migrations/.
-
-2. By "destroyed" — do you mean structural (schema corruption / data loss)
-   or operational (unrecoverable performance state)? The lens selection
-   differs.
-> Data loss. Imagine all order rows for the past quarter are gone and the
-  backups don't restore cleanly.
-
-OK. Lenses I'll apply:
-- technical (most likely path to data loss via design defect)
-- reversibility (backups didn't restore cleanly is a reversibility claim)
-- detection (a defect that destroys data may have been silently brewing)
-- operational (the operational path that allowed the defect to ship)
-- adversarial (worth checking — a malicious actor exploiting a design
-  defect is a related causal path)
-
-Skipping estimation, scope, adoption, dependency-and-environment, team,
-incentive — they don't materially advance this scenario.
-
-[Spawning 5 pre-mortemers in parallel, with read access to orders-svc/
- and db/migrations/...]
-[Each investigating the actual code for causes of the given scenario...]
-[Synthesizing...]
-
-## Pre-Mortem Report
-
-Mode: scenario
-Target: orders-svc/ + db/migrations/
-Scenario: A critical design defect caused destruction of the production
-          database (data loss for the past quarter; backups failed to
-          restore cleanly).
-Lenses applied: technical, reversibility, detection, operational, adversarial
-
-### Top Failure Modes
-
-1. **Migration script lacks transaction boundary on destructive ops**
-   *(lenses: technical, reversibility)*
-   - **Failure scenario:** Migration `db/migrations/20260318_normalize_orders.sql`
-     executes a multi-step rewrite that deletes from `orders_legacy` and
-     inserts into `orders` without wrapping the operation in a transaction.
-     A failure mid-script leaves `orders_legacy` partially deleted and
-     `orders` partially populated. The rollback path attempts to restore
-     from `orders_legacy` but the rows are gone.
-   - **Causes:** The script uses `BEGIN`/`COMMIT` at the top and bottom,
-     but a `\set ON_ERROR_STOP` is not set, and an intermediate
-     `RAISE NOTICE` is incorrectly used for status logging in a way
-     that does not abort on error. The migration runner (`scripts/migrate.sh`)
-     does not check exit codes between steps.
-   - **Evidence:** `db/migrations/20260318_normalize_orders.sql:1-12`
-     (no `ON_ERROR_STOP`); `scripts/migrate.sh:34` (does not check
-     intermediate exit codes).
-   - **Early-warning signals:** Any migration in the repo that uses
-     `DELETE` followed by `INSERT` against the same table family without
-     `ON_ERROR_STOP` set. Currently 3 other migrations match this pattern.
-   - **Likelihood:** moderate — the pattern is present and unguarded
-   - **Impact:** high — data loss
-   - **Defendable / monitor-only:** Defendable. Add `ON_ERROR_STOP=1` to
-     all migrations; refactor migrate.sh to halt on any non-zero exit.
-
-2. **Backup restore path is untested and likely broken**
-   *(lenses: reversibility, detection)*
-   - **Failure scenario:** When the team attempted to restore from the
-     nightly backup, the restore script `scripts/restore-from-backup.sh`
-     fails because it expects a backup format that was changed in
-     `scripts/backup.sh:18` six weeks ago to a streaming format. The
-     restore script was never updated to match. The backups exist but
-     cannot be applied to a running cluster.
-   - **Causes:** Backup format change without corresponding restore-side
-     update. No automated restore test in CI. The last successful test
-     restore was 4 months ago, before the format change.
-   - **Evidence:** `scripts/backup.sh:18` (format change committed
-     2026-03-12); `scripts/restore-from-backup.sh:42-58` (still expects
-     pre-change format); `.github/workflows/` contains no restore test.
-   - **Early-warning signals:** No restore-from-backup test runs in CI
-     currently. A scheduled monthly drill would catch this. The fact
-     that backups complete cleanly says nothing about whether they can
-     be restored.
-   - **Likelihood:** high — the format mismatch is verifiable from the code now
-   - **Impact:** high — turns a recoverable failure into an unrecoverable one
-   - **Defendable / monitor-only:** Defendable. Add a CI job that
-     restores yesterday's backup to a throwaway database and validates
-     row counts.
-
-3. **Soft-delete column unused but relied on by orphan-prevention logic**
-   *(lenses: technical, detection)*
-   - **Failure scenario:** A soft-delete-then-purge job in `orders-svc/jobs/cleanup.go`
-     filters by `deleted_at IS NOT NULL AND deleted_at < NOW() - INTERVAL '90 days'`,
-     but a recent migration changed the column type from `timestamp` to
-     `timestamptz` without updating the cleanup job's timezone-handling.
-     Under DST transition, a window of orders gets `deleted_at` values that
-     compare incorrectly, and the cleanup job permanently deletes rows that
-     should still be live.
-   - **Causes:** Column type change; cleanup job logic not updated; no test
-     covering the timezone-boundary case.
-   - **Evidence:** `orders-svc/jobs/cleanup.go:23` (timezone-naive comparison);
-     `db/migrations/20260205_orders_timestamptz.sql` (column type change);
-     no corresponding test in `orders-svc/jobs/cleanup_test.go`.
-   - **Early-warning signals:** A spike in customer complaints about
-     missing orders in the days following a DST transition. Or a
-     scheduled query that audits cleanup-job actions before they run.
-   - **Likelihood:** moderate — only fires under DST transitions
-   - **Impact:** moderate — partial data loss, recoverable from backups
-     *if* backup restore works (see #2)
-   - **Defendable / monitor-only:** Defendable. Add explicit timezone
-     handling and tests for DST-boundary cases.
-
-### Other Failure Modes Worth Tracking
-
-| Failure mode                                                | Lens          | Likelihood | Impact   | Early signal                                        |
-|-------------------------------------------------------------|---------------|------------|----------|-----------------------------------------------------|
-| Privileged DB role used by app for migrations               | adversarial   | low        | high     | Audit DB role permissions; check app's role grants  |
-| No row-count validation post-migration                      | detection     | moderate   | moderate | Add row-count checks to migration runner            |
-| Replication lag masks data loss until catastrophic          | operational   | low        | high     | Replication lag dashboards exist but aren't alerted |
-
-### Cross-Cutting Observations
-
-- **Three lenses (technical, reversibility, detection) all converged on
-  *unverified rollback paths*.** The migration script lacks transactions;
-  the backup restore isn't tested; row-count validation is absent. The
-  pattern: the system trusts that rollback works without ever exercising
-  it. Highest-leverage hardening: institute regular rollback drills.
-
-- **The migration runner (`scripts/migrate.sh`) is a single point of
-  failure.** Multiple lenses pointed to it. Worth a focused review.
-
-### Load-Bearing Assumptions
-
-- Backups can be restored to a running cluster (likely false — see #2)
-- Migrations are atomic at the file level (false — see #1)
-- The cleanup job is timezone-safe (false — see #3)
-- All migrations use the same safety conventions (verifiable; currently false)
-
-### Lenses That Found Little
-
-- adversarial — produced one moderate-likelihood finding (privileged DB
-  role) but the scenario as posed is more naturally explained by design
-  defect than by adversarial action
-
-### Suggested Next Steps
-
-- Add `ON_ERROR_STOP=1` and exit-code checks to migration tooling (defends against #1)
-- Add CI restore-from-backup test (defends against #2 and the cross-cutting observation)
-- Audit migration scripts for the DELETE+INSERT-without-transaction pattern
-- To stress-test the proposed hardening: `/think-scrutinize`
-- To turn the defendable items above into tickets: `/scope`
-```
+Scenario mode follows the same shape, with two differences: the brief pairs the posed scenario with a scoped target system and its context, and every cause in the report cites the code, configuration, or architecture that would have allowed it (file:line).
 
 ## Relationship to Other Skills
 
@@ -594,25 +382,6 @@ Lenses applied: technical, reversibility, detection, operational, adversarial
 | `/think-brainstorm` | Pre-mortem can identify the *problem* (failure modes); brainstorm generates *mitigations*                                                                |
 | `/think-diagnose`   | Adjacent skill for *currently-occurring* failures with unknown causes; pre-mortem (scenario mode) is for *hypothetical* failures against running systems |
 
-**Pre-mortem and scrutinize compared.** Both stress-test plans / systems, but they are not redundant. Pre-mortem is broader and more generative — it sweeps the failure space using prospective hindsight. Scrutinize is narrower and more dialectical — skeptics versus advocate on a specific concern. Natural ordering: *pre-mortem first, scrutinize second*. Pre-mortem identifies the top failure modes; scrutinize stress-tests the mitigations or load-bearing assumptions.
-
-**Pre-mortem and diagnose compared (important).** These are easy to confuse but distinct.
-
-- `/think-diagnose` is for *currently-observable* failures whose causes are unknown — abductive reasoning to infer what *is* causing a real phenomenon. Symptoms are observable now; the question is "why?"
-- `/think-premortem` (scenario mode) is for *hypothetical* catastrophes against running systems — the user posits "imagine X happened" against a system where X has *not* happened, and the skill investigates what features of the system could have allowed X. The scenario is given; the question is "what in the system would have produced this?"
-
-If the failure is real and now, route to `/think-diagnose`. If it is hypothetical, scenario-mode pre-mortem applies.
-
-**Pre-mortem and reflect as matched pair.** Pre-mortem is prospective failure imagination *before* the failure has happened; reflect is retrospective learning *after* an experience has resolved. They share the discipline of separating decision quality from outcome quality (Tetlock) — pre-mortem at the front, reflect at the back.
-
 ## Philosophy
-
-Optimism is the default mode of both planning and operating systems. People imagine plans succeeding and systems running cleanly, patch over the failure modes that happen to surface, and proceed. This systematically under-attends to risks and produces post-hoc surprise when those risks materialize.
-
-Klein's contribution is the framing reversal. Asking "what could go wrong?" lets the planning brain shrug off concerns; pre-mortem instead says "the failure has already happened; figure out why." Prospective hindsight bypasses the optimism filter — people are surprisingly good at imagining concrete failure causes when they are told a failure already occurred.
-
-The technique generalizes. It works on plans before commitment (Klein's original framing) and on running systems against hypothetical catastrophes (the same cognitive trick, applied to a different target). What changes is whether the pre-mortemers imagine causes broadly within a plan, or investigate the actual system for causes that could have produced a specific given scenario. In scenario mode, the discipline tightens: claims must be backed by evidence in the actual code.
-
-The plugin operationalizes both with the NGT-isolated parallel-agents pattern that the other `/think-*` skills use. Independent imagination or investigation prevents anchoring on the first plausible failure cause; synthesis produces a register the user can act on rather than a list of generic risks they can dismiss.
 
 The discipline is: imagine or investigate specifically, generate in isolation, calibrate honestly, surface the early-warning signals. The output is meant to make the plan stronger or the system harder, not to prevent the plan from being attempted or the system from being trusted. A pre-mortem that turns up few specific failure modes is a stronger result, not an under-pre-mortemed one — calibration honesty is the bar.

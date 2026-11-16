@@ -16,11 +16,11 @@ The `/think-scrutinize` skill stress-tests an idea or plan before you commit to 
 **Use `/think-scrutinize` for:**
 - Reviewing a plan before starting implementation
 - Pressure-testing a proposal before presenting it
-- Pre-mortem analysis on significant decisions
 - Surfacing objections that politeness or groupthink would suppress
 
 **Don't use `/think-scrutinize` for:**
 - Choosing between options (use `/think-deliberate`)
+- Sweeping a plan's failure space (use `/think-premortem`)
 - Finding bugs in existing code (use `/bug-hunt` or `/review-security`)
 - Implementing changes (this skill makes nothing — it's a consultant)
 - Venting about a plan without a concrete idea to critique
@@ -60,7 +60,7 @@ The `/think-scrutinize` skill stress-tests an idea or plan before you commit to 
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  4. SPAWN SKEPTICS (parallel)                │
+ │  4. SPAWN SKEPTICS (parallel, isolated)      │
  │  ────────────────────────────────────────    │
  │  One agent per lens                          │
  │  Each returns structured critique            │
@@ -100,7 +100,7 @@ The `/think-scrutinize` skill stress-tests an idea or plan before you commit to 
 | Role        | What they do                                                             |
 | ----------- | ------------------------------------------------------------------------ |
 | Judge (you) | Capture idea, choose lenses, spawn agents, synthesize report             |
-| Skeptics    | Critique the idea through assigned lenses (parallel)                     |
+| Skeptics    | Critique the idea through assigned lenses (parallel, isolated)           |
 | Advocate    | Defends the idea in good faith — concedes real faults, refutes weak ones |
 
 ## Critical Lenses

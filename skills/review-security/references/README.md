@@ -68,7 +68,7 @@ The current design treats anchoring as a specific cognitive failure mode, with *
 
 ### 1. Determine Scope
 
-The skill asks about scope, areas of concern, and areas to skip. By default, the audit targets production code only — test code, dev-only dependencies, generated code, and vendored code are excluded. Users can override these defaults. User concerns inform prioritization but don't replace systematic analysis.
+The skill asks about scope, areas of concern, and areas to skip. When the invocation or a caller (such as `/review-repo`'s follow-up) already supplies scope, the scope question is skipped. By default, the audit targets production code only — test code, dev-only dependencies, generated code, and vendored code are excluded. Users can override these defaults. User concerns inform prioritization but don't replace systematic analysis.
 
 ### 2. Independent First Pass — Parallel and Isolated
 
@@ -106,7 +106,7 @@ Findings are cross-referenced to identify exploit chains — combinations of ind
 
 ### 6. Consolidated Report
 
-A single report combining the blue team's defensive assessment, the red team's offensive findings, the reconnaissance synthesis (with target categorization), and any exploit chains discovered. Findings carry an expanded `Discovered by:` attribution: *blue team independent*, *red team independent*, *synthesis (anchoring-suppressed)*, *focused agent*, or *chain analysis*. Presented interactively — CRITICAL findings first.
+A single report combining the blue team's defensive assessment, the red team's offensive findings, the reconnaissance synthesis (with target categorization), and any exploit chains discovered. Findings carry an expanded `Discovered by:` attribution: *blue team independent*, *red team independent*, *synthesis (anchoring-suppressed)*, *focused agent*, or *chain analysis*. Non-security bugs the agents noticed in passing are listed one line each, routed to `/bug-fix`. Presented interactively — CRITICAL findings first.
 
 ### 7. Cut Tickets
 

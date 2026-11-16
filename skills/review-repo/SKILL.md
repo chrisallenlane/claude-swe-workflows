@@ -69,6 +69,8 @@ The context is a load-bearing input. It shapes classification and the Decide pha
 
 Ask the ticket question only if follow-ups are granted. Mention that some follow-ups (notably `/review-security`) are heavy. The floor defaults to High. Granting tickets *is* the approval to create them.
 
+**The floor across scales:** High = CRITICAL/HIGH, ASHI Safety Hazard/Major, release BLOCKER. Architecture, dead-code, and value items are always proposed, never auto-created.
+
 **Determine scope.** The default is the whole repo. Honor a named directory or module in every phase. If the repo is very large (>100k LOC or >10 top-level subsystems), ask whether to scope down.
 
 **Abort if:** not a git repository, or no source files in scope. Missing tooling is not a reason to abort; record it in the Coverage Manifest.
@@ -197,19 +199,19 @@ Generate 2–4 options for the user's context, each citing the Orient findings t
 
 Give the top 3–5 next steps, prioritized by severity × relevance to the context. Each is either a specific action with `file:line` pointers, or a deeper review with a scoped argument:
 
-| Finding type                               | Route to                            | When                                                        |
-|--------------------------------------------|-------------------------------------|-------------------------------------------------------------|
-| Module boundaries, coupling                | `/review-repo architecture <scope>` | Architecture hygiene at Foundational, cross-cutting coupling |
-| Hidden change coupling                     | `/review-repo architecture <scope>` | Change-coupled pairs with no static dependency (2f)         |
+| Finding type                               | Route to                            | When                                                          |
+|--------------------------------------------|-------------------------------------|---------------------------------------------------------------|
+| Module boundaries, coupling                | `/review-repo architecture <scope>` | Architecture hygiene at Foundational, cross-cutting coupling  |
+| Hidden change coupling                     | `/review-repo architecture <scope>` | Change-coupled pairs with no static dependency (2f)           |
 | Dead or unreachable code                   | `/review-repo dead-code <scope>`    | Dead-code signals in Observe, or before any architecture pass |
-| Machinery out of proportion to the product | `/review-repo value <scope>`        | Recommend only; its trades need the product owner           |
-| Confirmed hotspots (debt being paid)       | `/refactor <module>`                | Recommend only; it changes code                             |
-| Test coverage or quality gaps              | `/review-test <scope>`              | Test health at Foundational, or specific gaps               |
-| Security findings                          | `/review-security`                  | Safety-tier security findings                               |
-| Performance-sensitive code                 | `/review-perf`                      | Hot paths with no evidence of their cost                    |
-| Accessibility (web)                        | `/review-a11y`                      | Web UI present                                              |
-| Documentation gaps                         | `/tidy-docs`                        | Documentation at Foundational                               |
-| Pre-release readiness                      | `/review-release`                   | The user is preparing to publish                            |
+| Machinery out of proportion to the product | `/review-repo value <scope>`        | Recommend only; its trades need the product owner             |
+| Confirmed hotspots (debt being paid)       | `/refactor <module>`                | Recommend only; it changes code                               |
+| Test coverage or quality gaps              | `/review-test <scope>`              | Test health at Foundational, or specific gaps                 |
+| Security findings                          | `/review-security`                  | Safety-tier security findings                                 |
+| Performance-sensitive code                 | `/review-perf`                      | Hot paths with no evidence of their cost                      |
+| Accessibility (web)                        | `/review-a11y`                      | Web UI present                                                |
+| Documentation gaps                         | `/tidy-docs`                        | Documentation at Foundational                                 |
+| Pre-release readiness                      | `/review-release`                   | The user is preparing to publish                              |
 
 Route only when the deeper pass does exactly what's needed at the depth warranted. Recommend shallow fixes directly.
 
@@ -220,13 +222,14 @@ Route only when the deeper pass does exactly what's needed at the depth warrante
 **With it,** run the deeper reviews the map calls for, each scoped to where its findings point. Use judgment, not a checklist: every review that plausibly applied and didn't run gets a one-line reason in the report.
 
 - **Candidates:** the `dead-code`, `architecture`, and `namespace` (audit mode) focuses (run per §Focused Reviews), `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release`.
+- **`/review-release` runs report-only:** stop after its findings presentation. It applies no fixes and makes no commit, so this skill still changes no code.
 - **Order:** dead code before architecture; release readiness last.
 - **Never run here:**
   - `/refactor` and `/implement`, because they change code.
   - The `value` focus, unless intent asks for it, because its trades are product decisions.
   - The `namespace` focus in search mode, because it needs the operator. Audit mode may run when the map's findings point at legibility.
 
-**Tickets.** Each deep review ends with a ticket proposal. With ticket authority, approve proposals at or above the floor and decline the rest, recording them, per [`references/advisory-tickets.md`](../../references/advisory-tickets.md). Without it, decline all of them in-run and propose one consolidated set at the end, ordered by severity, created only on approval.
+**Tickets.** Each deep review with a ticket step ends with a ticket proposal. With ticket authority, approve proposals at or above the floor and decline the rest, recording them, per [`references/advisory-tickets.md`](../../references/advisory-tickets.md). Without it, decline all of them in-run and propose one consolidated set at the end, ordered by severity, created only on approval. Skills with no ticket step (`/review-perf`, `/review-a11y`, `/review-release`) feed findings straight into the consolidated set; with ticket authority, create those at or above the floor directly.
 
 **Consolidate.** Dedupe findings that several reviews raised (a confirmation is not a second finding). Reconcile them with the map; where a deeper review contradicts the map, the deeper review wins and the contradiction is reported.
 
@@ -256,10 +259,11 @@ An **honest zero** is a valid result for every focus. Report it and stop. If the
 
 **Prompt `swe-arch-reviewer`** with the scope, the auditability ceiling (the project's stated file-size limit, or 500 lines), any dead-code audit already produced, and the map's hidden-coupling pairs. Ask for a target blueprint that covers every module, existing and proposed.
 
-**Present three things:**
+**Present four things:**
 - **(a) The noun analysis:** the frequency table and the per-noun namespace evaluation. This is the analytical foundation.
 - **(b) Proposed changes** with their rationale, grouped as mechanism downgrades, renames, moves, absorptions, dissolutions, and new modules.
 - **(c) No-change items** with their domain justifications. The operator may disagree, or spot a module the agent missed.
+- **(d) Behavior-altering changes**, from the agent's "Behavior-Altering Changes (requires approval)" section, flagged for approval. They escalate to the operator rather than becoming tickets automatically.
 
 Iterate until the operator is satisfied. Architectural decisions are consequential, so don't rush this step.
 

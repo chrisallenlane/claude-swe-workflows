@@ -45,6 +45,7 @@ The skill is in the `/tidy-*` namespace because the find→fix seam is small: de
  │    master → ask user)                        │
  │  • Detect current branch                     │
  │  • Note working-tree state (info only)       │
+ │  • Abort if mid-rebase/merge/cherry-pick     │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -58,8 +59,9 @@ The skill is in the `/tidy-*` namespace because the find→fix seam is small: de
  ┌──────────────────────────────────────────────┐
  │  3. INVENTORY BORDERLINE-SAFE OPERATIONS     │
  │  ────────────────────────────────────────    │
- │  Merged local branches (excluding main +     │
- │  current); record SHAs for reflog recovery   │
+ │  Merged local branches (excluding main,      │
+ │  current, and worktree-checked-out);         │
+ │  record SHAs for reflog recovery             │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -70,6 +72,7 @@ The skill is in the `/tidy-*` namespace because the find→fix seam is small: de
  │  • Branches ahead of upstream                │
  │  • Local-only tags                           │
  │  • Untracked files (sample of 10)            │
+ │  • Branches whose upstream is gone           │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -111,21 +114,22 @@ These operations remove only *references*. They cannot lose commits, objects, or
 
 Operations that delete *references with associated commits*. Reversible from the reflog (90 days), but worth previewing.
 
-| Operation                  | Command                            | Safety                                                                                                                             |
-|----------------------------|------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| Delete merged local branch | `git branch -d <name>` (lowercase) | `-d` refuses to delete if the branch isn't actually merged; this guards against rare `--merged` false positives. No `-D` fallback. |
+| Operation                  | Command                            | Safety                                                                                                                     |
+|----------------------------|------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| Delete merged local branch | `git branch -d <name>` (lowercase) | `-d` runs its own merge check (against the branch's upstream, else `HEAD`); if it refuses, the branch is skipped. No `-D`. |
 
 ### Tier 3 — Real loss risk: report only
 
 State that *might* warrant cleanup, but the cleanup is judgment-laden or hard to reverse. The skill reports these so the operator can decide; it never acts on them.
 
-| Category                   | Why report-only                                                                        |
-|----------------------------|----------------------------------------------------------------------------------------|
-| Stashes                    | A stash is by definition undecided work; auto-dropping violates reversibility          |
-| Branches with no upstream  | May be intentional local-only work or forgotten branches; operator knows which         |
-| Branches ahead of upstream | Forgotten pushes — operator decides whether to push, abandon, or keep working          |
-| Local-only tags            | Often intentional backups (e.g., `pre-rebase-backup-*`) — operator knows the intent    |
-| Untracked files            | `git clean` is destructive and context-dependent; `/pre-compact` handles session-trash |
+| Category                    | Why report-only                                                                         |
+|-----------------------------|-----------------------------------------------------------------------------------------|
+| Stashes                     | A stash is by definition undecided work; auto-dropping violates reversibility           |
+| Branches with no upstream   | May be intentional local-only work or forgotten branches; operator knows which          |
+| Branches ahead of upstream  | Forgotten pushes — operator decides whether to push, abandon, or keep working           |
+| Branches with upstream gone | Usually squash/rebase-merged and deleted remotely; deleting needs `-D`, never automated |
+| Local-only tags             | Often intentional backups (e.g., `pre-rebase-backup-*`) — operator knows the intent     |
+| Untracked files             | `git clean` is destructive and context-dependent; `/pre-compact` handles session-trash  |
 
 ## Why `--merged` Doesn't Catch Everything
 
@@ -135,7 +139,7 @@ The Tier-2 merged-branch detection uses `git branch --merged <main>`. This catch
 - **Squash-merged branches.** GitHub's "Squash and merge" creates a *new* commit on main with a different SHA. The original branch's tip is not reachable from main, so `--merged` misses it.
 - **Rebase-merged branches.** Rebasing changes the SHAs. Same problem.
 
-These branches surface in the "Branches ahead of upstream" informational category instead. The operator sees them with their per-branch commit count and decides — typically deleting them manually with `git branch -D` after confirming the work is on main.
+Once the remote branch is deleted and pruned, these branches surface in the "upstream gone" informational category instead (`%(upstream:track)` reads `[gone]`). If the remote branch still exists, they appear in no category. The operator sees them and decides — typically deleting them manually with `git branch -D` after confirming the work is on main.
 
 The skill deliberately does *not* try to be smart about squash/rebase detection. Heuristics (e.g., "the branch's tree matches a commit on main") produce false positives, and a wrong delete on a squash-merge-looking branch could lose work that was never actually merged. Reporting these informationally and letting the operator decide is safer.
 
@@ -170,11 +174,11 @@ The principle: a "tidy" skill must be safer than the underlying `git` commands i
 
 ## Tips for Effective Use
 
-1. **Run after every merge to master.** The merge creates a flurry of stale state: the feature branch is now mergeable to nothing, the remote may have deleted its copy, the local upstream tracking ref points at nothing useful. One `/tidy-git` pass cleans all of it.
+1. **Run after every merge to master.** The merge creates a flurry of stale state: the feature branch has nothing left to merge, the remote may have deleted its copy, and the local branch's upstream may now name a ref that no longer exists. One `/tidy-git` pass cleans all of it.
 
 2. **Don't fight the report-only categories.** If `/tidy-git` reports 8 untracked files in your repo, the right next step is `git status` or `/pre-compact`, not running `/tidy-git` again expecting different behavior. The categories are deliberately different tiers.
 
-3. **The "branches ahead of upstream" report catches forgotten pushes.** A common pattern: feature branch is merged via squash-merge on GitHub, but locally the branch still has its original (non-squashed) commits, which are "ahead of upstream" on the now-deleted-but-still-tracked remote. That's the signal that the branch should be deleted manually with `-D`.
+3. **The "upstream gone" report catches squash-merged branches.** A common pattern: a feature branch is squash-merged on GitHub and the remote branch deleted, but locally the branch keeps its original (non-squashed) commits and still names the deleted upstream. That's the signal to confirm the work is on main and delete the branch manually with `-D`. The separate "branches ahead of upstream" report catches forgotten pushes.
 
 4. **Keep the backup-tag convention.** Tags like `pre-rebase-backup-2026-05-11` are valuable safety nets during destructive operations. `/tidy-git` reports them as local-only-tags rather than deleting them because they're often deliberate. Drop them yourself with `git tag -d` once the underlying operation is verified successful.
 
@@ -204,4 +208,6 @@ git remote set-head origin <main-branch-name>
 
 **Operator declines all deletions ("Keep all").** Tier 2 commits no changes; only Tier 1 cleanups land. The summary reflects this honestly — "0 merged branches deleted."
 
-**`git branch -d` fails on a branch in the preview list.** Surface the failure inline (e.g., "feat/foo: branch is not fully merged — skipping"), continue with the rest of the list, and note the skip in the summary. Never fall back to `-D`.
+**Branch checked out in another worktree.** Excluded from the deletion list; `git branch -d` refuses to delete it.
+
+**`git branch -d` fails on a branch in the preview list.** `-d` checks the merge against the branch's upstream (or the current `HEAD` if it has none), not against main, so it can refuse a branch `--merged main` listed — for example when run from a feature branch. Surface the failure inline (e.g., "feat/foo: branch is not fully merged — skipping"), continue with the rest of the list, and note the skip in the summary. Never fall back to `-D`.

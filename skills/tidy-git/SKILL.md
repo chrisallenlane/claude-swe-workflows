@@ -6,7 +6,7 @@ model: opus
 
 # Tidy-Git - Mechanical Repo Hygiene
 
-Cleans up local git state that accumulates over time: remote-tracking refs for branches that no longer exist upstream, local branches that have already been merged, stale worktree references. Surfaces (without acting on) other state worth knowing about: stashes, untracked files, branches with no upstream, branches ahead of upstream, local-only tags.
+Cleans up local git state that accumulates over time: remote-tracking refs for branches that no longer exist upstream, local branches that have already been merged, stale worktree references. Surfaces (without acting on) other state worth knowing about: stashes, untracked files, branches with no upstream, branches ahead of upstream, branches whose upstream is gone, local-only tags.
 
 **Scope of action:** local repo only. The skill never pushes, never force-pushes, never deletes anything on the remote. It also never deletes unmerged work, never deletes the current branch, never deletes the main branch.
 
@@ -32,14 +32,15 @@ Cleans up local git state that accumulates over time: remote-tracking refs for b
 │     ├─ Prune remote-tracking refs                    │
 │     └─ Prune stale worktree refs                     │
 │  3. Inventory borderline-safe operations             │
-│     └─ Merged local branches (excluding main +       │
-│        current)                                      │
+│     └─ Merged local branches (excluding main,        │
+│        current, and worktree-checked-out)            │
 │  4. Inventory informational state                    │
 │     ├─ Stashes (with age)                            │
 │     ├─ Branches with no upstream                     │
 │     ├─ Branches ahead of upstream                    │
 │     ├─ Local-only tags                               │
-│     └─ Untracked files                               │
+│     ├─ Untracked files                               │
+│     └─ Branches whose upstream is gone               │
 │  5. Present preview + confirm for branch deletion    │
 │  6. Execute approved deletions                       │
 │  7. Final summary                                    │
@@ -56,6 +57,7 @@ Run the following checks before any cleanup:
 - **What is the main branch?** Try in order: `git symbolic-ref refs/remotes/origin/HEAD` (the canonical answer if `origin/HEAD` is set), then check for `main`, then `master`. If none detected, ask the user.
 - **What is the current branch?** `git branch --show-current`. Note for safety checks.
 - **Is the working tree clean?** Not a blocker, but worth noting in the summary — it's informational state.
+- **Is an operation in progress?** For each of `rebase-merge`, `rebase-apply`, `MERGE_HEAD`, `CHERRY_PICK_HEAD`, resolve its path with `git rev-parse --git-path <name>` (correct inside linked worktrees) and test whether it exists. If any does, abort: the repo is mid-rebase, mid-merge, or mid-cherry-pick, and the user should resolve that first.
 
 Record the main branch and current branch for safety checks in later steps. These two branches are never deleted by this skill.
 
@@ -93,15 +95,15 @@ git branch --merged <main-branch>
 
 **Exclude from the list:**
 - The main branch itself
-- The current branch (`git branch --show-current`)
-- Any branch passed as a `--keep` argument by the user (future extension)
+- The current branch (marked `*`)
+- Any branch checked out in another worktree (marked `+`) — `git branch -d` refuses to delete these
 
 For each remaining branch, also record:
 - Last commit SHA (so the user can recover via reflog if they regret the delete)
 - Last commit date and message (for the preview)
 - Whether the branch has an upstream (informational)
 
-**Caveat to surface in the preview:** `git branch --merged` only detects branches whose tip commit is reachable from the main branch. Branches that were merged via *squash-merge* or *rebase-merge* will NOT show up here — their tip commit is different from anything on main. Those branches will surface in step 4's "branches ahead of upstream" category, where the user can decide.
+**Caveat to surface in the preview:** `git branch --merged` only detects branches whose tip commit is reachable from the main branch. Branches that were merged via *squash-merge* or *rebase-merge* will NOT show up here — their tip commit is different from anything on main. Once their remote branch is deleted and pruned (step 2a), they surface in step 4f's "upstream gone" category, where the user can decide. If the remote branch still exists, they appear in no category.
 
 ### 4. Inventory Informational State
 
@@ -109,13 +111,15 @@ These are reported but never modified by the skill.
 
 **4a. Stashes.** `git stash list --date=relative`. Record count and the list. Stashes are never deleted by this skill — the user decides if they want to drop or apply.
 
-**4b. Branches with no upstream.** `git for-each-ref --format='%(refname:short) %(upstream)' refs/heads/` and filter for empty upstream. These are local branches that have never been pushed (or whose upstream was deleted without removing the local branch). Surface as informational — they might be intentional local-only work or forgotten branches.
+**4b. Branches with no upstream.** `git for-each-ref --format='%(refname:short) %(upstream)' refs/heads/` and filter for empty upstream. These are local branches that have never been pushed. (A branch whose upstream was deleted still has a configured upstream; it surfaces in 4f, not here.) Surface as informational — they might be intentional local-only work or forgotten branches.
 
-**4c. Branches ahead of upstream.** For each branch with an upstream, check `git rev-list --count <branch>@{u}..<branch>`. If non-zero, the branch has commits not on the remote. Report each with the count of commits ahead. Useful for spotting forgotten pushes.
+**4c. Branches ahead of upstream.** For each branch with an upstream that is not gone (see 4f; `@{u}` fails to resolve for those), check `git rev-list --count <branch>@{u}..<branch>`. If non-zero, the branch has commits not on the remote. Report each with the count of commits ahead. Useful for spotting forgotten pushes.
 
 **4d. Local-only tags.** Compare `git tag` against `git ls-remote --tags origin` (or the configured remote). Tags present locally but not remotely are local-only. These may be intentional backups (e.g., `pre-rebase-backup-*`) and are reported without action. Surface them so the operator can review and drop manually if desired.
 
 **4e. Untracked files.** `git status --porcelain` and filter for untracked. Report count and a representative sample (cap at 10 names; collapse the rest). Not deleted by this skill — `/pre-compact` handles session-trash cleanup with judgment; this skill stays out of that lane.
+
+**4f. Branches whose upstream is gone.** `git for-each-ref --format='%(refname:short) %(upstream:track)' refs/heads/` and filter for `[gone]`. The branch tracks a remote branch that no longer exists — typically one merged on the platform (often via squash- or rebase-merge, which `--merged` cannot detect) and deleted there. Report each; the operator confirms the work is on main and deletes it by hand (`git branch -D`, which this skill never runs).
 
 ### 5. Present Preview + Confirm
 
@@ -152,7 +156,7 @@ For each approved branch:
 git branch -d <branch-name>
 ```
 
-Use the **lowercase `-d`** (safe delete) — it refuses to delete a branch that isn't actually merged. This guards against rare cases where step 3's `--merged` check returns a false positive (e.g., a branch was merged-then-reset locally). If `-d` fails, surface the error and skip that branch; do **not** fall back to `-D`.
+Use the **lowercase `-d`** (safe delete). It runs its own merge check, independent of step 3's: against the branch's upstream if it has one, otherwise against the current `HEAD` — not against the main branch. So `-d` can refuse a branch that step 3 found merged into main (when the current branch is not main, or the branch has local commits its upstream lacks). That refusal is the safe failure: surface the error and skip that branch; do **not** fall back to `-D`.
 
 Record each successful deletion (branch name + SHA) for the summary.
 
@@ -179,10 +183,12 @@ Record each successful deletion (branch name + SHA) for the summary.
   feat/wip-thing, fix/local-experiment
 - Branches ahead of upstream: K
   feat/almost-done (3 commits ahead of origin/feat/almost-done)
+- Branches whose upstream is gone: G
+  feat/squashed-pr (was origin/feat/squashed-pr)
 - Local-only tags: J
   pre-rebase-backup-2026-05-11
 - Untracked files: I (sample below; see `git status` for full list)
-  /tmp/scratch.txt, PROJECT_STATE.md, debug.log
+  scratch.txt, PROJECT_STATE.md, debug.log
 ```
 
 If any of the auto-operations failed (e.g., `git remote prune` errored because there's no remote configured), report the failure inline and continue with the rest of the workflow.
@@ -231,8 +237,9 @@ Inventory:
 - Stashes: 2 (oldest from 2026-02-12, message: "wip: trying caching")
 - Branches with no upstream: 1 (feat/wip-thing)
 - Branches ahead of upstream: 0
+- Branches whose upstream is gone: 0
 - Local-only tags: 1 (pre-rebase-backup-2026-05-11)
-- Untracked files: 7 (incl. /tmp/scratch.txt, PROJECT_STATE.md)
+- Untracked files: 7 (incl. scratch.txt, PROJECT_STATE.md)
 
 ## Branch deletion preview
 
@@ -265,6 +272,6 @@ Deleting feat/old-experiment... done (sha 1a2b3c4).
 - Local-only branches with no upstream: 1 (feat/wip-thing)
 - Local-only tags: 1 (pre-rebase-backup-2026-05-11)
 - Untracked files: 7
-  /tmp/scratch.txt, PROJECT_STATE.md, debug.log, ... (4 more)
+  scratch.txt, PROJECT_STATE.md, debug.log, ... (4 more)
   Run `git status` for the full list.
 ```

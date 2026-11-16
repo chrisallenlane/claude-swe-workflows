@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `/think-brainstorm` skill generates candidate approaches for achieving a goal. It validates the assumptions embedded in the goal, then spawns parallel brainstormers running different techniques in isolation, and synthesizes the pool into a catalog of ideas.
+The `/think-brainstorm` skill generates candidate approaches for achieving a goal. It validates the assumptions embedded in the goal, runs a framing check (parallel reframers) when the framing itself is in doubt, then spawns parallel brainstormers running different techniques in isolation, and synthesizes the pool into a catalog of ideas.
 
 **Key properties:**
 - Divergent by design — generation, not evaluation
@@ -96,6 +96,7 @@ The `/think-brainstorm` skill generates candidate approaches for achieving a goa
  ┌──────────────────────────────────────────────┐
  │  6. REPORT                                   │
  │  ────────────────────────────────────────    │
+ │  Validated assumptions / Framing check /     │
  │  Standouts / Hybrids / Other reasonable /    │
  │  Questions raised / Suggested next steps     │
  └──────────────────────────────────────────────┘
@@ -103,11 +104,11 @@ The `/think-brainstorm` skill generates candidate approaches for achieving a goa
 
 ## Roles
 
-| Role          | What they do                                                             |
-| ------------- | ------------------------------------------------------------------------ |
-| Judge (you)   | Capture goal, validate assumptions, choose techniques, synthesize report |
-| Brainstormers | Generate ideas through assigned techniques, in isolation                 |
-| Reframers     | Framing check only: restate the problem through one lens, in isolation   |
+| Role          | What they do                                                                                         |
+| ------------- | ---------------------------------------------------------------------------------------------------- |
+| Judge (you)   | Capture goal, validate assumptions, run the framing check when needed, choose techniques, synthesize |
+| Brainstormers | Generate ideas through assigned techniques, in isolation                                             |
+| Reframers     | Framing check only: restate the problem through one lens, in isolation                               |
 
 ## Brainstorming Techniques
 
@@ -140,6 +141,7 @@ Synthesis re-introduces cross-pollination through *hybrid idea construction*, ca
 
 A structured catalog with:
 - **Validated Assumptions** — what held, what got revised, what got dropped
+- **Framing Check** — if it ran: lenses applied, standout reframings, where the original framing held, and which framing the user chose; otherwise one line saying why it was skipped
 - **Standouts** — 3-7 most promising/novel/counterintuitive ideas, no technique attribution (let them stand on merit)
 - **Hybrid Ideas** — orchestrator-constructed combinations across techniques
 - **Other Reasonable Ideas** — clustered by theme, with technique attribution for transparency
@@ -206,6 +208,11 @@ constraints-shift
   weighted, driven by rollback risk
 - Rollback is in scope → Confirmed
 - The current pipeline is sacred → Revised: not sacred, open to rearchitecture
+
+### Framing Check
+
+Skipped: assumption validation already reframed the goal around rollback
+fear, and you confirmed that framing; it was no longer in doubt.
 
 ### Standouts
 

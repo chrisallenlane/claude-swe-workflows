@@ -6,7 +6,7 @@ model: opus
 
 # Think-Reflect - Retrospective Learning from Completed Experience
 
-Extracts learnings from something that already happened. Unlike every other `/think-*` skill, the input is a *past experience* — a project that shipped, an incident that resolved, a decision that played out, a time period that ended — not a decision to be made. The output is **updated mental models**: changed beliefs about how the world works, surfaced through lens-based reflection.
+Extracts learnings from something that already happened. Unlike every other `/think-*` skill, its input is a *completed experience*, not a live phenomenon or a pending decision: a project that shipped, an incident that resolved, a decision that played out, a time period that ended. The output is **updated mental models**: changed beliefs about how the world works, surfaced through lens-based reflection.
 
 **This skill produces no tangible artifacts.** It is a consultant, not an implementer. No code, no tickets, no commits. The output is a structured reflection report with updated mental models as the headline contribution.
 
@@ -194,7 +194,7 @@ This skill is one-shot. If the user wants to reflect on a different experience, 
 - **No artifacts.** No code, tickets, commits, or documents.
 - **Observation/recollection split.** Non-negotiable in the ground-truth-gathering phase.
 - **Isolated reflection.** Reflectors do not see each other's output during generation.
-- **Updated mental models are the headline.** A reflection that produces a tidy findings list but no model updates has failed its purpose.
+- **Updated mental models are the headline.** A reflection that produces a tidy findings list but no model updates has failed its purpose — unless it honestly reports that no belief needed to change.
 - **Honest attribution.** Process wins and luck are distinct — conflating them is dangerous.
 
 ## When to Use
@@ -217,7 +217,7 @@ This skill is one-shot. If the user wants to reflect on a different experience, 
 
 ## Relationship to Other Skills
 
-`/think-reflect` is structurally different from the other `/think-*` skills: its input is a past experience, not a decision. The fact-finding phase is substantial because the observation/recollection distinction matters. The output foregrounds mental-model updates rather than options, critiques, or reframings.
+`/think-reflect` is structurally different from the other `/think-*` skills: its input is a completed experience, not a live phenomenon or a pending decision. The fact-finding phase is substantial because the observation/recollection distinction matters. The output foregrounds mental-model updates rather than options, critiques, or causes.
 
 **Natural follow-ups:**
 - Updated mental models that imply action → `/think-brainstorm` to generate interventions
@@ -234,4 +234,4 @@ Retrospectives are universally skipped or done as ritual theater. A tidy documen
 
 **The enforced observation-vs-recollection split is the other discipline.** Memory reconstructs coherent narratives; observations don't. When they disagree, prefer the observation — and *note the disagreement*. The gap between what happened and what we remember is itself a learning about how we perceive our own experience.
 
-**Luck and process must stay separate.** A good outcome from a bad process reinforces the bad process. A bad outcome from a good process looks like process failure. Attributing honestly — even when uncomfortable — is the foundation of all the other learnings.
+**Luck and process must stay separate** (see `references/think.md`, Cross-cutting practices).

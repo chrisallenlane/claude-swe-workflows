@@ -127,13 +127,13 @@ Narrative fit-checking has a known blind spot: it asks "does this evidence fit?"
 
 Otherwise skip it and say so in one line. This step decides among *these* candidates; it does not generate new ones.
 
-**1. Complete the hypothesis set.** Use the candidates from step 6, and add:
+**7a. Complete the hypothesis set.** Use the candidates from step 6, and add:
 - a **null** hypothesis ("nothing unusual is happening; this is noise, normal variance, or an artifact"), unless something has demonstrably happened that requires explanation;
 - a **deceptive** hypothesis ("appearances are being manipulated"), when trust, security, or signals that could be manipulated are involved.
 
 Diagnostic lenses rarely produce these two, so adding them is required. Aim for 4–7 hypotheses. User-held interpretations are hypotheses too; add them now, not earlier, so they don't anchor the diagnosticians.
 
-**2. Gather evidence in parallel and in isolation.** Spawn 3–5 `THK - ACH Evidence Gatherer` agents, one per evidence class, with no cross-talk. Give each the brief, the observations, and the hypothesis set.
+**7b. Gather evidence in parallel and in isolation.** Spawn 3–5 `THK - ACH Evidence Gatherer` agents, one per evidence class, with no cross-talk. Give each the brief, the observations, and the hypothesis set.
 
 | Class                  | What it surfaces                                    | Include when                              |
 |------------------------|-----------------------------------------------------|-------------------------------------------|
@@ -146,20 +146,20 @@ Diagnostic lenses rarely produce these two, so adding them is required. Aim for 
 
 Merge and deduplicate the evidence (typically 8–20 items), keeping each item's reliability note.
 
-**3. Build the matrix.** For every (hypothesis, evidence) cell, mark:
+**7c. Build the matrix.** For every (hypothesis, evidence) cell, mark:
 - **C** (consistent),
 - **I** (inconsistent),
 - **N/A** (no bearing; silence is not support).
 
 Use **CC** or **II** for unusually decisive cells. **Evaluate each cell on its own.** Work row by row, then check the columns, so earlier cells don't anchor later ones.
 
-**4. Diagnosticity.** Evidence consistent with every hypothesis tells you nothing; set it aside. Evidence that splits the hypotheses carries the weight. One highly diagnostic item outweighs ten non-diagnostic ones.
+**7d. Diagnosticity.** Evidence consistent with every hypothesis tells you nothing; set it aside. Evidence that splits the hypotheses carries the weight. One highly diagnostic item outweighs ten non-diagnostic ones.
 
-**5. Rank by least disconfirmation.** Order the hypotheses by their inconsistent marks, **never** by their consistent ones. This is non-negotiable: flipping it brings back the confirmation bias the technique exists to remove. A hypothesis can't be proven, only fail to be disproven. Keep every hypothesis on the leaderboard: second place is "currently second", not "wrong".
+**7e. Rank by least disconfirmation.** Order the hypotheses by their inconsistent marks, **never** by their consistent ones. This is non-negotiable: flipping it brings back the confirmation bias the technique exists to remove. A hypothesis can't be proven, only fail to be disproven. Keep every hypothesis on the leaderboard: second place is "currently second", not "wrong".
 
-**6. Sensitivity.** For each piece of load-bearing evidence, ask: what if it's wrong, misread, planted, or open to another interpretation? If changing a single item changes the leader, that item is the highest-leverage thing to verify before acting.
+**7f. Sensitivity.** For each piece of load-bearing evidence, ask: what if it's wrong, misread, planted, or open to another interpretation? If changing a single item changes the leader, that item is the highest-leverage thing to verify before acting.
 
-**7. Falsification milestones.** For the top 2–3 hypotheses, list the observations that would separate them: "if A, we should see X; if B, Y; Z would rule out A but not B". These replace the report's Distinguishing Evidence section.
+**7g. Falsification milestones.** For the top 2–3 hypotheses, list the observations that would separate them: "if A, we should see X; if B, Y; Z would rule out A but not B". These fill the report's Distinguishing Evidence section.
 
 ### 8. Report
 
@@ -264,7 +264,7 @@ This skill is one-shot. If the user gathers distinguishing evidence and wants an
 - Behavioral patterns — "why do customer calls go badly when we raise prices?"
 - Organizational issues — "why does our goal-setting process keep producing missed goals?"
 - Anywhere `/bug-fix` doesn't apply because the phenomenon isn't code-specific
-- Several explanations already on the table, which need rigorous narrowing. Pass them in as interpretations; step 7 will run.
+- Several explanations already on the table, which need rigorous narrowing. Pass them in as interpretations; if they survive step 6 without separating, step 7 narrows them.
 
 **Poor fit:**
 - Known causes needing intervention design — use `/think-brainstorm`
@@ -279,8 +279,6 @@ This skill is one-shot. If the user gathers distinguishing evidence and wants an
 - "What could I do about this?" → `/think-brainstorm`
 
 ## Relationship to Other Skills
-
-`/think-diagnose` is a **hybrid generative + evaluative** skill, unlike the purely divergent `/think-brainstorm` or the selective `/think-deliberate` and `/think-scrutinize`. The orchestrator generates candidate causes (divergent) then evaluates them against evidence (evaluative).
 
 **Natural downstreams:**
 - If cause is identified → `/think-brainstorm` for remediation interventions
@@ -297,10 +295,4 @@ This skill is one-shot. If the user gathers distinguishing evidence and wants an
 
 ## Philosophy
 
-Diagnosis is hard because compelling narratives beat correct ones. Humans prefer causes that tell a good story — they feel explanatory. Good abductive reasoning resists this: the most likely cause is the one that *best fits the evidence*, not the one that makes the cleanest story.
-
-The enforced observation-vs-interpretation split is the skill's most important contribution. Most bad diagnoses start by accepting an interpretation as if it were an observation — "the drop happened because of the migration" sneaks the causal claim into the description of what happened. Once that interpretation is in the evidence bucket, no diagnostician will challenge it, and the diagnosis inherits the error.
-
 When candidates tie, the narrowing step adds Heuer's discipline: ask what *disconfirms*, not what fits. Every candidate can collect fitting evidence. The one that survives is the one hardest to kill.
-
-Honest uncertainty is the other key discipline. "I don't know for sure" is often the correct output when evidence is thin — and it's far more useful than a confident-sounding but brittle conclusion. Users can act on acknowledged uncertainty (by gathering more evidence); they can't protect themselves from false confidence.

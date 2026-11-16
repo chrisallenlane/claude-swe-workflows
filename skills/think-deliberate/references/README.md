@@ -97,7 +97,7 @@ The `/think-deliberate` skill uses adversarial representation to make decisions.
  │  • Verdict: which option wins                │
  │  • Primary reasoning (2-3 key factors)       │
  │  • Trade-offs acknowledged                   │
- │  • Confidence level (High/Medium/Low)        │
+ │  • Confidence (high/moderate/low/uncertain)  │
  │                                              │
  │  OR: Unable to decide → present factors      │
  │  the user must weigh personally              │
@@ -155,13 +155,12 @@ raw throughput advantage at our scale...
 **Trade-offs:**
 Higher memory overhead, more operational surface area...
 
-**Confidence:** High — persistence requirement is decisive
+**Confidence:** high — persistence requirement is decisive
 ```
 
 ## Constraints
 
-- **Iteration limit:** Maximum 10 rounds of deliberation (steps 4-6)
-- **Model:** All advocates use opus for best reasoning
+- **Iteration limit:** Maximum 10 rounds of deliberation (steps 5-6)
 - **Tool access:** Advocates have full tool access for research
 - **Good faith:** Advocates must not fabricate facts or misrepresent options
 

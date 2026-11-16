@@ -49,7 +49,7 @@ For each mutation: apply the change, run the test suite, check if tests fail, th
 
 **Mutation score** = (killed + timeout) / (total − likely-equivalent) × 100%
 
-**Safety preconditions.** Mutations are reverted with `git restore`, so the run requires a clean tree: it stops before autopilot if any tracked file has uncommitted changes. Each module also starts with a timed baseline run. If the suite is already red, the module is marked `blocked` rather than reporting every mutation as killed, and the per-mutation timeout is set to 3× the baseline (at least 30 seconds) so a slow suite isn't mistaken for a hang.
+**Safety preconditions.** Mutations are reverted with `git restore`, so the run requires a clean tree: it stops before autopilot if any tracked file has uncommitted changes. Each module also starts with a timed baseline run. If the suite is already red, the run stops and reports the failing output rather than reporting every mutation as killed (the suite is shared, so red is red for every module). The per-mutation timeout is set to 3× the baseline (at least 30 seconds) so a slow suite isn't mistaken for a hang.
 
 ## Workflow
 
@@ -92,7 +92,7 @@ For each module in scope, the workflow:
 3. Verifies the new tests actually kill the mutations
 4. Commits changes and moves to the next module
 
-If something goes wrong (the implementer can't write a test, new tests fail, a mutation resists), the workflow logs the issue and continues with the next module. A final summary reports everything that succeeded and everything that was skipped.
+If something goes wrong with one module (the implementer can't write a test, new tests fail, a mutation resists), the workflow logs the issue, removes only the files it added, and continues with the next module. A final summary reports everything that succeeded and everything that was skipped.
 
 ## Mutation Score Interpretation
 
@@ -131,7 +131,7 @@ The skill maintains `.test-mutations.json` in your project root:
 }
 ```
 
-This file persists across sessions. You can commit it to share mutation scores with your team, or add it to `.gitignore` to keep it local.
+This file persists across sessions. You can commit it to share mutation scores with your team, or add it to `.gitignore` to keep it local (per-module commits then include only test files, and are skipped when there is nothing to commit). There is no mid-file resume: `in_progress` marks a file the mutator covered partially, and re-testing it re-mutates the whole file.
 
 ## Example Session
 
@@ -154,11 +154,11 @@ Starting autopilot run for 7 modules...
 
 ## Mutation Testing Complete
 
-| Module                 | Before | After | Tests Added | Unresolved |
-|------------------------|--------|-------|-------------|------------|
-| src/api/handler.go     | —      | 98%   | 3           | 1          |
-| src/middleware.go      | —      | 100%  | 0           | 0          |
-| ...                    |        |       |             |            |
+| Module                 | Before | After | Tests Added | Unresolved | Equivalent |
+|------------------------|--------|-------|-------------|------------|------------|
+| src/api/handler.go     | —      | 98%   | 3           | 1          | 0          |
+| src/middleware.go      | —      | 100%  | 0           | 0          | 0          |
+| ...                    |        |       |             |            |            |
 
 Project: 10/10 modules complete, overall score: 94%
 Commits: 7

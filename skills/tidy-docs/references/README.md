@@ -4,7 +4,7 @@
 
 The `/tidy-docs` skill spawns a `doc-maintainer` agent to comprehensively audit all project documentation. It audits every documentation file for correctness, completeness, freshness, and consistency — then fixes what it can within its authority and reports anything requiring user approval.
 
-The skill lives in the `/tidy-*` namespace because the find→fix seam is small for most documentation issues — typos, stale code examples, broken links, freshness drift are all mechanical to correct. Anything genuinely judgment-laden (a deprecation that needs a stakeholder decision, an architectural claim that may no longer be true) surfaces in the "Issues Requiring User Approval" section rather than being auto-fixed.
+The skill lives in the `/tidy-*` namespace because the find→fix seam is small for most documentation issues — typos, stale code examples, broken links, freshness drift are all mechanical to correct. Anything genuinely judgment-laden (a deprecation that needs a stakeholder decision, an architectural claim that may no longer be true) surfaces in the agent's "Needs a decision" section rather than being auto-fixed.
 
 **Key benefits:**
 - Catches stale docs, broken links, and code-documentation drift in one sweep
@@ -31,19 +31,19 @@ The skill lives in the `/tidy-*` namespace because the find→fix seam is small 
 ┌─────────────────────────────────────────────────────┐
 │                  TIDY-DOCS                          │
 ├─────────────────────────────────────────────────────┤
-│  1. Spawn doc-maintainer agent                      │
-│     • Discovers all .md files in project            │
-│     • Reviews each for quality checklist:           │
-│       - Code-documentation consistency              │
-│       - Completeness                                │
-│       - Link validation                             │
-│       - Style consistency                           │
+│  1. Spawn doc-maintainer agent (full-audit mode)    │
+│     • Checks every doc in the project against code: │
+│       - Accuracy                                    │
+│       - Examples                                    │
+│       - Links                                       │
 │       - Freshness                                   │
+│       - Completeness                                │
+│       - Consistency                                 │
 │     • Fixes issues autonomously (within authority)  │
 │  2. Report results to user                          │
 │     • What was reviewed                             │
 │     • What was changed                              │
-│     • Issues requiring user approval                │
+│     • Items that need a decision                    │
 │  3. Commit (optional, if changes were made)         │
 └─────────────────────────────────────────────────────┘
 ```
@@ -57,17 +57,13 @@ Spawning doc-maintainer agent for comprehensive audit...
 
 ## Documentation Audit Report
 
-### Changes Made
+### Changed
 1. skills/implement/references/README.md — Updated example to match current CLI flags
 2. CLAUDE.md — Fixed skill list ordering to match directory structure
 
-### Issues Requiring User Approval
-- README.md installation section references deprecated flag (needs user decision on replacement)
-
-### No Issues Found
-- Link validation: all links resolve
-- Style consistency: headings, code blocks, terminology all consistent
-- Freshness: no references to removed features
+### Needs a decision
+- README.md:42 — installation section references a deprecated flag
+  (options: document the replacement flag, or restore the old one)
 
 Commit documentation fixes?
 > Yes

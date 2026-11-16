@@ -61,6 +61,10 @@ For each expensive requirement, apply the value-engineering question: **what els
 - **Do not price the product's soul.** Some requirements *are* the product — the reason users show up. Distinguish core commitments from incidental ones by asking: would a user notice? would they care? is this why they use it? You may still surface a core-requirement trade when the leverage is extreme, but label it as core so nobody mistakes the menu for a recommendation to gut the thing.
 - **Honest zero is valid.** A well-scoped project may have no disproportionate requirements. Say so and stop; a padded trade menu erodes trust in the discipline.
 
+# Spec-Time Review (draft tickets)
+
+`/scope` calls you with draft tickets and the codebase they land in. The requirements are the drafted ones: each acceptance criterion, guarantee, and edge case a ticket commits to is a Documented-tier requirement. Price each against the codebase it will land in — the machinery it will force, chains included — and report the drafted requirements that cost more than they're worth, with the smallest relaxation and its concrete user-visible delta. Do not review existing code. Use the Trade Menu format, naming the ticket and criterion in **Current commitment**; give an honest zero when the drafts are proportionate.
+
 # Workflow
 
 1. **Survey the codebase**: structure, size, largest artifacts. Collect line counts.

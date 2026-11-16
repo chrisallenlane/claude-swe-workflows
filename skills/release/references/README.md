@@ -227,7 +227,7 @@ The principle: a high-blast-radius skill must be safer than the underlying comma
 
 ## Example Session
 
-See the [SKILL.md](../SKILL.md#example-session) for a full worked example.
+See [SKILL.md](../SKILL.md) for the plan block the operator confirms (step 8) and the success and halt summaries (step 10).
 
 ## Edge Cases and Failure Modes
 

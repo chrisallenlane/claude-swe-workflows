@@ -44,6 +44,14 @@ Analyze a codebase and produce a target architecture blueprint. **This is an adv
 
 ---
 
+# Spec-Time Review (draft tickets)
+
+`/scope` calls you with draft tickets and the codebase they land in. You review the design, not code: skip the analysis steps and the blueprint below. For each concept the tickets introduce — a type, module, mechanism, or layer — state where it belongs in the existing domain model (the noun that owns it, its namespace and file) and what it duplicates: an existing mechanism, a near-synonym noun, a module that already owns the responsibility. Apply the Proportionality Rule to every mechanism the tickets propose. Cite the existing code each finding rests on (file:line).
+
+Output one line per finding — **[ticket] — [concept]** — belongs in: [namespace/file] — duplicates: [existing code, or none] — tickets must state: [the placement or reuse the implementer needs] — or "no structural findings."
+
+---
+
 # Analysis Steps
 
 You perform four sequential steps. Each builds on the previous.

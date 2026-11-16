@@ -30,6 +30,36 @@
   - **`thk-ach-hypothesizer` is removed.** Diagnose's own diagnosticians generate the candidates, and the two angles they rarely produce (null and deceptive) are now required additions in the narrowing step.
   - **Lost:** standalone ACH for non-causal questions (forecasting, attribution among actors). To approximate it, frame the competing explanations as candidates for `/think-diagnose`.
 
+### Fixed
+
+- **A correctness pass over all 22 skills**, run after the consolidation. Four independent reviewers made about 85 findings, and every one was checked against the file before it was fixed. The ones with behavioral consequences:
+  - **`/test-mutation` could delete your untracked files.** Its rollback now deletes only files created since the implementer was spawned.
+  - **`/test-mutation` and a red suite.** A failing baseline now stops the run instead of marking every module blocked.
+  - **`/test-mutation` and a gitignored tracking file.** It no longer fails to commit when the tracking file is gitignored.
+  - **`/release` preflight blocked every release.** The preflight ran before the version bump, so manifests still at the old version looked like errors. `/release`, `/review-release`, and `qa-release-engineer` now agree that a pending bump is INFO.
+  - **`/bug-fix` called by another skill.** It gains an "Invoked by Another Skill" contract, so `/implement` running it no longer closes tickets or rebases.
+  - **`/implement` running `/bug-hunt`.** `/implement` now answers `/bug-hunt`'s up-front intent questions itself.
+  - **`/bug-hunt`'s floor.** It is consistently "at or above the floor".
+  - **`/review-repo` and `/review-release`.** `/review-repo` runs `/review-release` report-only, so it truly never changes code. Its ticket floor is mapped onto every scale its follow-up reviews produce.
+  - **Findings that were being dropped:**
+    - non-security bugs that the security agents find;
+    - `qa-test-reviewer`'s Other category;
+    - the perf reviewer's hot-path and over-provisioning evidence;
+    - the architecture reviewer's behavior-altering changes.
+  - **`/scope` reviewers.** The perf, architecture, and value agents gain a spec-time mode for reviewing draft tickets, which `/scope` was already asking them to do.
+  - **`/think-premortem`** now passes the time horizon and system context its agent requires.
+  - **`/think-diagnose`'s narrowing trigger** is stated one way everywhere.
+  - **`/tidy-git`.**
+    - It finds squash-merged branches whose upstream is gone (a new "upstream gone" category).
+    - It checks for an in-progress rebase or merge before acting.
+    - It excludes branches checked out in other worktrees.
+  - **`/tidy-docs`** now dispatches `doc-maintainer`'s full-audit mode.
+- **Trimmed.**
+  - `/review-security` went from 701 lines to 435, `/review-test` from 643 to 433, and `/bug-fix` from 412 to 317.
+  - The example sessions in `/test-mutation` and `/release` that repeated their steps are cut.
+  - The `/think-premortem` README went from 618 lines to 387.
+  - Every SKILL.md is now within the house 500-line limit.
+
 ### Changed
 
 - **The remaining agents are realigned with the skills that call them.** In v10 and v11 the skills were redesigned while many of their agents kept the old contracts, and most real defects sat in that gap. Agent names are internal, so none of these changes is breaking.

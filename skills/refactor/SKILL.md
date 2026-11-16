@@ -35,7 +35,7 @@ Not golf: the machine is counted in **concepts, then mechanisms, then branches, 
 1. BASELINE    census the incumbent; the requirements menu — the ONE
                operator checkpoint (stakes, probes, verdicts); build the
                oracle against the ORIGINAL incumbent, pinned for the run
-2. ITERATE     until an iteration changes ~nothing (cap: elicit; default 4):
+2. ITERATE     until an iteration changes ~nothing (cap: set at the menu; default 4):
                  a. CENSUS      recount the champion → budget numbers
                  b. QUESTION    re-attribute machinery to the standing
                                 verdicts (non-interactive); new nominations
@@ -61,7 +61,7 @@ Not golf: the machine is counted in **concepts, then mechanisms, then branches, 
 
 **Census the incumbent.** Using language tooling where present (LSP document-symbols, ctags) and reading where not, inventory every declared type, function, table, and mechanism **regardless of which file it hides in** — `foo.lang` quietly implementing a `Bar` is exactly what this pass catches. Cluster **parallel machinery** (the same problem solved twice in different modules), and count the machine: concepts, mechanisms, code lines. Collection may fan out; **clustering and counts run in one context over the merged inventory** — a duplicate split across two shards is invisible to both.
 
-**The requirements menu — the one checkpoint.** It opens with stakes, answered once and recorded verbatim: *what happens if this breaks?* and *who maintains it, for how long?* Stakes calibrate the whole run — how hard questioning presumes death, how deep the corpus must go, what an add-back is worth. **Operator probes ride along**: custom verification steps ("run `make demo` and check the output," "hit `/health`") become oracle corpus. Then the verdicts, one machinery cluster at a time:
+**The requirements menu — the one checkpoint.** It opens with stakes, answered once and recorded verbatim: *what happens if this breaks?* and *who maintains it, for how long?* — plus the iteration cap (default 4). Stakes calibrate the whole run — how hard questioning presumes death, how deep the corpus must go, what an add-back is worth. **Operator probes ride along**: custom verification steps ("run `make demo` and check the output," "hit `/health`") become oracle corpus. Then the verdicts, one machinery cluster at a time:
 
 - **Ratified** — an operator declaration, or user-facing behavior a user would notice losing. Pinned.
 - **Documented** — cited by a design doc, ADR, or README, but not independently user-visible. **A citation is a nomination, not a verdict** — the docs are part of the incumbent, not above it. The operator's keep ratifies; bulk rulings ("keep all documented") are fine.
@@ -80,7 +80,7 @@ Each iteration is one turn of the crank on the current champion (iteration 1's c
 
 **b. Question.** Re-attribute the champion's machinery to the standing verdicts — non-interactive; the menu is never reopened mid-run. Newly visible nominations and trades (stripping uncovers them) accumulate to the report for the operator's next run. The dead list persists so nothing is re-invented or re-litigated.
 
-**c–d. Strip ⇄ Regenerate — the inner loop.** Stripping and regeneration are two moves in one game, not two stages: stripping often exposes design-level work only regeneration can do, and an aggressive strip sometimes takes a pinned behavior with it — in which case the repair is **either restoring the old part or regenerating a minimal replacement for just that hole, whichever measures smaller**. Restore-versus-rebuild is a gate question like everything else, not a discussion. Alternate the moves freely — strip until stripping stalls, regenerate while design-level work remains, always strip again after a regeneration lands — and end the iteration when neither move produces an adoptable candidate.
+**c. Strip ⇄ Regenerate — the inner loop.** Stripping and regeneration are two moves in one game, not two stages: stripping often exposes design-level work only regeneration can do, and an aggressive strip sometimes takes a pinned behavior with it — in which case the repair is **either restoring the old part or regenerating a minimal replacement for just that hole, whichever measures smaller**. Restore-versus-rebuild is a gate question like everything else, not a discussion. Alternate the moves freely — strip until stripping stalls, regenerate while design-level work remains, always strip again after a regeneration lands — and end the iteration when neither move produces an adoptable candidate.
 
 **The strip move.** **Never regenerate what you can simply remove.** Spawn `swe-refactor-deleter` — fresh instance, assigned stance, removal-only jurisdiction — and apply its proposals in batches, highest-confidence first. Each batch is adjudicated by the gates like any candidate: pass → dead; fail → repaired (restore or minimal rebuild, as above), no discussion. The hunt is safe from anchoring for a structural reason — **anchoring poisons designers, not deleters**: an examiner that may only remove makes no design decisions for the incumbent to bias. Behavior-touching finds route to the trade menu; add-shaped finds to the side memo.
 
@@ -142,7 +142,7 @@ The champion is a machine no human has yet read. Spawn `swe-refactor-dx` (the re
 - **Not golf — and adjudicated, not just declared.** Concepts before mechanisms before branches before lines; house-style density; comments free. The structure gate enforces this mechanically; a guardrail that exists only as prose fires only by luck.
 - **After the menu, documents are dead law.** No agent may decline or soften a removal by citing DESIGN.md, an ADR, a README, a comment, or "how it was done before." The pinned behavior and the operator's verdicts are the *entire* law of the run; a document matters only as the nominator of a requirement the operator kept.
 - **Optimize nothing in the kill pile.** Simplification runs only on machinery that survived questioning.
-- **Commit discipline.** One atomic commit per strip pass, per adopted regeneration, per finish pass, per bequest — stage the specific files, verify the staged diff, `refactor:` prefix. The branch history is the run's audit trail.
+- **Commit discipline.** One atomic commit per strip batch, per adopted regeneration, per finish pass, per bequest — stage the specific files, verify the staged diff, `refactor:` prefix. The branch history is the run's audit trail.
 - **Version-controlled files only.** The run modifies nothing untracked by git — untracked work could be irreversible to lose. Non-negotiable regardless of scope.
 - **The side memo.** Any pass that trips over a genuine bug or missing capability records it and moves on — the oracle pins today's behavior, bugs included, so a silent fix is a divergence and a dropped finding is a loss.
 - **The report is the conscience**: every killed requirement names the machinery it took with it; every kept one names its source.

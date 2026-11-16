@@ -38,7 +38,7 @@ The same logic applies in reverse to test-quality findings (DELETE / REWRITE / S
 
 ### 1. Determine Scope
 
-**Ask the user:** "What should I review?"
+If the invocation or caller supplies scope, use it and skip this question. Otherwise, **ask the user:** "What should I review?"
 
 Present these options:
 - **Entire project**: Review all source and test files (default)
@@ -51,8 +51,6 @@ Present these options:
 **If the project is large** (many source files), suggest narrowing scope. The user can always re-run on a different scope.
 
 This scope applies to all five phases.
-
----
 
 ## Phase 1: Unit Coverage Gaps
 
@@ -127,15 +125,11 @@ Identify:
 Return structured findings with ADD recommendations and refactoring suggestions.
 ```
 
-**If no significant gaps found:** Record "No significant coverage gaps found" and proceed to Phase 2.
+**If no significant gaps found:** Record "No significant coverage gaps found".
 
 ### 1c. Record Phase 1 Findings
 
 Record findings grouped by priority tier (CRITICAL / HIGH / LOW) for the consolidated report in step 7. Hold the REFACTOR-FOR-TESTABILITY suggestions separately — they appear as an informational section in the final report; they may or may not be cut as tickets per the runtime ticket-structure proposal in step 8.
-
-Proceed to Phase 2.
-
----
 
 ## Phase 2: Integration Coverage
 
@@ -172,27 +166,13 @@ The agent reports in one of two modes.
 
 **If the agent reports "no findings"** (Mode B with empty gaps and expansion), record the existing posture briefly and proceed.
 
-Proceed to Phase 3.
-
----
-
 ## Phase 3: E2E Coverage
 
 Survey end-to-end (browser-driven) test coverage and identify gaps or, if none exist, a starter strategy using Playwright. **This phase only applies to webapps.**
 
-### 3a. Webapp Detection Gate
+### 3a. Analyze E2E Coverage
 
-Spawn `qa-test-e2e-reviewer` for the gate check first. The agent's Step 0 detects whether the project is a webapp.
-
-**If the agent reports "NOT A WEBAPP":**
-
-Record "Phase 3 skipped — not a webapp" and proceed to Phase 4. Do not proceed with the rest of Phase 3.
-
-**If the agent reports webapp signals detected:** Continue to step 3b (the same agent invocation produces the full analysis; the gate is the first thing it reports).
-
-### 3b. Analyze E2E Coverage
-
-The agent (already spawned in 3a) produces the full analysis.
+Spawn a single `qa-test-e2e-reviewer` agent. Its Step 0 is the webapp gate: if it reports "NOT A WEBAPP", record "Phase 3 skipped — not a webapp" and move to Phase 4. Otherwise the same invocation produces the full analysis.
 
 **Prompt:**
 
@@ -218,7 +198,7 @@ Return findings per the agent's output format, with calibrated confidence and
 explicit flag that journey classification is the most subjective input.
 ```
 
-### 3c. Confirm Journey Classification
+### 3b. Confirm Journey Classification
 
 Before recording the Phase 3 findings, **confirm the agent's journey classification with the user** — this is the most subjective input in the analysis and shapes the priority assigned to each gap.
 
@@ -227,27 +207,13 @@ Before recording the Phase 3 findings, **confirm the agent's journey classificat
 ```
 ## Phase 3: E2E Coverage — confirm journey classification
 
-Webapp detection: DETECTED via @playwright/test in package.json + React deps
+Webapp detection: DETECTED via React + Vite dependencies
 
-### Critical User Journeys (please confirm before findings are finalized)
+CRITICAL:     Signup → first login; Login; Checkout (cart → payment → confirmation)
+IMPORTANT:    Password reset; Profile settings; Order history
+NICE-TO-HAVE: Marketing pages; Help center search
 
-CRITICAL:
-- Signup → email confirmation → first-login flow
-- Login → session establishment
-- Core checkout flow (cart → payment → confirmation)
-
-IMPORTANT:
-- Password reset
-- Profile settings update
-- Order history view
-
-NICE-TO-HAVE:
-- Marketing page browsing
-- Help center search
-
-⚠️  Journey classification is the most subjective part of this analysis.
-Please confirm or correct.
-
+Journey classification is the most subjective part of this analysis.
 Are these classifications correct? [Yes / Correct: ...]
 ```
 
@@ -255,13 +221,9 @@ Use `AskUserQuestion`. Allow free-form correction.
 
 If the user corrects any classification, update the agent's findings before recording.
 
-### 3d. Record Phase 3 Findings
+### 3c. Record Phase 3 Findings
 
 Record the gaps (Mode A starter strategy, infrastructure, and starter tests; or Mode B gaps and expansion opportunities) with the confirmed journey priorities. The agent's "out of scope" declarations stay in the recorded report.
-
-Proceed to Phase 4.
-
----
 
 ## Phase 4: Fuzz Coverage
 
@@ -288,10 +250,6 @@ Identify:
 
 **Otherwise:** Record candidates grouped by priority (HIGH / MEDIUM / LOW). Record covered candidates separately as informational context.
 
-Proceed to Phase 5.
-
----
-
 ## Phase 5: Test Quality Audit
 
 Identify quality issues across the existing test suite.
@@ -312,28 +270,15 @@ Merge findings into a single list. Deduplicate overlaps at partition boundaries.
 Review the test suite for quality issues.
 Scope: [partition or full scope]
 
-Look for:
-- Tautological tests (can't fail)
-- Brittle tests (coupled to implementation, weak assertions when stronger ones exist)
-- Redundant tests (duplicate coverage — informational only, no action recommended)
-- False confidence tests (don't verify what they claim)
-- Test smells (structural problems)
-- Inconsistent assertion strategies (mixed error checking approaches, varied assertion styles)
-
-Return structured findings with recommended actions (DELETE, REWRITE, SIMPLIFY).
+Run your full category review and return your standard output format.
 Missing coverage is out of scope here (Phases 1-4 own it).
-Redundant tests should be reported as informational only (no action recommended).
 ```
 
 **If no issues found:** Record "No test quality issues found" and proceed to the consolidated report.
 
 ### 5b. Record Phase 5 Findings
 
-Record findings grouped by category (Tautological / Brittle / False-confidence / Test smells / Inconsistent / Redundant) with the per-finding recommended action (DELETE / REWRITE / SIMPLIFY / informational). The redundant category stays informational.
-
-Proceed to step 7.
-
----
+Record findings grouped by category (Tautological / Brittle / False-confidence / Test smells / Inconsistent / Redundant / Other) with the per-finding recommended action (DELETE / REWRITE / SIMPLIFY / informational). The redundant category stays informational.
 
 ## 7. Present Consolidated Findings
 
@@ -378,8 +323,6 @@ suggestions are not implemented by this workflow; work them with
 ```
 
 Present to the user. Walk through CRITICAL items and high-impact starter-strategy proposals (Mode A items in Phases 2 and 3) explicitly — these are the highest-leverage findings and the operator should engage with them before the ticket-structure proposal.
-
----
 
 ## 8. Cut Tickets
 
@@ -467,28 +410,9 @@ After all tickets are created, report the URLs to the operator and exit.
 
 See [`references/advisory-tickets.md`](../../references/advisory-tickets.md) § "Orchestrator-invoked behavior" — the proposal is presented identically to operator and orchestrator; the orchestrator's auto-approval contract is documented in [`references/autonomy.md`](../../references/autonomy.md) § "Auto-approval of sub-skill ticket proposals".
 
-The contract change versus pre-v9.0.0 is that test work surfaced by `/review-test` is now durably documented in the tracker rather than implemented in-skill via language-specialist routing.
-
 ## Agent Coordination
 
-**Phase 1 analysis:** Spawn `qa-test-coverage-reviewer` agent(s). For large scopes, partition and run in parallel.
-**Phase 2 analysis:** Spawn single `qa-test-integration-reviewer` agent.
-**Phase 3 analysis:** Spawn single `qa-test-e2e-reviewer` agent (which performs the webapp gate first).
-**Phase 4 analysis:** Spawn single `qa-test-fuzz-reviewer` agent.
-**Phase 5 analysis:** Spawn `qa-test-reviewer` agent(s). For large scopes, partition and run in parallel.
-
-**No remediation agents.** Step 8 cuts tickets via the tracker integration; no `swe-implementer` or `qa-engineer` invocations happen inside `/review-test`. Test design and implementation are handled out-of-skill by `/implement` against the cut tickets.
-
-**Fresh instances:** Every agent spawn is a fresh instance. No state carried between invocations.
-
-**State to maintain (as orchestrator):**
-- Scope (shared across all phases)
-- Coverage command and baseline metrics (Phase 1)
-- Webapp detection result (used to skip Phase 3 cleanly)
-- Confirmed journey classification (Phase 3, after user correction)
-- Per-phase findings (accumulating)
-- Refactoring suggestions (held for informational section of consolidated report)
-- Tickets created at step 8 (if any)
+One fresh agent (or one per partition, in parallel) per phase, as named above. **No remediation agents:** step 8 cuts tickets; test design and implementation happen in `/implement` against them. Hold scope, coverage baseline, the webapp gate result, the confirmed journey classification, and per-phase findings across phases.
 
 ## Abort Conditions
 
@@ -498,146 +422,12 @@ The contract change versus pre-v9.0.0 is that test work surfaced by `/review-tes
 
 **Do NOT abort for:**
 - Coverage command failure (fall back to manual analysis)
-- Phase 2 reporting "no findings" (Mode B with no gaps; record and proceed)
-- Phase 3 webapp gate negative (skip cleanly to Phase 4)
-- Phase 4 finding no fuzz infrastructure (record the starter-tooling recommendation and the candidates; continue)
-- Any single phase finding no issues (record and continue to next phase)
-- Operator declining to cut tickets at step 8 — review report stands alone
-- Tracker unavailable when the operator has approved ticket creation — surface the error; preserve the approved ticket set in the completion summary so the operator can create the tickets manually
+- A phase finding nothing, or the webapp gate skipping Phase 3 (record and continue)
+- Operator declining tickets at step 8 (the report stands alone)
+- Tracker unavailable after approval (surface the error; give the approved ticket set so the operator can create the tickets by hand)
 
 ## Integration with Other Skills
 
 **`/review-test` vs `/test-mutation`:** Complementary. `/review-test` builds breadth (surfaces gap and quality tickets); `/test-mutation` builds depth (verifies that existing tests actually catch bugs). Recommended sequence: `/review-test` → work the cut tickets via `/implement` → `/test-mutation` to strengthen.
 
 **`/review-test` and `/refactor`:** `/refactor` pins behavior with a differential oracle rather than the test suite, and retires tests that pin the internals it removes; it ports behavior-level tests. Run `/review-test` after a `/refactor` run to see what the reduced codebase's suite covers.
-
-## Example Session
-
-```
-> /review-test
-
-What should I review?
-> Entire project
-
-## Phase 1: Unit Coverage Gap Analysis
-
-Overall coverage: 68.3% lines (baseline)
-
-### CRITICAL (2 found)
-1. [ADD] auth.go:ValidateJWT (lines 45-72) — JWT validation error paths untested
-   Risk: Invalid tokens could bypass authentication
-2. [ADD] payment.go:ChargeCard (lines 88-120) — Retry and failure logic untested
-   Risk: Silent charge failures or double charges
-
-### HIGH (3 found)
-3. [ADD] parser.go:ParseConfig (lines 30-55) — Malformed input handling untested
-4. [ADD] api.go:CreateUser (lines 15-40) — Duplicate email conflict untested
-5. [ADD] middleware.go:RateLimit (lines 22-45) — Limit exceeded path untested
-
-### LOW (2 found)
-6. [ADD] config.go:Defaults (lines 5-12) — Default value coverage
-7. [ADD] router.go:RegisterRoutes (lines 8-25) — Route registration
-
-## Phase 2: Integration Coverage
-
-Integration test posture: NONE DETECTED (Mode A)
-Seams identified: 4 (PostgreSQL, Redis cache, Stripe API, Kafka consumer)
-
-### Proposed Strategy
-- Service-level integration tests using testcontainers for Postgres + Kafka
-- HTTP-level tests against the spun-up app with a real DB
-
-### Proposed Infrastructure
-- `make integration-test` with `//go:build integration` tag
-- `docker-compose.test.yml` for Postgres + Kafka
-- `tests/integration/README.md`
-
-### Starter Tests (5)
-1. [ADD] Signup → DB persistence → email queued (CRITICAL flow)
-2. [ADD] Payment webhook handling → Stripe sig verification → DB write
-3. [ADD] Login → session token issuance → Redis store
-4. [ADD] Order placement → queue produce → consumer process
-5. [ADD] Account deletion → cascade across tables
-
-## Phase 3: E2E Coverage — confirm journey classification
-
-Webapp detection: DETECTED via @playwright/test in package.json + React deps
-
-### Critical User Journeys (please confirm)
-CRITICAL: Signup, Login, Checkout
-IMPORTANT: Password reset, Profile settings
-
-⚠️  Journey classification is the most subjective part of this analysis.
-
-Are these classifications correct?
-> Yes
-
-### Mode A — Playwright prescribed
-
-Infrastructure: playwright.config.ts, tests/e2e/, npm run test:e2e, seeding script.
-Starter tests: 5 (Signup, Login, Checkout happy path, Password reset, Profile update).
-Out of scope: visual regression, a11y, performance, mobile-native, component tests.
-
-## Phase 4: Fuzz Coverage
-
-Fuzz infrastructure: native testing.F (Go 1.22)
-Existing fuzz tests: 2
-
-### HIGH (2 found)
-1. [ADD] parser.go:ParseConfig — Parses user-provided YAML config
-2. [ADD] protocol.go:DecodeMessage — Decodes wire protocol messages
-
-## Phase 5: Test Quality Audit
-
-### Tautological (2 found) — DELETE
-- model_test.go:TestUserStruct — Checks struct field existence
-- config_test.go:TestConfigFields — Builds a Config literal in the test, then asserts its own fields back (never calls the code)
-
-### Brittle (2 found) — REWRITE
-- api_test.go:TestCreateUserError — Exact error string match
-- handler_test.go:TestNotFound — Asserts full JSON response body
-
-### Redundant (1 noted — informational)
-- math_test.go:TestAddVariants — 5 cases hitting same code path
-
-## Refactoring for Testability (informational)
-
-1. internal/scheduler/queue.go — global mutable state prevents isolated testing.
-   Suggestion: thread a `Clock` interface through Schedule() so time can be controlled.
-   Would enable testing: timeout / retry edge cases without sleep().
-
-Proposed ticket structure for this review:
-
-Phase 1: 7 gaps (2 CRITICAL, 3 HIGH, 2 LOW)
-Phase 2: Mode A — full starter strategy (infra + 5 tests)
-Phase 3: Mode A — full Playwright starter strategy (infra + 5 tests)
-Phase 4: 2 fuzz candidates (HIGH)
-Phase 5: 5 findings (2 DELETE, 2 REWRITE, 1 ADD; 1 redundant — informational)
-
-Proposed: 8 tickets
-  - 1 ticket per CRITICAL unit gap (2 tickets)
-  - 1 batch ticket: "Phase 1 — HIGH/LOW unit coverage gaps" (5 gaps)
-  - 1 ticket: "Set up integration test infrastructure + 5 starter tests"
-  - 1 ticket: "Set up Playwright E2E infrastructure + 5 starter tests"
-  - 1 batch ticket: "Phase 4 — Fuzz test additions" (2 candidates)
-  - 1 batch ticket: "Phase 5 — Test quality cleanup" (DELETE + REWRITE)
-  - (Refactor-for-testability suggestion held as informational — no ticket
-     unless you'd like one)
-
-Approve / edit / decline?
-> Approve, and please add a ticket for the queue.go refactor-for-testability item.
-
-Editing structure: + 1 ticket "Refactor scheduler.queue.go to enable timeout testing"
-
-Final structure: 9 tickets. Creating...
-  #N — [Phase 1 CRITICAL] Add unit tests for auth.ValidateJWT error paths
-  #N — [Phase 1 CRITICAL] Add unit tests for payment.ChargeCard retry/failure
-  #N — [Phase 1 HIGH/LOW] Unit coverage gap batch (5 gaps)
-  #N — [Phase 2 Mode A] Integration test infrastructure + 5 starter tests
-  #N — [Phase 3 Mode A] Playwright E2E infrastructure + 5 starter tests
-  #N — [Phase 4] Fuzz test additions for parser and protocol (2 candidates)
-  #N — [Phase 5] Test quality cleanup (delete tautological, rewrite brittle)
-  #N — [Refactor-for-testability] Thread Clock interface through scheduler.queue
-
-8 tickets created. Review complete.
-```

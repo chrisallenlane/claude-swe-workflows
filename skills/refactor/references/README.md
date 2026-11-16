@@ -16,7 +16,8 @@ cycle, automate last.
 1. BASELINE    the machine is counted (filenames lie; symbols are
                inventoried wherever they hide), then THE ONE INTERACTIVE
                STEP: a requirements menu opening with two stakes questions
-               (what happens if this breaks? who maintains it?) and any
+               (what happens if this breaks? who maintains it?), the
+               iteration cap (default 4), and any
                custom verification probes you can name, then verdicts —
                ratified / documented (docs nominate; you ratify) /
                invented (presumed dead) / priced (offered as a trade).
@@ -62,7 +63,7 @@ cycle, automate last.
   give up to dissolve machinery (your call, for a future run), and bugs
   the run found but did not touch — fixing a bug changes behavior, and
   the oracle pins behavior, bugs included.
-- **A branch, not a merged result.** Read the report and the ledger,
+- **A branch, not a merged result.** Read the report and the branch history,
   then merge or delete.
 
 ## Key rules that make it safe
@@ -82,6 +83,6 @@ cycle, automate last.
 ## Agents used
 
 - `swe-refactor-deleter` — the deletion hunter; fresh instance per strip pass
-- `swe-refactor-minimizer` — the blind designer; fresh instance per iteration
+- `swe-refactor-minimizer` — the blind designer; fresh instance per regeneration
 - `swe-refactor-dx` — the reader advocate for the finishing pass
 - `swe-correctness-reviewer` — the correctness gate on every candidate

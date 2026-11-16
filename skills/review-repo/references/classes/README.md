@@ -10,12 +10,12 @@ Per-class rubrics keep the calibration anchor explicit, visible, and overridable
 
 ## Available Classes
 
-| File | Class | Primary Audience |
-|------|-------|------------------|
-| `solo-utility.md` | Solo or small-team utility / CLI / internal tool | Author + small known user base |
-| `production-service.md` | Team-maintained production service or backend | Live users; on-call rotation |
-| `oss-library.md` | OSS library with external consumers | Strangers depending on a stable contract |
-| `prototype.md` | Prototype / research / pre-production exploratory work | The author(s); learning, not serving |
+| File                    | Class                                                  | Primary Audience                         |
+|-------------------------|--------------------------------------------------------|------------------------------------------|
+| `solo-utility.md`       | Solo or small-team utility / CLI / internal tool       | Author + small known user base           |
+| `production-service.md` | Team-maintained production service or backend          | Live users; on-call rotation             |
+| `oss-library.md`        | OSS library with external consumers                    | Strangers depending on a stable contract |
+| `prototype.md`          | Prototype / research / pre-production exploratory work | The author(s); learning, not serving     |
 
 ## Schema (Every Class File Has These Sections)
 

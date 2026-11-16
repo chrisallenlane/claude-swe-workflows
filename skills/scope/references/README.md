@@ -2,7 +2,7 @@
 
 ## Overview
 
-`/scope` helps you understand a problem space — through codebase exploration and dialogue — and turns it into the tickets that implementing it will need. A small bug fix may produce one ticket; a new subsystem may produce a dozen with dependencies between them. It covers what `/scope-project` used to do; there is now one planning skill at every scale.
+`/scope` helps you understand a problem space — through codebase exploration and dialogue — and turns it into the tickets that implementing it will need. A small bug fix may produce one ticket; a new subsystem may produce a dozen with dependencies between them.
 
 **It writes no code.** It explores, questions, designs with you, and documents.
 
@@ -51,6 +51,8 @@
 
 What you want to explore — a feature, a refactoring, a bug, a project — and its scope, boundaries, problem, and desired outcome. Not the implementation yet.
 
+When the stated problem looks like a symptom, or its framing is contested, the skill spawns a few `thk-reframer` agents in isolation, each on a different lens (problem-vs-symptom, scope-shift, stakeholder-shift, category-shift), and settles the framing with you before exploring.
+
 ### 2. Explore
 
 The skill learns the relevant code before proposing anything: where the change fits, what it affects, established conventions, integration points, similar features. It uses `Explore` agents for broad sweeps, reads key files directly, and reads third-party docs or clones dependencies to a scratch directory when an integration matters.
@@ -88,13 +90,14 @@ A multi-ticket set states each ticket's dependencies explicitly and has an execu
 
 At least one fresh-context reviewer reads the drafts, always. Beyond that, the skill chooses by what the work needs:
 
-| Reviewer                                    | When                                                                            | Asks                                                                    |
-|---------------------------------------------|---------------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| Implementer (`swe-implementer`)            | The default cold reader                                                         | "Could I build this tomorrow?" — gaps, ambiguity, wrong references      |
-| `ux-reviewer`                               | The work changes what a user of a CLI, MCP server, web app, or API sees or does | "Should we build this?" — mental-model fit, dead ends, recovery, naming |
-| `sec-blue-teamer`                           | The design shapes auth, authorization, trust boundaries, or data handling       | What controls does this design need? (spec-time, not a code audit)      |
-| `swe-perf-reviewer`                         | The design has architectural performance implications                           | Data structures at scale, caching, hot-path shape                       |
-| `swe-arch-reviewer`, `swe-value-engineer`   | The structure, or the requirements themselves, deserve a challenge              | Is this the right shape? Is this requirement worth its cost?            |
+| Reviewer                         | When                                                                            | Asks                                                                     |
+|----------------------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| Implementer (`swe-implementer`)  | The default cold reader                                                         | "Could I build this tomorrow?" — gaps, ambiguity, wrong references       |
+| `ux-reviewer`                    | The work changes what a user of a CLI, MCP server, web app, or API sees or does | "Should we build this?" — mental-model fit, dead ends, recovery, naming  |
+| `sec-blue-teamer`                | The design shapes auth, authorization, trust boundaries, or data handling       | What controls does this design need? (spec-time, not a code audit)       |
+| `swe-perf-reviewer` (spec-time)  | The design has architectural performance implications                           | What will this cost at actual scale? Data structures, caching, hot paths |
+| `swe-arch-reviewer` (spec-time)  | The design's structure deserves a challenge                                     | Where do these concepts belong? What do they duplicate?                  |
+| `swe-value-engineer` (spec-time) | The requirements themselves deserve a challenge                                 | Which drafted requirements cost more than they're worth?                 |
 
 Review repeats until it converges. The skill revises from the findings, then re-reviews with a **fresh** instance of each lens that raised material findings, so reviewers don't anchor on their own prior findings. It stops when a round finds nothing material — nothing that would change what gets built, how it is verified, or how the work is cut; wording nits don't count. Simple work usually converges in one round. A lens still raising material findings after three rounds comes to you, because a disagreement that persistent is usually a requirements question.
 

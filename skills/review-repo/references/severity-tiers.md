@@ -1,6 +1,6 @@
 # Severity Tiers for Individual Findings
 
-Borrowed from the American Society of Home Inspectors (ASHI) defect-severity taxonomy, adapted for source-code artifacts. Every individual finding produced by `/review-repo` carries exactly one severity tier.
+Borrowed from the American Society of Home Inspectors (ASHI) defect-severity taxonomy, adapted for source-code artifacts. Every individual finding produced by the map carries exactly one severity tier.
 
 Severity tiers are **independent of reference class**. A finding's severity is a claim about its intrinsic consequences, not about whether it's expected-for-this-kind-of-repo. (The latter is what the class rubric handles.) A `Major` finding in an OSS library may represent a different strategic response than a `Major` finding in a prototype — but it's a `Major` finding in both cases.
 

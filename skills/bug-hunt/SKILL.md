@@ -1,6 +1,6 @@
 ---
 name: bug-hunt
-description: Proactive bug hunting. Takes commander's intent (scope, severity floor, constraints, and authority to create tickets and/or fix), assesses where bugs are likely to hide, and sends focused hunters that confirm every finding with a reproducing test. Iterates — following confirmed bugs to their siblings and, when authorized, fixing via /implement and re-hunting — until a round confirms nothing above the floor. Without authority it changes nothing outside its report and offers tickets for approval.
+description: Proactive bug hunting. Takes commander's intent (scope, severity floor, constraints, and authority to create tickets and/or fix), assesses where bugs are likely to hide, and sends focused hunters that confirm every finding with a reproducing test. Iterates — following confirmed bugs to their siblings and, when authorized, fixing via /implement and re-hunting — until a round confirms nothing at or above the floor. Without authority it changes nothing outside its report and offers tickets for approval.
 model: opus
 ---
 
@@ -8,7 +8,7 @@ model: opus
 
 Hunts for bugs nobody knows about yet. An assessor works out where bugs are likely to hide by cross-referencing change history (complexity × churn hotspots, fix density, change coupling), coverage gaps, and structural risk; focused hunters then probe each hotspot and write a reproducing test for every suspected bug. No speculative reports: a finding without a failing test is a suspicion, and is labeled as one.
 
-The user states intent once. The skill then hunts round after round until a round confirms nothing above the severity floor — and, if given the authority, tickets what it finds and fixes it via `/implement` between rounds.
+The user states intent once. The skill then hunts round after round until a round confirms nothing at or above the severity floor — and, if given the authority, tickets what it finds and fixes it via `/implement` between rounds.
 
 ## Philosophy
 
@@ -88,7 +88,7 @@ For each confirmed finding:
 
 **Next round.** Hunt again where new bugs are likely: code the fixes changed, siblings of confirmed patterns, and the next tier of assessor hotspots. Without fix authority, rounds still continue through siblings and the next tier — they just don't re-hunt fixes.
 
-**Converge** when a round confirms nothing above the floor. **Hard cap: 10 rounds**, then stop and report what remains. Use judgment on a final `/review-test` pass over the tests this run wrote when there are many of them.
+**Converge** when a round confirms nothing at or above the floor. **Hard cap: 10 rounds**, then stop and report what remains. Use judgment on a final `/review-test` pass over the tests this run wrote when there are many of them.
 
 ## 4. Report
 
@@ -125,11 +125,11 @@ Confirmed: N (X critical, Y high, Z medium, W low) — F fixed, T ticketed, D de
 
 Walk the user through Critical findings first: the bug, its impact, and the reproducing test.
 
-**Without ticket authority**, end by proposing tickets for whatever the run did not fix, in a structure shaped by the hunt — per-bug tickets for Critical/High, per-pattern tickets for systemic issues, batched tickets below — and create it only on approval, per [`references/advisory-tickets.md`](../../references/advisory-tickets.md). Offer to commit the reproducing tests (marked as expected failures where they confirm bugs). **Without fix authority**, offer to hand the confirmed bugs to `/implement`.
+**Without ticket authority**, end by proposing tickets for whatever the run did not fix, in a structure shaped by the hunt — per-bug tickets for Critical/High, per-pattern tickets for systemic issues, batched tickets below — and create it only on approval, per [`references/advisory-tickets.md`](../../references/advisory-tickets.md). On approval, commit the reproducing tests first (expected-failure markers referencing the finding), then create the tickets, which cite the tests by path. If tickets are declined, offer to commit the tests anyway. **Without fix authority**, offer to hand the confirmed bugs to `/implement`.
 
 ## 5. Escalation
 
-With the user present, ask. When running on authority, stop and hand off with what was found, what was tried, 2–3 named options, and a recommendation, when:
+With the user present, ask. When running on authority, stop and hand off per [`references/autonomy.md`](../../references/autonomy.md)'s andon-cord template (phase identifier: the round number), when:
 
 - A finding is **contested** on substance.
 - A fix would require a **breaking change** or violate a constraint.
@@ -147,7 +147,5 @@ Fresh agent instances for every assessor and hunter. Hunters run sequentially so
 ## Relationship to Other Skills
 
 **`/bug-fix`** fixes a bug you already know about, diagnosis first. **`/bug-hunt`** finds bugs nobody knows about.
-
-**`/implement`** does all fixing, whether the hunt hands findings to it directly or you run it later on the tickets. Each reproducing test is the acceptance criterion.
 
 **`/review-security`** asks whether an attacker can exploit the code; `/bug-hunt` asks whether it will fail under ordinary use. Their territory overlaps; their lenses don't.

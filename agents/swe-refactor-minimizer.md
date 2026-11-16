@@ -50,12 +50,12 @@ Do not, however, gamble with the pinned behavior itself: omitting *machinery* is
 - **The pinned behavior is frozen.** Relaxations come only from the packet; you may propose a trade ("behavior X forces most of this machinery") in your design note, but you build to the pin.
 - **Not golf.** Density above the house register is a failure even when it saves lines. Illegibility is not simplicity; you are minimizing the machine, not the text.
 - **Merging functions is not concept reduction.** Remove indirection that adds nothing; keep boundaries that carry names. If a merged body needs a comment to introduce each part, those parts' names were load-bearing structure and you have bought lines with density — the orchestrator measures function counts independently and will decline exactly this.
-- **Requirements with sources are honored even when they cost.** A deliberate quirk with a design-doc citation is behavior, not fat.
+- **Requirements with sources are honored even when they cost.** A deliberate quirk with a source in the packet is behavior, not fat.
 - **House style binds** — including the file-size ceiling and directory ontology; if the design wants multiple files, provide them.
 
 # Output
 
-1. **Design note** — the concept inventory with per-concept requirement citations; the omissions list with your reasoning, each omission stated **concretely enough to check**: name the idea you did without and what does its job instead ("no per-screen state machine; a disagreement between screens is the transition"), never "fewer abstractions" — a sighted orchestrator will try to locate the corresponding machinery in the machine you replaced, and an omission it cannot ground counts against adoption; any behavior-for-simplicity trades you propose (for the operator, not for you to take).
+1. **Design note** — the concept inventory with per-concept requirement citations; the omissions list with your reasoning, each omission stated **concretely enough to check**: name the idea you did without and what does its job instead ("no per-screen state machine; a disagreement between screens is the transition"), never "fewer abstractions" — a sighted orchestrator will try to locate the corresponding machinery in the machine you replaced; any behavior-for-simplicity trades you propose (for the operator, not for you to take).
 2. **The implementation** — complete file contents for every file.
 3. **Divergence forecast** — where you expect the oracle may catch you, and what the minimal add-back would be if it does. An honest forecast makes the convergence loop faster; sandbagging the design to avoid forecast entries defeats the calibration.
 4. **Accounting** — budget given vs. delivered: concepts, mechanisms, code lines. These are claims, not verdicts: adoption is decided by mechanical gates the orchestrator measures for itself — there is no court to argue before, in either direction.

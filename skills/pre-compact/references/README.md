@@ -20,10 +20,9 @@ Compaction replaces the live conversation with a lossy summary. Anything that ma
 ## Workflow
 
 ```
-1. Persistent memory pass   — save user facts, feedback (with its why),
-                              project state, references; update rather
-                              than duplicate; skip what git or the code
-                              already records
+1. Persistent memory pass   — save what matters next session, per the
+                              memory conventions in effect; update
+                              rather than duplicate
 2. Git hygiene pass         — surface uncommitted and untracked work and
                               unusual branch state; commit only with your
                               permission

@@ -25,6 +25,7 @@ Examples from the existing namespace:
 - `/think-scrutinize` counters confirmation bias via adversarial steelmanning.
 - `/think-diagnose` counters narrative preference via observation/interpretation separation.
 - `/think-premortem` counters planning fallacy and optimism bias via prospective hindsight.
+- `/think-deliberate` counters premature closure and single-option railroading via adversarial advocacy.
 
 ### 2. Its method comes from a practitioner tradition
 
@@ -76,7 +77,7 @@ Several practices recur across the namespace. They are listed here so they can b
 
 Some valuable disciplines belong as *phases inside* skills, not as skills of their own. A surgical timeout is a phase. A pre-flight checklist is a phase. The bar for promoting a phase to a standalone `/think-*` skill is twofold: the discipline produces a transferable artifact that other skills could consume, *or* it can be invoked at multiple distinct points in workflows. Otherwise it lives inside a skill, not next to it.
 
-Two former skills were demoted on this test in v12. Problem reframing is now `/think-brainstorm`'s framing check, because it was only ever run upstream of brainstorming. Analysis of Competing Hypotheses is now `/think-diagnose`'s narrowing step, because in practice it only ever narrowed diagnose's candidates. Their agents and methods survived intact; only the entry points went.
+Two former skills were demoted on this test in v12. Problem reframing is now `/think-brainstorm`'s framing check, because it was run upstream of brainstorming and inside `/scope`'s exploration, both as a phase; neither needed a standalone entry point. Analysis of Competing Hypotheses is now `/think-diagnose`'s narrowing step, because in practice it only ever narrowed diagnose's candidates. Their agents and methods survived intact; only the entry points went.
 
 ## Spillover: values across the plugin
 

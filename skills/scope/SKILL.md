@@ -23,7 +23,7 @@ Helps the user understand a problem space through codebase exploration and dialo
 
 ## 1. Discover
 
-Understand what the user wants to explore — a feature, a refactoring, a bug that needs investigation, a whole project — and ask about scope, boundaries, the problem, and the desired outcome (not the implementation yet). When the stated problem looks like a symptom, or its framing is contested, spawn a few `THK - Reframer` agents in isolation, each on a different lens (problem-vs-symptom, scope-shift, stakeholder-shift, category-shift), and settle the framing with the user before exploring. Turning the wrong problem into tickets is the most expensive way to solve it.
+Understand what the user wants to explore — a feature, a refactoring, a bug that needs investigation, a whole project — and ask about scope, boundaries, the problem, and the desired outcome (not the implementation yet). When the stated problem looks like a symptom, or its framing is contested, spawn a few `thk-reframer` agents in isolation, each on a different lens (problem-vs-symptom, scope-shift, stakeholder-shift, category-shift), and settle the framing with the user before exploring. Turning the wrong problem into tickets is the most expensive way to solve it.
 
 ## 2. Explore
 
@@ -63,8 +63,9 @@ Spawn fresh-context reviewers on the drafts — at least one, always (rule 1). C
 - **Implementer** — the default cold reader. Spawn `swe-implementer` in cold-read mode, told to review every ticket as if assigned to implement it tomorrow: every gap, ambiguity, missing dependency, wrong code reference, and unanswered question, with a specific fix for each.
 - **`ux-reviewer`** — whenever the work changes what a user (of a CLI, MCP server, web app, or library API) sees or does: mental-model fit, dead ends, missing recovery paths, naming. Asks "should we build this?"
 - **`sec-blue-teamer`** — when the work shapes authentication, authorization, trust boundaries, or data handling at the design level. Frame it as a spec-time review: the controls the design needs, not an audit of existing code.
-- **`swe-perf-reviewer`** — when the design has architectural performance implications: data structures at scale, caching strategy, hot-path shape.
-- **`swe-arch-reviewer`**, **`swe-value-engineer`** — when the design's structure, or the requirements themselves, deserve a challenge.
+- **`swe-perf-reviewer`** in spec-time mode — when the design has architectural performance implications: what it will cost at the codebase's actual scale (data structures, caching strategy, hot-path shape).
+- **`swe-arch-reviewer`** in spec-time mode — when the design's structure deserves a challenge: where the proposed concepts belong and what they duplicate.
+- **`swe-value-engineer`** in spec-time mode — when the requirements themselves deserve a challenge: which drafted requirements cost more than they're worth.
 
 **Iterate to convergence.** Revise from the findings, then re-review with a **fresh** instance of each lens that raised material findings — a fresh reader doesn't anchor on its own prior findings. Stop when a round finds nothing material: nothing that would change what gets built, how it is verified, or how the work is cut. Wording nits are not material. Simple work usually converges in one round; complex work may take several. A lens still raising material findings after three rounds goes to the user — the disagreement is probably a requirements question, not a drafting one.
 

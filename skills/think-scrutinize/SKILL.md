@@ -65,13 +65,15 @@ Select lenses that fit the idea's domain. The number is a judgment call — ther
 - 2-5 lenses is typical; more only for broad ideas
 - Include any angles the user nominated in step 2
 
-### 4. Spawn Skeptics (Parallel)
+### 4. Spawn Skeptics (Parallel, Isolated)
 
 Spawn one `THK - Skeptic` agent per lens, in parallel. Each receives:
 - The written idea brief (from step 1)
 - Its assigned lens and what the lens means in this context
 - Relevant fact-finding context
 - The structured output format
+
+**No cross-talk between skeptics.** Each critiques in isolation, so no lens anchors on another's first plausible fault.
 
 Collect all critiques.
 
@@ -156,10 +158,10 @@ This skill is one-shot. If the user refines the idea based on the report, they *
 - Reviewing a plan or design before committing to implementation
 - Pressure-testing a proposal before presenting it to stakeholders
 - Surfacing objections that politeness or groupthink would suppress
-- Pre-mortem analysis — "what could make this fail?"
 
 **Poor fit:**
 - Choosing between options → use `/think-deliberate`
+- Sweeping a plan's failure space → `/think-premortem`
 - Finding bugs in existing code → use `/bug-hunt` or `/review-security`
 - Implementing changes → this skill makes nothing; follow up with `/implement`, `/refactor`, etc.
 - Vague dissatisfaction with a plan that has no concrete form yet

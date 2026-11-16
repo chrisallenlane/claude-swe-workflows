@@ -62,7 +62,7 @@ Scan the project for source files to determine what performance domains apply.
 
 ### 2. Determine Scope
 
-Present detected project type and ask the user:
+If the invocation or caller supplies scope, use it and skip this question. Otherwise, present the detected project type and ask the user:
 
 ```
 Detected project characteristics:
@@ -124,7 +124,8 @@ Perform your full review:
 4. Recommend measurement infrastructure only where measuring would change
    a decision at the documented scale
 
-Produce your standard output format with findings organized by priority.
+Produce your standard output format: hot paths, findings by severity,
+over-provisioned machinery, and cold paths dismissed.
 ```
 
 ### 4. Present Consolidated Report
@@ -151,7 +152,16 @@ Issues: N (X critical, Y high, Z low)
 
 Issues: N (X critical, Y high, Z low)
 
+#### Hot Paths
+[per path: n, frequency, budget, cost, verdict — from the reviewer's HOT PATHS]
+
 [merged findings by severity]
+
+#### Over-Provisioned Machinery
+[from the reviewer's OVER-PROVISIONED MACHINERY, with the simpler replacement — or "none found"]
+
+#### Cold Paths Dismissed
+[from the reviewer's COLD PATHS DISMISSED, one line each]
 
 ---
 
@@ -166,6 +176,8 @@ If no cross-cutting concerns, omit this section.]
 [Based on findings:
 - If critical/high issues found: recommend fixing them, noting which
   domain each belongs to
+- If over-provisioned machinery found: recommend `/refactor` scoped to
+  that module (it changes code; this skill only recommends it)
 - If no significant issues: "No significant performance issues found"
 - If missing tooling: recommend specific tools (Lighthouse, benchmarking
   frameworks, profiling tools)]

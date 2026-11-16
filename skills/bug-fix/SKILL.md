@@ -86,14 +86,6 @@ Loop back to user until the bug is clearly understood. You need enough informati
 - Only AFTER practical verification confirms the fix works does the agent run the full test suite
 - Agent also checks the related failure modes identified by the diagnostician
 
-**Practical verification by feature type:**
-- CLI tools: Run commands in subshell (skip destructive operations)
-- MCP servers: Launch the server and send JSON-RPC requests directly
-- Web UIs: Browser automation when available
-- Claude skills/agents: Cannot be invoked from a subagent — QA returns the steps to the orchestrator, which runs them
-- API integrations: Make actual calls (with caution for dangerous operations)
-- Libraries: Quick sanity checks, then unit tests
-
 **This is a CRITICAL GATE:**
 - The originally-reported bug must be demonstrably fixed (practical test) AND tests must pass to proceed
 - If practical verification fails: return to step 4 (implementation) immediately
@@ -118,7 +110,7 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 - Identifies systemic gaps that enable vulnerability classes
 - **Has authority to demand changes** - security issues should block or require explicit user approval
 
-**Output**: Defense evaluation with severity levels (critical/high/low)
+**Output**: Defense evaluation with severity levels (critical/high/medium/low)
 
 #### 6b. Scope Audit (Conditional - Departures Resolved)
 
@@ -149,12 +141,10 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 **Re-invoke the implementation agent from step 4** (`swe-implementer`, or yourself if you implemented directly):
 - Provide all review feedback (security, scope-audit departures, performance)
 - The implementer reviews all feedback and **uses its own discretion** to implement
-- **Security findings**: Must address or get explicit user approval to skip
+- **Security findings**: Critical/High must be addressed or get explicit user approval to skip; Medium/Low are advisory
 - **Scope-audit departures**: Each is removed, or justified by the failure mode or requirement that forces it
 - **Performance feedback**: Advisory only - the implementer has final authority, and may decline recommendations that conflict with the project's conventions
-- The implementer implements accepted changes and commits
-
-**Note**: Security issues have authority to block and departures must be resolved; performance feedback is advisory. Implementation agent makes final decisions on advisory feedback.
+- The implementer implements accepted changes (uncommitted; step 13a commits).
 
 ### 8. Peer Review (Conditional)
 
@@ -174,19 +164,19 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 - No architectural changes
 - No re-implementing features
 - No changing approaches or patterns chosen by the original implementer
-- If something seems wrong at a deeper level, flag it rather than fix it
+- If something seems wrong at a deeper level, flag it rather than fix it — deeper issues escalate to the user
+- If its changes break tests, revert them and proceed (nits aren't worth breaking functionality)
 
-**Expected output:** Small fixes committed, or "no changes needed" if code is clean.
+**Expected output:** Small fixes (uncommitted), or "no changes needed" if code is clean.
 
-### 9. Quality Assurance - Coverage & Quality Verification
+### 9. Quality Assurance - Coverage of the Changed Diff
 
 **Spawn `qa-engineer` agent:**
-- The agent infers its mode from context: absence of acceptance criteria triggers general assessment
-- Agent performs general QA assessment of all changed code (from steps 4, 7, and 8)
+- The agent infers its mode from context: absence of acceptance criteria triggers Mode 2, coverage of a changed diff
+- Pass the diff of all changed code (from steps 4, 7, and 8)
 - Assess test coverage for new/modified code
 - Identify gaps and write missing tests
 - Run the suite and linters; failures are reported, not fixed — they route back to step 7 or step 4
-- Evaluate test quality (assertions, edge cases)
 - **Verify implementations from steps 7 and 8 didn't break tests** - catches issues from refactoring, security fixes, or peer review cleanups
 
 **This is SUPPLEMENTARY:**
@@ -195,7 +185,7 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 - Minor issues: proceed to documentation
 - Significant issues (tests broken, major bugs): return to step 7 (review feedback) or step 4 (implementation)
 
-**Expected output:** Coverage metrics, tests added/modified, quality issues found, confirmation that all changes still pass tests.
+**Expected output:** Coverage metrics, tests added/modified, failures found, confirmation that all changes still pass tests.
 
 ### 10. Correctness Review (Conditional — Blocking)
 
@@ -224,63 +214,9 @@ The default is to run. Skip only when the diff is trivial — typo fixes, commen
 
 **Expected output:** APPROVE verdict (possibly with residual risks for the final summary), or escalation after cap exhaustion.
 
-### Feedback Loops
-
-**Reproduction failure (step 2):**
-- Return to step 1 (clarification)
-- Report what was tried and why reproduction failed
-- Max 2 reproduction attempts before escalating to user
-
-**Fix verification failure (step 5):**
-- Return to step 4 (implementation)
-- Track iteration count (max 3 attempts before escalating to user)
-- Report specific failures (which tests still fail, what practical verification showed)
-
-**Security review findings (step 6a):**
-- Critical/High severity: Must address in step 7 or get explicit user approval to skip
-- Medium/Low severity: Advisory - implementation agent decides in step 7
-
-**Scope audit departures (step 6b):**
-- Each departure is resolved in step 7: removed, or justified by the failure mode or requirement that forces it — not advisory
-
-**Performance feedback (step 6c):**
-- Advisory
-- Implementation agent in step 7 uses discretion to implement
-
-**Peer review issues (step 8):**
-- If peer review changes break tests: revert peer review changes and proceed (nits aren't worth breaking functionality)
-- If peer review flags deeper issues: escalate to user for decision
-
-**Coverage & quality issues (step 9):**
-- Tests broken by changes from step 7: Return to step 7 to fix or revert
-- Tests broken by changes from step 8: Revert step 8 changes (peer review nits shouldn't break tests)
-- Major bugs found: Return to step 4 (implementation)
-- Minor issues (low coverage in non-critical code, style nitpicks): document and proceed
-- User can approve proceeding despite issues if acceptable
-
-**Correctness review findings (step 10):**
-- All findings are blocking — advisory discretion does not apply
-- Each finding is resolved by fixing it or refuting it with cited evidence; fixes route to the implementation agent, then mechanical re-verification (reproducing test, full suite, linters), then a fresh reviewer instance
-- 3 rounds maximum, then escalate to user with surviving findings
-- Residual risks (non-blocking) carry forward to the final summary
-
 ### 11. Documentation
 
-**Spawn `doc-maintainer` agent:**
-- Review git diff to identify which files/modules changed
-- Determine which documentation is affected:
-  - README.md if user-facing functionality changed
-  - CLAUDE.md if architecture/integration points changed
-  - API docs if public interfaces changed
-  - Internal docs (doc/, adr/) if implementation details relevant to architecture changed
-- Focus review on documentation related to changed code
-- Verify code examples in affected docs still work
-- Check for broken links in modified documentation
-
-**Agent should be targeted, not comprehensive:**
-- Only review documentation relevant to the changes made
-- Skip full codebase documentation scan
-- Report "no documentation changes needed" if changes are purely internal with no doc impact
+Spawn `doc-maintainer` in targeted mode with the diff.
 
 ### 12. Final verification
 
@@ -352,7 +288,7 @@ Detect tracker, recover the ticket number, and post the close-out per [`referenc
 **If current branch is behind main:**
 - Ask user: "Your branch is behind main. Would you like to rebase on main?"
 - If user confirms:
-  - Perform: `git fetch origin main && git rebase origin/main`
+  - Perform: `git fetch origin <main-branch> && git rebase origin/<main-branch>`
   - If conflicts arise, report to user and halt (don't auto-resolve)
   - If rebase succeeds, report success
 
@@ -369,44 +305,13 @@ Detect tracker, recover the ticket number, and post the close-out per [`referenc
 
 ## Agent Coordination
 
-**Sequential execution:**
-- Agents run one at a time (no parallel spawning)
-- Each agent completes before next begins
-- Use Task tool to spawn agents
-
-**State management:**
-- Track current workflow step
-- Track reproduction attempt count (for step 2 failures)
-- Track QA iteration count (for fix verification failures)
-- Track correctness review round count (step 10 convergence loop)
-- Carry residual risks from step 10 forward to the final summary
-- Accumulate summary information
-- Preserve original bug report for passing to QA verification and the correctness reviewer (step 10)
-- Preserve diagnosis report for passing to implementation agent (but **not** to the correctness reviewer — see step 10)
-
-**Agent self-skipping:**
-- Agents should skip work if not applicable
-- Report "nothing to do" rather than making unnecessary changes
-
-**Implementer continuity:**
-- The same implementation agent is used across steps 2 (failing test), 4 (fix), 7 (review feedback), and 8 (peer review)
-- Steps 2 and 4 should ideally be the same instance or carry forward context
-- Step 8 (peer review) must be a fresh instance for independent perspective
-
-**Diagnosis pass-through:**
-- The diagnostician's report from step 3 is passed to the implementer in step 4
-- The implementer should acknowledge the diagnosis and follow its recommended approach
-- The implementer should write tests for each related failure mode the diagnostician identified
+The step-3 diagnosis goes to the implementer, and never to the correctness reviewer (step 10).
 
 ## Iteration Limits
 
-**Maximum iterations:**
-- Reproduction loop (step 2): 2 attempts, then escalate to user
-- Fix verification loop (step 5): 3 attempts, then escalate to user
-- Correctness review convergence loop (step 10): 3 rounds, then escalate to user
-- Overall workflow: 16 total agent spawns (safety limit)
+- Reproduction (step 2): 2 attempts; fix verification (step 5): 3 attempts; correctness review (step 10): 3 rounds
+- When a limit is reached, escalate: present the current state, explain what's blocking progress, and request guidance
 
-**Escalation to user:**
-- Present current state
-- Explain what's blocking progress
-- Request guidance
+## Invoked by Another Skill
+
+When a calling skill (such as `/implement`) runs this one, the caller supplies the bug report and answers step 1's clarifying questions and step 13's confirmation; nothing is asked of the user. Steps 2-13a run unchanged. Skip 13b — never update or close tickets — and never rebase (13c). Escalations go to the caller, which decides whether to escalate further.
