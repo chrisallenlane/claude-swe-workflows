@@ -53,7 +53,7 @@ Audit unless the invocation says `search`:
 
 **Step 2 — blind probe generation.** Spawn a general-purpose agent instructed to read ONLY the project's purpose documents (design doc, README, user docs — named explicitly; no directory listings, no source). It writes 15-25 navigation-task questions grounded in described behavior, spread across all major areas, never mentioning file or directory names. Blindness is the point: questions must come from behavior space, not from knowledge of the tree's traps.
 
-**Step 4 — the reader fleet.** Spawn `swe-namespace-reader` (×2) and `swe-namespace-canary` (×1) with the file listing and questions pasted inline — never a repository path. When the project declares a style guide (e.g. conventions in CLAUDE.md), run a second pool of the same shape with the guide's decomposition/naming rules as a conventions preamble: this pool proxies the maintainer.
+**Step 4 — the reader fleet.** Spawn `swe-namespace-reader` (×2) and `swe-namespace-canary` (×1) with the file listing and questions pasted inline — never a repository path. When the project declares a style guide (e.g. conventions in CLAUDE.md), run a second pool of the same shape with the guide's decomposition/naming rules as a conventions preamble: this pool proxies the maintainer. The prompt's format line asks for `N. <path> — <high|med|low> — <short reason>`: confidence feeds Law 8 and the severity classes, and the reasons are the evidence findings cite and what search mode mutates from.
 
 **Step 6 — finding classes.**
 

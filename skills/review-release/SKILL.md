@@ -116,7 +116,7 @@ Return structured findings with severity levels (BLOCKER/WARNING/INFO).
 **Spawn `doc-maintainer` agent** in assessment-only mode:
 
 ```
-Perform a documentation freshness assessment only. DO NOT make any changes.
+Mode: assessment-only. DO NOT make any changes.
 Review all documentation files (README, CHANGELOG, CLAUDE.md, doc/, etc.)
 for staleness relative to the current codebase.
 Report which documents appear outdated and what specifically seems wrong.

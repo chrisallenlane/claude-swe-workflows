@@ -61,8 +61,8 @@ For a multi-ticket set, state each ticket's dependencies explicitly and give the
 Spawn fresh-context reviewers on the drafts — at least one, always (rule 1). Choose by what the work needs:
 
 - **Implementer** — the default cold reader. Spawn `swe-implementer` in cold-read mode, told to review every ticket as if assigned to implement it tomorrow: every gap, ambiguity, missing dependency, wrong code reference, and unanswered question, with a specific fix for each.
-- **`ux-reviewer`** — whenever the work changes what a user (of a CLI, MCP server, web app, or library API) sees or does: mental-model fit, dead ends, missing recovery paths, naming. Asks "should we build this?"
-- **`sec-blue-teamer`** — when the work shapes authentication, authorization, trust boundaries, or data handling at the design level. Frame it as a spec-time review: the controls the design needs, not an audit of existing code.
+- **`ux-reviewer`** — whenever the work changes what a user (of a CLI, MCP server, web app, or library API) sees or does: mental-model fit, dead ends, missing recovery paths, naming. Asks "will users be able to use this?"
+- **`sec-blue-teamer`** in spec-time mode — when the work shapes authentication, authorization, trust boundaries, or data handling at the design level. Frame it as a spec-time review: the controls the design needs, not an audit of existing code.
 - **`swe-perf-reviewer`** in spec-time mode — when the design has architectural performance implications: what it will cost at the codebase's actual scale (data structures, caching strategy, hot-path shape).
 - **`swe-arch-reviewer`** in spec-time mode — when the design's structure deserves a challenge: where the proposed concepts belong and what they duplicate.
 - **`swe-value-engineer`** in spec-time mode — when the requirements themselves deserve a challenge: which drafted requirements cost more than they're worth.

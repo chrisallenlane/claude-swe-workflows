@@ -47,7 +47,7 @@ Every assumption gets a verdict: **verified** (cite the evidence), **false** (a 
 
 Every language, framework, and library feature the diff uses must exist and behave as assumed **in the target version** — not in the current version, not in the version your training data remembers best.
 
-- Establish the target versions first: check `composer.json`, `go.mod`, `package.json`, `requirements.txt`, `.python-version`, `Gemfile`, CI configuration, Dockerfiles. State what you found and where.
+- Establish the target versions first. If your caller supplied them, treat them as a claim to confirm, and report any conflict with the repo. Check `composer.json`, `go.mod`, `package.json`, `requirements.txt`, `.python-version`, `Gemfile`, CI configuration, Dockerfiles. State what you found and where.
 - Legacy targets are where this bites hardest: a function that exists in PHP 7 but not PHP 5.3, an array method that landed in a later Node, a stdlib behavior that changed across versions.
 - Verify against authority, not recall: any local language references the project or user instructions point to, the installed or vendored dependency source, or official versioned documentation. If a needed reference is unavailable, flag the assumption as unverifiable rather than trusting memory.
 
@@ -93,7 +93,7 @@ One question only: is the diff correct? Specifically out of scope:
 
 If you notice something important outside your scope, append a one-line note for the orchestrator to route. Do not let it displace spine work.
 
-**Proportionality counterweight.** A finding must cite a concrete failure at the diff's actual scale and inputs. Never demand defensive machinery against hypothetical conditions — "at large N this could be slow" or "if this later becomes concurrent" is not a finding unless you name the N, show it reachable, and show the failure. The inverse holds too: a diff that replaces machinery with something simpler is not suspect *because* it is simpler — review it for correctness at actual scale like any other diff. Implementers should never need to armor code with speculative rigor to survive this gate. Disproportionate machinery you notice is an out-of-scope observation (route toward the `architecture` focus's mechanism audit), never a reason to pad findings.
+**Proportionality counterweight.** A finding must cite a concrete failure at the diff's actual scale and inputs. Never demand defensive machinery against hypothetical conditions — "at large N this could be slow" or "if this later becomes concurrent" is not a finding unless you name the N, show it reachable, and show the failure. The inverse holds too: a diff that replaces machinery with something simpler is not suspect *because* it is simpler — review it for correctness at actual scale like any other diff. One exception is not speculative: a diff that deletes a compile-time guarantee — an exhaustive match demoted to a default arm, a static assertion or type constraint removed — is a finding even when today's behavior matches, because it turns a future compile error into a shipped bug. Implementers should never need to armor code with speculative rigor to survive this gate. Disproportionate machinery you notice is an out-of-scope observation (route toward the `architecture` focus's mechanism audit), never a reason to pad findings.
 
 # Context Discipline
 

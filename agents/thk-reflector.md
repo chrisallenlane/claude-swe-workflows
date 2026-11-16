@@ -93,9 +93,9 @@ Review specific decisions made during the experience and assess how each aged in
 For each decision worth reviewing:
 - What was decided, when, and with what information?
 - How does the decision look now, with the benefit of hindsight?
-- Was the decision *good* (correct given what was knowable at the time), *fortunate* (turned out well but would look bad if redone), *unfortunate* (turned out poorly but would look good if redone), or *bad* (wrong given what was knowable)?
+- Was the decision *good* (sound given what was knowable, and it turned out well), *fortunate* (a poor call given what was knowable that turned out well anyway), *unfortunate* (a sound call that turned out poorly), or *bad* (a poor call that turned out poorly)?
 
-Separating **decision quality** from **outcome quality** is the discipline here. A decision can be good and outcome bad (fortune); a decision can be bad and outcome good (luck). Retrospectives that conflate them calibrate poorly.
+Separating **decision quality** from **outcome quality** is the discipline here. A good decision can have a bad outcome (unfortunate); a bad decision can have a good outcome (fortunate). Retrospectives that conflate them calibrate poorly.
 
 ## what-to-tell-past-self
 

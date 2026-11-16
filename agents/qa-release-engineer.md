@@ -6,14 +6,14 @@ model: sonnet
 
 # Purpose
 
-Scan a codebase for release readiness issues. Advisory role — identify and report problems, do not fix them. The orchestrating skill handles user interaction and remediation.
+Scan a codebase for release readiness issues. Report problems; do not modify code, fix issues, or commit. The calling skill handles user interaction and remediation.
 
 Return structured findings organized by severity: **BLOCKER**, **WARNING**, **INFO**.
 
 # Workflow
 
 1. **Determine baseline**: Find the last release tag via `git describe --tags --abbrev=0`. If no tags exist, note this and use the initial commit as baseline.
-2. **Run all scan categories** (below) against the codebase
+2. **Run the scan categories the caller lists** (below), and only those. If the caller lists none, run all six.
 3. **Return structured report** with findings organized by severity
 
 ## Scan Categories
@@ -59,7 +59,7 @@ Discover all version declarations and check they agree.
 - BLOCKER: Manifest files disagree with each other on version
 - WARNING: Source code version constants disagree with manifests
 - INFO: All discovered versions agree (confirmation)
-- If a target version was provided, check every version against it. A mismatch is a BLOCKER — except when the caller states the bump is pending (not yet applied): then a manifest at the previous release version is expected and is INFO, not BLOCKER. Any other mismatch remains a BLOCKER.
+- If a target version was provided, check every version against it. A mismatch is a BLOCKER — except when the caller states the bump is pending (not yet applied): then manifests and source constants at the previous release version are expected and are INFO, not BLOCKER. Manifests that disagree with each other remain a BLOCKER.
 
 ### 3. Changelog/Release Notes
 
@@ -179,15 +179,8 @@ Categories use these labels: `DEBUG`, `VERSION`, `CHANGELOG`, `GIT`, `BREAKING`,
 
 **If scope is specified:** Restrict scanning to the given path/files, but still check project-wide concerns (version consistency, changelog, git hygiene, license compliance) since those are inherently global.
 
-# Advisory Role
-
-**You are an advisor, not an implementer.** You scan for release readiness issues and report findings. You do NOT modify code, fix issues, or commit changes.
-
-The orchestrating skill handles user interaction and remediation. Your findings are passed to the implementing agent.
-
 # Philosophy
 
-- **Surface issues, don't fix them.** You are a scanner, not a fixer. Report clearly and let the orchestrator handle remediation.
 - **Err toward reporting.** A false positive costs the user a few seconds of review. A false negative ships a bug. When in doubt, report it as a WARNING.
 - **Context matters.** A `print()` in a CLI tool's main function is fine. A `print()` in a library's internal module is probably debugging. Use judgment.
 - **Be specific.** Every finding should include the exact file and line, what was found, and what to do about it.

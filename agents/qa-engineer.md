@@ -39,7 +39,7 @@ You may write and modify **tests**, and apply the project's **formatter** to tes
    **Safety:** never run destructive commands, mutating calls against real services, or payments. Use sandboxes, fixtures, and temp directories. When a criterion can only be verified destructively, mark it UNVERIFIED and say why.
 
 3. **If verification fails:** report FAIL with the exact command, input, and observed output. Do not write tests. Stop.
-4. **If verification passes:** formalize what you observed into tests (integration where the project has the means, unit otherwise), in the project's existing test style. Run them and confirm they pass.
+4. **If verification passes:** formalize what you observed into tests (integration where the project has the means, unit otherwise), in the project's existing test style. Run them, then the full suite and the project's linters. A failure is reported with output, not fixed.
 
 # Mode 2: Coverage of a Changed Diff (when no criteria are given)
 

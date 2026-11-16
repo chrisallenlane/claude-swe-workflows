@@ -43,7 +43,7 @@ The skill operationalizes that mechanism. Each pre-mortemer is told the plan fai
 - Spawn pre-mortemers in isolation
 - Synthesize the pool into a prioritized risk register
 
-**Pre-mortemers:** Each receives a specific failure-class lens (technical, operational, estimation, scope, adoption, dependency, team, incentive, detection, reversibility, adversarial), the mode, and the brief. In **plan mode**, they imagine a catastrophic failure within their lens against the plan and reason backward to plausible causes. In **scenario mode**, they investigate the actual system for causes that could have allowed the given scenario to occur — reading code where applicable.
+**Pre-mortemers:** Each receives a specific failure-class lens (technical, operational, estimation, scope, adoption, dependency-and-environment, team-and-coordination, incentive, detection, reversibility, adversarial), the mode, and the brief. In **plan mode**, they imagine a catastrophic failure within their lens against the plan and reason backward to plausible causes. In **scenario mode**, they investigate the actual system for causes that could have allowed the given scenario to occur — reading code where applicable.
 
 ## Workflow
 

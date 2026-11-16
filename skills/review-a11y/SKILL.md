@@ -81,7 +81,8 @@ Scope: [partition or full scope]
 Read all files in scope and perform your full audit:
 1. Detect and run any automated accessibility tooling (axe-core, pa11y, etc.)
 2. Manual inspection for issues automated tools miss (keyboard navigation,
-   semantic correctness, dynamic content, ARIA usage, content quality, media)
+   semantic correctness, dynamic content, ARIA usage, forms and errors,
+   visual presentation, pointer input, media)
 3. Classify every issue by severity (CRITICAL / HIGH / LOW)
 
 Produce your standard output format with summary, issues by severity,
@@ -98,7 +99,7 @@ Present a consolidated report:
 ## Accessibility Audit Report
 
 Conformance target: WCAG 2.2 Level AA
-Method: [automated + manual | manual only]
+Method: [automated + live browser + manual | manual code inspection only]
 Scope: [what was audited]
 Issues found: N (X critical, Y high, Z low)
 
@@ -110,6 +111,9 @@ Issues found: N (X critical, Y high, Z low)
 
 ### LOW
 [merged low findings]
+
+### AAA Opportunities (optional)
+[merged AAA items, labeled AAA; never counted against AA conformance]
 
 ### Tooling Recommendations
 [if applicable — recommendations for adding automated accessibility testing]

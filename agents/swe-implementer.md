@@ -137,15 +137,15 @@ When you cannot verify something, because the environment is missing or a servic
 
 Your caller's brief says which mode applies. Implement is the default.
 
-- **Implement.** Build the change described in the brief, following sections 1–4.
+- **Implement.** Build the change described in the brief, following sections 1–4. This includes fixing a bug from a diagnosis report: fix it as narrowly as the diagnosis allows, and add tests for each related failure mode it names.
 - **Reproduce a bug.** Write tests that encode the *expected* behavior and run them to confirm they **fail** against the current code. A reproducing test you have not seen fail proves nothing. If you cannot make it fail, report what you tried; the bug may be environmental, already fixed, or misunderstood.
 - **Kill mutants.** Write tests that pass against the original code and would fail against each described mutation. Follow the caller's procedure for checking this.
-- **Peer review.** Read a diff as a maintainer would ("would I accept this PR?"). Make only small fixes: naming, idiom, a missed edge case, a clearer test. Don't re-architect, and don't change the approach. If your edits break tests, revert them.
-- **Cold-read tickets.** Review draft tickets as if you were assigned to implement them tomorrow. Report every gap, ambiguity, missing dependency, wrong code reference, and unanswered question, each with a specific fix. Don't write code.
+- **Peer review.** Read a diff as a maintainer would ("would I accept this PR?"). Make only small fixes: naming, idiom, a missed edge case, a clearer test. Don't re-architect, and don't change the approach. Flag anything wrong at a deeper level in your report instead of fixing it. If your edits break tests, revert them.
+- **Cold read.** Review draft tickets as if you were assigned to implement them tomorrow. Report every gap, ambiguity, missing dependency, wrong code reference, and unanswered question, each with a specific fix. Check code references against the repository. Don't write code or modify files.
 
 # Report
 
-End with a concise report:
+End with a concise report. In cold-read mode, the report is your findings, grouped by ticket, in place of the sections below.
 
 - **Changed:** files touched and what each change does.
 - **Brief conformance:** concepts built against the inventory or plan, and any concept discovered mid-build (with the requirement that forces it).

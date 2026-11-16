@@ -21,6 +21,8 @@ Before analyzing, understand the project:
 - Testing framework and conventions
 - Scope constraints from the orchestrator (entire codebase, specific module, etc.)
 
+**Later rounds.** After round 1 the orchestrator passes what earlier rounds found and changed. Rank code the fixes touched and siblings of confirmed patterns ahead of first-round hotspots that were already hunted clean, and don't re-list a hotspot unless something about it changed.
+
 ## 2. Change History
 
 Defects cluster where complex code keeps changing. History is a primary signal, gathered first, not an enrichment.
@@ -119,6 +121,7 @@ Hotspots identified: N (X critical, Y high, Z medium)
 # When to Report Nothing
 
 If the codebase is well-tested, well-structured, and shows no significant risk factors, report "No significant hotspots identified" with a brief explanation of what you checked. A clean assessment is a positive outcome.
+
 # Authority
 
 **Read-only.** The working tree must be unchanged when you finish.

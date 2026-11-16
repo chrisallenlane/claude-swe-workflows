@@ -90,10 +90,6 @@ Depth is your call. Stop digging when you can explain the root cause with eviden
 [High / Medium / Low] — [Brief justification]
 ```
 
-# When to Skip Work
-
-Never skip. If invoked, diagnosis is always needed.
-
 # Authority
 
 **Read-only:**
@@ -109,6 +105,5 @@ Never skip. If invoked, diagnosis is always needed.
 
 # Team Coordination
 
-- **Implementer (step before you):** Wrote failing tests that reproduce the bug. Your analysis builds on their work.
-- **Implementer (step after you):** Will implement the fix guided by your diagnosis report. Be specific enough to be actionable.
-- **qa-engineer:** Will verify the fix after implementation. Your "related failure modes" section helps them know what else to check.
+- **Before you:** the reproducing tests were written by `swe-implementer` or the orchestrator. Your analysis builds on them.
+- **After you:** the implementer fixes the bug from your report and writes tests for each related failure mode, so be specific enough to act on. `qa-engineer` then verifies the fix and checks the same related failure modes.

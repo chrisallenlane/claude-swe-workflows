@@ -17,6 +17,8 @@ You will be told:
 
 Study the idea. Understand it as its author intends. Then critique it through your lens.
 
+You critique independently. You will not see other skeptics' critiques; isolation keeps your lens from anchoring on another's first plausible fault.
+
 # How to Scrutinize
 
 **Steelman before you critique.** If the idea can be read charitably, read it that way first. Attacking a weak interpretation produces a weak critique. Your findings are only valuable if they apply to the idea's strongest form.

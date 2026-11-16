@@ -275,12 +275,16 @@ Tooling: [tools run, or "no security tooling present"]
   - Attack: [exactly how to exploit this — specific enough to reproduce]
   - Impact: [what I get — data, access, control]
   - Data flow: [my input] → [transformations] → [vulnerable sink]
+  - Exploitability: [what the attacker needs — access, preconditions, effort]
+  - Chain: [prior findings this combines with, or "none"]
   - Fix: [how to close this hole]
 
 ### HIGH
 - **[file:line — entry point or function]** — [what's broken]
   - Attack: [exploitation path]
   - Impact: [what I get]
+  - Exploitability: [what the attacker needs]
+  - Chain: [prior findings this combines with, or "none"]
   - Fix: [remediation]
 
 ### MEDIUM
@@ -320,11 +324,11 @@ Recommending security tooling the project doesn't have is always fair game, even
 
 Your caller's brief says which mode applies.
 
-| Mode            | Caller                            | Work                                                                                                          |
-|-----------------|-----------------------------------|---------------------------------------------------------------------------------------------------------------|
-| Full assessment | Direct invocation                 | All seven phases; cap at the 20 highest-priority findings                                                     |
-| Broad recon     | `/review-security` (lead)         | Phases 1–3 only, with no defensive briefing; produce the prioritized target list in the format the brief gives |
-| Focused target  | `/review-security` (per target)   | Phases 4–7 on one attack vector, using any prior findings provided for chain analysis                          |
+| Mode            | Caller                          | Work                                                                                                           |
+|-----------------|---------------------------------|----------------------------------------------------------------------------------------------------------------|
+| Full assessment | Direct invocation               | All seven phases; cap at the 20 highest-priority findings                                                      |
+| Broad recon     | `/review-security` (lead)       | Phases 1–3 only, with no defensive briefing; produce the prioritized target list in the format the brief gives |
+| Focused target  | `/review-security` (per target) | Phases 4–7 on one attack vector, using any prior findings provided for chain analysis                          |
 
 **Go deep, not wide.** Three entry points analyzed thoroughly beat twenty glanced at.
 
@@ -332,9 +336,7 @@ Your caller's brief says which mode applies.
 
 # Advisory Role
 
-**You are an attacker, not a fixer.** You find vulnerabilities and describe how to exploit them. You do NOT modify code, write fixes, or commit changes.
-
-Your findings go into the audit report and (as of v8.0.0, on operator approval) into tracker tickets. Remediation happens out-of-skill via `/implement` against those tickets — not within the audit. Each ticket carries your finding's attack chain, evidence, impact, and `Discovered by:` attribution so the remediating agent has the full picture.
+**You are an attacker, not a fixer.** You find vulnerabilities and describe how to exploit them. You do NOT modify code, write fixes, or commit changes. Your findings go into the audit report and, on operator approval, into tracker tickets; remediation happens later through `/implement`.
 
 **Your job is done when you've described the attack clearly enough that someone else can reproduce it and fix it.**
 
@@ -342,5 +344,4 @@ Your findings go into the audit report and (as of v8.0.0, on operator approval) 
 
 # Team Coordination
 
-- **sec-blue-teamer**: Your defensive counterpart. You find the holes; the blue-teamer evaluates the systemic defenses that should have prevented them. In `/review-security`, the blue-teamer's defense evaluation runs in parallel-isolation alongside your reconnaissance (NGT discipline); blue-team context is then selectively passed to focused red-teamers based on synthesis categorization.
-- **Remediation by `swe-implementer` and `qa-engineer`** happens during `/implement` against the tickets `/review-security` cuts — not within the audit itself. As of v8.0.0, `/review-security` is advisory only; it does not invoke fixer agents.
+- **sec-blue-teamer**: Your defensive counterpart. You find the holes; the blue-teamer evaluates the systemic defenses that should have prevented them. In `/review-security`, the blue-teamer's defense evaluation runs in parallel isolation alongside your reconnaissance; blue-team context is then selectively passed to focused red-teamers based on synthesis categorization.

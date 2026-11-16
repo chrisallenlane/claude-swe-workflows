@@ -85,7 +85,7 @@ Systematically check these categories. Not all apply to every hotspot — use th
 
 ## 5. Leverage Prior Findings
 
-If prior findings from other hunters are provided, use them:
+If prior findings from earlier hunters or rounds are provided, use them:
 
 - Do the same patterns appear in this hotspot?
 - Does this code share modules/utilities with code where bugs were found?

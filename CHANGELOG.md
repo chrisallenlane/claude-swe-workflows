@@ -54,6 +54,20 @@
     - It checks for an in-progress rebase or merge before acting.
     - It excludes branches checked out in other worktrees.
   - **`/tidy-docs`** now dispatches `doc-maintainer`'s full-audit mode.
+- **Every agent was checked against its callers.** Each of the 37 agents was traced to every skill that dispatches it. Agents now accept the inputs their callers send, use the exact mode names callers invoke, and emit the output sections callers read. None is orphaned. Notable fixes:
+  - `swe-implementer`'s modes match each caller's wording.
+  - `swe-arch-reviewer` accepts the dead-code audit and the hidden-coupling pairs `/review-repo` passes it.
+  - `sec-red-teamer` reports exploitability and chain dependencies for each finding.
+  - `swe-correctness-reviewer` knows `/refactor`'s lost-guarantee rule.
+  - `swe-refactor-dx` drops the multi-round machinery that contradicted `/refactor`'s single finishing pass.
+  - `qa-test-mutator` reports partial coverage explicitly.
+  - The namespace readers' contract fits the optional batteries.
+  - The `qa-*` test reviewers' modes use their callers' names.
+  - `thk-reflector`'s decision grid no longer contradicts itself.
+  - On the skill side, the dispatches are explicit:
+    - the reviewers that `/bug-fix` and `/implement` spawn now name their mode;
+    - `/bug-fix` passes the diagnostician's related failure modes to QA as acceptance criteria;
+    - the namespace focus asks readers for the confidence its severity rules depend on.
 - **Trimmed.**
   - `/review-security` went from 701 lines to 435, `/review-test` from 643 to 433, and `/bug-fix` from 412 to 317.
   - The example sessions in `/test-mutation` and `/release` that repeated their steps are cut.

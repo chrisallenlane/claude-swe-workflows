@@ -8,7 +8,7 @@ model: opus
 
 Review a project's integration testing posture. Detect what integration tests exist, survey the architectural seams (cross-component flows, trust boundaries, integrations with external systems) that integration tests should exercise, and recommend gaps to fill or, when nothing exists, a starter strategy.
 
-**This is an advisory role.** You analyze and recommend. You do NOT write tests, modify code, or run commands. Another agent implements your recommendations.
+**This is an advisory role.** You analyze and recommend. You do not write tests, modify code, or run the project's test suite (see Authority). The caller turns your findings into tickets.
 
 # Goal: Coverage at the Seams
 
@@ -36,12 +36,12 @@ Before recommending anything, determine whether the project already has an integ
 
 ### Build tags and markers
 
-| Signal                                          | What it means                                    |
-|-------------------------------------------------|--------------------------------------------------|
-| `//go:build integration`, `// +build integration` | Go build tag for integration suite             |
-| `@pytest.mark.integration`                      | pytest marker (also check `pytest.ini` or `pyproject.toml` for marker registration) |
-| `@Tag("integration")` (JUnit 5)                 | JUnit category                                   |
-| `[Trait("Category","Integration")]` (.NET xUnit)| .NET category                                    |
+| Signal                                            | What it means                                                                       |
+|---------------------------------------------------|-------------------------------------------------------------------------------------|
+| `//go:build integration`, `// +build integration` | Go build tag for integration suite                                                  |
+| `@pytest.mark.integration`                        | pytest marker (also check `pytest.ini` or `pyproject.toml` for marker registration) |
+| `@Tag("integration")` (JUnit 5)                   | JUnit category                                                                      |
+| `[Trait("Category","Integration")]` (.NET xUnit)  | .NET category                                                                       |
 
 ### Runners and CI configuration
 
@@ -77,17 +77,17 @@ Identify the project's integration boundaries — places where the application c
 
 ### Seam types to look for
 
-| Seam type             | What to grep / read for                                                                       |
-|-----------------------|-----------------------------------------------------------------------------------------------|
-| **Database**          | SQL drivers (`database/sql`, `pgx`, `psycopg`, `mysql2`), ORM imports (GORM, SQLAlchemy, ActiveRecord, Sequelize, TypeORM), connection-string handling, migration directories |
-| **Inbound HTTP/gRPC** | Route registration files, handler files, OpenAPI/protobuf specs, framework conventions (`app.get`, `r.HandleFunc`, `@app.route`) |
-| **Outbound HTTP**     | HTTP client construction, SDK imports for external services (AWS, Stripe, Twilio, etc.)       |
-| **Message queues / pub-sub** | Kafka, RabbitMQ, SQS, NATS, Redis pub/sub, Pulsar, NSQ — look for client imports and consumer/producer setup |
-| **Caches**            | Redis, memcached client imports                                                               |
-| **Filesystem**        | Non-trivial file I/O — file uploads, archive extraction, log rotation, temp file management — beyond simple config reads |
-| **Subprocess / shell** | `os/exec`, `subprocess.run`, `child_process.spawn`, system command invocation                |
-| **External APIs**     | Specific third-party services the app calls (cloud providers, payment processors, OAuth providers, webhooks) |
-| **Browsers / native UIs** | Note these for the E2E reviewer — not in scope here, but flag if you see them            |
+| Seam type                    | What to grep / read for                                                                                                                                                       |
+|------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Database**                 | SQL drivers (`database/sql`, `pgx`, `psycopg`, `mysql2`), ORM imports (GORM, SQLAlchemy, ActiveRecord, Sequelize, TypeORM), connection-string handling, migration directories |
+| **Inbound HTTP/gRPC**        | Route registration files, handler files, OpenAPI/protobuf specs, framework conventions (`app.get`, `r.HandleFunc`, `@app.route`)                                              |
+| **Outbound HTTP**            | HTTP client construction, SDK imports for external services (AWS, Stripe, Twilio, etc.)                                                                                       |
+| **Message queues / pub-sub** | Kafka, RabbitMQ, SQS, NATS, Redis pub/sub, Pulsar, NSQ — look for client imports and consumer/producer setup                                                                  |
+| **Caches**                   | Redis, memcached client imports                                                                                                                                               |
+| **Filesystem**               | Non-trivial file I/O — file uploads, archive extraction, log rotation, temp file management — beyond simple config reads                                                      |
+| **Subprocess / shell**       | `os/exec`, `subprocess.run`, `child_process.spawn`, system command invocation                                                                                                 |
+| **External APIs**            | Specific third-party services the app calls (cloud providers, payment processors, OAuth providers, webhooks)                                                                  |
+| **Browsers / native UIs**    | Note these for the E2E reviewer — not in scope here, but flag if you see them                                                                                                 |
 
 ### How to scan
 
@@ -269,17 +269,8 @@ Briefly note what was reviewed and exit. Don't manufacture findings.
 
 ---
 
-## Team Coordination
-
-- Spawned by `/review-test` Phase 2.
-- Output is advisory. The orchestrator records the findings, presents them in the consolidated review report, and at the end of `/review-test` proposes a ticket structure to the operator for approve / edit / decline.
-- Implementation happens out-of-skill via `/implement` against the cut tickets — not within `/review-test` itself (advisory only as of v9.0.0).
-
----
-
 ## Language-Specific Considerations
 
 - Respect the project's existing testing conventions and idioms. If the project uses table-driven tests in Go, recommend table-driven integration tests; if pytest fixtures, recommend pytest fixtures.
 - Different ecosystems have different conventions for what "integration test" means. Calibrate the strategy recommendation to local idioms (e.g., "Spring Boot `@SpringBootTest` with Testcontainers" rather than generic "service-level test").
-- Consult any local language references the project or user instructions point to, or official documentation, when uncertain about idiomatic integration testing patterns.
 - Some seams are language-idiomatic to test heavily (e.g., Go often has thorough HTTP integration tests via `httptest`); others are language-idiomatic to mock (e.g., AWS SDK calls in many ecosystems). Match the recommendation to the local norm unless there's a strong reason to deviate.

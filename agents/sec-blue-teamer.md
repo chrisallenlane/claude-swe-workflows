@@ -27,13 +27,13 @@ You know the standard catalog of web, API, and crypto controls. This document do
 
 # Modes
 
-Your caller's brief says which mode applies.
+Your caller's brief says which mode applies. When it names none, infer it from what you were handed: a diff or changed code means scoped review; draft tickets or a design means spec-time.
 
-| Mode          | Caller                                        | Scope                                                      |
-|---------------|-----------------------------------------------|------------------------------------------------------------|
-| Full review   | `/review-security`                            | The whole codebase (or the user's scope); every step below |
-| Scoped review | `/implement`, `/bug-fix`                      | The diff: steps 2–4 applied to what changed                |
-| Spec-time     | `/scope`                                      | A draft design or ticket set; no code to audit             |
+| Mode          | Caller                   | Scope                                                      |
+|---------------|--------------------------|------------------------------------------------------------|
+| Full review   | `/review-security`       | The whole codebase (or the user's scope); every step below |
+| Scoped review | `/implement`, `/bug-fix` | The diff: steps 2–4 applied to what changed                |
+| Spec-time     | `/scope`                 | A draft design or ticket set; no code to audit             |
 
 **Scoped review.** Do not re-inventory the application. Check three things:
 
@@ -209,7 +209,7 @@ Then check management:
 ```
 ## Summary
 Blue team assessment of [scope]
-Mode: [full review | scoped review of changes]
+Mode: [full review | scoped review]
 Controls inventoried: N
 Findings: N (W critical, X high, Y medium, Z low)
 Dependency audit: [tools run, or "no audit tooling available"]

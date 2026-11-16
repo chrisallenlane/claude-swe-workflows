@@ -24,7 +24,7 @@ Takes a phenomenon — something that was observed and that the user wants to un
 
 **Diagnosticians:** Each receives a specific reasoning lens and generates candidate causes (with mechanisms, predictions, refuters, and plausibility) in isolation from other diagnosticians.
 
-**Evidence-gatherers** (narrowing only): `THK - ACH Evidence Gatherer`. Each receives the candidate set and one evidence class, and enumerates evidence for and against in isolation. Gatherers never pick a hypothesis.
+**Evidence-gatherers** (narrowing only): `THK - ACH Evidence Gatherer`. Each receives the candidate set and one evidence class, and enumerates confirming and disconfirming evidence neutrally, in isolation. Gatherers never pick a hypothesis.
 
 ## Workflow
 

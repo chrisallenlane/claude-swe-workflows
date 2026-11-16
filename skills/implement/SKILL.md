@@ -98,8 +98,8 @@ For multi-ticket work, run it per ticket before its merge; a final review of the
 Use what the work needs. Each pass that plausibly applied and did not run gets a one-line reason in the report.
 
 **Reviews of the change:**
-- `sec-blue-teamer` — auth, crypto, input handling, trust boundaries. Critical/High findings must be fixed or explicitly waived by the user.
-- `swe-perf-reviewer` — hot paths, queries, loops at scale.
+- `sec-blue-teamer` with the diff (Mode: scoped review) — auth, crypto, input handling, trust boundaries. Critical/High findings must be fixed or explicitly waived by the user.
+- `swe-perf-reviewer` with the diff (Mode: change review) — hot paths, queries, loops at scale.
 - A fresh `swe-implementer` in peer-review mode — "would I accept this PR?" nits on non-trivial diffs; small fixes only, never re-architecture. If its edits break tests, revert them.
 - `doc-maintainer` or `/tidy-docs` — documentation for what changed; targeted for one ticket, a full pass for a project.
 

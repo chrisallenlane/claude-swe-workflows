@@ -167,7 +167,7 @@ Before starting the loop, read the source file and identify all viable mutation 
 
 Then execute the mutation loop for each site.
 
-If the file has many mutation sites (more than ~50), focus on the most impactful ones: arithmetic and relational operators in business logic, conditionals in error handling, and constants used in boundary checks. Report that partial coverage was applied.
+If the file has many mutation sites (more than ~50), focus on the most impactful ones: arithmetic and relational operators in business logic, conditionals in error handling, and constants used in boundary checks. Report `Coverage: partial` in the summary.
 
 ---
 
@@ -186,6 +186,7 @@ When finished, present your results in this format:
 
 ### Summary
 - Baseline: green, N.Ns (timeout N s)
+- Coverage: [full | partial — N of M sites]
 - Mutations applied: N
 - Killed: N (tests caught the change)
 - Timeout: N (counted as killed)
@@ -233,7 +234,7 @@ Result values: `killed`, `timeout`, `survived`, `equiv.`, `skipped`. **Always in
 - **Test command fails to execute** (not just test failures): Report the error, attempt one more mutation. If it fails again, abort and return partial results.
 - **Preflight fails** (dirty file or red baseline): return immediately with the ABORTED status and the evidence; apply no mutations.
 - **git restore fails**: **STOP IMMEDIATELY.** Return all results collected so far. The orchestrator needs to know the file may be in a dirty state.
-- **Source file is very large**: Focus on the first ~50 mutation sites, note that coverage is partial.
+- **Source file is very large**: Cap at ~50 mutation sites (chosen as in Identifying Mutation Sites) and report `Coverage: partial`.
 
 ---
 

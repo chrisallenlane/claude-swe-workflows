@@ -112,7 +112,7 @@ A single report combining the blue team's defensive assessment, the red team's o
 
 The skill examines the audit's shape (severity distribution, chain count, defense-in-depth findings) and proposes a ticket structure that fits — concentrated CRITICALs typically get one ticket each plus a chain ticket plus a defense-in-depth batch; defense-in-depth-only audits get a single hardening ticket; empty audits cut nothing. The proposal is presented for approve / edit / decline; on approval, tickets land via the canonical tracker integration (`references/trackers.md`).
 
-Each cut ticket preserves the `Discovered by:` attribution introduced in v7.1.0, so the empirical signal about whether the parallel-isolated first pass is producing value (especially anchoring-suppressed findings) survives the handoff to the tracker.
+Each cut ticket preserves the `Discovered by:` attribution, so the empirical signal about whether the parallel-isolated first pass is producing value (especially anchoring-suppressed findings) survives the handoff to the tracker.
 
 The skill offers ticket creation regardless of caller. When an orchestrator invokes `/review-security`, the orchestrator receives the proposal and applies its own autonomy judgment per `references/autonomy.md` — approving, editing, or declining the proposal, then deciding which of any created tickets to work in the current flow versus defer. Remediation happens via `/implement`, not within this skill.
 

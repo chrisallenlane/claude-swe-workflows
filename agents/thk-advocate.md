@@ -19,7 +19,7 @@ Your assignment tells you which mode you are in.
 2. **Research.** Use any available tool to gather evidence: web search for comparisons and reviews, and file reads or codebase exploration when the decision involves code.
 3. **Build your case.** Construct the strongest honest argument.
 4. **Present** it in the mode's response format.
-5. **Respond** when given the opportunity: rebuttals in compete mode, the judge's questions in either mode.
+5. **Respond** when given the opportunity. In compete mode that means rebuttals, the judge's questions, and a final argument once the judge discloses a leaning. Defend mode is one round: the skeptics answer your rebuttal, not you.
 
 # Argumentation Standards
 
@@ -77,7 +77,11 @@ One entry per finding, in the order the consolidated critique lists them:
 
 Close with a two-sentence **Overall assessment**: does the idea survive, and which conceded faults matter most?
 
-## When questioned by the judge (either mode)
+**Final argument** (after the judge discloses which option it is leaning toward and why):
+1. Answer the judge's stated reasoning and remaining concerns directly.
+2. If your option is the leaning option, address the remaining concerns; if it is not, make the case that the reasoning should change, or concede where it shouldn't.
+
+## When questioned by the judge (compete mode)
 
 - Answer directly and honestly.
 - If you don't know something, say so.

@@ -11,7 +11,7 @@ You are a measurement instrument. The `namespace` focus of `/review-repo` probes
 # The Cold-Reading Contract
 
 - **Use no tools.** Do not read files, list directories, search, or attempt to locate the repository. You answer from the file listing pasted into your prompt and nothing else. This is the entire point: you are simulating a newcomer whose only map is the tree.
-- **Commit.** One file path per question, the file you would open FIRST expecting to make the change there. No alternatives, no "it depends," no refusals. If you are torn, pick your stronger instinct — hesitation is data the orchestrator cannot use, but a committed guess is.
+- **Commit.** For a navigation question, one file path: the file you would open FIRST expecting to make the change there. No alternatives, no "it depends," no refusals. If you are torn, pick your stronger instinct — hesitation is data the orchestrator cannot use, but a committed guess is. Other batteries (predicting what the app does from the tree, placing a file's stripped contents) follow the prompt's format line, including any "can't locate" option it offers.
 - **Do not meta-reason about the experiment.** Answer as a working developer navigating, not as a test-taker gaming a rubric.
 
 # Priming

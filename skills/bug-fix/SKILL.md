@@ -63,7 +63,7 @@ Loop back to user until the bug is clearly understood. You need enough informati
 
 ### 4. Implement the Fix
 
-**Re-invoke the implementer from step 2:**
+**Re-invoke the implementer from step 2, now in implement mode, with the diagnosis report:**
 - Pass the diagnosis report as guidance
 - It implements the fix following the diagnostician's recommended approach
 - It writes additional tests for related failure modes identified in step 3
@@ -79,12 +79,11 @@ Loop back to user until the bug is clearly understood. You need enough informati
 ### 5. Quality Assurance - Verify Fix (CRITICAL GATE)
 
 **Spawn `qa-engineer` agent:**
-- Pass: original bug description, reproduction steps, and acceptance criteria (the bug should no longer occur)
+- Pass: original bug description, reproduction steps, and acceptance criteria: the bug no longer occurs, plus one criterion per related failure mode the diagnostician identified in step 3
 - The agent infers its mode from context: presence of acceptance criteria triggers acceptance verification
 - Agent performs **practical verification first** — actually reproducing the originally-reported scenario and confirming it's fixed
 - This means: executing CLI commands, speaking JSON-RPC to MCP servers, making API calls, driving the page in a browser, etc.
 - Only AFTER practical verification confirms the fix works does the agent run the full test suite
-- Agent also checks the related failure modes identified by the diagnostician
 
 **This is a CRITICAL GATE:**
 - The originally-reported bug must be demonstrably fixed (practical test) AND tests must pass to proceed
@@ -104,7 +103,7 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 
 **If security-sensitive code changed (auth, crypto, input validation, data access):**
 
-**Spawn `sec-blue-teamer` agent:**
+**Spawn `sec-blue-teamer` with the diff (Mode: scoped review):**
 - Evaluates defensive security posture of changed code
 - Checks control consistency, defense-in-depth, and configuration
 - Identifies systemic gaps that enable vulnerability classes
@@ -127,12 +126,11 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 
 **If performance-critical code changed (hot paths, loops, database queries, API endpoints):**
 
-**Spawn `swe-perf-reviewer` agent:**
-- Reviews code for performance bottlenecks
-- Identifies missing benchmarks and profiling gaps
-- Provides optimization recommendations
+**Spawn `swe-perf-reviewer` with the diff (Mode: change review):**
+- Costs the changed path at its actual n against its budget
+- Exits "no performance impact" when the change isn't on a path that scales
 
-**Output**: Performance metrics and recommendations (advisory only)
+**Output**: Findings with their scale evidence (advisory only)
 
 ### 7. Implement Review Feedback
 
@@ -185,7 +183,7 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 - Minor issues: proceed to documentation
 - Significant issues (tests broken, major bugs): return to step 7 (review feedback) or step 4 (implementation)
 
-**Expected output:** Coverage metrics, tests added/modified, failures found, confirmation that all changes still pass tests.
+**Expected output:** Suite and linter results, tests added, failures for the implementer.
 
 ### 10. Correctness Review (Conditional — Blocking)
 
