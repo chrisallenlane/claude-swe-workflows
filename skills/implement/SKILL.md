@@ -75,13 +75,13 @@ Implements whatever it is given — one ticket, a batch of tickets, or a goal th
 
 **Delegate the build to `swe-implementer`** — or implement directly when the change is small enough that a handoff costs more than it saves. Pass it the ticket, the inventory, any plan, and the target runtime and versions when you know them.
 
-**Plan when the work is unclear.** `swe-planner` sequences complex changes (cross-cutting concerns, migrations, many modules, several viable approaches) into verifiable sub-tasks; it plans the inventoried concepts and adds none. Prototype risky approaches in a scratch directory first.
+**Plan when the work is unclear** — cross-cutting concerns, migrations, many modules, several viable approaches. Write the plan yourself before delegating: an ordered sequence of sub-tasks over the inventoried concepts (it adds none), each verifiable on its own, with risky or uncertain parts first and hard-to-reverse steps last. Prototype uncertain approaches in a scratch directory before building on them.
 
 **Implementation responsibilities:** language idioms and project conventions; edge cases and errors; unit tests for pure logic as it is written.
 
 ## 4. Verify (Floor)
 
-**Practical verification first.** Spawn `qa-engineer` with the ticket's acceptance criteria. It exercises the feature for real — runs the CLI, calls the API, drives the MCP tool through a subagent, uses the library — and only then writes tests. This prevents passing tests for broken code. Failure returns to §3; after 3 failed attempts on the same ticket, escalate (§7).
+**Practical verification first.** Spawn `qa-engineer` with the ticket's acceptance criteria. It exercises the feature for real — runs the CLI, calls the API, speaks JSON-RPC to the MCP server, drives the page in a browser, uses the library — and only then writes tests. This prevents passing tests for broken code. It never fixes product code; a failure comes back to the implementer with its evidence. Verification it cannot perform from inside a subagent (invoking a Claude skill or agent) is returned to you to run. Failure returns to §3; after 3 failed attempts on the same ticket, escalate (§7).
 
 **Tests and linters green.** Run the suite, linters, and formatters after every change set, and before every commit and merge.
 

@@ -45,7 +45,7 @@
 │     ├─ Present understanding + plan; wait for approval       │
 │     └─ Branch (never main); PROJECT_STATE.md if multi-ticket │
 │  2. Concept inventory — per ticket (floor)                   │
-│  3. Build — swe-implementer or direct; planner when unclear  │
+│  3. Build — swe-implementer or direct; plan first if unclear │
 │  4. Verify (floor)                                           │
 │     ├─ qa-engineer: practical verification, then tests       │
 │     ├─ Tests and linters green                               │
@@ -98,11 +98,11 @@ The inventory scales with the change — a small fix may record "no new concepts
 
 The build goes to `swe-implementer`, a single language-agnostic agent, or is done directly when the change is too small to be worth a handoff. The implementer's value is not language expertise, which the model already has. Its value is discipline against the ways implementation agents fail: it checks APIs against the installed toolchain version rather than recalling them, follows the project's conventions instead of imposing defaults, builds only the inventoried concepts, and reports nothing as done that it hasn't run.
 
-The agent receives the ticket, the inventory, and any plan. When the work is unclear — cross-cutting concerns, migrations, many modules, several viable approaches — `swe-planner` sequences it into verifiable sub-tasks first, planning only the inventoried concepts. Risky approaches are prototyped in a scratch directory.
+The agent receives the ticket, the inventory, and any plan. When the work is unclear — cross-cutting concerns, migrations, many modules, several viable approaches — the skill plans it first: an ordered sequence of independently verifiable sub-tasks over the inventoried concepts, risky or uncertain parts first, hard-to-reverse steps last. Uncertain approaches are prototyped in a scratch directory. Failures in practical verification go back to the implementer; `qa-engineer` reports, it never fixes.
 
 ### 4. Verify (Floor)
 
-**Practical verification first.** `qa-engineer` gets the acceptance criteria and exercises the feature for real — runs the CLI, calls the API, drives the MCP tool through a subagent, uses the library — and only then writes tests. Failure returns to Build; three failed attempts on the same ticket escalate.
+**Practical verification first.** `qa-engineer` gets the acceptance criteria and exercises the feature for real — runs the CLI, calls the API, speaks JSON-RPC to the MCP server, drives the page in a browser, uses the library — and only then writes tests. Failure returns to Build; three failed attempts on the same ticket escalate.
 
 ```
 ❌ Write code → write passing tests → ship broken code

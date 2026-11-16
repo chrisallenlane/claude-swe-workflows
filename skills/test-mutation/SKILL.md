@@ -121,7 +121,9 @@ Scope? Enter file names/numbers, or press Enter to test all pending modules.
 
 **Default:** All pending modules, processed in alphabetical order. If a module is in-progress, it is processed first.
 
-**After scope is confirmed, the workflow enters autopilot mode. No further user interaction occurs until the run completes or an unrecoverable error is encountered.**
+**Require a clean tree before autopilot.** Run `git status --porcelain --untracked-files=no`. If it prints anything, stop and ask the user to commit or stash first: the mutator reverts with `git restore`, and step 7 discards failed tests the same way, so any uncommitted edit to a tracked file would be silently destroyed. (The mutator re-checks its own file before each module.)
+
+**After scope is confirmed and the tree is clean, the workflow enters autopilot mode. No further user interaction occurs until the run completes or an unrecoverable error is encountered.**
 
 ---
 
@@ -142,13 +144,17 @@ and report which mutations are killed vs survived.
 
 Wait for the agent to complete and collect its results.
 
+**If the agent returns `ABORTED`:**
+- `dirty file` — stop the run; something changed the tree mid-run. Report it to the user.
+- `baseline red` — the suite already fails, so mutation results would be meaningless. Mark the module `blocked` with the failing output as the reason, and continue with the next module.
+
 ### 5. Update Tracking File
 
 Parse the mutator agent's results and update `.test-mutations.json`:
 
 - Set module status to `completed` (or `in_progress` if the agent reported partial coverage)
 - Populate `mutations_by_type` with results grouped by mutation type
-- Store surviving mutation examples in the `examples` arrays
+- Store surviving and likely-equivalent mutation examples in the `examples` arrays
 - Calculate `mutation_score` for the module
 - Update `global_statistics` (recalculate totals and overall score)
 - Set `last_updated` timestamp
@@ -158,6 +164,8 @@ Write the updated tracking file.
 ### 6. Spawn Implementer to Write Tests
 
 **If no survivors (100% mutation score):** Log the result and proceed to step 8 (commit).
+
+**Likely-equivalent mutants are not test tasks.** The mutator marks survivors that no input can distinguish from the original, with a reason. Do not send them to the implementer; record them in the tracking file and list them in the final summary so a human can confirm. Review each reason as you pass it through — if the reason doesn't hold, treat the mutant as an ordinary survivor.
 
 **If survivors exist:** Write tests for ALL surviving mutations.
 
@@ -188,7 +196,7 @@ Each test should:
 
 **Run the test suite** to confirm new tests pass with the correct (unmutated) code.
 
-**If new tests fail:** Give the implementer (or yourself) one chance to fix. If still failing, log the failure, revert the failing tests (`git restore`), and continue with the next module.
+**If new tests fail:** Give the implementer (or yourself) one chance to fix. If still failing, log the failure, remove the tests added for this module (delete new test files; `git restore` modified ones), and continue with the next module.
 
 **Re-mutate to confirm kills:** For each addressed surviving mutation:
 
@@ -233,11 +241,11 @@ After all modules in scope have been processed:
 ## Mutation Testing Complete
 
 ### Modules Tested This Session
-| Module             | Before | After | Tests Added | Unresolved |
-|--------------------|--------|-------|-------------|------------|
-| src/auth.go        | —      | 100%  | 0           | 0          |
-| src/payment.go     | —      | 95%   | 4           | 2          |
-| src/config.go      | —      | 88%   | 3           | 3          |
+| Module             | Before | After | Tests Added | Unresolved | Equivalent |
+|--------------------|--------|-------|-------------|------------|------------|
+| src/auth.go        | —      | 100%  | 0           | 0          | 0          |
+| src/payment.go     | —      | 95%   | 4           | 2          | 1          |
+| src/config.go      | —      | 88%   | 3           | 3          | 0          |
 
 ### Project Progress
 - Modules complete: 8/10
@@ -248,6 +256,12 @@ After all modules in scope have been processed:
 - src/payment.go:103 — removed `audit.Log(transaction)` (statement deletion)
 - src/config.go:45 — `timeout > 0` → `timeout >= 0` (relational)
 - ...
+
+### Likely-Equivalent (confirm by hand)
+- src/payment.go:61 — `i < n` → `i != n` (loop index only increments from below `n`)
+
+### Blocked Modules
+- src/legacy.go — baseline suite red (see tracking file)
 
 ### Commits Made
 - abc1234 test: improve mutation coverage for auth module
@@ -276,6 +290,8 @@ Report any modules that were skipped due to errors (implementer failures, test f
           "total": 12,
           "killed": 11,
           "survived": 1,
+          "timeout": 0,
+          "likely_equivalent": 0,
           "examples": [
             {
               "line": 42,
@@ -288,6 +304,7 @@ Report any modules that were skipped due to errors (implementer failures, test f
         }
       },
       "mutation_score": 91.7,
+      "blocked_reason": null,
       "insights": []
     }
   },
@@ -306,6 +323,8 @@ Report any modules that were skipped due to errors (implementer failures, test f
 - `examples` should include all surviving mutations (for reporting) and a few representative killed mutations (for insight). Don't store every killed mutation — just survivors and notable kills.
 - `insights` are human-readable observations the mutator agent provides (e.g., "Strong error handling coverage" or "No tests for boundary conditions").
 - `global_statistics` are recalculated from module data on each update.
+- `mutation_score` is (killed + timeout) / (total − likely_equivalent). Skipped mutations are not counted in `total`.
+- `status` is one of `pending`, `in_progress`, `completed`, `blocked`; `blocked_reason` says why (e.g. baseline red).
 
 ## Agent Coordination
 
@@ -322,7 +341,8 @@ Report any modules that were skipped due to errors (implementer failures, test f
 - User interrupts
 - Test command doesn't work (can't run tests)
 - No source files found to mutate
-- Git repository is in a dirty state that would prevent `git restore` (warn user, ask them to commit or stash first)
+- Tracked files have uncommitted changes (`git status --porcelain --untracked-files=no` is non-empty) — checked before autopilot; ask the user to commit or stash
+- The mutator reports a dirty file mid-run
 
 **Do NOT abort for:**
 - Individual mutation failures (record and continue)
@@ -330,6 +350,7 @@ Report any modules that were skipped due to errors (implementer failures, test f
 - Implementer fails to write a test (log the failure, revert, continue with next module)
 - Some re-applied mutations still survive after new tests (log as unresolved, continue)
 - New tests fail and cannot be fixed (log, revert, continue with next module)
+- A module's baseline suite is red (mark it `blocked`, continue)
 
 ## Example Session
 
@@ -408,6 +429,12 @@ Starting autopilot run for 8 modules...
 - src/api/handler.go:88 — removed `log.Info(request)` (statement deletion)
 - src/config.go:45 — `timeout > 0` → `timeout >= 0` (relational)
 - ...
+
+### Likely-Equivalent (confirm by hand)
+- src/payment.go:61 — `i < n` → `i != n` (loop index only increments from below `n`)
+
+### Blocked Modules
+- src/legacy.go — baseline suite red (see tracking file)
 
 ### Commits Made (8)
 - abc1234 test: improve mutation coverage for handler module

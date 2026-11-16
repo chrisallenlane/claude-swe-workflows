@@ -39,11 +39,11 @@ Work from both ends and meet in the middle:
 
 If a `/review-arch` mechanism audit is available in your context, its `serves:` citations are pre-computed cost attribution — start there. The audit stops at "keep — serves requirement X"; you interrogate whether X earns its keep.
 
-**Hunt requirement chains especially.** The most expensive requirements are rarely expensive directly — they force a design choice that forces a compensating mechanism that forces a defense of the compensation. ("No mutual kills" → sequential resolution → id bias → per-tick shuffle → bias measurement → tests proving the mitigation.) Price the whole chain back to the root commitment, because relaxing the root dissolves everything downstream.
+**Hunt requirement chains especially.** The most expensive requirements are rarely expensive directly — they force a design choice that forces a compensating mechanism that forces a defense of the compensation. (In a game: "no mutual kills" → sequential resolution → id bias → per-tick shuffle → bias measurement → tests proving the mitigation. In a web service: "every export reflects the live database" → no caching → read load on the primary → a read replica → replica-lag handling → tests proving consistency.) Price the whole chain back to the root commitment, because relaxing the root dissolves everything downstream.
 
 Recurring places cost hides:
 
-- **Edge-case absolutism**: guarantees held at boundaries no user observes ("an order accepted on the final tick must render" — forcing per-record phase stamping everywhere).
+- **Edge-case absolutism**: guarantees held at boundaries no user observes ("an order accepted on the final tick must render" — forcing per-record phase stamping everywhere; "a report must include writes made in the same second it was requested" — forcing transactional snapshots for a nightly summary).
 - **Unshipped futures**: machinery underwritten by a feature that hasn't shipped and may never (replay support justifying uniform normalization, logging, and determinism surface).
 - **Uniformity commitments**: "every X goes through the same path" purchased at the price of the most demanding X.
 - **Precision beyond perception**: exactness, ordering, or immediacy that no consumer can distinguish from a cheaper approximation.
@@ -55,7 +55,7 @@ For each expensive requirement, apply the value-engineering question: **what els
 
 **Discipline for every trade:**
 
-- **The delta must be concrete and scenario-shaped.** "The viewer who types an order on the exact final battle tick sees no acknowledgement" is decidable by a product owner. "Slightly different edge behavior" is not a finding.
+- **The delta must be concrete and scenario-shaped.** "The viewer who types an order on the exact final battle tick sees no acknowledgement" is decidable by a product owner. "An invoice edited within a minute of a CSV export may be missing from that export" is equally decidable. "Slightly different edge behavior" is not a finding.
 - **Savings are estimates, presented as estimates,** with the affected files cited so the operator can spot-check. Never let "~800 lines" read as a measurement.
 - **Flag load-bearing categories.** A relaxation touching correctness of money, data integrity, security, privacy, or accessibility must say so prominently — those trades exist but carry a different burden.
 - **Do not price the product's soul.** Some requirements *are* the product — the reason users show up. Distinguish core commitments from incidental ones by asking: would a user notice? would they care? is this why they use it? You may still surface a core-requirement trade when the leverage is extreme, but label it as core so nobody mistakes the menu for a recommendation to gut the thing.
@@ -112,4 +112,4 @@ For each expensive requirement, apply the value-engineering question: **what els
 
 - **`/review-arch` / mechanism audit**: prices machinery *within* fixed requirements; you price the requirements. Its "keep — serves X" verdicts are your inputs. Costly machinery serving no requirement routes to it.
 - **`/refactor`**: behavior-preserving cleanup — downstream of any approved trade.
-- **swe-planner / `/scope`**: turn approved trades into implementable tickets.
+- **`/scope`**: turns approved trades into implementable tickets.

@@ -43,9 +43,13 @@ Mutation testing introduces synthetic bugs one at a time:
 For each mutation: apply the change, run the test suite, check if tests fail, then revert.
 
 - **Killed**: Tests failed — they caught the mutation (good)
+- **Timeout**: The suite ran past 3× its baseline time — counted as killed, reported separately
 - **Survived**: Tests passed — they missed the mutation (gap found)
+- **Likely-equivalent**: A survivor no input can distinguish from the original (with a stated reason). Not sent for test writing; listed for you to confirm
 
-**Mutation score** = (mutations killed / total mutations) x 100%
+**Mutation score** = (killed + timeout) / (total − likely-equivalent) × 100%
+
+**Safety preconditions.** Mutations are reverted with `git restore`, so the run requires a clean tree: it stops before autopilot if any tracked file has uncommitted changes. Each module also starts with a timed baseline run. If the suite is already red, the module is marked `blocked` rather than reporting every mutation as killed, and the per-mutation timeout is set to 3× the baseline (at least 30 seconds) so a slow suite isn't mistaken for a hang.
 
 ## Workflow
 
@@ -55,11 +59,13 @@ For each mutation: apply the change, run the test suite, check if tests fail, th
 │  Initialize (load/create tracking file)  │
 │  Detect test command (first run)         │
 │  Select scope (default: all pending)     │
+│  Require a clean tree                    │
 │                                          │
 │  EXECUTION (autopilot)                   │
 │  For each module in scope:               │
+│    Baseline: suite green? time it        │
 │    Apply mutations, run tests each time  │
-│    Write tests targeting ALL survivors   │
+│    Write tests for survivors (not equiv.)│
 │    Verify new tests kill the mutations   │
 │    Commit changes                        │
 │  Final summary                           │
@@ -81,8 +87,8 @@ Loads progress from the tracking file, shows what's been tested and what's pendi
 ### Autopilot Execution
 
 For each module in scope, the workflow:
-1. Spawns a mutator agent to apply mutations and identify survivors
-2. Spawns an implementer to write tests for all surviving mutations
+1. Spawns a mutator agent, which checks the file is clean, times a green baseline, then applies mutations and identifies survivors
+2. Spawns an implementer to write tests for every survivor not marked likely-equivalent
 3. Verifies the new tests actually kill the mutations
 4. Commits changes and moves to the next module
 

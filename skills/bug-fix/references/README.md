@@ -110,9 +110,9 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
  │      Agent: sec-blue-teamer                  │
  │      Authority: Can demand changes           │
  │                                              │
- │  6b. Refactoring (if non-trivial)            │
+ │  6b. Scope audit (if non-trivial)            │
  │      Agent: swe-code-reviewer                │
- │      Authority: Advisory suggestions         │
+ │      Authority: Departures must be resolved  │
  │                                              │
  │  6c. Performance (if critical code)          │
  │      Agent: swe-perf-reviewer                │
@@ -126,7 +126,8 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
  │                                              │
  │  • Aggregate all review feedback             │
  │  • Security: Must address or get approval    │
- │  • Other: Advisory - use discretion          │
+ │  • Departures: Remove or justify             │
+ │  • Performance: Advisory - use discretion    │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -146,7 +147,7 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
  │                                              │
  │  • Test coverage analysis                    │
  │  • Fill coverage gaps                        │
- │  • Run linters/formatters                    │
+ │  • Run suite + linters; report failures      │
  │  • Verify steps 7-8 didn't break tests       │
  └──────────────────┬───────────────────────────┘
                     ▼
@@ -251,9 +252,9 @@ If verification fails, returns to step 4 (max 3 attempts before escalating).
 
 ### 6-13. Reviews, Correctness Gate, Documentation, Completion
 
-- **6-7. Conditional reviews and feedback.** `sec-blue-teamer` (security-sensitive changes; Critical/High findings must be addressed or explicitly waived), `swe-code-reviewer` (non-trivial changes; advisory), and `swe-perf-reviewer` (performance-critical changes; advisory). The implementer addresses the feedback.
+- **6-7. Conditional reviews and feedback.** `sec-blue-teamer` (security-sensitive changes; Critical/High findings must be addressed or explicitly waived), `swe-code-reviewer` (non-trivial changes; audits the fix against the diagnosis's narrow fix, and each departure must be removed or justified), and `swe-perf-reviewer` (performance-critical changes; advisory). The implementer addresses the feedback.
 - **8. Peer review.** A fresh `swe-implementer` in peer-review mode makes small fixes on non-trivial changes; reverted if it breaks tests.
-- **9. QA coverage and quality.** `qa-engineer` fills coverage gaps, runs linters, and confirms steps 7-8 broke nothing.
+- **9. QA coverage and quality.** `qa-engineer` fills coverage gaps with tests, runs the suite and linters, and confirms steps 7-8 broke nothing. Failures route back to the implementer; QA never fixes product code.
 - **10. Correctness review** (below).
 - **11-13. Documentation, final verification, completion.** `doc-maintainer` runs a targeted pass; the full suite and linters run; with your confirmation the skill commits, updates or closes the ticket, and offers a rebase.
 

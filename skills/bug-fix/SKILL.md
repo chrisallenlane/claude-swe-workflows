@@ -82,20 +82,22 @@ Loop back to user until the bug is clearly understood. You need enough informati
 - Pass: original bug description, reproduction steps, and acceptance criteria (the bug should no longer occur)
 - The agent infers its mode from context: presence of acceptance criteria triggers acceptance verification
 - Agent performs **practical verification first** — actually reproducing the originally-reported scenario and confirming it's fixed
-- This means: executing CLI commands, spawning subagents to test MCP tools, making API calls, etc.
+- This means: executing CLI commands, speaking JSON-RPC to MCP servers, making API calls, driving the page in a browser, etc.
 - Only AFTER practical verification confirms the fix works does the agent run the full test suite
 - Agent also checks the related failure modes identified by the diagnostician
 
 **Practical verification by feature type:**
 - CLI tools: Run commands in subshell (skip destructive operations)
-- MCP servers/Claude skills: Spawn subagent to actually use the feature
+- MCP servers: Launch the server and send JSON-RPC requests directly
+- Web UIs: Browser automation when available
+- Claude skills/agents: Cannot be invoked from a subagent — QA returns the steps to the orchestrator, which runs them
 - API integrations: Make actual calls (with caution for dangerous operations)
 - Libraries: Quick sanity checks, then unit tests
 
 **This is a CRITICAL GATE:**
 - The originally-reported bug must be demonstrably fixed (practical test) AND tests must pass to proceed
 - If practical verification fails: return to step 4 (implementation) immediately
-- If verification passes but tests fail: debug tests, not implementation
+- If verification passes but tests fail: return to step 4 with the failing output — QA reports failures, it never fixes product code
 - Track iteration count (max 3 attempts before escalating to user)
 
 **Expected output:** Practical verification results, pass/fail determination with specific findings.
@@ -118,17 +120,16 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 
 **Output**: Defense evaluation with severity levels (critical/high/low)
 
-#### 6b. Refactoring Review (Conditional - Advisory)
+#### 6b. Scope Audit (Conditional - Departures Resolved)
 
 **If non-trivial implementation (>50 lines changed, multiple files, or complex logic):**
 
-**Spawn `swe-code-reviewer` agent:**
-- Reviews implementation for code quality issues
-- Identifies refactoring opportunities (DRY violations, dead code, complexity, etc.)
-- Provides structured recommendations organized by priority
-- Agent will report "No refactoring needed" if code is already clean
+**Spawn `swe-code-reviewer` agent** with the diff and the step-3 diagnosis report:
+- Audits the fix against the narrow fix the diagnosis calls for: anything built beyond what the fix and its related failure modes require — new helpers, options, abstractions, or a mechanism duplicating one already in the codebase
+- Every departure is evidence-cited (file:line, and the search that proves a duplicate)
+- Agent reports "No departures" when the diff stays within the fix
 
-**Output**: Refactoring recommendations (advisory only)
+**Output**: Departures. They are not advisory: step 7 resolves each one by removing it, or by naming the failure mode or requirement that forces it.
 
 #### 6c. Performance Review (Conditional - Advisory)
 
@@ -146,13 +147,14 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 **Aggregate all review feedback from step 6 and provide to implementation agent.**
 
 **Re-invoke the implementation agent from step 4** (`swe-implementer`, or yourself if you implemented directly):
-- Provide all review feedback (security, refactoring, performance)
+- Provide all review feedback (security, scope-audit departures, performance)
 - The implementer reviews all feedback and **uses its own discretion** to implement
 - **Security findings**: Must address or get explicit user approval to skip
-- **Other feedback**: Advisory only - the implementer has final authority, and may decline recommendations that conflict with the project's conventions
+- **Scope-audit departures**: Each is removed, or justified by the failure mode or requirement that forces it
+- **Performance feedback**: Advisory only - the implementer has final authority, and may decline recommendations that conflict with the project's conventions
 - The implementer implements accepted changes and commits
 
-**Note**: Security issues have authority to block; other feedback is advisory. Implementation agent makes final decisions on advisory feedback.
+**Note**: Security issues have authority to block and departures must be resolved; performance feedback is advisory. Implementation agent makes final decisions on advisory feedback.
 
 ### 8. Peer Review (Conditional)
 
@@ -183,13 +185,13 @@ Conditionally invoke specialized reviewers based on code changes and complexity.
 - Agent performs general QA assessment of all changed code (from steps 4, 7, and 8)
 - Assess test coverage for new/modified code
 - Identify gaps and write missing tests
-- Run linters/formatters and fix issues
+- Run the suite and linters; failures are reported, not fixed — they route back to step 7 or step 4
 - Evaluate test quality (assertions, edge cases)
 - **Verify implementations from steps 7 and 8 didn't break tests** - catches issues from refactoring, security fixes, or peer review cleanups
 
 **This is SUPPLEMENTARY:**
 - Issues found here don't block the workflow by default
-- Agent documents issues and proposes fixes
+- Agent documents issues and writes tests; it does not modify product code
 - Minor issues: proceed to documentation
 - Significant issues (tests broken, major bugs): return to step 7 (review feedback) or step 4 (implementation)
 
@@ -238,8 +240,11 @@ The default is to run. Skip only when the diff is trivial — typo fixes, commen
 - Critical/High severity: Must address in step 7 or get explicit user approval to skip
 - Medium/Low severity: Advisory - implementation agent decides in step 7
 
-**Code review feedback (steps 6b-6c):**
-- All refactoring and performance feedback is advisory
+**Scope audit departures (step 6b):**
+- Each departure is resolved in step 7: removed, or justified by the failure mode or requirement that forces it — not advisory
+
+**Performance feedback (step 6c):**
+- Advisory
 - Implementation agent in step 7 uses discretion to implement
 
 **Peer review issues (step 8):**
