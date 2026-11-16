@@ -1,5 +1,7 @@
 # /bug-hunt - Find Bugs Before Users Do
 
+The step-by-step procedure lives in [`SKILL.md`](../SKILL.md); this guide covers when to use the skill and what to expect.
+
 ## Overview
 
 `/bug-hunt` hunts for bugs nobody knows about yet. An assessor works out where bugs are likely to hide by cross-referencing change history (complexity × churn hotspots, fix density, change coupling), coverage gaps, and structural risk. Focused hunters then probe each hotspot and write a reproducing test for every suspected bug. You state your intent once; the skill hunts round after round until a round confirms nothing at or above your severity floor. If you give it the authority, it also tickets what it finds and fixes it via `/implement` between rounds.
@@ -7,23 +9,9 @@
 Four ideas shape it:
 
 - **Evidence, not opinion.** Every confirmed bug has a reproducing test that encodes the correct behavior and fails against the current code. That test is the finding's proof, the ticket's acceptance criterion, and the fix's verification. A finding without a failing test is reported as a suspicion, labeled as one.
-- **Finding and fixing stay separate.** Hunters never fix. With fix authority, confirmed findings go to `/implement`, which fixes them in a fresh context under its own floor: concept inventory, practical verification, independent correctness review.
+- **Finding and fixing stay separate.** Hunters never fix — the pressure to find bugs should not bend toward bugs that are easy to fix. With fix authority, confirmed findings go to `/implement`, which fixes them in a fresh context under its own floor: concept inventory, practical verification, independent correctness review.
 - **Converge on a floor, not on zero.** A hunt always finds *something* at Low. Findings at or above your floor block convergence; findings below it are reported and left alone.
 - **No rationalizing bugs away.** A finding with a failing reproducing test is real. The skill may contest one only on substance — the test asserts the wrong behavior, or the "bug" is documented intended behavior — and a contested finding comes to you.
-
-### Commander's intent
-
-Asked once, up front, then read back for confirmation:
-
-| Field          | Question                                                                  | Default if unanswered                                                     |
-|----------------|---------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| Scope          | What should the hunt cover? Areas you're worried about? Anything to skip? | Production code; tests, dev tooling, generated and vendored code excluded |
-| Severity floor | Below what severity should findings be reported but not acted on?         | High (Critical and High block convergence)                                |
-| Constraints    | Anything that must not change — public APIs, compatibility, files?        | No breaking changes; nothing else                                         |
-| Tickets        | May I create tickets for confirmed bugs without asking again?             | No — a ticket set is proposed at the end for approval                     |
-| Fix            | May I fix confirmed bugs (on a branch, via `/implement`) and re-hunt?     | No                                                                        |
-
-The defaults make `/bug-hunt` an advisory audit: it changes nothing outside its report unless you say it may. Granting ticket authority up front *is* your approval to create them.
 
 ## When to Use
 
@@ -38,50 +26,31 @@ The defaults make `/bug-hunt` an advisory audit: it changes nothing outside its 
 - Security exploitability — use `/review-security`, which asks whether an attacker can exploit the code; `/bug-hunt` asks whether it fails under ordinary use
 - Test-suite quality or coverage strategy — use `/review-test`
 
-## Workflow Diagram
+## What You'll Be Asked: Commander's Intent
+
+Asked once, up front, then read back for confirmation:
+
+| Field          | Question                                                                  | Default if unanswered                                                     |
+|----------------|---------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| Scope          | What should the hunt cover? Areas you're worried about? Anything to skip? | Production code; tests, dev tooling, generated and vendored code excluded |
+| Severity floor | Below what severity should findings be reported but not acted on?         | High (Critical and High block convergence)                                |
+| Constraints    | Anything that must not change — public APIs, compatibility, files?        | No breaking changes; nothing else                                         |
+| Tickets        | May I create tickets for confirmed bugs without asking again?             | No — a ticket set is proposed at the end for approval                     |
+| Fix            | May I fix confirmed bugs (on a branch, via `/implement`) and re-hunt?     | No                                                                        |
+
+The defaults make `/bug-hunt` an advisory audit: it changes nothing outside its report unless you say it may. Granting ticket authority up front *is* your approval to create them. Your concerns steer where it looks first; they don't replace the systematic assessment.
+
+## The Flow
 
 ```
-┌────────────────────────────────────────────────────────────────┐
-│  1. COMMANDER'S INTENT                                         │
-│     scope · severity floor · constraints · tickets? · fix?     │
-│     read back and confirmed; branch + state doc if fixing      │
-└────────────────────────────────┬───────────────────────────────┘
-                                 ▼
-┌────────────────────────────────────────────────────────────────┐
-│  2. HUNT (one round)                                           │
-│     assess  → swe-bug-assessor ranks hotspots                  │
-│     hunt    → swe-bug-hunter per hotspot, sequentially,        │
-│               each given prior findings                        │
-│     triage  → verify fails at HEAD · classify vs floor ·       │
-│               screen contests + breaking changes · patterns    │
-└────────────────────────────────┬───────────────────────────────┘
-                                 ▼
-┌────────────────────────────────────────────────────────────────┐
-│  3. ACT (by authority)                                         │
-│     fix?     → /implement fixes at-or-above-floor findings;    │
-│                reproducing tests go green                      │
-│     tickets? → one per unfixed bug at or above the floor,      │
-│                one per pattern                                 │
-│     unfixed reproducing tests → committed as expected failures │
-└────────────────────────────────┬───────────────────────────────┘
-                                 ▼
-                ┌─────────────────────────────────┐
-                │ Round confirmed anything at or  │── yes ──┐
-                │ above the floor?                │         │
-                │ (cap: 10 rounds)                │         │
-                └────────────────┬────────────────┘         │
-                                 │ no                       ▼
-                                 │          next round: code the fixes
-                                 │          changed, siblings of confirmed
-                                 │          patterns, next hotspot tier
-                                 │          (back to 2)
-                                 ▼
-┌────────────────────────────────────────────────────────────────┐
-│  4. REPORT                                                     │
-│     findings by severity · status (fixed / ticketed / deferred)│
-│     no ticket authority → propose ticket set for approval      │
-│     no fix authority    → offer to hand bugs to /implement     │
-└────────────────────────────────────────────────────────────────┘
+Commander's intent ─→ ┌─ Hunt round: assess → hunt → triage ─┐
+                      │                                      │
+                      └── Act (by authority): fix / ticket ←─┘
+                            repeat until a round confirms nothing
+                            at or above the floor (capped)
+                                         │
+                                         ▼
+                                       Report
 ```
 
 ## What Each Authority Combination Produces
@@ -93,84 +62,14 @@ The defaults make `/bug-hunt` an advisory audit: it changes nothing outside its 
 | no      | yes | Bugs fixed via `/implement` on a branch; commits and the report are the record; tickets only for deferred items, if you approve them       |
 | yes     | yes | Both: fixes for findings at or above the floor, tickets for the rest                                                                       |
 
-## Workflow Details
+## What You Get Back
 
-### 1. Commander's intent
+- **A report** with confirmed bugs by severity (each with impact, root cause, its reproducing test, and status: fixed, ticketed, or deferred), systemic patterns, coverage improvements, suspicions it couldn't confirm, and areas not investigated. A "look at these first" section leads with contested findings, breaking-change findings, and whatever the run is least sure of. Critical findings are walked through first.
+- **Reproducing tests that keep the suite green.** Tests for bugs not fixed this run are committed as expected failures (`t.Skip`, `pytest.mark.xfail`, `it.skip`, …) referencing their ticket or finding; the fix is done when the marker comes off and the test passes.
+- **With fix authority, a branch** (`bug-hunt/<date>` if you were on main), plus a gitignored `BUG_HUNT_STATE.md` so a long run survives compaction and can resume.
+- **Escalations, not quiet decisions.** Contested findings, fixes that would break a constraint, and anything else it can't resolve come to you — directly when you're present, or as an andon-cord handoff when running on authority.
 
-The skill asks the five questions above and reads the intent back. Your concerns steer where it looks first; they don't replace the systematic assessment.
-
-With fix authority, it works on a branch — never main/master. If you're on main, it creates `bug-hunt/<date>`. It keeps `BUG_HUNT_STATE.md` (gitignored) with the pinned intent and a per-round log, so a long run survives context compaction and can resume.
-
-### 2. Hunt
-
-Each round has three steps.
-
-**Assess.** A fresh `swe-bug-assessor` reads change history first (complexity × churn hotspots, fix density, change coupling), measures coverage (instrumented where available), and finds complexity and structural risk — error-handling gaps, input validation, shared mutable state, resource handling, concurrency, edge cases, consistency. It ranks hotspots by *converging* signals: a frequently-fixed, complex, untested hotspot outranks any single signal. After round 1, it is told what earlier rounds found and changed.
-
-**Hunt.** A fresh `swe-bug-hunter` probes each hotspot, one at a time, each receiving the confirmed bugs and patterns found so far. A broken error-handling utility found in one module becomes a lead for every module that uses it. Hunters write tests that assert at the boundary a caller sees — return values, errors, output, persisted state — not internals, because the test becomes the fix's acceptance criterion:
-
-| Test result | Meaning                | What happens to the test                                        |
-|-------------|------------------------|-----------------------------------------------------------------|
-| Fails       | Bug confirmed          | Kept; the finding is documented                                 |
-| Passes      | Hypothesis invalidated | Kept only if it covers a previously untested path; else deleted |
-
-**Triage.** Each confirmed finding is:
-
-1. **Verified** to fail against current HEAD — otherwise it isn't confirmed.
-2. **Classified** against the floor — at or above is acted on this round; below is deferred and reported.
-3. **Screened for contests** — a finding that looks wrong on substance goes to you, with the reasoning. It is never dropped silently.
-4. **Screened for breaking changes** — a fix needing a breaking change, or violating a constraint, goes to you rather than to `/implement`.
-5. **Checked for patterns** — bugs sharing a root cause, or a buggy utility used beyond the hotspot that exposed it, become systemic patterns and leads for the next round.
-
-### 3. Act and iterate
-
-**Fix authority.** The round's at-or-above-floor findings go to `/implement` under its "Invoked by Another Skill" contract: the findings (or their tickets) are the work, each reproducing test is the acceptance criterion, your constraints are its constraints. `/implement`'s floor applies unchanged, and its escalations come back to `/bug-hunt`. When it finishes, the reproducing tests pass.
-
-**Ticket authority.** Tickets are created per the plugin's tracker conventions: one per bug at or above the floor that the run does not fix, and one per systemic pattern. Findings below the floor stay in the report; ticket authority does not extend to them. Each carries the bug, impact, root cause, fix guidance, and the reproducing test as acceptance criterion.
-
-**Unfixed bugs keep the suite green.** Their reproducing tests are committed marked as expected failures with the project's mechanism (`t.Skip`, `pytest.mark.xfail`, `it.skip`, …), referencing the ticket or finding. The fix is done when the marker comes off and the test passes. Coverage-improving tests are committed as ordinary tests.
-
-**Next round.** The hunt goes where new bugs are likely: code the fixes changed, siblings of confirmed patterns, and the next tier of hotspots. Without fix authority, rounds still continue through siblings and the next tier — they just don't re-hunt fixes.
-
-**Convergence.** The run stops when a round confirms nothing at or above the floor, or after 10 rounds, reporting what remains. When the run has written many tests, the skill may run a `/review-test` pass over them.
-
-### 4. Report
-
-```
-## Bug Hunt Complete
-
-Intent: [scope; floor; constraints; tickets yes/no; fix yes/no]
-Rounds: N — converged | cap reached
-Confirmed: N (X critical, Y high, Z medium, W low) — F fixed, T ticketed, D deferred
-
-## Look at these first
-[Contested findings, breaking-change findings, anything the run is least sure of]
-
-## Confirmed bugs (by severity)
-- **file:line — description** — impact; root cause; reproducing test
-  (file:name); status: fixed at <sha> | ticket #N | deferred (below floor)
-
-## Systemic patterns
-## Coverage improvements
-## Suspected but unconfirmed
-## Not investigated
-## Branch (if fixing)
-```
-
-The skill walks you through Critical findings first: the bug, its impact, and the reproducing test. Without ticket authority, it ends by proposing a ticket structure shaped by the hunt; on your approval it commits the reproducing tests first (expected failures referencing their findings), then creates the tickets citing them. If you decline the tickets, it offers to commit the tests anyway. Without fix authority, it offers to hand the confirmed bugs to `/implement`.
-
-### 5. Escalation
-
-When you're present, the skill just asks. When running on authority, it stops and hands off using the plugin's shared andon-cord template (`references/autonomy.md`), titled with the round number, when:
-
-- A finding is **contested** on substance
-- A fix would need a **breaking change** or violate a constraint
-- `/implement` escalates and the cause can't be resolved here
-- A bug fixed in one round is confirmed again in a later round
-- A merge conflicts, or the suite breaks for reasons that aren't local
-- On resume, HEAD no longer matches `BUG_HUNT_STATE.md`
-
-It never pushes, merges to main/master, releases, or closes tickets.
+**It never** pushes, merges to main/master, releases, or closes tickets.
 
 ## Examples
 

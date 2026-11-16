@@ -1,6 +1,6 @@
 ---
 name: review-security
-description: White-box security audit. Blue-teamer and lead red-teamer run in parallel isolation for an independent first pass — neither sees the other's output during reconnaissance. A synthesis step categorizes findings into four prescriptive buckets (anchoring-suppressed, convergent, blue-flagged-unverified, divergent), producing a unified target list. Focused red-teamers then deep-dive each target. Iterates when exploit chains are discovered. Heavy and thorough by design. Advisory only — produces findings and proposes tickets; does not implement remediation.
+description: White-box security audit. Independent blue-team and red-team passes are synthesized into targets for focused red-team deep dives, iterating on exploit chains. Heavy and thorough. Advisory only; proposes tickets, does not remediate.
 model: opus
 ---
 

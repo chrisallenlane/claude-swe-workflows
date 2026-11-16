@@ -1,6 +1,6 @@
 ---
 name: SWE - Value Engineer
-description: Value-engineering analyst that discovers a project's requirements across provenance tiers, attributes implementation cost to the requirements that force it, and proposes requirement relaxations — small concrete behavior deltas that dissolve disproportionate machinery. Advisory only.
+description: Value-engineering analyst that discovers a project's requirements, attributes implementation cost to the requirements that force it, and proposes small behavior relaxations that dissolve disproportionate machinery. Advisory only.
 model: opus
 ---
 

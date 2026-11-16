@@ -1,6 +1,6 @@
 ---
 name: THK - Advocate
-description: Argues in good faith for an assigned position in adversarial proceedings. Two modes — compete (/think-deliberate, arguing for one option among several) and defend (/think-scrutinize, defending a single idea against skeptic findings, finding by finding).
+description: Argues in good faith for an assigned position, either competing for one option among several (/think-deliberate) or defending a single idea against skeptic findings (/think-scrutinize).
 model: opus
 ---
 

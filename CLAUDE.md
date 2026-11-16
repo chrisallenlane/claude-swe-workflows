@@ -18,11 +18,15 @@ This is `claude-swe-workflows`, a Claude Code plugin for software engineering wo
 │   └── skill-name/
 │       ├── SKILL.md          # Skill prompt with YAML frontmatter
 │       └── references/
-│           └── README.md     # Human-readable guide for the skill
+│           └── README.md     # Human guide: when to use, what to expect (not the steps)
 ├── references/          # Cross-cutting reference and discipline docs
 │   ├── autonomy.md          # Discipline for skills that act on granted authority
 │   ├── think.md             # Design discipline for the /think-* namespace
 │   └── ...
+├── scripts/
+│   └── lint.py          # Mechanical checks run by `make lint` and CI
+├── .gitea/workflows/    # CI: runs `make lint`
+├── Makefile
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 └── README.md
@@ -36,6 +40,24 @@ Test the plugin locally:
 claude --plugin-dir .
 ```
 
+The installed plugin runs this checkout, so changes made in a worktree are not live until merged. Test a branch with `claude --plugin-dir <worktree>`.
+
+Check your changes before committing:
+
+```bash
+make lint
+```
+
+`make lint` (`scripts/lint.py`, standard library only) checks:
+- frontmatter: `name`, `description`, and a lowercase `model`; a skill's `name` matches its directory;
+- descriptions of at most 300 characters;
+- files under `skills/`, `agents/`, and `references/` of at most 500 lines;
+- markdown tables padded so their rows are the same width;
+- every agent and skill a doc cites exists. Removed skills may be named only on history lines: ones that cite "v12", "formerly", or "(now `/...`)". CHANGELOG.md is exempt;
+- no orphan agents.
+
+CI (`.gitea/workflows/lint.yml`) runs `make lint` on every push to master and on every pull request.
+
 ## Writing Skills and Agents
 
 **Skills** (in `skills/*/SKILL.md`):
@@ -45,10 +67,14 @@ claude --plugin-dir .
 
 **Agents** (in `agents/*.md`):
 - YAML frontmatter: `name`, `description`, `model` (lowercase)
-- Spawned programmatically via `Task` tool with `subagent_type`
+- Spawned programmatically via the `Agent` tool with `subagent_type`
 - Operate autonomously within defined scope
 
 **Model names must be lowercase** (`opus`, `sonnet`, `haiku`, `fable`) - capitalized names are not recognized.
+
+**Descriptions are for selection, not documentation.** They load into every session's context, for every user. Keep them to one or two sentences: what the skill or agent does and when to use it, with the trigger words a user would actually say. Put methodology in the body.
+
+**`SKILL.md` holds the procedure; `references/README.md` is the human guide.** The guide covers what a person needs to decide whether and how to use the skill: an overview and rationale, when to use it and when not to, what it asks and returns, worked examples, and at most one diagram at phase level. It links to `SKILL.md` for the steps and does not restate them. A procedure change then needs no README edit unless the user-facing contract changes.
 
 **New `/think-*` skills must pass the five tests in [`references/think.md`](references/think.md).** When proposing or designing a new `/think-*` skill, read `references/think.md` first and check the proposal against the tests there. Skills outside the `/think-*` namespace are admitted by different criteria — primarily, whether they earn their keep in real software-engineering work — though the practitioner-methodology and structured-discipline values described in `references/think.md` apply across the plugin.
 

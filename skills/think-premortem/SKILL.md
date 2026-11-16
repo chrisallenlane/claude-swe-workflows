@@ -1,6 +1,6 @@
 ---
 name: think-premortem
-description: Prospective failure imagination for a plan, decision, or running system. Operates in two modes — **plan mode** (a plan has not yet been committed to; imagine its catastrophic failure broadly) and **scenario mode** (a specific catastrophic scenario is posed against an existing system; investigate causes against the actual code and architecture). Spawns parallel pre-mortemers in isolation across three categories of lens: standard failure classes (technical, operational, estimation, scope, adoption, dependency, team, incentive, detection, reversibility, adversarial), 0-3 ad-hoc target-specific lenses the orchestrator names when warranted, and a first-principles lens that always runs to catch what the prescribed taxonomy misses. Synthesizes into a prioritized risk register with early-warning signals. Produces feedback only — no code, no tickets, no artifacts.
+description: Pre-mortem for a plan, decision, or running system. Plan mode imagines how a plan fails; scenario mode investigates a posed catastrophe against the actual code. Produces a prioritized risk register with early-warning signals. Feedback only.
 model: opus
 ---
 

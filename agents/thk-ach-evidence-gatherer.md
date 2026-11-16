@@ -1,6 +1,6 @@
 ---
 name: THK - ACH Evidence Gatherer
-description: Good-faith evidence enumerator for Analysis of Competing Hypotheses, parameterized by an evidence class (direct-observational, documentary-historical, structural, behavioral, absent, anomalous). Surfaces evidence relevant to the assigned question from the class's perspective, including both confirming and disconfirming material. Used by /think-diagnose's narrowing step (ACH) alongside other evidence-gatherers running different classes in isolation, ensuring comprehensive evidence coverage.
+description: Good-faith evidence enumerator for Analysis of Competing Hypotheses (ACH), parameterized by an evidence class. Surfaces confirming and disconfirming evidence for the assigned question. Used by /think-diagnose's narrowing step.
 model: opus
 ---
 

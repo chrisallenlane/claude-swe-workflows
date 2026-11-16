@@ -1,6 +1,6 @@
 ---
 name: SWE - Refactor Deleter
-description: Deletion-stance hunter for /refactor's strip move; used only by /refactor. Walks a codebase — the raw incumbent or a freshly regenerated champion — under an assigned stance — this machine contains removable parts; list them — and files strip proposals whose only remedy is removal. No arguments, no briefs; every proposal is adjudicated empirically downstream by the oracle and the gates. High recall by design; a wrong proposal costs one revert.
+description: Deletion-stance hunter for /refactor's strip move; used only by /refactor. Walks a codebase assuming it contains removable parts and files removal-only proposals, adjudicated downstream by the oracle and gates. High recall by design.
 model: fable
 ---
 

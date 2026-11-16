@@ -2,110 +2,45 @@
 
 ## Overview
 
-The `/think-scrutinize` skill stress-tests an idea or plan before you commit to implementing it. It spawns critical skeptics from multiple angles (technical, economic, operational, etc.), pairs them with an advocate defending the idea, and produces a synthesized report of faults that survived cross-examination.
+`/think-scrutinize` stress-tests a single idea or plan before you commit to it. Skeptics critique it in isolation, each through a different lens. An advocate defends it, conceding real faults and refuting weak ones, and the skeptics answer the defense. The report keeps only what survived that exchange.
 
-**Key properties:**
-- Adversarial by design — critique meets defense meets counter-critique
-- Good-faith on both sides — no strawmen, no desperate defense
-- Lens-based scrutiny — different angles catch different faults
-- Produces feedback only — no code, no tickets, no artifacts
-- "No faults found" is an honest, valuable outcome
+It counters confirmation bias: people stop looking for faults in an idea they already like. The method is adversarial steelmanning from the rationalist tradition, in the spirit of Munger's borrowing from Jacobi, "Invert, always invert." It uses the same adversarial pattern as `/think-deliberate`, pointed inward at one idea instead of across competing options. The namespace-wide rationale lives in [`references/think.md`](../../../references/think.md).
+
+The step-by-step procedure lives in [`SKILL.md`](../SKILL.md); this guide covers when to use the skill and what to expect.
+
+"No faults found" is a legitimate result. The skill produces feedback only: no code, no tickets, no artifacts.
 
 ## When to Use
 
 **Use `/think-scrutinize` for:**
-- Reviewing a plan before starting implementation
-- Pressure-testing a proposal before presenting it
+- Reviewing a plan or design before starting implementation
+- Pressure-testing a proposal before presenting it to stakeholders
 - Surfacing objections that politeness or groupthink would suppress
+- Stress-testing mitigations or assumptions surfaced by `/think-premortem`
 
 **Don't use `/think-scrutinize` for:**
 - Choosing between options (use `/think-deliberate`)
-- Sweeping a plan's failure space (use `/think-premortem`)
+- Sweeping a plan's whole failure space (use `/think-premortem`; run it first, then scrutinize what it surfaces)
 - Finding bugs in existing code (use `/bug-hunt` or `/review-security`)
-- Implementing changes (this skill makes nothing — it's a consultant)
-- Venting about a plan without a concrete idea to critique
+- Implementing changes (this skill makes nothing; follow up with `/scope` or `/implement`)
+- Vague dissatisfaction with a plan that has no concrete form yet
 
-**Rule of thumb:** If you want to know "what's wrong with this idea?" — use `/think-scrutinize`. If you want to know "which option is best?" — use `/think-deliberate`.
+**Rule of thumb:** "What's wrong with this idea?" → `/think-scrutinize`. "Which option is best?" → `/think-deliberate`.
 
-## Workflow Diagram
+**Natural pipeline:** `/think-brainstorm` → `/think-deliberate` → `/think-scrutinize` → `/scope` (generate → choose → stress-test → specify).
+
+## Flow
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│ /think-scrutinize Workflow                                  │
-└─────────────────────────────────────────────────────────────┘
-
- ┌──────────────────────────────────────────────┐
- │  1. RECEIVE THE IDEA                         │
- │  ────────────────────────────────────────    │
- │  • From context, document, or user input     │
- │  • Produce a written brief                   │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  2. FACT-FINDING                             │
- │  ────────────────────────────────────────    │
- │  • Goal, constraints, prior attempts         │
- │  • Stakeholders, scope boundaries            │
- │  • Angles of particular concern              │
- │  (Typically 3-5 clarifying questions)        │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  3. CHOOSE CRITICAL LENSES                   │
- │  ────────────────────────────────────────    │
- │  Technical / Economic / Operational /        │
- │  Adversarial-user / Security / Regulatory /  │
- │  Social / Temporal                           │
- │  (2-5 lenses typical)                        │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  4. SPAWN SKEPTICS (parallel, isolated)      │
- │  ────────────────────────────────────────    │
- │  One agent per lens                          │
- │  Each returns structured critique            │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  5. CONSOLIDATE CRITIQUES                    │
- │  ────────────────────────────────────────    │
- │  Deduplicate, preserve lens attribution      │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  6. ADVOCATE REBUTS                          │
- │  ────────────────────────────────────────    │
- │  Defends idea in good faith                  │
- │  Concedes real faults, refutes weak ones     │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  7. COUNTER-REBUTTAL (parallel)              │
- │  ────────────────────────────────────────    │
- │  Skeptics respond: concede/hold/refine       │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  8. SYNTHESIZE AND REPORT                    │
- │  ────────────────────────────────────────    │
- │  Findings: Stands / Refuted / Partial /      │
- │            Uncertain                         │
- │  Recommendation: Proceed / Adjust /          │
- │                  Rethink / Reject            │
- └──────────────────────────────────────────────┘
+Receive idea → Fact-finding (with you) → Choose lenses → Skeptics (parallel, isolated)
+  → Consolidate → Advocate defends → Skeptics counter-rebut → Synthesize → Report
 ```
 
-## Roles
-
-| Role        | What they do                                                             |
-| ----------- | ------------------------------------------------------------------------ |
-| Judge (you) | Capture idea, choose lenses, spawn agents, synthesize report             |
-| Skeptics    | Critique the idea through assigned lenses (parallel, isolated)           |
-| Advocate    | Defends the idea in good faith — concedes real faults, refutes weak ones |
+**Fact-finding is interactive.** Expect three to five questions about the goal, constraints, prior attempts, stakeholders, and scope. You'll also be asked which angles you want scrutinized hardest, and your nominations become lenses.
 
 ## Critical Lenses
 
-The orchestrator selects lenses based on the idea's shape. Common lenses include:
+The skill picks the lenses where the idea plausibly has weaknesses, typically 2–5, and skips those that don't apply.
 
 | Lens             | Asks                                     |
 | ---------------- | ---------------------------------------- |
@@ -118,21 +53,18 @@ The orchestrator selects lenses based on the idea's shape. Common lenses include
 | Social/org       | Will people adopt this? Political risks? |
 | Temporal         | Does this hold up over time?             |
 
-2-5 lenses is typical. You may nominate specific angles when invoking the skill.
+## What You Get Back
 
-## Output
+Each finding gets a verdict: **stands**, **refuted**, **partial** (narrowed but not eliminated), or **uncertain** (needs your judgment). The report has:
 
-A structured report with:
-- **Findings That Stand** — faults that survived rebuttal
-- **Load-Bearing Assumptions** — things the idea depends on; verify them
-- **Partial / Uncertain** — narrowed concerns, user judgment items
-- **Refuted** — for completeness; shows the exchange was honest
-- **Strengths** — where the idea held up
-- **Recommendation** — Proceed / Proceed with adjustments / Rethink / Reject
+- **Findings That Stand**: faults that survived rebuttal
+- **Load-Bearing Assumptions to Validate**: what the idea depends on; verify these
+- **Partial / Uncertain**
+- **Findings That Were Refuted**: brief, to show the exchange was two-sided
+- **Strengths**: where the idea held up
+- **Recommendation**: Proceed / Proceed with adjustments / Rethink / Reject
 
-## Iteration
-
-The skill is **one-shot by design**. If the report suggests revision, refine your idea and re-invoke. Each invocation is a clean consultation — not an open-ended conversation. This keeps the skill composable and avoids the anti-pattern of endless "one more round" dialogs that dilute signal.
+The skill is one-shot. Revise the idea and re-invoke rather than extending the exchange.
 
 ## Example Session
 
@@ -140,84 +72,45 @@ The skill is **one-shot by design**. If the report suggests revision, refine you
 > /think-scrutinize Let's scrutinize our plan to migrate the session
   store from Postgres to Redis.
 
-Before I spawn skeptics, let me confirm my understanding:
+Idea brief: move sessions, CSRF tokens, and rate-limit counters to Redis;
+Postgres keeps durable data; goal is lower session-read latency.
 
-Idea brief:
-- Move session data (user sessions, CSRF tokens, rate-limit counters)
-  from Postgres to Redis
-- Postgres remains for durable data
-- Goal: reduce session-read latency and offload session writes
-
-Is that accurate?
-> Yes.
-
-A few clarifying questions:
-- What's the current session-read p99 latency, and what's the target?
-- How long should sessions persist? (Redis defaults to volatile; do you
-  need RDB/AOF persistence?)
-- Do any regulatory requirements touch session data (PCI, HIPAA)?
-- Who owns Redis operationally? Same team, or a platform team?
+- Current p99 and target? Session lifetime? Regulatory scope? Who owns Redis?
 > p99 150ms → target <20ms. 30-day TTL. No regulatory concerns.
   Platform team owns Redis.
 
-Lenses I'll apply: technical, operational, temporal, adversarial-user.
-Skipping regulatory (no relevant compliance scope) and economic
-(infrastructure cost is not in scope per the plan).
-
-[Spawning 4 skeptics in parallel...]
-[Consolidating critiques...]
-[Spawning advocate to rebut...]
-[Skeptics counter-rebutting in parallel...]
+Lenses: technical, operational, temporal, adversarial-user. Skipping
+regulatory (no compliance scope) and economic (cost out of scope).
 
 ## Scrutinization Report
 
-Idea: Migrate session store from Postgres to Redis
-Lenses applied: technical, operational, temporal, adversarial-user
-
 ### Findings That Stand
 
-- **[operational]** Redis AOF/RDB recovery is slower than Postgres point-in-time
-  recovery. In a disaster, session loss is recoverable from Redis backup, but
-  the time-to-restore during an incident could exceed current SLA.
-  Addresses: define explicit DR runbook and RTO target before migration.
+- **[adversarial-user]** With a 30-day TTL, revoked sessions can't be
+  invalidated by a DB mutation as they can in Postgres. Needs an explicit
+  revocation path: short TTLs + refresh, or a revocation set.
 
-- **[adversarial-user]** Session TTL of 30 days in Redis means revoked sessions
-  cannot be invalidated by DB mutation (as in Postgres). Need an explicit
-  revocation mechanism — either short TTLs + refresh, or a revocation set.
-  Addresses: design the session revocation path as part of the migration.
+- **[operational]** Redis restore could exceed the current SLA during an
+  incident. Define a DR runbook and RTO target before migrating.
 
 ### Load-Bearing Assumptions to Validate
 
-- Platform team has capacity to own another critical Redis instance
-- Redis latency improvements hold under real workload (not just synthetic)
+- The platform team has capacity to own another critical Redis instance
+- Latency gains hold under real workload, not just synthetic
 
-### Refuted
+### Findings That Were Refuted
 
-- [temporal] "Redis won't scale to projected 2-year growth" — advocate cited
-  Redis Cluster sizing and your current size. Concern conceded.
+- [temporal] "Redis won't scale to projected 2-year growth." The advocate
+  cited Redis Cluster sizing against current size; the skeptic conceded.
 
 ### Strengths
 
-- Technical fit is solid — session data is naturally key-value and TTL-friendly
-- Migration strategy (dual-write with cutover) is well-understood
-- Current Postgres session-write load is a documented bottleneck
+- Session data is naturally key-value and TTL-friendly
 
 ### Recommendation
-**Proceed with adjustments** — design the revocation path and DR runbook
+
+**Proceed with adjustments:** design the revocation path and DR runbook
 before cutover.
 ```
 
-## Relationship to Other Skills
-
-| Skill               | Relationship                                                                                  |
-| ------------------- | --------------------------------------------------------------------------------------------- |
-| `/think-deliberate` | Chooses between N options; `/think-scrutinize` stress-tests 1 idea. Same adversarial pattern. |
-| `/scope`            | If the idea should proceed, translates it into tickets                                        |
-| `/bug-hunt`         | Points at existing code; `/think-scrutinize` points at ideas                                  |
-| `/review-security`  | Points at existing code; `/think-scrutinize` points at ideas                                  |
-
-## Philosophy
-
-Inspired by Charlie Munger's adaptation of Jacobi: **"Invert, always invert."** Before committing to an idea, understand how it could fail. The skill formalizes this instinct — not as unstructured doubt, but as adversarial stress-testing with honest synthesis.
-
-A good skeptic finds the faults that matter, not the most faults. A good advocate defends honestly, not desperately. What emerges is the truth the idea needs to hear before it becomes code, tickets, or commitments.
+The instructive part is the refuted finding. A plausible-sounding objection was dropped once the advocate answered it with evidence, so the findings that stand are the ones worth acting on.

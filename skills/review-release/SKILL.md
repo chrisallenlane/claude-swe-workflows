@@ -1,6 +1,6 @@
 ---
 name: review-release
-description: Pre-release readiness review. Scans for debug artifacts, version mismatches, changelog gaps, git hygiene issues, breaking changes, and license compliance. Runs tests and build verification. Presents consolidated findings for human review before release.
+description: Pre-release readiness review. Checks for debug artifacts, version mismatches, changelog gaps, git hygiene issues, breaking changes, and license compliance, and runs tests and the build. Findings go to a human before release.
 model: opus
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: think-brainstorm
-description: Good-faith divergent brainstorming for achieving a goal. Validates assumptions and, when the framing itself is in doubt, runs a framing check (parallel reframers across lenses such as problem-vs-symptom, scope-shift, stakeholder-shift, inversion, and category-shift) so the right problem gets brainstormed. Then spawns brainstormers running different techniques (first-principles, working-backwards, lateral, analogical, constraints-shift, etc.) in isolation, and synthesizes the pool into a report of standouts, reasonable ideas, and hybrid combinations. Produces feedback only — no code, no tickets, no artifacts.
+description: Good-faith divergent brainstorming toward a goal. Validates assumptions and reframes the problem when its framing is in doubt, runs brainstormers using different techniques in isolation, and synthesizes standouts and hybrids. Produces feedback only.
 model: opus
 ---
 

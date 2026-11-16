@@ -1,6 +1,6 @@
 ---
 name: tidy-git
-description: Mechanical git repo hygiene. Prunes stale remote-tracking refs, deletes merged local branches (with confirmation), and reports stashes, untracked files, and unpushed work. Never touches remote state. Safe by default — destructive operations require explicit operator approval.
+description: Mechanical local git repo hygiene. Prunes stale remote-tracking refs, deletes merged local branches (with confirmation), and reports stashes, untracked files, and unpushed work. Never touches remote state.
 model: opus
 ---
 

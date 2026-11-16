@@ -1,6 +1,6 @@
 ---
 name: bug-hunt
-description: Proactive bug hunting. Takes commander's intent (scope, severity floor, constraints, and authority to create tickets and/or fix), assesses where bugs are likely to hide, and sends focused hunters that confirm every finding with a reproducing test. Iterates — following confirmed bugs to their siblings and, when authorized, fixing via /implement and re-hunting — until a round confirms nothing at or above the floor. Without authority it changes nothing outside its report and offers tickets for approval.
+description: Proactive bug hunting. Assesses where bugs likely hide, confirms each finding with a reproducing test, and iterates until nothing is found above a severity floor. Advisory by default; creates tickets or fixes via /implement only when authorized.
 model: opus
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: THK - Diagnostician
-description: Good-faith abductive reasoner that generates candidate explanations for a phenomenon, parameterized by a specific reasoning lens (technical, human-factors, process, incentive-structure, environmental, temporal, measurement-artifact, statistical). Returns candidate causes with predictions (what we'd expect to see if true), refuters (what would disprove it), and honest confidence. Used in diagnosis proceedings alongside other diagnosticians running different lenses in isolation.
+description: Good-faith abductive reasoner parameterized by a reasoning lens. Returns candidate causes for a phenomenon with predictions, refuters, and honest confidence. Used by /think-diagnose alongside diagnosticians running other lenses in isolation.
 model: opus
 ---
 

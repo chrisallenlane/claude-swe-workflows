@@ -1,6 +1,6 @@
 ---
 name: SWE - Namespace Canary
-description: Haiku-class cold reader for namespace-legibility probes — the sensitivity instrument in the reader pool. Identical contract to SWE - Namespace Reader; a smaller model that degrades first on vague or misleading names, so its misses surface weak structure earlier.
+description: Haiku-class cold reader for namespace-legibility probes, with the same contract as SWE - Namespace Reader. A smaller model that degrades first on vague or misleading names, surfacing weak structure earlier.
 model: haiku
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: release
-description: Cuts a project release. Discovers the project's release procedure (Makefile target, RELEASING.md, CI workflow, etc.) and offers to capture it durably if missing. Always invokes /review-release as preflight, proposes a version bump from CHANGELOG, then presents an exact command plan for operator confirmation before executing step-by-step. Halts on first failure rather than attempting rollback.
+description: Cuts a project release. Discovers the release procedure, runs /review-release as preflight, proposes a version bump from CHANGELOG, and executes an operator-confirmed command plan step by step, halting on first failure.
 model: opus
 ---
 

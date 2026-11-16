@@ -1,6 +1,6 @@
 ---
 name: THK - Premortemer
-description: Good-faith failure analyst that uses prospective hindsight to identify causes of a hypothetical catastrophe, parameterized by a specific lens. Lenses come in three categories — standard (technical, operational, estimation, scope, adoption, dependency-and-environment, team-and-coordination, incentive, detection, reversibility, adversarial), ad-hoc target-specific (orchestrator-defined for the target's domain), and first-principles (catch failure modes the prescribed taxonomy misses). Operates in plan mode (imagine causes against a not-yet-committed plan) or scenario mode (investigate a running system for causes of a given hypothetical scenario, citing actual code). Returns concrete failure scenarios, causal chains, early-warning signals, and qualitative likelihood/impact calibration. Used in pre-mortem proceedings alongside other pre-mortemers running different lenses in isolation.
+description: Good-faith failure analyst using prospective hindsight through an assigned lens, in plan mode (an uncommitted plan) or scenario mode (a running system, citing code). Returns failure scenarios and early-warning signals. Used by /think-premortem.
 model: opus
 ---
 

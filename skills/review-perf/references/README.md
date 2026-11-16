@@ -1,67 +1,46 @@
 # /review-perf - Performance Review
 
+The step-by-step procedure lives in [`SKILL.md`](../SKILL.md); this guide covers when to use the skill and what to expect.
+
 ## Overview
 
-The `/review-perf` skill reviews a project for performance issues across two domains: **compute performance** (algorithms, memory, CPU — costed at the codebase's actual scale) and **web performance** (caching, asset delivery, loading strategy, Core Web Vitals). It detects the project type and dispatches the appropriate specialist(s).
+`/review-perf` reviews a project for performance issues in two domains: **compute performance** (algorithms, memory, CPU, costed at the codebase's actual scale) and **web performance** (caching, asset delivery, loading strategy, Core Web Vitals). It detects which domains apply and dispatches the matching specialist, or both for a full-stack project, in parallel.
 
-**Key benefits:**
-- Automatic domain detection: dispatches web reviewer, compute reviewer, or both based on project content
-- Two specialized lenses: network-bound performance and compute-bound performance are fundamentally different — each gets a specialist
-- Cross-domain synthesis: identifies issues that span both domains (e.g., SSR bottlenecks that are both compute and loading problems)
+Why it's shaped this way:
 
-**This is a diagnostic tool.** It identifies performance problems and recommends fixes. It does not implement them.
+- **Measure, don't guess.** Performance intuitions are unreliable. The reviewers identify structural issues and recommend what to measure, not just what to optimize. The compute reviewer establishes each hot path's input size and budget from the repo, and also flags machinery that is over-provisioned for the real scale.
+- **Two domains, two specialists.** Network-bound and compute-bound performance are different disciplines; one lens applied to everything misses half the problems. The report adds a cross-cutting synthesis for issues that span both (for example, server-side rendering that is both a compute bottleneck and a loading problem).
+- **Diagnostic, not therapeutic.** It recommends fixes and never implements them.
+
+```
+Detect project type ──▶ Scope ──▶ Reviewers (compute ∥ web) ──▶ Consolidated report
+```
 
 ## When to Use
 
 **Use `/review-perf` for:**
-- Evaluating performance posture of a project
+- Evaluating the performance posture of a project
 - Pre-release performance checks
 - Auditing after significant architectural or feature changes
 - Understanding where time is spent (network vs. compute)
 
 **Don't use `/review-perf` for:**
-- Implementing optimizations (ask directly after reviewing findings, or use `/implement`)
-- Accessibility review (use `/review-a11y`)
-- Specific code changes (use `/implement`), or shrinking the codebase (use `/refactor`)
-- Strategic orientation on an unfamiliar repo (use `/review-repo`)
-- Security review (use `/review-security`)
+- Implementing optimizations: ask directly after reviewing findings, or use `/implement`
+- Shrinking over-provisioned machinery: `/refactor` (this skill recommends it, scoped to the module)
+- Strategic orientation on an unfamiliar repo: `/review-repo`
+- Accessibility or security: `/review-a11y`, `/review-security`
 
-## Workflow
+## What You'll Be Asked
 
-```
-┌──────────────────────────────────────────────────────┐
-│                 PERFORMANCE REVIEW                   │
-├──────────────────────────────────────────────────────┤
-│  1. Detect project type (web, non-web, or both)      │
-│  2. Determine scope                                  │
-│  3. Dispatch performance reviewer(s) in parallel     │
-│  4. Present consolidated report                      │
-└──────────────────────────────────────────────────────┘
-```
+Unless the invocation or a caller (such as `/review-repo`'s follow-up) supplies scope, the skill shows the detected project characteristics and asks what to review: both domains (default), web only, compute only, or a specific directory. If it finds no performance-relevant source code, it says so and stops.
 
-### 1. Detect Project Type
+## What You Get Back
 
-Scans for web indicators (HTML/JSX/TSX, web frameworks, build tool configs, service workers) and compute indicators (backend source files, existing benchmarks, database code). Full-stack projects trigger both reviewers.
+A consolidated report, inline:
 
-### 2. Determine Scope
+- **Web performance:** findings by severity (CRITICAL / HIGH / LOW), with caching and asset-delivery assessments.
+- **Compute performance:** findings by severity, the hot paths (input size, frequency, budget, cost, verdict), over-provisioned machinery with a simpler replacement, and the cold paths dismissed.
+- **Cross-cutting concerns,** when any exist.
+- **Suggested next steps,** including tooling to adopt (Lighthouse, benchmarking frameworks, profilers) when it's missing.
 
-User chooses what to review: both domains (default), web only, compute only, or a specific directory. When the invocation or a caller (such as `/review-repo`'s follow-up) already supplies scope, the question is skipped.
-
-### 3. Dispatch Reviewers
-
-Applicable reviewers run in parallel. Each performs a comprehensive review within its domain and produces findings classified by severity.
-
-### 4. Consolidated Report
-
-Findings from both domains merged into a single report with a cross-cutting analysis section that identifies issues spanning both domains. The compute section carries the reviewer's hot paths (n, frequency, budget), over-provisioned machinery, and cold paths dismissed; over-provisioned machinery is routed to `/refactor` in the next steps.
-
-## Agents Used
-
-| Agent                   | Domain                                                          |
-| ----------------------- | --------------------------------------------------------------- |
-| `swe-perf-reviewer`     | Compute performance, costed at the codebase's actual scale      |
-| `swe-web-perf-reviewer` | Web performance (caching, assets, loading, Core Web Vitals)     |
-
-## Resource Usage
-
-Lightweight. Reviewer agents are read-only and run in parallel. Non-destructive.
+A domain that doesn't apply is marked not applicable. "No significant issues" is a valid result. The skill is read-only and lightweight, and it proposes no tickets; under `/review-repo`'s follow-up, its findings feed that skill's consolidated ticket set.

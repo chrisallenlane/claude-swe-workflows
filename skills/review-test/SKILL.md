@@ -1,6 +1,6 @@
 ---
 name: review-test
-description: Comprehensive test suite review across five phases. Surveys unit coverage, integration coverage, E2E (browser) coverage for webapps, fuzz coverage, and test quality — in that order. Advisory only — produces findings and proposes tickets; does not implement test changes.
+description: Test suite review covering unit, integration, E2E (browser), and fuzz coverage plus test quality. Advisory only; produces findings and proposes tickets, does not change tests.
 model: opus
 ---
 

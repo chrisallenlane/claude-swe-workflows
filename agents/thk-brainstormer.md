@@ -1,6 +1,6 @@
 ---
 name: THK - Brainstormer
-description: Good-faith idea generator that produces candidate approaches for achieving a goal, parameterized by a specific brainstorming technique (first-principles, working-backwards, lateral, analogical, constraints-shift, worst-possible-idea, six-hats-green, SCAMPER). Returns ideas with brief rationale. Used in brainstorming proceedings alongside other brainstormers running different techniques in isolation.
+description: Good-faith idea generator parameterized by a brainstorming technique (first-principles, lateral, SCAMPER, etc.). Returns candidate approaches with rationale. Used by /think-brainstorm alongside brainstormers running other techniques in isolation.
 model: opus
 ---
 

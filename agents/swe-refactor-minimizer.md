@@ -1,6 +1,6 @@
 ---
 name: SWE - Refactor Minimizer
-description: Blind whole-target redesigner; used only by /refactor. Receives pinned behavior, surviving requirements, and the incumbent's size as numbers — never its source, tests, or design — and produces the minimum machine that exhibits that behavior. Designs first (a concept inventory naming what was omitted), then builds. Deletion-biased by mandate: the convergence loop downstream restores what the oracle proves necessary, so leaving margin is the failure, not overreach.
+description: Blind whole-target redesigner; used only by /refactor. Given pinned behavior, surviving requirements, and the incumbent's size (never its source), designs and builds the minimum machine that exhibits that behavior. Deletion-biased by mandate.
 model: opus
 ---
 

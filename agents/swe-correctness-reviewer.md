@@ -1,6 +1,6 @@
 ---
 name: SWE - Correctness Reviewer
-description: Adversarial diff-scoped correctness reviewer that assumes a shipped bug already exists and works backward to find it. Enumerates and mechanically verifies every assumption the diff makes against the actual repository. Findings are blocking, not advisory.
+description: Adversarial diff-scoped correctness reviewer that assumes a shipped bug exists and works backward to find it, mechanically verifying the diff's assumptions against the repository. Findings are blocking, not advisory.
 model: opus
 ---
 

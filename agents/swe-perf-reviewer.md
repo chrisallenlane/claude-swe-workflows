@@ -1,6 +1,6 @@
 ---
 name: SWE - Performance Reviewer
-description: Compute-performance reviewer that judges cost at the codebase's actual scale. Establishes n, costs hot paths against real workloads, runs the project's existing benchmarks and profilers when they exist, and labels static estimates as estimates. Recommends only work whose payoff the scale supports, including removing machinery that over-provisions. Advisory only.
+description: Compute-performance reviewer that judges cost at the codebase's actual scale, running existing benchmarks and profilers when present and labeling static estimates as estimates. Recommends only work the scale justifies. Advisory only.
 model: opus
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: tidy-docs
-description: Mechanical documentation hygiene. Spawns a doc-maintainer agent to audit all project documentation and fix correctness, completeness, freshness, and consistency issues autonomously within its authority. Surfaces anything requiring user judgment for approval.
+description: Mechanical documentation hygiene. A doc-maintainer audits all project docs and fixes correctness, completeness, freshness, and consistency issues within its authority; anything needing user judgment is surfaced for approval.
 model: opus
 ---
 

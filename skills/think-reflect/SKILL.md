@@ -1,6 +1,6 @@
 ---
 name: think-reflect
-description: Retrospective learning from a completed experience. Takes a project, incident, decision that played out, or time period; gathers ground truth (observations) separately from recollections; spawns reflectors applying different lenses (what-worked-vs-got-lucky, what-didn't, what-surprised, system-rewards-vs-intent, decisions-that-aged, what-to-tell-past-self, patterns-that-recur) in isolation; synthesizes into updated mental models as first-class output. Produces feedback only — no code, no tickets, no artifacts.
+description: Retrospective learning from a completed project, incident, decision, or time period. Separates ground truth from recollection, applies parallel reflection lenses, and yields updated mental models. Produces feedback only.
 model: opus
 ---
 

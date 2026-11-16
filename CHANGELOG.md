@@ -76,6 +76,20 @@
 
 ### Changed
 
+- **`make lint` and CI.**
+  - **What it checks:** `scripts/lint.py` (standard library only) checks skill and agent frontmatter, description length, the 500-line limit, markdown table alignment, that every agent and skill a doc cites exists, and that no agent is orphaned.
+  - **Where it runs:** `.gitea/workflows/lint.yml` runs it on every push to master and on every pull request.
+  - **Why:** every check it runs was done by hand repeatedly during the v12 consolidation, and the two reference checks still caught stale `/review-*` references that had survived several review passes.
+- **Each skill's `references/README.md` is now a guide, not a second copy of the procedure.** The 22 guides drop from about 5,800 lines to about 3,300. They keep:
+  - the rationale and lineage;
+  - when to use and not to use the skill;
+  - what it asks and returns;
+  - worked examples;
+  - at most one diagram at phase level.
+
+  They link to `SKILL.md` for the steps. A procedure change no longer needs a matching README edit, which removes the sync gap that kept producing drift.
+- **Shorter descriptions.** Skill and agent descriptions now run one or two sentences and at most 250 characters (the linter allows 300). The total across all of them drops from about 20,500 to 12,000 characters, all of which load into every session's context. Trigger words and selection-critical qualifiers are kept: focus names, "Never changes code", "blocking", "read-only", "used only by /refactor".
+
 - **The remaining agents are realigned with the skills that call them.** In v10 and v11 the skills were redesigned while many of their agents kept the old contracts, and most real defects sat in that gap. Agent names are internal, so none of these changes is breaking.
   - **`swe-code-reviewer` is now a scope auditor.** `/implement` had used it for the concept-inventory audit, but the agent never mentioned an inventory: it searched the whole codebase for refactoring ideas. It now checks a diff against its license, which is the inventory in `/implement` and the diagnosis's narrow fix in `/bug-fix`. It reports unlicensed concepts, elaborated forms, duplicated mechanisms (citing the search that found the original), and exports with no outside caller. Step 6b of `/bug-fix` uses it that way.
   - **`qa-engineer` is independent of what it verifies.** It no longer fixes product code or adds test infrastructure; failures go back to the implementer. It drives MCP servers over JSON-RPC itself, because a subagent cannot spawn one. It uses browser tooling when available, and UNVERIFIED is now a valid result. It runs on Opus.

@@ -1,238 +1,83 @@
 # /review-test — Comprehensive Test Suite Survey
 
+The step-by-step procedure lives in [`SKILL.md`](../SKILL.md); this guide covers when to use the skill and what to expect.
+
 ## Overview
 
-The `/review-test` skill performs a five-phase test suite survey: unit coverage gaps, integration coverage gaps, E2E (browser) coverage gaps when applicable, fuzz coverage gaps, and test quality issues. It is **advisory only** — the skill does not implement test changes. After all phases run, it presents consolidated findings and proposes a ticket structure for the recommended work; the operator (human or orchestrator) approves, edits, or declines. On approval, tickets land in the issue tracker.
+`/review-test` surveys a test suite in five phases: unit coverage gaps, integration coverage, E2E (browser) coverage for webapps, fuzz coverage, and test quality. It presents consolidated findings, then proposes a ticket structure for the recommended work. You approve, edit, or decline it.
 
-The plugin is moving `/review-*` skills toward advisory-only over time; `/review-test` joined `/review-arch` (now `/review-repo architecture`), `/review-security`, and `/bug-hunt` in this direction in v9.0.0. See the "Advisory aspiration" section of [`references/autonomy.md`](../../../references/autonomy.md) for the broader direction.
+**Tests are a system, not a checklist.** Unit gaps, integration gaps, E2E gaps, fuzz gaps, and bad tests are facets of one problem: the suite isn't doing its job. The phases run inside-out by test scope (unit → integration → E2E), then fuzz, then a quality audit over everything that exists today.
 
-**Key benefits:**
-- Systematic: surveys unit, integration, E2E, fuzz, and quality in deliberate order
-- Inside-out by test scope: unit → integration → E2E, then fuzz, then quality
-- Parallel analysis: large scopes are partitioned across multiple agents
-- Conditional E2E: Phase 3 only runs for webapps; cleanly skips otherwise
-- Operator (human or orchestrator) shapes the ticket plan before any tickets are cut
-- Tickets carry per-phase context, acceptance criteria, and a recommended implementation skill
-- Single workflow regardless of caller — orchestrators receive the offer like humans do
+**Advisory only.** The skill never writes, deletes, or rewrites tests. Finding a gap and designing a test for it take different reasoning, and the discovery agents shouldn't be biased toward gaps that are easy to fill. Removing or rewriting an existing test is a decision you should approve explicitly, via a ticket, not a side effect of a review. `/implement` works the tickets.
+
+```
+Scope ──▶ Unit ──▶ Integration ──▶ E2E (webapps only) ──▶ Fuzz ──▶ Quality ──▶ Report ──▶ Ticket proposal
+```
 
 ## When to Use
 
 **Use `/review-test` for:**
-- Coverage metrics below target or onboarding to an under-tested codebase
+- Coverage below target, or onboarding to an under-tested codebase
 - After a burst of agent-written tests that may need quality review
 - Before a release, to surface gaps and brittle tests
 - Periodic comprehensive test-health checks
-- Adding integration or E2E coverage to a project that lacks it (Mode A starter strategy)
+- Adding integration or E2E coverage to a project that lacks it (a starter strategy)
 
 **Don't use `/review-test` for:**
-- Projects with no tests yet (write initial tests first, or scope a project via `/scope`)
-- Quick one-off test additions (just write them directly, or use `/implement` against a small ticket)
-- Mutation testing (use `/test-mutation` for that)
+- Projects with no tests yet: write initial tests first, or scope the work via `/scope`
+- Quick one-off test additions: write them directly, or use `/implement` against a small ticket
+- Checking whether existing tests actually catch bugs: that's `/test-mutation`
 
-**Rule of thumb:** `/review-test` builds breadth (surfaces ticket-shaped work). `/test-mutation` builds depth (verifies tests actually catch bugs).
+**`/review-test` vs `/test-mutation`:** `/review-test` builds breadth (it surfaces ticket-shaped work); `/test-mutation` builds depth (it verifies tests catch bugs). A good sequence is `/review-test` → `/implement` the tickets → `/test-mutation`.
 
-## Workflow Diagram
+**After `/refactor`:** `/refactor` pins behavior with a differential oracle rather than the test suite, and retires tests that pin internals it removed. Run `/review-test` afterward to see what the reduced codebase's suite covers.
+
+## What You'll Be Asked
+
+- **Scope,** unless the invocation or caller supplies it: the entire project (default), a directory, specific files, or the current branch's changes. On a large project the skill suggests narrowing.
+- **A coverage command,** only if no coverage report exists and none can be detected from the build files. Without one, unit-gap analysis falls back to reading the code, and coverage isn't measured.
+- **The E2E journey classification,** for webapps only. The skill shows which user journeys it classified Critical, Important, and Nice-to-have, and asks you to confirm or correct them. This is the most subjective input in the review, and a wrong E2E starter strategy costs days of work plus chronic maintenance, so it's deliberately a human checkpoint.
+
+## What You Get Back
+
+A consolidated report with one section per phase:
+
+| Phase       | What it reports                                                                                                                                   |
+|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| Unit        | Coverage baseline (if measured) and untested paths tiered CRITICAL / HIGH / LOW; refactor-for-testability suggestions, informational              |
+| Integration | Either a starter strategy (no integration tests yet) or gaps within the existing strategy plus missing strategies                                 |
+| E2E         | Skipped if not a webapp. Otherwise a Playwright starter strategy (no E2E yet), or gaps within your existing framework; it never pushes migration  |
+| Fuzz        | Fuzz candidates by priority; if there's no fuzz tooling, a starter-tooling recommendation the candidates depend on                                |
+| Quality     | Existing tests flagged DELETE (tautological), REWRITE (brittle, false confidence, inconsistent), or SIMPLIFY (smells); redundant is informational |
+
+E2E is scoped to browser-driven journeys; visual regression, accessibility (`/review-a11y`), web performance, component-level testing, and mobile-native UI are declared out of scope.
+
+Then a **ticket proposal** shaped to the findings: for example, one ticket per CRITICAL unit gap, batches for lower tiers, one ticket per starter strategy, and batches per quality category. A clean review proposes nothing. Tickets carry acceptance criteria and a recommended implementation skill, and any DELETE item keeps the reviewer's caveat to rewrite rather than delete if the test covers real behavior. When an orchestrator invokes the skill, it receives the same proposal and applies its own autonomy judgment, typically declining items it will implement inline.
+
+## Tips
+
+1. **The findings walkthrough is where most of the value lands.** Engage with CRITICAL items and starter-strategy proposals before the ticket proposal; they shape the plan more than anything else.
+2. **Declining tickets is fine.** The report stands on its own as a planning artifact.
+3. **Promote refactor-for-testability suggestions explicitly.** They default to informational; edit the ticket proposal to track them.
+4. **Scope aggressively on large codebases.** `/review-test pkg/core/` beats analyzing everything when you already know where the gaps are.
+
+## Example — Ticket Proposal
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│ /review-test Workflow (advisory)                                │
-└─────────────────────────────────────────────────────────────────┘
+Phase 1: 8 gaps (2 CRITICAL, 3 HIGH, 3 LOW)
+Phase 2: existing strategy — 4 gaps
+Phase 3: no E2E present — Playwright infrastructure + 5 starter tests
+Phase 4: 2 fuzz candidates (1 HIGH, 1 MEDIUM)
+Phase 5: 5 findings (2 DELETE, 3 REWRITE; 2 redundant — informational)
 
- ┌──────────────────────────────────────────────┐
- │  1. DETERMINE SCOPE                          │
- │  ────────────────────────────────────────    │
- │  (skipped when the caller supplies scope)    │
- │  • Entire project (default)                  │
- │  • Specific directory or files               │
- │  • Recent changes (git diff)                 │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  PHASE 1: UNIT COVERAGE GAPS                 │
- │  ────────────────────────────────────────    │
- │  1a. Detect/obtain coverage data             │
- │      (existing report → generate → ask →     │
- │       manual analysis fallback)              │
- │  1b. Analyze gaps (qa-test-coverage-reviewer)│
- │  1c. Record findings by priority tier        │
- │      (CRITICAL → HIGH → LOW)                 │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  PHASE 2: INTEGRATION COVERAGE               │
- │  ────────────────────────────────────────    │
- │  2a. Analyze (qa-test-integration-reviewer)  │
- │  2b. Record findings:                        │
- │      Mode A (none) → starter strategy        │
- │      Mode B (exists) → gaps + expansion      │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  PHASE 3: E2E COVERAGE (webapps only)        │
- │  ────────────────────────────────────────    │
- │  3a. Analyze (qa-test-e2e-reviewer), gated   │
- │      Not a webapp? → Skip to Phase 4         │
- │  3b. Confirm journey classification (USER)   │
- │  3c. Record findings                         │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  PHASE 4: FUZZ COVERAGE                      │
- │  ────────────────────────────────────────    │
- │  4a. Analyze (qa-test-fuzz-reviewer)         │
- │  4b. Record candidates or "no infra" with    │
- │      tooling recommendation                  │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  PHASE 5: TEST QUALITY AUDIT                 │
- │  ────────────────────────────────────────    │
- │  5a. Scan for issues (qa-test-reviewer)      │
- │  5b. Record findings by category             │
- │      (DELETE / REWRITE / SIMPLIFY;           │
- │       redundant = informational)             │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  7. PRESENT CONSOLIDATED FINDINGS            │
- ├──────────────────────────────────────────────┤
- │  8. CUT TICKETS                              │
- │  • Propose ticket structure                  │
- │  • Operator approves / edits / declines      │
- │    (orchestrators apply autonomy judgment)   │
- │  • Create approved tickets in tracker        │
- └──────────────────────────────────────────────┘
+Proposed: 7 tickets
+  - 1 ticket per CRITICAL unit gap (2 tickets)
+  - 1 batch ticket: "Phase 1 — HIGH/LOW unit coverage gaps" (6 gaps)
+  - 1 batch ticket: "Phase 2 — Integration gaps within existing strategy" (4 gaps)
+  - 1 ticket: "Set up Playwright E2E infrastructure + 5 starter tests"
+  - 1 batch ticket: "Phase 4 — Fuzz test additions" (2 candidates)
+  - 1 batch ticket: "Phase 5 — Test quality cleanup" (DELETE + REWRITE)
+  - (Refactor-for-testability suggestions held as informational — no ticket)
+
+Approve / edit / decline?
 ```
-
-## Phase Details
-
-### Phase 1: Unit Coverage Gaps
-
-Detects or generates a coverage report using a four-step waterfall:
-
-1. **Check for existing artifacts** (coverage.out, lcov.info, etc.)
-2. **Detect coverage command** from build files (Makefile, package.json, go.mod, etc.)
-3. **Ask the user** for the correct command
-4. **Manual analysis fallback** — read source and test files to identify gaps by inspection
-
-For large scopes (>15 source files), the analysis is partitioned across multiple `qa-test-coverage-reviewer` agents running in parallel.
-
-Findings are grouped by priority (CRITICAL / HIGH / LOW). REFACTOR-FOR-TESTABILITY suggestions are collected separately and presented in the consolidated report as informational items.
-
-### Phase 2: Integration Coverage
-
-A single `qa-test-integration-reviewer` agent surveys the project's integration testing posture. It first detects existing integration test infrastructure (directories, build tags / markers, runners, fixtures, CI), then surveys integration seams (databases, queues, external APIs, etc.).
-
-The reviewer reports in one of two modes:
-
-- **Mode A** (no integration tests detected): proposes a starter strategy anchored in the seams, the infrastructure needed to run integration tests in isolation (Makefile target, build tag, fixture compose file, README), and a starter test set capped at 5–8 high-value tests.
-- **Mode B** (integration tests exist): identifies gaps within the existing strategy (capped at ~10 with HIGH/MEDIUM/LOW priority) and missing strategy categories (capped at ~3 with priority).
-
-### Phase 3: E2E Coverage (webapps only)
-
-A single `qa-test-e2e-reviewer` agent surveys the project's end-to-end (browser-driven) testing posture.
-
-**Webapp detection gate:** the agent's first action is to detect whether the project is a webapp. Signals include:
-- Frontend framework dependencies (React, Vue, Svelte, Angular, Next, Nuxt, Remix, Solid, Astro, Qwik, SvelteKit)
-- Server-rendered HTML templates (Rails views, Django/Jinja, Twig, Blade, Phoenix, Go html/template)
-- Static site generator config (Hugo, Jekyll, 11ty, Gatsby, Astro)
-- Existing browser test config (Playwright, Cypress, Selenium, etc.)
-
-If none are detected, the phase skips cleanly to Phase 4.
-
-**Critical user journey survey:** for webapps, the reviewer reads README/product docs, maps auth-gated routes, identifies entry points and state-mutating forms, and classifies each journey as **Critical**, **Important**, or **Nice-to-have**. Journey classification is the most subjective input in the analysis; the orchestrator confirms classification with the user before finalizing the findings.
-
-The reviewer reports in one of two modes:
-
-- **Mode A** (no E2E detected): **prescribes Playwright unconditionally** for greenfield webapp E2E. Proposes Playwright config, test directory, fixture/seeding strategy (load-bearing — without it, E2E is non-deterministic), and a starter test set capped at ~5 (E2E maintenance is expensive).
-- **Mode B** (E2E exists): respects the existing framework (Playwright, Cypress, Selenium, etc.) and recommends gaps within the strategy (~6) and strategy expansion (~2). **Does not push migration** away from Cypress/Selenium/etc.; an informational note about Playwright as the modern recommendation may appear, but no action.
-
-**Out of scope (declared in the agent's output):**
-- Visual regression testing — not Phase 3
-- Accessibility — handled by `/review-a11y` and `qa-web-a11y-reviewer`
-- Web performance — handled by `swe-web-perf-reviewer`
-- Cross-browser / viewport / locale matrices — surfaced as gaps only if the project actually targets multiple
-- Component-level testing (Storybook, RTL) — between unit and E2E; not Phase 3
-- Mobile native UI — browser-only
-
-**Phase 3 is the most "human-in-the-loop" of the five phases.** The journey-classification confirmation step is intentionally interactive — Mode A starter-strategy recommendations are the highest-risk findings in the skill (wrong E2E strategy = days of wasted work plus chronic maintenance pain), and the explicit user confirmation guards against acting on misclassifications before they propagate into tickets.
-
-### Phase 4: Fuzz Coverage
-
-A single `qa-test-fuzz-reviewer` agent checks whether fuzz testing infrastructure exists and identifies functions that are good fuzz candidates.
-
-If no fuzz infrastructure is detected, the agent still lists fuzz candidates, because they are the case for adopting the tooling. The phase records the starter-tooling recommendation (which may be cut as a ticket per the runtime ticket-structure proposal) alongside the candidates, which depend on it. No attempt is made to set up fuzz tooling within `/review-test`.
-
-### Phase 5: Test Quality Audit
-
-For large scopes (>15 test files), the audit is partitioned across multiple `qa-test-reviewer` agents running in parallel.
-
-Issue categories and recommended actions on the resulting ticket(s):
-
-| Category         | Action   | Description                                    |
-| ---------------- | -------- | ---------------------------------------------- |
-| Tautological     | DELETE   | Tests that can't fail                          |
-| Brittle          | REWRITE  | Tests coupled to implementation details        |
-| False confidence | REWRITE  | Tests that don't verify what they claim        |
-| Test smells      | SIMPLIFY | Structural problems in the test code           |
-| Inconsistent     | REWRITE  | Mixed assertion strategies; outliers rewritten |
-| Redundant        | (info)   | Duplicate coverage — reported but not actioned |
-| Other            | (varies) | Problems outside the categories above          |
-
-The implementer working a Phase 5 ticket retains the discretion to REWRITE rather than DELETE if the test covers real behavior that could regress — this caveat is included in every DELETE-containing ticket body.
-
-## Cut Tickets — Ticket-Structure Proposal
-
-After all five phases have run and the consolidated findings have been presented, the skill proposes a ticket structure based on the review's shape. Common shapes include:
-
-- **Concentrated unit gaps + small integration/E2E asks:** one ticket per CRITICAL unit gap; one batch ticket per HIGH/LOW tier; one ticket per integration or E2E gap; one batch for Phase-5 quality issues.
-- **Mode A starter strategies dominate:** one ticket per phase's starter strategy; individual tickets for unit/quality findings only if there are few.
-- **Lots of Phase-5 churn:** one batch ticket per quality category.
-- **Light review, scattered findings:** one batch ticket per phase covering all findings.
-- **No actionable findings:** no tickets; the review report stands alone.
-
-The operator approves / edits / declines:
-
-- **Approve:** tickets are cut as proposed.
-- **Edit:** the structure is revised (merge tickets, split, drop a finding, promote refactor-for-testability suggestions to tickets, change granularity). Repeat until approved.
-- **Decline:** the review report stands alone.
-
-**Tickets include:**
-- Per-finding body sections (gap, files, risk, "should verify," acceptance criteria, recommended implementation skill).
-- For Mode A starter strategies: strategy + infrastructure + starter tests + out-of-scope + acceptance criteria.
-- For Phase 5: per-test recommendation (DELETE / REWRITE / SIMPLIFY) with the "rewrite-if-still-valuable" caveat preserved for DELETE items.
-- Phase-type labels (`test-coverage`, `integration-test`, `e2e`, `fuzz`, `test-quality`) when the tracker supports them.
-
-## Orchestrator-Invoked Behavior
-
-When `/review-test` is invoked by an orchestrator (`/implement`, `/review-repo`), the workflow above is unchanged. The orchestrator receives the ticket-structure proposal and applies its own judgment per [`references/autonomy.md`](../../../references/autonomy.md) — typically declining items it intends to implement inline and approving items it wants tracked for follow-up.
-
-## Agent Coordination
-
-| Phase   | Analysis Agent                 | Parallelized    |
-| ------- | ------------------------------ | --------------- |
-| Phase 1 | `qa-test-coverage-reviewer`    | Yes (>15 files) |
-| Phase 2 | `qa-test-integration-reviewer` | No (single)     |
-| Phase 3 | `qa-test-e2e-reviewer`         | No (single)     |
-| Phase 4 | `qa-test-fuzz-reviewer`        | No (single)     |
-| Phase 5 | `qa-test-reviewer`             | Yes (>15 files) |
-
-**No implementation agents.** `/review-test` does not spawn `swe-implementer` or `qa-engineer` agents. Test design and implementation are handled out-of-skill by `/implement` against the cut tickets.
-
-Every agent spawn is a fresh instance. The orchestrator holds scope, the coverage baseline, the webapp gate result, the confirmed journey classification, and per-phase findings across phases.
-
-## Tips for Effective Use
-
-1. **The findings presentation (step 7) is where most of the value lands.** Take time with CRITICAL items and any Mode A starter-strategy proposals; these shape the ticket plan more than any other phase output.
-
-2. **Ticket creation is opt-in.** If you want the analysis as a planning artifact rather than a set of tickets, decline at step 8. The findings stand on their own.
-
-3. **Promote refactor-for-testability suggestions explicitly.** They default to informational; if you want them tracked, edit the structure during step 8a to add one ticket per suggestion (or one batch ticket if they're related).
-
-4. **Orchestrators apply their own judgment to the offer.** When invoked from an orchestrator such as `/implement` running a multi-ticket project, the orchestrator typically declines items it intends to implement inline and approves items it wants tracked for follow-up. Both responses are valid per `references/autonomy.md`.
-
-5. **Scope aggressively for large codebases.** `/review-test pkg/core/` targets a specific module; better than analyzing everything when you already know where the gaps are.
-
-## Integration with Other Skills
-
-Recommended sequence for test improvement: `/review-test` first (surface ticket-shaped work) → `/implement` (remediate) → `/test-mutation` (strengthen).

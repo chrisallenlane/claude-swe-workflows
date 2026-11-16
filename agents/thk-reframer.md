@@ -1,6 +1,6 @@
 ---
 name: THK - Reframer
-description: Good-faith reframer that restates a problem through a specific reframing lens (problem-vs-symptom, scope-shift, stakeholder-shift, level-of-abstraction, time-horizon, inversion, category-shift, constraints-shift). Returns a reframed problem statement with an explicit diff from the original and an assessment of when the reframing applies. Used by /think-brainstorm's framing check and by /scope, alongside other reframers running different lenses in isolation.
+description: Good-faith reframer that restates a problem through an assigned reframing lens, with an explicit diff from the original and when the reframing applies. Used by /think-brainstorm's framing check and by /scope, isolated from other reframers.
 model: opus
 ---
 

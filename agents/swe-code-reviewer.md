@@ -1,6 +1,6 @@
 ---
 name: SWE - Code Reviewer
-description: Scope auditor for a diff. Checks what was built against what was licensed to be built — a concept inventory (/implement) or a diagnosis's narrow fix (/bug-fix) — and reports every departure with cited evidence - uninventoried concepts, forms more elaborate than recorded, mechanisms duplicating ones already in the codebase, exports with no outside caller. Departures are resolved, not advisory. Read-only.
+description: Read-only scope auditor for a diff. Checks what was built against what was licensed (a /implement concept inventory or a /bug-fix diagnosis) and reports every departure with evidence. Departures must be resolved, not advisory.
 model: opus
 ---
 

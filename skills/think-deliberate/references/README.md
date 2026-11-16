@@ -2,14 +2,11 @@
 
 ## Overview
 
-The `/think-deliberate` skill uses adversarial representation to make decisions. Inspired by the legal adversarial system, it spawns advocate agents who argue for each option, rebut each other's positions, and respond to probing questions. You (the judge) render a verdict with reasoning and trade-offs.
+`/think-deliberate` makes a decision among two or more options by adversarial representation. One advocate agent argues for each option, the advocates rebut each other and answer the judge's questions, and the judge (the Claude running the skill) renders a verdict with reasoning, trade-offs, and confidence.
 
-**Key benefits:**
-- Every option gets its best case argued — no option dismissed prematurely
-- Weaknesses exposed through direct rebuttal
-- Advocates research and gather evidence to support their cases
-- Trade-offs made explicit through collision of well-argued positions
-- Judge can probe weak points and challenge assumptions
+It counters premature closure and single-option railroading: no option is dismissed before its strongest case has been made. The lineage is the legal adversarial system, where truth emerges from the collision of well-argued positions. The namespace-wide rationale lives in [`references/think.md`](../../../references/think.md).
+
+The step-by-step procedure lives in [`SKILL.md`](../SKILL.md); this guide covers when to use the skill and what to expect.
 
 ## When to Use
 
@@ -22,114 +19,45 @@ The `/think-deliberate` skill uses adversarial representation to make decisions.
 
 **Don't use `/think-deliberate` for:**
 - Decisions with a clearly correct answer
-- Simple preferences (just ask directly)
-- Decisions requiring real-world testing to resolve
+- Simple preferences (just decide)
+- Decisions that only real-world testing can resolve
 - Ethical dilemmas (advocacy framing may be inappropriate)
+- Generating options you don't have yet (use `/think-brainstorm`)
+- Stress-testing a single idea you've already chosen (use `/think-scrutinize`)
 
-## Workflow Diagram
+**Natural pipeline:** `/think-brainstorm` → `/think-deliberate` → `/think-scrutinize` (generate → choose → stress-test).
+
+## Flow
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│ /think-deliberate Workflow                                      │
-└─────────────────────────────────────────────────────────────────┘
-
- ┌──────────────────────────────────────────────┐
- │  1. PARSE THE DECISION                       │
- │  ────────────────────────────────────────    │
- │  • Identify options (minimum 2)              │
- │  • Determine criteria                        │
- │  • Gather relevant context                   │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  2. FACT-FINDING                             │
- │  ────────────────────────────────────────    │
- │  Probe for:                                  │
- │  • Constraints, budget, timeline             │
- │  • History — what's been tried or ruled out  │
- │  • Non-negotiables vs nice-to-haves          │
- │  • Success criteria                          │
- │  (Typically 3-5 clarifying questions)        │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  3. SPAWN ADVOCATES (parallel)               │
- │  ────────────────────────────────────────    │
- │  One advocate agent per option               │
- │  Each presents initial argument              │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  4. REBUTTAL ROUND (parallel)                │
- │  ────────────────────────────────────────    │
- │  Each advocate sees all arguments            │
- │  Each responds with rebuttals                │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  5. JUDGE'S QUESTIONS (optional)             │
- │  ────────────────────────────────────────    │
- │  Probe weaknesses, request clarification,    │
- │  test how advocates handle challenges        │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  6. PRE-JUDGMENT DISCLOSURE                  │
- │  ────────────────────────────────────────    │
- │  Judge shares current leaning and reasoning  │
- │  Advocates get final opportunity to respond  │
- └──────────────────┬───────────────────────────┘
-                    ▼
-        ┌───────────────────────┐
-        │  7. ITERATE OR        │
-        │     CONCLUDE          │
-        └───────────┬───────────┘
-                    │
-           ┌────────┴────────┐
-           ▼                 ▼
-   New questions?       Sufficient info
-   → Back to step 5     → Render judgment
-   (max 10 rounds)
-
- ┌──────────────────────────────────────────────┐
- │  8. RENDER JUDGMENT                          │
- │  ────────────────────────────────────────    │
- │  • Verdict: which option wins                │
- │  • Primary reasoning (2-3 key factors)       │
- │  • Trade-offs acknowledged                   │
- │  • Confidence (high/moderate/low/uncertain)  │
- │                                              │
- │  OR: Unable to decide → present factors      │
- │  the user must weigh personally              │
- └──────────────────────────────────────────────┘
+Parse the decision → Fact-finding (with you) → Opening arguments (parallel)
+  → Rebuttals (parallel) → Judge's questions ⇄ Pre-judgment disclosure
+  → Verdict (or "unable to decide")
 ```
 
-## Roles
+**Fact-finding is interactive.** Expect a few clarifying questions about constraints, history, non-negotiables, and success criteria before any advocate is spawned. Three to five is typical.
 
-**Judge (the orchestrator):**
-- Identifies options and criteria
-- Spawns advocate agents
-- Listens to arguments and rebuttals
-- Asks probing questions
-- Renders final judgment (or admits inability to decide)
+**The judge is not passive.** It probes weak points and, before ruling, discloses which way it is leaning so every advocate gets a final chance to respond. The question-and-disclosure cycle repeats as needed, up to 10 rounds.
 
-**Advocates (spawned agents):**
-- Argue vigorously for their assigned option
-- Research and gather evidence
-- Rebut opposing arguments
-- Acknowledge genuine weaknesses when challenged (good faith requirement)
+Advocates have full tool access for research, and they argue in good faith: no fabricated facts, and genuine weaknesses are conceded when challenged.
+
+## What You Get Back
+
+A **Judgment**:
+- **Recommendation**: the winning option
+- **Reasoning**: why it wins
+- **Trade-offs**: what you give up by not choosing the alternatives
+- **Confidence**: high / moderate / low / uncertain, with a brief explanation
+- **Key factors**: what most influenced the decision
+
+Or, when the options are genuinely equivalent, critical information is missing, or the choice turns on preferences the judge can't infer, an **Unable to Render Judgment** report: what the deliberation revealed, what the decision hinges on, and "if you value X, choose A; if you value Y, choose B."
 
 ## Example Session
 
 ```
 > /think-deliberate Redis vs Memcached for our session store
 
-What decision needs to be made?
-Session store for a web application — Redis vs Memcached.
-
 [Fact-finding: 3 questions about scale, persistence needs, existing infra]
-
-Spawning advocates...
 
 [Advocate A - Redis]:
 Redis offers persistence, data structures beyond key-value,
@@ -157,13 +85,3 @@ Higher memory overhead, more operational surface area...
 
 **Confidence:** high — persistence requirement is decisive
 ```
-
-## Constraints
-
-- **Iteration limit:** Maximum 10 rounds of deliberation (steps 5-6)
-- **Tool access:** Advocates have full tool access for research
-- **Good faith:** Advocates must not fabricate facts or misrepresent options
-
-## Philosophy
-
-The adversarial process ensures all options are robustly explored before a decision is made. The judge's job is not to be passive — ask hard questions, challenge weak arguments, push advocates to address concerns. The quality of the judgment depends on the rigor of the process.

@@ -1,6 +1,6 @@
 ---
 name: SWE - Namespace Reader
-description: Cold reader for namespace-legibility probes. Receives a file listing and navigation questions inline and answers purely from the listing — no tools, no repository access, no hedging. Fresh instance per battery. The reader's guesses ARE the measurement.
+description: Cold reader for namespace-legibility probes. Answers navigation questions purely from an inline file listing, with no tools or repository access. Fresh instance per battery; its guesses are the measurement.
 model: sonnet
 ---
 

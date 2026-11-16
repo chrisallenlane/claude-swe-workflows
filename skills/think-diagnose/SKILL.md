@@ -1,6 +1,6 @@
 ---
 name: think-diagnose
-description: Abductive reasoning about causes. Takes a phenomenon, separates observations from interpretations, then spawns diagnosticians applying different reasoning lenses (technical, human-factors, process, incentive-structure, environmental, temporal, measurement-artifact, statistical) in isolation. Orchestrator evaluates candidate causes for fit-against-evidence and calibrates confidence honestly. When several candidates survive and the evidence can't separate them, it narrows them by Analysis of Competing Hypotheses (Heuer): parallel evidence-gatherers across evidence classes, an explicit hypothesis-by-evidence matrix, ranking by least disconfirming evidence, sensitivity analysis, and falsification milestones. Reports the leading candidate(s) with the evidence needed to distinguish them. Produces feedback only — no code, no tickets, no artifacts.
+description: Abductive reasoning about the causes of a bug, incident, or phenomenon. Parallel diagnosticians apply different lenses; surviving candidates are narrowed by Analysis of Competing Hypotheses (ACH) when needed. Reports leading causes. Feedback only.
 model: opus
 ---
 

@@ -1,37 +1,41 @@
 # /review-release - Pre-Release Readiness Check
 
+The step-by-step procedure lives in [`SKILL.md`](../SKILL.md); this guide covers when to use the skill and what to expect.
+
 ## Overview
 
-The `/review-release` skill performs a comprehensive pre-flight check before cutting a release. It spawns a scanner agent for static analysis, runs execution-based checks (tests, build, doc freshness), then presents all findings in a single consolidated report for human review.
+`/review-release` is a pre-flight check before cutting a release. A scanner agent does the static analysis, the skill runs the tests, the build, and a doc-freshness check, and every finding lands in one consolidated report for you to review.
 
-**Key benefits:**
-- Runs all checks without interruption — no mid-scan pauses
-- Structured severity levels (BLOCKER/WARNING/INFO) to prioritize attention
-- Reuses existing workflows (doc-maintainer for freshness checks)
-- Consolidated report with actionable recommendations
+Why it's shaped this way:
+
+- **Surface issues, don't silently fix them.** A release is a commitment to users, so every issue gets human review. The only fixes offered are mechanical (removing debug statements and work markers, bumping manifest versions), and only for items you select.
+- **Run everything, then report.** All checks run without mid-scan pauses, so you decide with the full picture.
+- **Err toward reporting.** A false positive costs seconds; a missed issue ships to users.
+
+```
+Release context ──▶ Static scan ──▶ Tests ──▶ Build ──▶ Doc freshness ──▶ Report
+               ──▶ (your selection) Fixes ──▶ Re-verify ──▶ Summary + recommendation
+```
 
 ## When to Use
 
 **Use `/review-release` for:**
-- Validating that a codebase is ready for distribution, without committing to cut yet
-- A standalone audit pass that catches things development workflows don't focus on
-- Investigating release-readiness ahead of a planned release window
+- Checking whether a codebase is ready for distribution, without committing to cut yet
+- A standalone audit that catches what development workflows don't focus on
+- Checking readiness ahead of a planned release window
 
 **Don't use `/review-release` for:**
-- Cutting the release itself — use [`/release`](../../release/references/README.md), which invokes `/review-release` as preflight internally. Running `/review-release` manually and then `/release` doubles up on the same check.
-- Routine development checks (use `/implement` or `/refactor`)
-- Test quality concerns (use `/review-test` or `/test-mutation`)
-- Documentation updates (use `/tidy-docs`)
-- Security audits (`/implement` runs the sec-blue-teamer on security-sensitive diffs; use `/review-security` for deep audits)
+- Cutting the release: use [`/release`](../../release/references/README.md), which always runs `/review-release` as preflight. Running this manually and then `/release` doubles the same check.
+- Test quality: `/review-test` or `/test-mutation`
+- Updating docs: `/tidy-docs` (this skill only flags staleness)
+- Security audits: `/review-security` (this skill checks only for tracked secrets and debug artifacts)
 
-**Pairing with `/release`:** `/review-release` and `/release` sit on opposite sides of the act/check seam. `/review-release` is advisory — it tells you whether the release is ready. `/release` is the mutator — it actually cuts the release, and always runs `/review-release` as preflight before doing anything irreversible. If your intent is to ship, go directly to `/release`. If your intent is to audit readiness without committing to a cut, run `/review-release` alone.
-
-**Key principle:** Releases deserve human review. This workflow surfaces issues — it doesn't silently fix them.
+**`/review-release` vs `/release`:** they sit on opposite sides of the check/act seam. `/review-release` tells you whether the release is ready; `/release` actually cuts it. If you intend to ship, go straight to `/release`.
 
 ## What It Checks
 
 | Check                   | What it looks for                                                | Severity |
-| ----------------------- | ---------------------------------------------------------------- | -------- |
+|-------------------------|------------------------------------------------------------------|----------|
 | **Debug artifacts**     | console.log, print(), breakpoint(), debugger statements          | BLOCKER  |
 | **Work markers**        | TODO, FIXME, HACK, XXX, REMOVEME                                 | WARNING  |
 | **Hardcoded URLs**      | localhost, 127.0.0.1 in production code                          | WARNING  |
@@ -45,139 +49,31 @@ The `/review-release` skill performs a comprehensive pre-flight check before cut
 | **Build verification**  | Build failures                                                   | BLOCKER  |
 | **Doc freshness**       | Documentation referencing removed/renamed code                   | WARNING  |
 
-## Workflow Diagram
+## What You'll Be Asked
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│ /review-release Workflow                                        │
-└─────────────────────────────────────────────────────────────────┘
+- **What version are you releasing?** Optional. With a target, every version is checked against it; without one, the skill still checks that discovered versions agree. Run standalone, the manifests are expected to carry the target already. Under `/release`, which bumps after the preflight, manifests still at the previous version are reported as INFO.
+- **Any checks to skip?** Run everything (recommended), or skip build verification, doc freshness, or license compliance.
+- **Which items to address,** after the report: specific numbers, "all blockers", "all warnings", or "all".
+- **Whether to commit,** if any fixes were made.
 
- ┌──────────────────────────────────────────────┐
- │  1. DETERMINE RELEASE CONTEXT                │
- │  ────────────────────────────────────────    │
- │  • Target version (optional)                 │
- │  • Bump applied? (not yet, under /release)   │
- │  • Detect last tag, test/build commands      │
- │  • Any checks to skip?                       │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  2. STATIC ANALYSIS                          │
- │  ────────────────────────────────────────    │
- │  Agent: qa-release-engineer                  │
- │                                              │
- │  Scans for (minus skipped checks):           │
- │  • Debug/dev artifacts                       │
- │  • Version consistency                       │
- │  • Changelog coverage                        │
- │  • Git hygiene                               │
- │  • Breaking changes                          │
- │  • License compliance                        │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  3. Run test suite                           │
- ├──────────────────────────────────────────────┤
- │  4. Run build verification                   │
- ├──────────────────────────────────────────────┤
- │  5. Check doc freshness (doc-maintainer)     │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  6. FULL CONSOLIDATED REPORT                 │
- │  ────────────────────────────────────────    │
- │  All findings numbered by severity:          │
- │  BLOCKERS → WARNINGS → PASSED                │
- │  User selects items to address               │
- │  (report-only callers stop here)             │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  7. IMPLEMENT SELECTED FIXES                 │
- │  ────────────────────────────────────────    │
- │  Auto-fixable:                               │
- │  • Debug artifact removal                    │
- │  • TODO/FIXME marker removal                 │
- │  • Version number updates                    │
- │                                              │
- │  Report-only:                                │
- │  • Merge conflicts (manual resolution)       │
- │  • Test/build failures (investigate)         │
- │  • Changelog gaps (scaffold offered)         │
- │  • License issues (user decides)             │
- │  • Doc staleness (suggest /tidy-docs)        │
- │  • Breaking changes (document or revert)     │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  8. RE-VERIFY                                │
- │  ────────────────────────────────────────    │
- │  Quick re-check of affected static checks    │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  9. FINAL SUMMARY                            │
- │  ────────────────────────────────────────    │
- │  • Items resolved vs remaining               │
- │  • Changes made                              │
- │  • Recommendation:                           │
- │    HOLD / PROCEED WITH CAUTION / READY       │
- │  • Offer to commit changes                   │
- └──────────────────────────────────────────────┘
-```
+## What You Get Back
 
-## Examples
+1. **A readiness report:** findings numbered BLOCKERS → WARNINGS, then what passed.
+2. **Fixes for the items you select,** where they're mechanical. Everything else is report-only with a pointer: merge conflicts need manual resolution, test and build failures need investigation, changelog gaps get an offered scaffold from git history, license and breaking-change calls are yours, and stale docs point to `/tidy-docs`.
+3. **A final summary** with what was resolved, what changed, what remains, and a recommendation:
+   - **HOLD:** any unresolved BLOCKER
+   - **PROCEED WITH CAUTION:** only WARNINGs remain
+   - **READY TO RELEASE:** nothing remains
 
-### Example 1: Clean Release
+When a caller asks for report-only (as `/review-repo`'s follow-up does), the skill stops after the report and recommendation: no fixes, no commit.
 
-```
-User: /review-release
-
-What version are you releasing?
-> 3.1.0
-
-Any checks to skip?
-> Run everything
-
-Spawning qa-release-engineer agent...
-Running tests...
-Running build...
-Checking docs...
-
-## Release Readiness Report
-
-Last tag: v3.0.0 → Target: v3.1.0
-12 commits, 8 files changed
-
-No BLOCKERS or WARNINGS found.
-
-### PASSED
-- Debug artifacts: None found
-- Version consistency: All manifests agree (3.1.0)
-- Changelog: Updated with v3.1.0 section
-- Git hygiene: Clean working tree, no issues
-- Breaking changes: None detected
-- License compliance: No new dependencies
-- Tests: All pass
-- Build: Clean build
-- Docs: Up to date
-
-### Recommendation
-READY TO RELEASE
-```
-
-### Example 2: Issues Found
+## Example — Issues Found
 
 ```
 User: /review-release
 
 What version?
 > 2.0.0
-
-Spawning qa-release-engineer agent...
-Running tests...
-Running build...
-Checking docs...
 
 ## Release Readiness Report
 
@@ -205,18 +101,10 @@ Select items to address:
 - Recommendation: HOLD — undocumented breaking change remains
 ```
 
-## Tips for Effective Use
+## Tips
 
-1. **Run on a clean branch.** The release review works best when your release branch is ready. Uncommitted work adds noise.
-
-2. **Provide the target version.** This enables version consistency checking against a known target, not just checking that versions agree with each other. Standalone, the manifests are expected to carry it already; under `/release`, which bumps after the preflight, manifests still at the previous version are reported as INFO.
-
-3. **Start from a clean state.** If you know there are obvious blockers (merge conflicts, tracked secrets), fix them before running the review to keep the report focused.
-
-4. **Run `/tidy-docs` for stale docs.** The release review only flags staleness — it doesn't fix documentation. Run `/tidy-docs` separately to update docs.
-
-5. **Review the changelog manually.** The review can detect that the changelog wasn't updated, and can scaffold entries from git history, but meaningful release notes require human authorship.
-
-6. **Run periodically, not just at release time.** Running occasionally during development catches issues early, when they're easier to fix.
-
-7. **Don't ignore warnings.** PROCEED WITH CAUTION means exactly that — review the remaining warnings and make a conscious decision about each one.
+1. **Start from a clean state.** Run it on a ready release branch, and fix obvious blockers (merge conflicts, tracked secrets) first to keep the report focused.
+2. **Provide the target version.** It turns "do the versions agree?" into "are they all the right version?"
+3. **Write the changelog yourself.** The skill can scaffold entries from git history, but meaningful release notes need human authorship.
+4. **Run it periodically, not just at release time.** Issues are cheaper to fix early.
+5. **Don't ignore warnings.** PROCEED WITH CAUTION means making a conscious decision about each one.

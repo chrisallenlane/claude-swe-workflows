@@ -1,6 +1,6 @@
 ---
 name: pre-compact
-description: Pre-compaction housekeeping. Walks a checklist (persistent memory updates, git hygiene, trash cleanup) plus an open-judgment audit, produces an SBAR with a go/no-go recommendation, and emits a copy-pasteable resume prompt for the post-compaction agent if work remains. Run this immediately before /compact.
+description: Pre-compaction housekeeping. Updates persistent memory, checks git hygiene and trash, produces an SBAR with a go/no-go recommendation, and emits a resume prompt if work remains. Run immediately before /compact.
 model: opus
 ---
 

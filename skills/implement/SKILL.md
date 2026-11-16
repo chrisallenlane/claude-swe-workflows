@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Implements one ticket, a batch of tickets, or an open-ended goal, end to end. Uses judgment to choose which specialist agents and skills the work needs — planning, an implementer, reviews, /refactor, /review-repo architecture, /bug-hunt — over a small fixed floor that always holds — concept inventory before code, practical verification of acceptance criteria, tests green at every commit, an independent correctness review, and no irreversible actions. One planned interaction scaled to the work, then autonomous; every pass not run is accounted for in the final report.
+description: Implements a ticket, a batch, or an open-ended goal end to end, choosing agents and reviews by judgment over a fixed floor (concept inventory, practical verification, green tests, correctness review). Autonomous after one planning interaction.
 model: opus
 ---
 

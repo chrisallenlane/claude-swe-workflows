@@ -1,12 +1,12 @@
 # /pre-compact — Session Housekeeping Before Compaction
 
+The step-by-step procedure lives in [`SKILL.md`](../SKILL.md); this guide covers when to use the skill and what to expect.
+
 ## Overview
 
-Compaction replaces the live conversation with a lossy summary. Anything that matters but lives only in the conversation — a decision, an open question, the reason behind a change — is gone afterward unless it was written down somewhere durable.
+Compaction replaces the live conversation with a lossy summary. Anything that matters but lives only in the conversation is gone afterward unless it was written down somewhere durable. That includes decisions, open questions, and the reasons behind changes.
 
-`/pre-compact` is the last-chance pass before you run `/compact`. It walks a fixed checklist as a floor (persistent memory, git state, scratch files), then uses judgment for whatever the checklist doesn't anticipate, and ends with a go/no-go SBAR and a resume prompt for the post-compaction session.
-
-**It never runs `/compact` itself.** Compaction is your call.
+`/pre-compact` is the last-chance pass before you run `/compact`. It walks a fixed checklist as a floor: persistent memory, git state, and scratch files. Then it uses judgment for whatever the checklist doesn't anticipate. It ends with a go/no-go SBAR and a resume prompt for the post-compaction session.
 
 ## When to Use
 
@@ -17,34 +17,19 @@ Compaction replaces the live conversation with a lossy summary. Anything that ma
 **Don't bother when:**
 - The session was a one-off question with nothing to carry forward.
 
-## Workflow
+**vs. `/tidy-git`:** `/tidy-git` is mechanical repo hygiene (stale refs, merged branches) and never deletes untracked files. `/pre-compact` judges which of this session's scratch files are trash.
+
+## Flow
 
 ```
-1. Persistent memory pass   — save what matters next session, per the
-                              memory conventions in effect; update
-                              rather than duplicate
-2. Git hygiene pass         — surface uncommitted and untracked work and
-                              unusual branch state; commit only with your
-                              permission
-3. Trash cleanup pass       — delete scratch files that are clearly trash
-                              and clearly the session's own; ask about
-                              anything ambiguous
-4. Open audit (judgment)    — undocumented decisions, unanswered questions,
-                              background processes, stashes, branches
-5. SBAR                     — Situation / Background / Assessment /
-                              Recommendation: "Safe to compact",
-                              "Safe to compact after X", or
-                              "Do not compact yet — Y"
-6. Resume prompt            — one copy-pasteable block telling the next
-                              session exactly what to do next, or
-                              "No resume prompt — work is sealed."
-7. Stop                     — waits for you
+memory → git hygiene → trash cleanup → open audit → SBAR → resume prompt → stop
 ```
 
-## Design Notes
+## What to Expect
 
-**Memory is the point.** The memory pass is never skipped or treated as optional; it is why the skill exists.
-
-**Bias toward keeping.** A wrongly deleted file loses your work in progress; a wrongly kept one costs nothing. Anything of uncertain origin is asked about, not deleted.
-
-**The resume prompt is written now, not later.** The post-compaction session sees only the summary. A handoff drafted while the full context is still present is far better than one it could reconstruct — so the skill always emits one, or says explicitly that there is nothing to resume.
+- **Memory is always updated.** It's the reason the skill exists, so the pass is never skipped.
+- **Nothing is committed without your permission.** Uncommitted and untracked work is surfaced, and you're asked before any commit.
+- **Only clear trash is deleted.** That means scratch files that are clearly throwaway and clearly the session's own. Anything ambiguous is asked about, and files that aren't the session's are left alone. A wrongly deleted file loses your work, while a wrongly kept one costs nothing.
+- **The SBAR ends in one of three verdicts:** "Safe to compact", "Safe to compact after X", or "Do not compact yet — Y".
+- **A resume prompt is always emitted**, or the explicit line "No resume prompt — work is sealed." The prompt is written now because the post-compaction session sees only the summary, and a handoff drafted with full context is far better than one reconstructed from it. It's a single copy-pasteable block naming one concrete next action.
+- **It never runs `/compact` itself** and starts no new work. It stops and waits for you.

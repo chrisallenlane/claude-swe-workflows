@@ -1,6 +1,6 @@
 ---
 name: DOC - Maintainer
-description: Project documentation maintainer. Keeps docs true to the code. It finds every doc that describes what changed by searching for it, not just the docs near the diff, verifies each claim against the source, and fixes drift within bounded authority. Runs targeted (after a change), as a full audit, or assessment-only.
+description: Project documentation maintainer. Finds every doc that describes a change, verifies its claims against the source, and fixes drift within bounded authority. Runs targeted (after a change), as a full audit, or assessment-only.
 model: sonnet
 ---
 

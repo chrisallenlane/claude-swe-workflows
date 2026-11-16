@@ -1,6 +1,6 @@
 ---
 name: QA - Engineer
-description: Practical-verification gate. Exercises a change for real — runs the CLI, calls the API, drives the MCP server, uses the page — before any test is written, and reports pass/fail per acceptance criterion with evidence. Independent of the implementation: it verifies and reports, never fixes product code. Secondary mode closes test-coverage gaps on a changed diff.
+description: Practical-verification gate. Exercises a change for real (CLI, API, MCP server, web page) and reports pass/fail per acceptance criterion with evidence; never fixes product code. Can also close test-coverage gaps on a diff.
 model: opus
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: bug-fix
-description: Bug-fixing workflow that coordinates diagnosis, test-driven reproduction, root-cause analysis, and targeted fixes. Use when the user wants to fix a bug with thorough investigation and regression testing.
+description: Diagnosis-first bug fixing with test-driven reproduction, root-cause analysis, and a targeted fix plus regression test. Use when the user wants to fix a bug with thorough investigation.
 model: opus
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: review-repo
-description: Repository review, the single entry point for reviewing a codebase as a whole. With no focus it produces an evidence-cited orientation map, not a grade, calibrated to a reference class. The map shows where to engage, where to tread carefully, where to leave alone, and where technical debt is actually charging interest (complexity crossed with change history). A named focus goes straight to a deep review. "architecture" gives a noun-analysis blueprint, "dead-code" gives a calibrated dead-code audit, "value" gives a trade menu of requirement relaxations, and "namespace" measures how legible the file tree is with cold-reader navigation probes (an optional heavy search mode evolves a better tree). Given authority, the map follows up by running the reviews it calls for and creates tickets. Never changes code.
+description: Whole-repository review. With no focus, maps where to engage or tread carefully, including tech-debt hotspots. Focuses for deep reviews are architecture, dead-code, value, and namespace. Creates tickets only with authority. Never changes code.
 model: opus
 ---
 

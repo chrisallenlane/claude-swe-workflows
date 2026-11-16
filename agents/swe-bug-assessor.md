@@ -1,6 +1,6 @@
 ---
 name: SWE - Bug Assessor
-description: Codebase risk assessor that cross-references change history (complexity × churn hotspots, fix density, change coupling), coverage, and structural risk factors to identify where bugs are most likely to lurk. Produces a ranked hotspot list for focused investigation.
+description: Codebase risk assessor that crosses change history (hotspots, fix density, coupling), coverage, and structural risk to rank where bugs most likely lurk. Produces a hotspot list for focused bug hunting.
 model: opus
 ---
 

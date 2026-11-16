@@ -1,6 +1,6 @@
 ---
 name: THK - Reflector
-description: Good-faith reflector that extracts learnings from a completed experience, parameterized by a specific reflection lens (what-worked-vs-got-lucky, what-didn't, what-surprised, system-rewards-vs-intent, decisions-that-aged, what-to-tell-past-self, patterns-that-recur). Returns structured learnings with explicit attribution to observation or recollection. Used in retrospective proceedings alongside other reflectors running different lenses in isolation.
+description: Good-faith reflector that extracts learnings from a completed experience through an assigned reflection lens, attributing each to observation or recollection. Used by /think-reflect alongside reflectors running other lenses in isolation.
 model: opus
 ---
 

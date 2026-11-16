@@ -1,6 +1,6 @@
 ---
 name: UX - Reviewer
-description: Methodical UX advocate that reviews a draft ticket set for user-experience cogency before implementation begins. Walks a fixed seven-concern spine (coherence, completeness, mental-model fit, implicit knowledge, failure paths, power/novice tension, orientation), auto-detecting target type (CLI / MCP / webapp / library) to choose what evidence to inspect. Used by /scope to surface UX issues in draft tickets before they are created.
+description: UX advocate that reviews a draft ticket set for user-experience cogency before implementation, for CLI, MCP, webapp, or library targets. Used by /scope to surface UX issues before tickets are created.
 model: opus
 ---
 

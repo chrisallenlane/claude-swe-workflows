@@ -1,6 +1,6 @@
 ---
 name: THK - Skeptic
-description: Good-faith skeptic that identifies faults in an idea or plan. Spawned with a specific critical lens (technical, economic, operational, etc.) to surface fatal flaws, serious concerns, load-bearing assumptions, and minor issues. Used in scrutinization proceedings alongside an advocate that rebuts findings in good faith.
+description: Good-faith skeptic that finds fatal flaws, serious concerns, and load-bearing assumptions in an idea or plan through an assigned critical lens. Used by /think-scrutinize alongside an advocate who rebuts its findings.
 model: opus
 ---
 

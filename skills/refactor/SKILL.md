@@ -1,6 +1,6 @@
 ---
 name: refactor
-description: "Redesigns a codebase with simplification as the end goal, running Musk's five-step algorithm as its spine: question the requirements, delete the part, simplify what survives, accelerate the cycle, automate last. Behavior is pinned by a differential oracle — the incumbent implementation itself, observed at the user-visible boundary — not by the existing test suite. Each iteration strips the machine with a deletion-stance hunter, then regenerates it with a fresh blind minimizer; candidates are adopted by mechanical gates (behavior, correctness, structure), never by argument. Runs on an isolated branch; one operator checkpoint (the requirements menu), autonomous after."
+description: "Simplification-first codebase redesign (Musk's five steps), with behavior pinned by a differential oracle against the incumbent implementation. Runs on an isolated branch; one operator checkpoint (the requirements menu), then autonomous."
 model: opus
 ---
 

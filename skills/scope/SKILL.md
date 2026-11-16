@@ -1,6 +1,6 @@
 ---
 name: scope
-description: Explores a problem space with the user and turns it into well-specified tickets in the issue tracker — one ticket or a whole project's worth, as the work warrants. Uses judgment to choose which reviewers the draft needs (UX, implementer, security, performance), with two fixed rules — a fresh-context review of every draft before it goes upstream, and nothing is created without the user's approval. Writes no code.
+description: Explores a problem with the user and turns it into well-specified tickets in the issue tracker, from one ticket to a whole project. Every draft gets a fresh-context review; nothing is created without approval. Writes no code.
 model: opus
 ---
 

@@ -1,16 +1,17 @@
 # /bug-fix - Automated Bug-Fixing Workflow
 
+The step-by-step procedure lives in [`SKILL.md`](../SKILL.md); this guide covers when to use the skill and what to expect.
+
 ## Overview
 
 The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through specialist agents. It reproduces the bug with a failing test, performs root-cause analysis with git archaeology, implements a targeted fix, and verifies the fix through practical testing — then runs it through review, correctness, and documentation gates.
 
-**Key benefits:**
-- Test-driven reproduction: a failing test defines "done"
-- Root-cause analysis prevents surface-level patches
-- Git archaeology uncovers when and why the bug was introduced
-- Related failure modes are identified and tested, not just the reported bug
-- Practical verification confirms the fix actually works
-- A full review pipeline: security, scope audit, performance, peer review, and a blocking correctness gate
+**Why it is shaped this way:**
+- **A failing test defines "done."** Writing the reproducing test before any fix turns "is it fixed?" into an empirical question.
+- **Diagnosis before implementation** prevents surface-level patches: a read-only investigator finds the root cause (with git archaeology when the bug warrants it) so the fix is targeted, not a guess.
+- **Related failure modes are tested too.** The same root cause often affects adjacent paths; those get tests, not just the reported bug.
+- **Practical verification** confirms the originally-reported scenario actually works — running the CLI, calling the API, driving the page — not only that tests pass.
+- **An unanchored correctness gate.** A fresh correctness reviewer sees the diff and your original bug report, but deliberately *not* the diagnosis. The diagnosis is the implementer's adopted theory; passing it would anchor the reviewer to the frame that produced the fix. The reviewer's question is "does this fix rest on false assumptions or break anything else?" The gate becomes mandatory when empirical verification degrades (no test suite, or the scenario can't be exercised).
 
 ## When to Use
 
@@ -25,241 +26,36 @@ The `/bug-fix` skill orchestrates a diagnosis-first bug-fixing workflow through 
 - Obvious typos or trivial one-line fixes (just fix them directly)
 - Feature requests disguised as bugs (use `/implement`)
 - Exploratory debugging where the symptom is unclear (investigate first, then `/bug-fix`)
+- Finding bugs you don't know about yet (use `/bug-hunt`)
 
 **Rule of thumb:** If the bug is worth a failing test and root-cause analysis, use `/bug-fix`. If the fix is obvious, just do it.
 
-## Workflow Diagram
+## The Flow
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│ /bug-fix Workflow                                               │
-└─────────────────────────────────────────────────────────────────┘
-
- ┌──────────────────────────────────────────────┐
- │  1. CLARIFY THE BUG                          │
- │  ────────────────────────────────────────    │
- │  • Symptoms, expected vs actual behavior     │
- │  • Reproduction steps                        │
- │  • When did it start? Recent changes?        │
- │  • Environment specifics                     │
- │  • Loop until bug is clearly understood      │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  2. WRITE FAILING TEST(S)                    │
- │  ────────────────────────────────────────    │
- │  Agent: swe-implementer (reproduce a bug)    │
- │                                              │
- │  • Write test encoding expected behavior     │
- │  • Verify test actually fails (proves bug)   │
- │  • This is the contract: when it passes,     │
- │    the bug is fixed                          │
- │                                              │
- │  Can't reproduce? ──┬─ Back to step 1        │
- │                     └─ (max 2 attempts)      │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  3. DIAGNOSIS                                │
- │  ────────────────────────────────────────    │
- │  Agent: swe-bug-investigator (read-only)     │
- │                                              │
- │  • Trace execution paths                     │
- │  • Git archaeology (depth at discretion):    │
- │    - Shallow: git log on involved files      │
- │    - Medium: git blame, commit context       │
- │    - Deep: git log -S, pattern search        │
- │  • Identify root cause + evidence            │
- │  • Identify related failure modes            │
- │  • Recommend fix approach                    │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  4. IMPLEMENT THE FIX                        │
- │  ────────────────────────────────────────    │
- │  Agent: Same implementer as step 2           │
- │                                              │
- │  • Follow diagnostician's recommended fix    │
- │  • Write tests for related failure modes     │
- │  • Verify: originally-failing test passes    │
- │  • Run full test suite for regressions       │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  5. QA - VERIFY FIX                          │
- │  ────────────────────────────────────────    │
- │  Agent: qa-engineer (Mode 1)                 │
- │                                              │
- │  CRITICAL GATE:                              │
- │  1. Practical verification (reproduce the    │
- │     original scenario, confirm it's fixed)   │
- │  2. Run full test suite                      │
- │  3. Check related failure modes              │
- │                                              │
- │  Passes? ──┬─ Yes → Continue                 │
- │            └─ No  → Back to step 4 ──┐       │
- │                     (max 3 attempts) │       │
- └──────────────────┬───────────────────┘       │
-                    ▼                           │
- ┌──────────────────────────────────────────────┤
- │  6. CODE REVIEW (conditional reviewers)      │
- │  ────────────────────────────────────────    │
- │  Only review working code!                   │
- │                                              │
- │  6a. Security (if sensitive code)            │
- │      Agent: sec-blue-teamer                  │
- │      Authority: Can demand changes           │
- │                                              │
- │  6b. Scope audit (if non-trivial)            │
- │      Agent: swe-code-reviewer                │
- │      Authority: Departures must be resolved  │
- │                                              │
- │  6c. Performance (if critical code)          │
- │      Agent: swe-perf-reviewer                │
- │      Authority: Advisory suggestions         │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  7. IMPLEMENT REVIEW FEEDBACK                │
- │  ────────────────────────────────────────    │
- │  Agent: Same implementer as steps 2/4        │
- │                                              │
- │  • Aggregate all review feedback             │
- │  • Security: Must address or get approval    │
- │  • Departures: Remove or justify             │
- │  • Performance: Advisory - use discretion    │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  8. PEER REVIEW (conditional)                │
- │  ────────────────────────────────────────    │
- │  Agent: Fresh swe-implementer (peer review)  │
- │                                              │
- │  Non-trivial changes?                        │
- │  ├─ Yes → Fresh reviewer makes nit fixes     │
- │  └─ No  → Skip to QA                         │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  9. QA - COVERAGE OF THE CHANGED DIFF        │
- │  ────────────────────────────────────────    │
- │  Agent: qa-engineer (Mode 2)                 │
- │                                              │
- │  • Test coverage analysis                    │
- │  • Fill coverage gaps                        │
- │  • Run suite + linters; report failures      │
- │  • Verify steps 7-8 didn't break tests       │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  10. CORRECTNESS REVIEW (run-unless)         │
- │  ────────────────────────────────────────    │
- │  Agent: swe-correctness-reviewer (fresh)     │
- │                                              │
- │  "The bug has already shipped. Find it."     │
- │  • Gets diff + bug report; NOT diagnosis     │
- │  • Findings are blocking, not advisory       │
- │  • Mandatory if empirical gates degraded     │
- │                                              │
- │  Findings? ──┬─ Yes → fix → fresh review     │
- │              │      (max 3 rounds)           │
- │              └─ No → APPROVE, continue       │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  11. DOCUMENTATION                           │
- │  ────────────────────────────────────────    │
- │  Agent: doc-maintainer                       │
- │                                              │
- │  • Targeted pass over the diff               │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  12. FINAL VERIFICATION                      │
- │  ────────────────────────────────────────    │
- │  • Run full test suite                       │
- │  • Run all linters                           │
- │  • Present summary: root cause, fix, tests   │
- └──────────────────┬───────────────────────────┘
-                    ▼
- ┌──────────────────────────────────────────────┐
- │  13. WORKFLOW COMPLETION (optional)          │
- │  ────────────────────────────────────────    │
- │  • Commit with root-cause in message         │
- │  • Update/close ticket (if applicable)       │
- │  • Rebase on main (if applicable)            │
- └──────────────────────────────────────────────┘
+Clarify → Reproduce (failing test) → Diagnose → Fix → Verify (practical)
+        → Review → Correctness gate → Document → Final verification → Complete
 ```
 
 ## How /bug-fix Differs from /implement
 
-`/implement` builds from requirements; `/bug-fix` starts from a symptom and spends steps 2-4 on reproduction and diagnosis before any fix. Both end with the same kinds of gates: practical verification, a fresh blocking correctness review, and a documentation pass.
+`/implement` builds from requirements; `/bug-fix` starts from a symptom and spends its early phases on reproduction and diagnosis before any fix. Both end with the same kinds of gates: practical verification, a fresh blocking correctness review, and a documentation pass.
 
-Key differences:
 - **Test first, then fix.** `/implement` implements then tests. `/bug-fix` writes a failing test before any fix attempt.
-- **Diagnosis before implementation.** The diagnostician performs root-cause analysis so the implementer makes a targeted fix, not a guess.
-- **Git archaeology.** The diagnostician traces when and how the bug was introduced, providing context the implementer wouldn't otherwise have.
-- **Related failure modes.** The diagnostician identifies patterns, and the implementer writes tests for all of them — not just the reported bug.
+- **Diagnosis before implementation.** The diagnostician performs root-cause analysis so the implementer makes a targeted fix.
+- **Related failure modes.** The diagnostician identifies patterns, and the implementer writes tests for all of them.
 
-## Workflow Details
+## What You'll Be Asked
 
-### 1. Clarify the Bug
-The workflow starts by ensuring the bug is clearly understood:
-- Symptoms (error messages, crashes, unexpected behavior)
-- Expected vs actual behavior
-- Reproduction steps
-- When it started, any recent changes
-- Environment specifics
+- **Up front:** symptoms, expected vs. actual behavior, reproduction steps, when it started, and environment. The skill keeps asking until it can write a reproducing test; if reproduction fails, it comes back with what it tried.
+- **On escalation:** when reproduction, fix verification, or correctness review hits its attempt limit, you get the current state and the specific blocker.
+- **At the end:** whether to complete the workflow — commit, update or close the ticket, and rebase on main if the branch is behind.
 
-Loops until there's enough information to write a reproducing test.
+## What You Get Back
 
-### 2. Write Failing Test(s)
-`swe-implementer` writes test(s) that encode the expected behavior:
-- Tests fail against the current buggy code (proving the bug is real and reproducible)
-- This is the "contract" — when these tests pass, the bug is fixed
-- If the bug can't be reproduced after 2 attempts, escalates to user
+A summary of the bug, its root cause, files changed, tests added (the regression test plus one per related failure mode), any residual risks from the correctness review, and remaining follow-ups. Nothing is committed until you confirm completion, and a rebase is offered, never forced; conflicts halt rather than auto-resolve.
 
-### 3. Diagnosis
-The `swe-bug-investigator` agent performs read-only root-cause analysis:
-- **Traces execution paths** from the failing test through the code
-- **Git archaeology** at its own discretion:
-  - Shallow: `git log` on involved files for recent changes
-  - Medium: `git blame` on suspicious code, commit context
-  - Deep: `git log -S` for pattern search, similar bugs elsewhere
-- **Identifies root cause** with supporting evidence
-- **Identifies related failure modes** (same root cause affecting other paths)
-- **Recommends fix approach** (what to change and why, not specific code)
-
-The diagnostician does not modify any code. It produces a diagnosis report that guides the implementation agent.
-
-### 4. Implement the Fix
-The same implementer from step 2 implements the fix:
-- Follows the diagnostician's recommended approach
-- Fixes the bug as narrowly and precisely as possible
-- Writes additional tests for each related failure mode
-- Verifies the originally-failing test now passes
-- Runs the full test suite for regressions
-
-### 5. QA - Verify Fix (CRITICAL GATE)
-The `qa-engineer` performs practical verification:
-- Actually reproduces the originally-reported scenario and confirms it's fixed
-- Runs the full test suite
-- Checks related failure modes identified by the diagnostician
-
-If verification fails, returns to step 4 (max 3 attempts before escalating).
-
-### 6-13. Reviews, Correctness Gate, Documentation, Completion
-
-- **6-7. Conditional reviews and feedback.** `sec-blue-teamer` (security-sensitive changes; Critical/High findings must be addressed or explicitly waived), `swe-code-reviewer` (non-trivial changes; audits the fix against the diagnosis's narrow fix, and each departure must be removed or justified), and `swe-perf-reviewer` (performance-critical changes; advisory). The implementer addresses the feedback.
-- **8. Peer review.** A fresh `swe-implementer` in peer-review mode makes small fixes on non-trivial changes; reverted if it breaks tests.
-- **9. QA coverage of the changed diff.** `qa-engineer` (Mode 2) fills coverage gaps with tests, runs the suite and linters, and confirms steps 7-8 broke nothing. Failures route back to the implementer; QA never fixes product code.
-- **10. Correctness review** (below).
-- **11-13. Documentation, final verification, completion.** `doc-maintainer` runs a targeted pass; the full suite and linters run; with your confirmation the skill commits, updates or closes the ticket, and offers a rebase. Nothing before step 13 commits.
-
-One step deserves bug-fix-specific mention — **step 10, the correctness review**. A fresh `swe-correctness-reviewer` reads the diff assuming a bug already shipped and mechanically verifies every assumption the fix makes (paths, signatures, runtime-version semantics, call sites). Its findings are blocking and resolve through a fix-and-fresh-re-review loop (max 3 rounds). Two contracts differ from the rest of the pipeline:
-
-- **The reviewer gets the diff and the original bug report, but not the diagnosis.** The bug report is the user's symptom — ground truth. The diagnosis is the implementer's adopted theory; passing it would anchor the reviewer to the frame that produced the fix. The reviewer isn't re-answering "is the bug fixed" (the reproducing test answers that); it's answering "does this fix rest on false assumptions or break anything else."
-- **The gate is mandatory when empirical verification degrades.** In a repo with no test infrastructure, the step-2 reproduction contract itself collapses — there may be no failing test at all — and this gate becomes the only correctness check between the fix and production.
+**Invoked by another skill** (such as `/implement`): the caller supplies the bug report and answers the questions and the completion confirmation in your place. The workflow runs through the commit, but never updates or closes tickets and never rebases. Escalations go to the caller.
 
 ## Examples
 
@@ -267,21 +63,14 @@ One step deserves bug-fix-specific mention — **step 10, the correctness review
 ```
 User: "The last item on each page is duplicated on the next page"
 
-Workflow:
-1. Clarify: Which endpoint? Happens with all page sizes? Started after recent changes?
-2. Failing test: swe-implementer writes TestPaginationBoundary that asserts
-   no duplicates — test fails against current code
-3. Diagnosis: swe-bug-investigator traces pagination logic, finds boundary
-   comparison uses < instead of <=, git blame shows it was introduced
-   in commit abc123 during a refactor. Also identifies: same pattern
-   exists in the cursor-based pagination path.
-4. Fix: swe-implementer fixes both comparison operators, adds tests for
-   cursor pagination boundary too
-5. QA: qa-engineer actually paginates through test data, confirms no dupes
-6-9. Reviews and coverage QA
-10. Correctness: reviewer checks all call sites of both pagination paths,
-    verifies boundary semantics — APPROVE
-11-13. Docs, verification, commit
+Clarify: Which endpoint? All page sizes? Started after recent changes?
+Reproduce: TestPaginationBoundary asserts no duplicates — fails.
+Diagnose: boundary comparison uses < instead of <=; git blame shows it
+  arrived in commit abc123 during a refactor. Same pattern exists in
+  the cursor-based pagination path.
+Fix: both operators fixed; cursor-path boundary tests added.
+Verify: qa-engineer actually paginates through test data — no dupes.
+Correctness: reviewer checks all call sites of both paths — APPROVE.
 
 Summary:
 - Root cause: < vs <= in boundary check, introduced in refactor abc123
@@ -293,19 +82,13 @@ Summary:
 ```
 User: "Intermittent 500 errors under load, started after adding caching"
 
-Workflow:
-1. Clarify: Which endpoint? Error logs? Frequency? Load characteristics?
-2. Failing test: swe-implementer writes TestConcurrentCacheAccess using
-   goroutines — test fails with data race detector
-3. Diagnosis: swe-bug-investigator finds unsynchronized map access in cache,
-   git log shows cache was added without mutex protection. Related: the
-   cache eviction path has the same issue.
-4. Fix: Adds sync.RWMutex to cache, protects both read/write and eviction paths
-5. QA: Runs concurrent test, race detector clean
+Reproduce: TestConcurrentCacheAccess fails under the race detector.
+Diagnose: unsynchronized map access; cache added without a mutex.
+  Related: the eviction path has the same issue.
+Fix: sync.RWMutex protects read/write and eviction paths.
 
 Summary:
 - Root cause: Unsynchronized map access in cache layer
-- Fixed: 1 file (cache.go), added RWMutex protection
 - Tests added: 3 (concurrent read/write, concurrent eviction, mixed load)
 ```
 
@@ -313,46 +96,17 @@ Summary:
 ```
 User: "App crashes on startup"
 
-Workflow:
-1. Clarify: Error message? OS? Configuration file? Recent updates?
-2. Failing test: swe-implementer tries to reproduce — test passes (no crash).
-   Reports: tested with default config, various invalid configs, missing
-   config file. Cannot reproduce.
-   → Back to step 1.
-   User provides: "Only happens with YAML config, not TOML"
-2. (retry): swe-implementer writes TestYAMLConfigParsing — fails! Bug reproduced.
-3-13. Continue with diagnosis and fix...
+Reproduce: tried default config, invalid configs, missing config —
+  no crash. Reports what was tried; back to clarification.
+User: "Only happens with YAML config, not TOML"
+Reproduce (retry): TestYAMLConfigParsing fails. Bug reproduced;
+  diagnosis and fix proceed.
 ```
 
 ## Tips
 
-1. **Provide reproduction details.** The more specific your reproduction steps, the faster step 2 goes. Vague reports lead to reproduction failures.
-
-2. **Trust the diagnostician's depth.** It chooses shallow or deep git archaeology based on the bug's complexity. Don't worry about it spending too much time on simple bugs.
-
-3. **The failing test is the contract.** Once the implementer writes a failing test, that test defines "fixed." This is more reliable than manual verification alone.
-
-4. **Related failure modes are valuable.** The diagnostician looks for patterns, not just the single reported bug. This often catches adjacent bugs that would have been reported next.
-
-5. **Use `/implement` for feature-shaped bugs.** If the "bug" is really a missing feature or a design change, `/implement` is a better fit. `/bug-fix` is for when existing behavior is wrong.
-
-## Agent Coordination
-
-**Sequential execution:** One agent at a time, each completes before the next starts.
-
-**Implementer continuity:** The same implementation agent is used across steps 2 (failing test), 4 (fix), and 7 (review feedback). Step 8 (peer review) uses a fresh instance for independent perspective.
-
-**Diagnosis pass-through:** The diagnostician's report from step 3 is passed to the implementer in step 4. The implementer follows the recommended approach and writes tests for each identified related failure mode. The report is deliberately **not** passed to the correctness reviewer in step 10 — see above.
-
-## Iteration Limits
-
-**Safety limits:**
-- Reproduction loop (step 2): 2 attempts max
-- Fix verification loop (step 5): 3 attempts max
-- Correctness review convergence loop (step 10): 3 rounds max
-
-If limits reached, workflow escalates to user with current state and specific blockers.
-
-## Invoked by Another Skill
-
-When another skill (such as `/implement`) runs `/bug-fix`, the caller supplies the bug report and answers the clarifying questions and the completion confirmation in place of the user. The workflow runs unchanged through the commit (13a), but it never updates or closes tickets (13b) and never rebases (13c). Escalations go to the caller, which decides whether to bring them to you.
+1. **Provide reproduction details.** The more specific your reproduction steps, the faster reproduction goes. Vague reports lead to reproduction failures.
+2. **Trust the diagnostician's depth.** It chooses shallow or deep git archaeology based on the bug's complexity.
+3. **The failing test is the contract.** Once it exists, that test defines "fixed."
+4. **Related failure modes are valuable.** They often catch adjacent bugs that would have been reported next.
+5. **Use `/implement` for feature-shaped bugs.** `/bug-fix` is for when existing behavior is wrong.

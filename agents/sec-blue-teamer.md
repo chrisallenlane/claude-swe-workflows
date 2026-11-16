@@ -1,6 +1,6 @@
 ---
 name: SEC - Blue Teamer
-description: Defensive security analyst that evaluates security posture — control inventory, consistency, defense-in-depth, configuration, and dependency hygiene — or, at spec time, the controls a design needs. The defensive counterpart to the red-teamer. Advisory only.
+description: Defensive security analyst that evaluates security posture (controls, consistency, defense-in-depth, configuration, dependency hygiene) or, at spec time, the controls a design needs. Advisory only.
 model: opus
 ---
 

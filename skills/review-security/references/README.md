@@ -1,132 +1,93 @@
 # /review-security - White-Box Security Audit
 
+The step-by-step procedure lives in [`SKILL.md`](../SKILL.md); this guide covers when to use the skill and what to expect.
+
 ## Overview
 
-The `/review-security` skill orchestrates a comprehensive security assessment of the project's source code using both defensive and offensive analysis. The blue-teamer and lead red-teamer run their first pass **in parallel and in isolation** — neither sees the other's output during reconnaissance. The orchestrator then synthesizes their reports into a unified target list, classifying each target by how it was discovered. Dedicated red-teamers investigate each target in depth. Findings are synthesized, exploit chains are explored, and the process iterates until no new chains emerge.
+`/review-security` is a full-depth static security audit of a project's source code, combining defensive and offensive analysis. A blue-teamer and a lead red-teamer make an independent first pass **in parallel and in isolation**. Their reports are then pooled into one target list, each target gets a dedicated red-teamer, and findings are cross-referenced for exploit chains until no new chains emerge.
 
-The skill is **advisory only** as of v8.0.0: it produces findings and proposes tickets but does not implement remediation. After the audit, Phase 7 proposes a ticket structure tailored to the audit's shape (severity distribution, chain count, defense-in-depth findings) and cuts tickets on operator approval. The cognitive seam between "find vulnerability" and "fix vulnerability" is wide; tickets capture findings durably and compose with `/implement` for remediation.
+The skill is **advisory only**. It produces findings and proposes tickets; it does not implement remediation. Finding a vulnerability and fixing one take different reasoning, and the discovery agents shouldn't be biased toward findings they could easily fix. Tickets carry the findings across that seam, and `/implement` remediates against them.
 
-**Key benefits:**
-- **NGT discipline** — independent generation followed by synthesis, designed to surface the gaps anchoring would otherwise suppress
-- Deep investigation: each attack vector gets a dedicated agent with full context
-- Synthesis triage: every target is categorized (anchoring-suppressed, convergent, blue-flagged-unverified, divergent), making the rationale for investigation explicit
-- Chain discovery: findings are cross-referenced to identify multi-step exploit chains
-- Iterative convergence: the process loops until no new chains emerge
-- Actionable output: findings include concrete attacks, not abstract warnings
+```
+Scope ──▶ Independent first pass (blue ∥ red, isolated) ──▶ Reconnaissance synthesis
+      ──▶ Focused red-teamers ──▶ Chain analysis ──┬── new chains ──▶ (back to focused red-teamers)
+                                                   └── converged ──▶ Report ──▶ Ticket proposal
+```
+
+## Why the First Pass Is Isolated
+
+An earlier design ran the blue-teamer first and briefed the red-teamer with its report. That had a hidden failure mode, **anchoring**: whatever the blue team flagged became the territory the red team looked at. Real attackers get no defensive briefing. They look at the system fresh and find what defenders never considered.
+
+The current design uses **Nominal Group Technique** (independent generation, then synthesis) as the countermeasure. The red-teamer's reconnaissance runs with no blue-team input, and the synthesis sorts every target by how it was found:
+
+| Category                    | Meaning                                                                             | Priority |
+|-----------------------------|-------------------------------------------------------------------------------------|----------|
+| **anchoring-suppressed**    | Red team flagged it; blue team's map didn't account for it. The discipline's payoff | Highest  |
+| **convergent**              | Both teams flagged it independently. High confidence                                | High     |
+| **blue-flagged-unverified** | Blue team called a gap the red team didn't reach. Paper gap or reachable?           | Medium   |
+| **divergent**               | One team flagged it; the other explicitly cleared it                                | Variable |
+
+Focused red-teamers get blue-team context only for targets the blue team helped find, so the independent perspective carries into the deep investigation for red-only targets. Every finding and ticket keeps a `Discovered by:` attribution, which over time shows whether the isolated first pass is earning its cost.
 
 ## When to Use
 
 **Use `/review-security` for:**
 - Pre-release security assurance on important releases
 - After significant feature additions that change the attack surface
-- When onboarding a new codebase and you want to understand its security posture
+- Understanding the security posture of a codebase you've just taken on
 - Periodic security audits (quarterly, annually, etc.)
-- When you need to understand both what's exploitable and why the defenses failed
+- Understanding both what's exploitable and why the defenses failed
 
 **Don't use `/review-security` for:**
-- Routine development (`/implement` and `/bug-fix` run the blue-teamer on their diffs when security-sensitive code changed)
-- Quick security sanity checks (spawn `sec-blue-teamer` directly)
-- Runtime security testing (this is static source analysis only)
+- Routine development: `/implement` and `/bug-fix` run the blue-teamer on their own diffs when security-sensitive code changed
+- Quick security sanity checks: spawn `sec-blue-teamer` directly
+- Runtime security testing: this is static source analysis only
+- Release prep: `/review-release` includes basic security checks (secrets, debug artifacts); `/review-security` is the dedicated audit for when security assurance is the goal
 
-**Rule of thumb:** If you'd hire a pentester for this, `/review-security` is the right tool. If you just want a security review of your latest changes, `/implement` and `/bug-fix` run one when the change touches security-sensitive code.
+**Rule of thumb:** if you'd hire a pentester for this, `/review-security` is the right tool.
 
-## Why NGT Isolation
+## What You'll Be Asked
 
-The earlier sequential design ran the blue-teamer first and then a lead red-teamer informed by the blue-team report. This was deliberate, but had a hidden failure mode: **anchoring**. Whatever the blue team flagged became the salient territory for the red team. Real attackers don't get a defensive briefing — they look at the system fresh and find what defenders missed. The sequential design optimized for *exploit the known gaps* but underweighted *find the gaps the defenders never considered*.
+Unless the invocation or a caller (such as `/review-repo`'s follow-up) supplies scope, the skill asks:
 
-The current design treats anchoring as a specific cognitive failure mode, with **Nominal Group Technique** (independent generation, then synthesis) as the structured countermeasure. The lead red-teamer's first pass runs without blue-team input — pure attacker perspective. The orchestrator then pools both reports and triages targets by category. Focused red-teamers in the deep-investigation phase still receive blue-team context for targets where it's relevant; the discipline is to keep the *first-pass reconnaissance* uncontaminated.
+- What to audit: the entire codebase, a module, or a feature area
+- Whether anything particularly concerns you (auth, file handling, a recent change). Concerns inform prioritization but don't replace the systematic analysis
+- What to skip beyond the defaults
 
-## Workflow
+By default the audit covers production code only. Test code, dev-only dependencies and tooling, generated code, and vendored code are excluded unless you ask for them.
+
+## What You Get Back
+
+- **A consolidated report:** the blue team's defense posture, the red team's attack surface, the reconnaissance synthesis by category, findings by severity (each with a concrete attack, impact, data flow, fix guidance, and `Discovered by:`), exploit chains with the cheapest link to break, tooling recommendations, areas not covered, and non-security bugs noticed in passing (routed to `/bug-fix`).
+- **An interactive walkthrough,** CRITICAL findings first, with room for your questions.
+- **A ticket proposal** shaped to the audit's findings (for example, one ticket per CRITICAL plus one per chain plus a defense-in-depth batch; a single hardening ticket when that's all there is; nothing for a clean audit). You approve, edit, or decline. When an orchestrator invokes the skill, it receives the same proposal and applies its own autonomy judgment.
+
+An empty target list is a positive outcome: both teams independently found little to attack. The skill never changes code.
+
+**Cost:** deliberately heavy. A medium-sized codebase may spawn 5–10+ agents and take significant time. The parallel first pass roughly doubles first-pass cost compared to the old sequential design; that is the price of surfacing anchoring-suppressed targets. If chain analysis is still finding new chains after three iterations, the skill stops and asks whether to continue.
+
+## Example Excerpt — Reconnaissance Synthesis
 
 ```
-┌───────────────────────────────────────────────────────────┐
-│                   AUDIT WORKFLOW                          │
-├───────────────────────────────────────────────────────────┤
-│  1. Determine scope                                       │
-│  2. Independent first pass — parallel and isolated        │
-│     ├─ Blue-teamer: defense evaluation                    │
-│     └─ Lead red-teamer: recon (NO blue-team input)        │
-│  3. Reconnaissance synthesis                              │
-│     ├─ Pool both reports                                  │
-│     ├─ Categorize each target:                            │
-│     │  • anchoring-suppressed                             │
-│     │  • convergent                                       │
-│     │  • blue-flagged-unverified                          │
-│     │  • divergent                                        │
-│     └─ Output: unified prioritized target list            │
-│  4. For each target:                                      │
-│     └─ Spawn focused red-teamer (deep investigation)      │
-│        Blue-team context passed only when target's        │
-│        origin includes blue-team data                     │
-│  5. Synthesize findings + chain analysis                  │
-│     ├─ If exploit chains found → goto 4 (new vector)      │
-│     └─ If no new chains → proceed                         │
-│  6. Present consolidated findings to user                 │
-│  7. Cut tickets (proposed structure, operator-approved)   │
-└───────────────────────────────────────────────────────────┘
+Blue-teamer: 8 controls; gaps include auth middleware missing on /internal/*
+  and /ws/*, CSRF on POST only, OAuth state generated but never validated.
+Lead red-teamer (no briefing): 14 entry points; 6 targets, including
+  /api/auth/callback, /api/upload, /api/export.
+
+ANCHORING-SUPPRESSED (red found; blue's map didn't account for it):
+- POST /api/upload — blue listed "upload exists"; red saw the path-
+  construction sink. → focused red-teamer gets NO blue-team context.
+- GET /api/export — CSV formula injection; blue's output-encoding
+  inventory covered HTML only.
+CONVERGENT (both flagged independently):
+- POST /api/auth/callback — blue: "state not validated"; red: "no
+  validation visible". → focused red-teamer gets the blue-team slice.
+BLUE-FLAGGED-UNVERIFIED (blue flagged; red didn't reach):
+- /internal/* — no auth, but possibly not network-exposed; investigate
+  to tell a paper gap from a reachable one.
+DIVERGENT: none.
+
+[Deep investigation confirms the upload traversal (CRITICAL) and OAuth CSRF
+(CRITICAL); /internal/* proves localhost-only (LOW, defense in depth).
+Chain analysis finds no chain among them; the audit converges.]
 ```
-
-### 1. Determine Scope
-
-The skill asks about scope, areas of concern, and areas to skip. When the invocation or a caller (such as `/review-repo`'s follow-up) already supplies scope, the scope question is skipped. By default, the audit targets production code only — test code, dev-only dependencies, generated code, and vendored code are excluded. Users can override these defaults. User concerns inform prioritization but don't replace systematic analysis.
-
-### 2. Independent First Pass — Parallel and Isolated
-
-Two agents spawn **in parallel**. Neither sees the other's output during this phase.
-
-- A `sec-blue-teamer` agent performs a full defense evaluation: control inventory, consistency checking, defense-in-depth assessment, configuration review, dependency hygiene, and secrets audit.
-- A `sec-red-teamer` agent runs phases 1–3 of its methodology (reconnaissance, data flow, trust boundaries) **without any blue-team input**. Pure attacker perspective from a cold read of the codebase.
-
-This is the load-bearing discipline. The lead red-teamer's recon is less targeted than it would be in the old informed design — that's intentional. The job is to surface what the blue team didn't anticipate.
-
-### 3. Reconnaissance Synthesis
-
-The orchestrator pools both reports and produces a unified target list. **This step is orchestrator-direct, not a sub-agent** — the categorization rules are mechanical, the orchestrator already holds both reports, and avoiding an extra agent invocation saves cost.
-
-Each target is categorized as one of four types:
-
-| Category                    | Meaning                                                                                                                                                                 | Priority |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| **anchoring-suppressed**    | Red team flagged but blue team didn't account for. **The highest-value category** — these are the gaps anchoring would have suppressed under the old sequential design. | Highest  |
-| **convergent**              | Both teams independently flagged the same target. High confidence; investigate.                                                                                         | High     |
-| **blue-flagged-unverified** | Blue team called a gap but red team didn't reach in independent recon. Worth investigating to confirm exploitability.                                                   | Medium   |
-| **divergent**               | One team flagged, the other explicitly cleared. Noteworthy; orchestrator judges priority.                                                                               | Variable |
-
-The unified target list is capped (typically at 25). The orchestrator triages by category, prioritizing anchoring-suppressed and convergent over blue-flagged-unverified and divergent. Each target carries its synthesis category as metadata, which is preserved in the final report.
-
-### 4. Deep Investigation (Focused Red-Teamers)
-
-Each prioritized target gets a dedicated `sec-red-teamer` agent with a full context window focused on that single attack vector. Agents run sequentially so findings accumulate for chain analysis.
-
-**Blue-team context is passed selectively.** Focused red-teamers receive relevant blue-team observations only for targets whose origin includes blue-team data (convergent, blue-flagged-unverified, and blue-origin divergent targets). Targets discovered solely by the red team (anchoring-suppressed, and red-only divergent targets) get no blue-team context — the discipline of independent perspective continues into the deep-investigation phase for these targets.
-
-### 5. Chain Analysis
-
-Findings are cross-referenced to identify exploit chains — combinations of individually low/medium-severity findings that together create a high/critical-severity exploit. New chains trigger additional focused investigation. The loop converges when no new chains are found (capped at 3 iterations).
-
-### 6. Consolidated Report
-
-A single report combining the blue team's defensive assessment, the red team's offensive findings, the reconnaissance synthesis (with target categorization), and any exploit chains discovered. Findings carry an expanded `Discovered by:` attribution: *blue team independent*, *red team independent*, *synthesis (anchoring-suppressed)*, *focused agent*, or *chain analysis*. Non-security bugs the agents noticed in passing are listed one line each, routed to `/bug-fix`. Presented interactively — CRITICAL findings first.
-
-### 7. Cut Tickets
-
-The skill examines the audit's shape (severity distribution, chain count, defense-in-depth findings) and proposes a ticket structure that fits — concentrated CRITICALs typically get one ticket each plus a chain ticket plus a defense-in-depth batch; defense-in-depth-only audits get a single hardening ticket; empty audits cut nothing. The proposal is presented for approve / edit / decline; on approval, tickets land via the canonical tracker integration (`references/trackers.md`).
-
-Each cut ticket preserves the `Discovered by:` attribution, so the empirical signal about whether the parallel-isolated first pass is producing value (especially anchoring-suppressed findings) survives the handoff to the tracker.
-
-The skill offers ticket creation regardless of caller. When an orchestrator invokes `/review-security`, the orchestrator receives the proposal and applies its own autonomy judgment per `references/autonomy.md` — approving, editing, or declining the proposal, then deciding which of any created tickets to work in the current flow versus defer. Remediation happens via `/implement`, not within this skill.
-
-## Agents Used
-
-| Agent             | Role                                                                          |
-| ----------------- | ----------------------------------------------------------------------------- |
-| `sec-blue-teamer` | Defensive posture evaluation (independent first pass)                         |
-| `sec-red-teamer`  | Offensive reconnaissance and exploitation (lead first pass + focused targets) |
-
-Remediation is handled by `/implement` against the tickets this skill cuts — `swe-implementer` and `qa-engineer` are not invoked from within the security audit.
-
-## Resource Usage
-
-This skill is deliberately heavy. A full audit of a medium-sized codebase may spawn 5–10+ agents and take significant time. That's by design — shallow security reviews miss the vulnerabilities that matter.
-
-The parallel first pass roughly doubles the first-pass token cost compared to the older sequential design, where the lead red-teamer's recon was more targeted because it was informed. This is a calculated trade-off — the discipline is worth the cost given the value of surfacing anchoring-suppressed targets.

@@ -1,5 +1,7 @@
 # Refactor — Human Guide
 
+The step-by-step procedure lives in [`SKILL.md`](../SKILL.md); this guide covers when to use the skill and what to expect.
+
 `/refactor` does not clean code up; it deletes machine. Reduction is the
 goal — stripping is the primary act, and regeneration is the most
 effective instrument of it. The mental model is the Raptor engine line:
@@ -8,81 +10,76 @@ design algorithm from that program, in strict order — question the
 requirements, delete the part, simplify what survives, accelerate the
 cycle, automate last.
 
-## What happens when you run it
+## Why it is shaped this way
+
+- **Behavior is pinned by the incumbent, not by the tests.** "Tests green"
+  locks a redesign into the shape the tests assumed. Instead, the
+  original implementation runs live beside every candidate and is diffed
+  only at the user-visible boundary. The old suite is a diagnostic, never
+  a constraint.
+- **Adoption is mechanical.** Both recorded failures of this skill's
+  ancestors were judgment failures — trusting a self-report, then
+  defending the machine it was handed. So candidates pass or fail gates
+  (behavior, correctness, structure); nobody argues either side.
+- **Documents nominate; only you ratify.** In an LLM-written repo, the
+  design docs were written by the same confident author as the code.
+  They can put a requirement on the menu, but cannot keep it alive.
+
+## When to use
+
+- You want a codebase, or a region of one, to become visibly smaller
+  while behaving the same at the boundary users see.
+- The design has accreted parallel machinery, invented requirements, or
+  layers nobody can justify.
+
+**Not for:** a targeted bug fix (`/bug-fix`), new features (`/implement`),
+or advice without changes — `/review-repo value` for requirement
+trades, `/review-repo architecture` for a structural blueprint,
+`/review-repo dead-code` for a dead-code audit.
+
+## The flow
 
 ```
-0. ISOLATE     a fresh branch (refactor/<slug>) or worktree; your tree is
-               never touched — merging the result is always your call
-1. BASELINE    the machine is counted (filenames lie; symbols are
-               inventoried wherever they hide), then THE ONE INTERACTIVE
-               STEP: a requirements menu opening with two stakes questions
-               (what happens if this breaks? who maintains it?), the
-               iteration cap (default 4), and any
-               custom verification probes you can name, then verdicts —
-               ratified / documented (docs nominate; you ratify) /
-               invented (presumed dead) / priced (offered as a trade).
-               Then behavior is pinned: the ORIGINAL implementation runs
-               live as a differential oracle, diffing user-visible output
-               only. The old test suite never constrains the new design.
-2. ITERATE     each pass: recount → re-attribute → then an inner loop of
-               STRIP (a deletion-stance hunter runs the classic
-               optimizer passes — DCE, copy propagation, inlining,
-               constant folding, CSE, branch simplification — as
-               mechanical detectors cascading to a fixpoint, and deletes
-               everything the gates permit — never regenerate what you
-               can simply remove) interleaved with REGENERATE (a brand-new blind
-               designer builds the minimum machine for the surviving
-               requirements); a strip that breaks pinned behavior is
-               repaired by restoring the old part or regenerating a
-               smaller replacement, whichever measures less machine.
-               Candidates pass or fail three
-               MECHANICAL gates — behavior, correctness, structure — and
-               nobody argues: the orchestrator is a clerk, not a judge.
-               Fresh eyes every pass; stop when a pass changes ~nothing.
-3. FINISH      swe-refactor-dx tidies the result for human readers — local
-               edits only.
-4. AUTOMATE    the oracle becomes a standing conformance suite; docs are
-               amended so nothing promises dead machinery.
-5. REPORT      the per-iteration series (concepts / mechanisms / lines),
-               strips, requirements verdicts, trade menu, side memo.
+ISOLATE  →  BASELINE  →  ITERATE  →  FINISH  →  AUTOMATE  →  REPORT
+            (the menu:   (strip ⇄     (local     (oracle →
+             your one     regenerate,  tidying    conformance
+             checkpoint)  gated)       for humans) suite)
 ```
 
-## What to expect
+## What you'll be asked
 
-- **One menu, once, near the start.** This is where you have power:
-  everything you kill takes its machinery with it. Bulk rulings ("keep
-  all documented") are fine.
-- **Deletion-biased behavior by design.** The run is calibrated so that
-  roughly 10% of what it deletes gets restored when the oracle objects —
-  if nothing ever needs restoring, it wasn't cutting hard enough.
+**One menu, once, near the start** — the only interactive step. It opens
+with two stakes questions (*what happens if this breaks?* and *who
+maintains it, for how long?*), the iteration cap (default 4), and any
+custom verification probes you can name ("run `make demo` and check the
+output"). Then a verdict per machinery cluster: ratified, documented
+(docs nominate; you ratify), invented (presumed dead unless you rescue
+it), or priced (offered as a trade). Bulk rulings ("keep all
+documented") are fine. Everything you kill takes its machinery with it.
+After the menu the run is autonomous.
+
+## What you get back
+
+- **A branch, not a merged result** — `refactor/<slug>` (or a worktree),
+  one atomic commit per change. Your working tree is untouched; merging
+  is your call.
+- **Deletion-biased results by design.** The run is calibrated so that
+  roughly 10% of what it deletes gets restored when the oracle objects.
 - **Behavior preservation at the user-visible boundary**, not test-suite
   preservation. Internal tests pinned to the old structure retire with
   it; behavior-level tests are ported; the differential harness becomes
-  the durable regression suite.
-- **A trade menu and a side memo in the report**: behaviors you could
-  give up to dissolve machinery (your call, for a future run), and bugs
-  the run found but did not touch — fixing a bug changes behavior, and
-  the oracle pins behavior, bugs included.
-- **A branch, not a merged result.** Read the report and the branch history,
-  then merge or delete.
+  a standing conformance suite.
+- **A report** with the per-iteration machine count (concepts,
+  mechanisms, lines), requirements killed/traded/kept with sources, a
+  **trade menu** (behaviors you could give up in a future run), and a
+  **side memo** of bugs found but not touched — the oracle pins today's
+  behavior, bugs included, so a silent fix would be a divergence.
 
-## Key rules that make it safe
+## What it never does
 
-- The original implementation stays runnable and is the reference for
-  every iteration — behavior cannot drift by degrees.
-- After the menu, documents are dead law: no agent may defend machinery
-  by citing DESIGN.md or precedent. Only your verdicts and the pinned
-  behavior govern.
-- Adoption is mechanical: gates pass and the machine shrank → adopted;
-  anything else → the previous champion stands. No agent argues either
-  side, because both argued directions have failed in the field.
-- The structure gate catches golf: a candidate that "shrank" by merging
-  named functions into dense bodies fails on measured function lengths.
-- Nothing untracked by git is ever modified.
-
-## Agents used
-
-- `swe-refactor-deleter` — the deletion hunter; fresh instance per strip pass
-- `swe-refactor-minimizer` — the blind designer; fresh instance per regeneration
-- `swe-refactor-dx` — the reader advocate for the finishing pass
-- `swe-correctness-reviewer` — the correctness gate on every candidate
+- Relax a behavior you didn't relax at the menu, or weaken the oracle to
+  get to green.
+- Let a document or precedent defend machinery after the menu.
+- Count density as simplification: a candidate that "shrank" by merging
+  named functions into long bodies fails the structure gate.
+- Modify anything untracked by git.

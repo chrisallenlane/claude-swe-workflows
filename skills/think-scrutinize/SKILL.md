@@ -1,6 +1,6 @@
 ---
 name: think-scrutinize
-description: Good-faith adversarial scrutiny of an idea or plan. Spawns critical skeptics across relevant lenses, pairs them with an advocate defending the idea, and synthesizes the exchange into a report. Produces feedback only — no code, no tickets, no artifacts.
+description: Good-faith adversarial scrutiny of an idea or plan. Skeptics critique it across relevant lenses, an advocate defends it, and the exchange is synthesized into a report. Produces feedback only.
 model: opus
 ---
 
