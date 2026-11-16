@@ -7,15 +7,16 @@
 - **`/review-repo [scope]` gives the orientation map.** This is an evidence-cited map of the repo's state, calibrated to a reference class, built to inform strategic decisions about how to engage with the project. Given authority up front, it also runs the deeper reviews the map calls for, consolidates what they find, and tickets it.
 - **`/review-repo <focus> [scope]` gives a focused review**, going straight to one deep pass:
 
-| Focus          | Question                                         | What you get                                                                            |
-|----------------|--------------------------------------------------|-----------------------------------------------------------------------------------------|
-| `architecture` | Where should everything live?                    | Noun analysis, mechanism audit, and a target blueprint covering every module            |
-| `dead-code`    | What can be deleted, and how sure are we?        | Findings tiered PROVEN / LIKELY / UNVERIFIABLE, calibrated by a dynamic-dispatch survey |
-| `value`        | Which requirements cost more than they're worth? | A trade menu of small behavior relaxations that dissolve disproportionate machinery     |
+| Focus          | Question                                             | What you get                                                                                                                    |
+|----------------|------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| `architecture` | Where should everything live?                        | Noun analysis, mechanism audit, and a target blueprint covering every module                                                    |
+| `dead-code`    | What can be deleted, and how sure are we?            | Findings tiered PROVEN / LIKELY / UNVERIFIABLE, calibrated by a dynamic-dispatch survey                                         |
+| `value`        | Which requirements cost more than they're worth?     | A trade menu of small behavior relaxations that dissolve disproportionate machinery                                             |
+| `namespace`    | Can a newcomer find things from the file tree alone? | Cold-reader navigation probes against verified ground truth; misses become findings; optional search mode evolves a better tree |
 
-Several focuses can be named together (`/review-repo value dead-code architecture`); they run in dependency order. A focus naming another review skill (`security`, `test`, `perf`, `a11y`, `release`, `namespace`) is routed to that skill.
+Several focuses can be named together (`/review-repo value dead-code architecture`); they run in dependency order. A focus naming another review skill (`security`, `test`, `perf`, `a11y`, `release`) is routed to that skill.
 
-Before v12 these focuses were separate skills: `/review-arch`, `/review-dead` and `/review-value`. Their methods live in their agents and are unchanged; only the entry point moved.
+Before v12 these focuses were separate skills: `/review-arch`, `/review-dead`, `/review-value` and `/review-namespace`. Their methods live in their agents and are unchanged; only the entry point moved.
 
 ## Core Design
 
@@ -89,11 +90,11 @@ Granting tickets *is* the approval to create them. Without the grant, nothing is
 
 **Never run here:**
 
-| Skill                        | Why                                                                   |
-|------------------------------|-----------------------------------------------------------------------|
-| `/refactor`, `/implement`    | They change code; recommended in Phase 4, never run                   |
-| The `value` focus            | Only if your intent asks for it — its trade menu is product decisions |
-| `/review-namespace` (search) | Search mode needs operator calibration                                |
+| Skill                      | Why                                                                   |
+|----------------------------|-----------------------------------------------------------------------|
+| `/refactor`, `/implement`  | They change code; recommended in Phase 4, never run                   |
+| The `value` focus          | Only if your intent asks for it — its trade menu is product decisions |
+| `namespace` in search mode | Search mode needs operator calibration; audit mode may run            |
 
 **Tickets.** Each deeper review ends with a ticket proposal. With ticket authority, the skill approves proposals at or above the floor and declines the rest, recording them for the report. Without it, every proposal is declined within the run and one consolidated set is proposed at the end — every finding, ordered by severity, for you to trim — created only on approval.
 
@@ -118,7 +119,11 @@ It iterates until you're satisfied, because architectural decisions are conseque
 
 Trades are product decisions. The skill never advocates for a trade, and an orchestrator never rules on one flagged core-requirement, correctness, or security. For an approved trade, the ticket's first acceptance criterion amends the requirement's record (design doc, ADR, README, or spec). An approved trade that changes only code gets rebuilt by the next agent to read the old requirement.
 
-**Combined focuses** run value, then dead code, then architecture, each receiving the previous one's output. Restructuring a requirement you're about to drop is wasted work, and the blueprint shouldn't be built around dead code.
+**`namespace`** (`swe-namespace-reader` and `swe-namespace-canary`, following [`namespace.md`](namespace.md)) turns "easy to reason about" into a measurement. A blind writer generates navigation questions from the purpose docs alone. The skill pins each question's ground truth in the code and pre-registers the scoring rules. Cold readers then answer from the file listing alone; they never see the repository. Misses are classified as deceptive locations, placement problems, attractor traps, homonym tax, one-hop conventions, or blind spots, and the readers' own wrong answers are the evidence. A second reader pool primed with the project's style guide stands in for the maintainer.
+
+Audit is the default. **Search** (`/review-repo namespace search`) evolves hypothetical trees, each with an old→new mapping, against the probe battery until it converges. It is heavy (millions of tokens), runs only on explicit opt-in with a round cap, and includes owner-calibration checkpoints where your vetoes outrank every score. The nine Laws of the Instrument, drawn from the field pilot, are in `namespace.md`.
+
+**Combined focuses** run value, then dead code, then architecture, then namespace, each receiving the previous one's output. In search mode, the architecture blueprint is seeded as a candidate tree, so the analyst's proposal is tested by the measurement. Restructuring a requirement you're about to drop is wasted work, and the blueprint shouldn't be built around dead code.
 
 ## Reference Materials
 
@@ -130,6 +135,7 @@ Trades are product decisions. The skill never advocates for a trade, and an orch
 | `classes/production-service.md` | Team-maintained production service or backend                                                          |
 | `classes/oss-library.md`        | OSS library with external consumers                                                                    |
 | `classes/prototype.md`          | Prototype / research / pre-production exploratory codebase                                             |
+| `namespace.md`                  | The `namespace` focus's procedure, loaded only when that focus runs                                    |
 
 ## When to Use
 
@@ -140,7 +146,7 @@ Trades are product decisions. The skill never advocates for a trade, and an orch
 - Revisiting your own project to decide where to invest effort
 - Generating an onboarding map for a new teammate
 - A comprehensive review that produces a backlog: grant follow-up and ticket authority
-- A structural blueprint (`architecture`), a dead-code audit (`dead-code`), or a requirements price list (`value`)
+- A structural blueprint (`architecture`), a dead-code audit (`dead-code`), a requirements price list (`value`), or a measured legibility audit of the file tree (`namespace`)
 - Finding where technical debt is costing you — and where to aim `/refactor`
 - Any "where am I, where should I start, what should I avoid" question
 
@@ -266,7 +272,7 @@ The map is primarily produced by the main Claude instance. Subagents are used na
 
 - **Observe-phase scouts (optional):** parallel subagents for discrete signal-collection tasks on large repos
 - **Focused consultation (optional, narrow):** a fresh subagent briefed on a single dimension that needs a deeper look
-- **Focus agents:** `swe-arch-reviewer`, `swe-dead-code-auditor`, `swe-value-engineer`, a fresh instance per focus
+- **Focus agents:** `swe-arch-reviewer`, `swe-dead-code-auditor`, `swe-value-engineer`, and the namespace reader fleet (`swe-namespace-reader` ×2, `swe-namespace-canary`), with fresh instances for each focus or battery
 - **Specialist skills (Phase 5, with authority):** each runs as its own skill with its own agents
 
 Per-language dispatch is *not* the default. That was an earlier version's failure mode.

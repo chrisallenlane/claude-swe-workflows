@@ -1,6 +1,6 @@
 ---
 name: review-repo
-description: Repository review, the single entry point for reviewing a codebase as a whole. With no focus it produces an evidence-cited orientation map, not a grade, calibrated to a reference class. The map shows where to engage, where to tread carefully, where to leave alone, and where technical debt is actually charging interest (complexity crossed with change history). A named focus goes straight to a deep review. "architecture" gives a noun-analysis blueprint, "dead-code" gives a calibrated dead-code audit, and "value" gives a trade menu of requirement relaxations. Given authority, the map follows up by running the reviews it calls for and creates tickets. Never changes code.
+description: Repository review, the single entry point for reviewing a codebase as a whole. With no focus it produces an evidence-cited orientation map, not a grade, calibrated to a reference class. The map shows where to engage, where to tread carefully, where to leave alone, and where technical debt is actually charging interest (complexity crossed with change history). A named focus goes straight to a deep review. "architecture" gives a noun-analysis blueprint, "dead-code" gives a calibrated dead-code audit, "value" gives a trade menu of requirement relaxations, and "namespace" measures how legible the file tree is with cold-reader navigation probes (an optional heavy search mode evolves a better tree). Given authority, the map follows up by running the reviews it calls for and creates tickets. Never changes code.
 model: opus
 ---
 
@@ -11,13 +11,14 @@ One entry point for repository-wide review. It works in two shapes:
 - **`/review-repo [scope]`** gives the **orientation map**. This is the strategic pass for when you've inherited a repo, are evaluating a FOSS project, are onboarding a teammate, or are deciding where to invest in your own project. It covers breadth first, with evidence for every claim.
 - **`/review-repo <focus> [scope]`** gives a **focused review**, going straight to one deep review:
 
-| Focus          | Question it answers                                   | Agent                   |
-|----------------|-------------------------------------------------------|-------------------------|
-| `architecture` | Where should everything live?                         | `swe-arch-reviewer`     |
-| `dead-code`    | What can be deleted, and how sure are we?             | `swe-dead-code-auditor` |
-| `value`        | Which requirements cost more than they're worth?      | `swe-value-engineer`    |
+| Focus          | Question it answers                                  | Agent                                          |
+|----------------|------------------------------------------------------|------------------------------------------------|
+| `architecture` | Where should everything live?                        | `swe-arch-reviewer`                            |
+| `dead-code`    | What can be deleted, and how sure are we?            | `swe-dead-code-auditor`                        |
+| `value`        | Which requirements cost more than they're worth?     | `swe-value-engineer`                           |
+| `namespace`    | Can a newcomer find things from the file tree alone? | `swe-namespace-reader`, `swe-namespace-canary` |
 
-Several focuses can be named together (`/review-repo value architecture`); they run in dependency order (§Focused Reviews). A focus naming another review skill (`security`, `test`, `perf`, `a11y`, `release`, `namespace`) is routed to that skill.
+Several focuses can be named together (`/review-repo value architecture`); they run in dependency order (§Focused Reviews). A focus naming another review skill (`security`, `test`, `perf`, `a11y`, `release`) is routed to that skill.
 
 **This skill never changes code.** It produces maps, findings, and ticket proposals. Removal and restructuring happen in `/implement` against the tickets, or in `/refactor`.
 
@@ -218,12 +219,12 @@ Route only when the deeper pass does exactly what's needed at the depth warrante
 
 **With it,** run the deeper reviews the map calls for, each scoped to where its findings point. Use judgment, not a checklist: every review that plausibly applied and didn't run gets a one-line reason in the report.
 
-- **Candidates:** the `dead-code` and `architecture` focuses (run per §Focused Reviews), `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release`.
+- **Candidates:** the `dead-code`, `architecture`, and `namespace` (audit mode) focuses (run per §Focused Reviews), `/review-security`, `/review-perf`, `/review-a11y`, `/review-test`, `/review-release`.
 - **Order:** dead code before architecture; release readiness last.
 - **Never run here:**
   - `/refactor` and `/implement`, because they change code.
   - The `value` focus, unless intent asks for it, because its trades are product decisions.
-  - `/review-namespace` search mode, because it needs the operator.
+  - The `namespace` focus in search mode, because it needs the operator. Audit mode may run when the map's findings point at legibility.
 
 **Tickets.** Each deep review ends with a ticket proposal. With ticket authority, approve proposals at or above the floor and decline the rest, recording them, per [`references/advisory-tickets.md`](../../references/advisory-tickets.md). Without it, decline all of them in-run and propose one consolidated set at the end, ordered by severity, created only on approval.
 
@@ -249,6 +250,7 @@ An **honest zero** is a valid result for every focus. Report it and stop. If the
 1. **Value.** Restructuring a requirement you're about to delete is wasted work.
 2. **Dead code.**
 3. **Architecture.** It receives the dead-code audit as input instead of re-cataloging dead code.
+4. **Namespace.** In search mode, the architecture blueprint is seeded as a round-1 candidate, so the analyst's proposal is tested by the measurement. Where the two disagree, prefer the measurement.
 
 ### `architecture` — target blueprint
 
@@ -303,6 +305,14 @@ Also present the drift observations: documented requirements the code no longer 
 - The remaining criteria cover what dissolves.
 
 An approved trade that changes only code is a time bomb: the next agent to read the unamended requirement will faithfully rebuild the machinery.
+
+### `namespace` — measured legibility
+
+**Read [`references/namespace.md`](references/namespace.md) and follow it.** It holds the instrument: blind probe generation, sighted ground-truth pinning, the reader fleets, the Laws of the Instrument, the finding classes, and search mode. It is kept out of this file because only this focus needs it.
+
+- **Audit** is the default: one probe battery against the actual tree (~10–15 agents).
+- **Search** runs only when the invocation says `search` (`/review-repo namespace search`) **and** the operator confirms the cost (millions of tokens) and a round cap. Its calibration checkpoints need the operator, so it never runs unattended.
+- **Tickets:** audit findings follow the shared pattern. A search champion becomes one migration ticket that can be worked without this conversation. It includes the tree, the complete old→new mapping (including files deliberately kept), spec changes, sequencing, and acceptance criteria.
 
 ## Evidence Discipline
 

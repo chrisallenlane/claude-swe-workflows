@@ -4,22 +4,24 @@
 
 ### Removed
 
-- **BREAKING: `/review-health` is renamed `/review-repo` and absorbs `/review-arch`, `/review-dead`, and `/review-value` as focuses. `/review-code` is removed.** Five whole-codebase review commands become one. Each folded skill was mostly a thin wrapper around one agent, and in practice their methods reached users through the agents: `/scope` dispatches the value engineer, and the map's follow-up runs the dead-code and architecture reviewers. All of that method lives in the agents, and the agents are unchanged.
+- **BREAKING: `/review-health` is renamed `/review-repo` and absorbs `/review-arch`, `/review-dead`, `/review-value`, and `/review-namespace` as focuses. `/review-code` is removed.** Six whole-codebase review commands become one. Most of the folded skills were thin wrappers around one agent, and in practice their methods reached users through the agents: `/scope` dispatches the value engineer, and the map's follow-up runs the dead-code and architecture reviewers. All of that method lives in the agents, and the agents are unchanged.
   - **Migration:**
 
-    | Before                   | After                                                                                                                                                    |
-    |--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
-    | `/review-health [scope]` | `/review-repo [scope]`, the same orientation map. Its "lens" question is now called the review *context*                                                 |
-    | `/review-arch [scope]`   | `/review-repo architecture [scope]`                                                                                                                      |
-    | `/review-dead [scope]`   | `/review-repo dead-code [scope]`                                                                                                                         |
-    | `/review-value [scope]`  | `/review-repo value [scope]`                                                                                                                             |
-    | `/review-code [range]`   | Removed. `/implement` and `/bug-fix` still run `swe-correctness-reviewer` as a blocking gate; for other diffs, use Claude Code's built-in `/code-review` |
+    | Before                       | After                                                                                                                                                    |
+    |------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+    | `/review-health [scope]`     | `/review-repo [scope]`, the same orientation map. Its "lens" question is now called the review *context*                                                 |
+    | `/review-arch [scope]`       | `/review-repo architecture [scope]`                                                                                                                      |
+    | `/review-dead [scope]`       | `/review-repo dead-code [scope]`                                                                                                                         |
+    | `/review-namespace [search]` | `/review-repo namespace [search] [scope]`. The procedure moved verbatim to `skills/review-repo/references/namespace.md`, loaded only for this focus      |
+    | `/review-value [scope]`      | `/review-repo value [scope]`                                                                                                                             |
+    | `/review-code [range]`       | Removed. `/implement` and `/bug-fix` still run `swe-correctness-reviewer` as a blocking gate; for other diffs, use Claude Code's built-in `/code-review` |
 
   - **What each focus keeps.**
     - `architecture` presents the blueprint in three parts: noun analysis, proposed changes, and the modules left alone.
     - `dead-code` presents its calibration first and sends uncertain findings to verification tickets, never removal tickets.
     - `value` never advocates, never lets an orchestrator rule on a flagged trade, and makes amending the requirement's record the first acceptance criterion of every approved trade.
-  - **Several focuses together** (`/review-repo value dead-code architecture`) run in dependency order, each receiving the previous one's output.
+    - `namespace` keeps its whole instrument, Laws of the Instrument included, and search mode still runs only on explicit opt-in.
+  - **Several focuses together** (`/review-repo value dead-code architecture namespace`) run in dependency order, each receiving the previous one's output. In namespace search mode, the architecture blueprint is seeded as a candidate tree, so the analyst's proposal is tested by the measurement.
   - **Also:** `REVIEW_HEALTH_STATE.md` is now `REVIEW_REPO_STATE.md`. `/implement`'s repertoire, the autonomy and advisory-ticket references, the README, and `CLAUDE.md` are updated.
 
 ### Changed

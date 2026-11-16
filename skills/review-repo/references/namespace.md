@@ -1,10 +1,6 @@
----
-name: review-namespace
-description: Empirical namespace-legibility review. Measures how well a file tree communicates by running navigation probes against cold readers who see only the listing, then reports mispredictions as evidence-backed findings. An optional heavy search mode iterates hypothetical trees against the probe battery until legibility converges. Advisory only — produces findings, candidate trees, and proposed tickets; never moves a file.
-model: opus
----
+# `namespace` Focus — Measured Legibility
 
-# Namespace Review — Measured Legibility
+Procedure for `/review-repo namespace [search] [scope]`. Loaded only when this focus runs. Everything below is the instrument; the focus-protocol steps in `SKILL.md` (iterate, offer tickets, summarize) wrap it.
 
 Measures whether a codebase is organized so a reader can *reason about it* — not by analyzing the tree, but by testing it: cold reader agents receive only the file listing and answer "which file would you open first for task X?" against ground truth the skill has verified in the actual code. **Advisory only.** Audit mode reports where the tree deceives its readers; search mode additionally evolves hypothetical trees against the battery and proposes the champion as a migration ticket. No file is ever moved.
 
@@ -14,7 +10,7 @@ Measures whether a codebase is organized so a reader can *reason about it* — n
 
 **Fresh eyes are a renewable resource.** A human team cannot summon unlimited naive readers; agents can be summoned per question. "Easy to reason about" stops being a feeling and becomes cold-reader task performance: can a newcomer predict what the app does from `ls`? Do they open the right file first try? Every finding carries that evidence.
 
-**Trees are for humans; specs are for machines.** Technical boundaries (purity, dependency direction) are real, but they belong to tests, not to the directory layout. When the most legible tree crosses a technical boundary, the resolution is a reachability spec over the import graph, not a less legible tree. (See the house-style ontology amendment.)
+**Trees are for humans; specs are for machines.** Technical boundaries (purity, dependency direction) are real, but they belong to tests, not to the directory layout. When the most legible tree crosses a technical boundary, the resolution is a reachability spec over the import graph, not a less legible tree. (Where the project's style guide states an ontology rule, it applies here.)
 
 **The owner is the calibration standard, used sparingly.** Reader pools are a proxy for the maintainer. A pool primed with the project's style guide is a *validated* proxy — in field trials, primed readers came to reproduce the maintainer's exact misses — but the maintainer's own small self-tests and vetoes outrank any score, and human testing fatigues fast (~10 questions), so the owner is consulted briefly and rarely.
 
@@ -34,10 +30,10 @@ Field-derived rules; the skill applies all of them:
 
 ## Mode Selection
 
-Ask the operator (or accept from the invocation):
+Audit unless the invocation says `search`:
 
 - **Audit** (default) — one probe battery against the actual tree; findings and proposed tickets. Moderate cost (~10-15 agents).
-- **Search** — the full evolutionary loop over hypothetical trees. Heavy by design (several reader fleets per round, typically 3-5 rounds; budget in the millions of tokens). Confirm the operator wants this before starting; elicit a round cap (default 4).
+- **Search** — the full evolutionary loop over hypothetical trees. Heavy by design (several reader fleets per round, typically 3-5 rounds; budget in the millions of tokens). Confirm the operator wants this before starting; elicit a round cap (default 4). If the `architecture` focus ran in the same invocation, seed its blueprint as a round-1 candidate: the analyst's proposal, tested by the measurement.
 
 ## Audit Mode
 
@@ -52,7 +48,7 @@ Ask the operator (or accept from the invocation):
                               reverse-navigation (place stripped file contents)
 6. Score and classify         severity by unanimity × confidence
 7. Present findings           evidence = the readers' own answers and rationales
-8. Offer tickets              per references/advisory-tickets.md
+8. Offer tickets              per ../../../references/advisory-tickets.md
 ```
 
 **Step 2 — blind probe generation.** Spawn a general-purpose agent instructed to read ONLY the project's purpose documents (design doc, README, user docs — named explicitly; no directory listings, no source). It writes 15-25 navigation-task questions grounded in described behavior, spread across all major areas, never mentioning file or directory names. Blindness is the point: questions must come from behavior space, not from knowledge of the tree's traps.
@@ -101,7 +97,7 @@ Runs the audit first (round 0 = the incumbent's baseline + noise floor: battery 
                looks like
 ```
 
-**Output:** the champion tree, its complete old→new mapping, any reachability-spec designs, the code-level moves the probes voted for (consistent misses against a coherent tree are refactoring advice — code that doesn't match the ontology its tree advertises), and the probe dossier as evidence. On operator approval, a migration ticket per `references/advisory-tickets.md` — the ticket must be workable without this conversation: tree, mapping table (including deliberately-kept files, so nothing is "helpfully" renamed), spec changes, sequencing, acceptance criteria.
+**Output:** the champion tree, its complete old→new mapping, any reachability-spec designs, the code-level moves the probes voted for (consistent misses against a coherent tree are refactoring advice — code that doesn't match the ontology its tree advertises), and the probe dossier as evidence. On operator approval, a migration ticket per [`advisory-tickets.md`](../../../references/advisory-tickets.md) — the ticket must be workable without this conversation: tree, mapping table (including deliberately-kept files, so nothing is "helpfully" renamed), spec changes, sequencing, acceptance criteria.
 
 ## Completion Summary
 
@@ -124,11 +120,3 @@ Runs the audit first (round 0 = the incumbent's baseline + noise floor: battery 
 **Abort:** operator interrupt; probe-writer produces unusably vague questions after one retry; tracker unavailable after ticket approval (surface the approved set for manual creation).
 
 **Do NOT abort for:** a high-scoring tree (honest "already legible" is a valid audit outcome — report the score and the residue); search mode failing to beat the incumbent (that IS the result: the incumbent is validated, with evidence).
-
-## Integration with Other Skills
-
-**vs `/review-repo architecture`:** `/review-repo architecture` analyzes structure (noun frequency, blueprints — the analyst's view); `/review-namespace` *tests* it (reader task performance — the user study). They can disagree; when they do, prefer the measurement. The catalog's longer-term direction is `/review-repo architecture` as a wrapper dispatching this skill plus a stack-tier review; until then they run independently.
-
-**Never run in search mode by `/review-repo`'s follow-up:** search mode's operator-calibration checkpoints (vetoes, self-tests) cannot be answered by an autonomous run, and audit mode overlaps `/review-repo architecture`'s noun analysis. Run it deliberately.
-
-**Feeds `/implement`:** the migration ticket routes there; this skill never mutates the tree itself.

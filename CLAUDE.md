@@ -96,11 +96,11 @@ Supporting workflows available at any level:
 
 **Quality pipelines:**
 
-- `/review-namespace` — empirical namespace-legibility review (advisory; cold reader agents probe the file tree by navigation task, misses become evidence-backed findings; optional heavy search mode evolves hypothetical trees to a measured champion; `/review-repo`'s follow-up never runs search mode, which needs the operator for calibration)
 - `/test-mutation` — mutation testing
 - `/review-repo` — the entry point for whole-codebase review (advisory; never changes code). With no focus, it produces an evidence-cited map calibrated to a reference class. With follow-up authority, it runs the deeper reviews the map calls for and consolidates them; with ticket authority, it creates tickets, otherwise it proposes them. Focuses go straight to one deep review:
   - `architecture`: noun-analysis blueprint.
   - `dead-code`: confidence-tiered audit calibrated against dynamic dispatch.
+  - `namespace`: cold-reader legibility probes. Search mode needs the operator and never runs unattended.
   - `value`: a requirement trade menu. The map runs this one only when intent asks, because its output is product decisions.
 
   Diff-scoped correctness review is not a skill. `/implement` and `/bug-fix` run `swe-correctness-reviewer` as a blocking gate, and Claude Code's built-in `/code-review` covers other diffs.
