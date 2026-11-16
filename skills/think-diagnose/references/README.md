@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `/think-diagnose` skill figures out *why* something is happening. Given a phenomenon and the observations supporting it, it spawns parallel diagnosticians applying different reasoning lenses in isolation, then evaluates each candidate cause against the evidence and reports leading candidates with distinguishing tests the user can run.
+The `/think-diagnose` skill figures out *why* something is happening. Given a phenomenon and the observations supporting it, it spawns parallel diagnosticians applying different reasoning lenses in isolation, then evaluates each candidate cause against the evidence. When several candidates survive and the evidence can't separate them, it narrows them by Analysis of Competing Hypotheses (Heuer): an explicit hypothesis-by-evidence matrix ranked by *least disconfirming* evidence. It reports the leading candidates with distinguishing tests the user can run.
 
 **Key properties:**
 - Hybrid generative + evaluative — unlike the purely divergent think-* skills
@@ -10,6 +10,7 @@ The `/think-diagnose` skill figures out *why* something is happening. Given a ph
 - Multiple reasoning lenses in parallel — different angles surface different causes
 - Honest confidence calibration — qualitative categories, no fabricated percentages
 - Resists compelling-narrative bias — weights evidence fit over story quality
+- Narrows ties by disconfirmation, not confirmation (ACH) — the survivor is the hypothesis hardest to kill
 - Applicable to non-code phenomena as readily as code ones
 - Produces feedback only — no code, no tickets, no artifacts
 
@@ -21,6 +22,7 @@ The `/think-diagnose` skill figures out *why* something is happening. Given a ph
 - Behavioral patterns ("why do customer calls go badly when X happens?")
 - Organizational issues ("why does our goal-setting keep producing missed goals?")
 - Anywhere `/bug-fix` doesn't apply because the phenomenon isn't code-specific
+- Rigorously narrowing several explanations you already have (pass them in; the ACH step runs)
 
 **Don't use `/think-diagnose` for:**
 - Code-specific diagnosis (use `/bug-fix` — has artifact output and execution tooling)
@@ -101,7 +103,19 @@ The `/think-diagnose` skill figures out *why* something is happening. Given a ph
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
- │  7. REPORT                                   │
+ │  7. NARROW BY ACH (when candidates tie)      │
+ │  ────────────────────────────────────────    │
+ │  Only if ≥3 candidates at moderate+ fit,     │
+ │  or a tie, and evidence can discriminate     │
+ │  • Add null (+ deceptive) hypotheses         │
+ │  • Evidence-gatherers per class (isolated)   │
+ │  • Matrix C / I / N/A; diagnosticity         │
+ │  • Rank by LEAST disconfirmation             │
+ │  • Sensitivity; falsification milestones     │
+ └──────────────────┬───────────────────────────┘
+                    ▼
+ ┌──────────────────────────────────────────────┐
+ │  8. REPORT                                   │
  │  ────────────────────────────────────────    │
  │  Leading candidate(s) / Other candidates /   │
  │  Distinguishing evidence / What remains      │
@@ -345,23 +359,22 @@ with reinstated prep docs to test.
 
 ## Relationship to Other Skills
 
-| Skill               | Relationship                                                                                                                                                               |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/bug-fix`          | Code-specific diagnosis with artifact output; `/think-diagnose` is non-code, abstract                                                                                      |
-| `/think-ach`        | Natural downstream — when `/think-diagnose` surfaces multiple plausible causes, `/think-ach` rigorously narrows among them by ranking against evidence and disconfirmation |
-| `/think-brainstorm` | Natural downstream — brainstorm remediations once the cause is identified                                                                                                  |
-| `/think-scrutinize` | Pressure-test either the diagnosis or the planned intervention                                                                                                             |
-| `/think-reframe`    | If the phenomenon itself seems off, consider reframing before diagnosing                                                                                                   |
+| Skill               | Relationship                                                                          |
+|---------------------|---------------------------------------------------------------------------------------|
+| `/bug-fix`          | Code-specific diagnosis with artifact output; `/think-diagnose` is non-code, abstract |
+| `/think-brainstorm` | Natural downstream — brainstorm remediations once the cause is identified             |
+| `/think-scrutinize` | Pressure-test either the diagnosis or the planned intervention                        |
 
 **Natural pipeline (non-code phenomena):**
 
 ```
-/think-diagnose → /think-ach → /think-brainstorm → /think-deliberate → /think-scrutinize
-     why?         narrow it      what to do?         which approach?     what's wrong?
-   (generate)    (disconfirm)
+/think-diagnose → /think-brainstorm → /think-deliberate → /think-scrutinize
+     why?             what to do?         which approach?      what's wrong?
+ (generate, then
+  narrow by ACH)
 ```
 
-`/think-diagnose` is generative — it casts a wide net for candidate causes. `/think-ach` is disconfirmation-focused — it ranks hypotheses by which has the *fewest* contradictions with evidence. They compose naturally: `/think-diagnose` produces the candidate set, `/think-ach` narrows it. Skip `/think-ach` when `/think-diagnose` already produces a strong-fit leading candidate with no close runners-up.
+Diagnosis first casts a wide net for candidate causes. Then, only when candidates tie, its ACH step ranks them by which has the *fewest* contradictions with the evidence. It skips that step when a strong-fit leader has no close runners-up. Before v12 the ACH step was a separate skill, `/think-ach`. Its non-causal uses (forecasting, attribution among actors) no longer have a dedicated home; for a question shaped like that, frame the competing explanations as the phenomenon's candidates.
 
 ## Philosophy
 

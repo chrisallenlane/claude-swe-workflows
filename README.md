@@ -35,16 +35,16 @@ Planning feeds implementation: `/scope` → `/implement`. Supporting skills (`/t
 Skills are grouped by namespace for discoverability. Each namespace gathers
 skills with a related purpose.
 
-| Namespace    | Purpose                                     | Skills                                                                                                                                                 |
-|--------------|---------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/implement` | Implement tickets (mutate the working tree) | `/implement`                                                                                                                                           |
-| `/scope`     | Plan and produce tickets                    | `/scope`                                                                                                                                               |
-| `/review-*`  | Advisory audits — no code changes           | `/review-repo`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-security`, `/review-release`                                                  |
-| `/think-*`   | Reasoning support — no artifacts            | `/think-reframe`, `/think-brainstorm`, `/think-diagnose`, `/think-ach`, `/think-deliberate`, `/think-premortem`, `/think-scrutinize`, `/think-reflect` |
-| `/tidy-*`    | Mechanical hygiene                          | `/tidy-docs`, `/tidy-git`                                                                                                                              |
-| `/bug-*`     | Find and fix bugs                           | `/bug-fix`, `/bug-hunt`                                                                                                                                |
-| `/test-*`    | Test-quality work                           | `/test-mutation`                                                                                                                                       |
-| (standalone) | Skills that don't share a namespace         | `/refactor`, `/pre-compact`, `/release`                                                                                                                |
+| Namespace    | Purpose                                     | Skills                                                                                                                 |
+|--------------|---------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
+| `/implement` | Implement tickets (mutate the working tree) | `/implement`                                                                                                           |
+| `/scope`     | Plan and produce tickets                    | `/scope`                                                                                                               |
+| `/review-*`  | Advisory audits — no code changes           | `/review-repo`, `/review-test`, `/review-perf`, `/review-a11y`, `/review-security`, `/review-release`                  |
+| `/think-*`   | Reasoning support — no artifacts            | `/think-brainstorm`, `/think-diagnose`, `/think-deliberate`, `/think-premortem`, `/think-scrutinize`, `/think-reflect` |
+| `/tidy-*`    | Mechanical hygiene                          | `/tidy-docs`, `/tidy-git`                                                                                              |
+| `/bug-*`     | Find and fix bugs                           | `/bug-fix`, `/bug-hunt`                                                                                                |
+| `/test-*`    | Test-quality work                           | `/test-mutation`                                                                                                       |
+| (standalone) | Skills that don't share a namespace         | `/refactor`, `/pre-compact`, `/release`                                                                                |
 
 The skills that act on granted authority — `/implement`, `/bug-hunt`, and
 `/review-repo` — additionally share an autonomy discipline (commander's
@@ -64,10 +64,10 @@ task:
 | Plan work and create tickets — one, or a whole project's worth                              | `/scope`                    |
 | Fix a bug with diagnosis and root-cause analysis                                            | `/bug-fix`                  |
 | Hunt for bugs — report, ticket, or fix them until a severity floor is met                   | `/bug-hunt`                 |
-| Pressure-test a problem's framing before solving it                                         | `/think-reframe`            |
+| Pressure-test a problem's framing before solving it                                         | `/think-brainstorm`         |
 | Brainstorm approaches to a goal                                                             | `/think-brainstorm`         |
 | Reason about why a phenomenon is happening                                                  | `/think-diagnose`           |
-| Narrow among competing hypotheses against evidence                                          | `/think-ach`                |
+| Narrow among competing hypotheses against evidence                                          | `/think-diagnose`           |
 | Make a hard decision with adversarial deliberation                                          | `/think-deliberate`         |
 | Imagine how a plan could fail, or how a hypothetical catastrophe could hit a running system | `/think-premortem`          |
 | Scrutinize an idea or plan before committing to it                                          | `/think-scrutinize`         |
@@ -121,10 +121,8 @@ All `/review-*` skills are advisory — they audit and propose, never mutate.
 
 All `/think-*` skills produce feedback only — no code, no tickets, no artifacts. See [references/think.md](references/think.md) for the namespace's design discipline.
 
-- **`/think-reframe`** — Pressure-tests problem framing before solving. Parallel reframers across lenses (problem-vs-symptom, scope-shift, inversion, etc.). ([details](skills/think-reframe/SKILL.md))
-- **`/think-brainstorm`** — Divergent idea generation across techniques (first-principles, working-backwards, lateral, analogical, etc.). ([details](skills/think-brainstorm/SKILL.md))
-- **`/think-diagnose`** — Abductive reasoning about why a phenomenon is happening. Diagnosticians across lenses (technical, human-factors, process, etc.). ([details](skills/think-diagnose/SKILL.md))
-- **`/think-ach`** — Analysis of Competing Hypotheses (Heuer). Builds a hypothesis-vs-evidence matrix; ranks by least disconfirming evidence. ([details](skills/think-ach/SKILL.md))
+- **`/think-brainstorm`** — Divergent idea generation across techniques (first-principles, working-backwards, lateral, analogical, etc.). When the framing itself is in doubt, it first runs a framing check: parallel reframers across lenses (problem-vs-symptom, scope-shift, inversion, …) so the right problem gets brainstormed. ([details](skills/think-brainstorm/SKILL.md))
+- **`/think-diagnose`** — Abductive reasoning about why a phenomenon is happening. Diagnosticians across lenses (technical, human-factors, process, etc.); when candidates tie, it narrows them by Analysis of Competing Hypotheses (Heuer), ranking on least disconfirming evidence. ([details](skills/think-diagnose/SKILL.md))
 - **`/think-deliberate`** — Adversarial decision-making. Advocates argue and rebut before a judge renders a verdict. ([details](skills/think-deliberate/SKILL.md))
 - **`/think-premortem`** — Treats catastrophic failure as already-happened and reasons backward to causes. Plan mode (not-yet-committed plan) or scenario mode (running system). ([details](skills/think-premortem/SKILL.md))
 - **`/think-scrutinize`** — Stress-tests an idea before commitment. Skeptics across angles paired with an advocate; reports faults that survive cross-examination. ([details](skills/think-scrutinize/SKILL.md))

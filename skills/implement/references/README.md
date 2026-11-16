@@ -144,7 +144,7 @@ Everything here is chosen by judgment. Anything that plausibly applied but didn'
 | `/bug-fix`                                                                                                                | A failure that resists a direct fix                                |
 | Smoke-testing procedure                                                                                                   | Before declaring multi-ticket work done                            |
 | `/review-release`                                                                                                         | Last, when the work is headed for a release                        |
-| `/think-*` (deliberate, reframe, diagnose, scrutinize)                                                                    | Close calls, wrong framings, unclear failures, risky plans         |
+| `/think-*` (deliberate, brainstorm, diagnose, scrutinize)                                                                 | Close calls, wrong framings, unclear failures, risky plans         |
 
 Review skills that propose tickets are handled with orchestrator judgment: approve what should be tracked, decline what the run will handle inline (and then handle it), and prefer a ticket when in doubt.
 

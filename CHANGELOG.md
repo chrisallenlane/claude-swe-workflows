@@ -24,6 +24,12 @@
   - **Several focuses together** (`/review-repo value dead-code architecture namespace`) run in dependency order, each receiving the previous one's output. In namespace search mode, the architecture blueprint is seeded as a candidate tree, so the analyst's proposal is tested by the measurement.
   - **Also:** `REVIEW_HEALTH_STATE.md` is now `REVIEW_REPO_STATE.md`. `/implement`'s repertoire, the autonomy and advisory-ticket references, the README, and `CLAUDE.md` are updated.
 
+- **BREAKING: `/think-reframe` and `/think-ach` become phases of the skills they always fed.** Under `references/think.md`'s "skill versus phase" test, neither earned its own command: reframing only ever ran upstream of brainstorming, and ACH only ever narrowed diagnose's candidates.
+  - **`/think-reframe` is now `/think-brainstorm`'s framing check.** It runs when assumption validation leaves the framing itself in doubt, when the problem is stuck or the debate won't converge, or when you ask "is this even the right problem?". It spawns the same isolated `thk-reframer` agents with the same eight lenses, classifies each reframing (shifts / refines / holds), and you choose the framing to brainstorm. `/scope` can also spawn reframers while it is still understanding a contested problem, before it explores the code.
+  - **`/think-ach` is now `/think-diagnose`'s narrowing step.** It runs when 3 or more candidates survive at moderate fit or better, or are tied, and evidence can discriminate among them. It keeps Heuer's procedure intact: null and deceptive hypotheses added, isolated `thk-ach-evidence-gatherer` agents per evidence class, the C / I / N/A matrix with independent cells, diagnosticity, ranking by **least** disconfirmation (non-negotiable), sensitivity analysis, and falsification milestones.
+  - **`thk-ach-hypothesizer` is removed.** Diagnose's own diagnosticians generate the candidates, and the two angles they rarely produce (null and deceptive) are now required additions in the narrowing step.
+  - **Lost:** standalone ACH for non-causal questions (forecasting, attribution among actors). To approximate it, frame the competing explanations as candidates for `/think-diagnose`.
+
 ### Changed
 
 - **The remaining agents are realigned with the skills that call them.** In v10 and v11 the skills were redesigned while many of their agents kept the old contracts, and most real defects sat in that gap. Agent names are internal, so none of these changes is breaking.

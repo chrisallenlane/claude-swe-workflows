@@ -110,7 +110,7 @@ Use what the work needs. Each pass that plausibly applied and did not run gets a
 - `/bug-fix` — a failure that resists a direct fix.
 - The smoke-testing procedure — before declaring multi-ticket work done.
 - `/review-release` — last, when the work is headed for a release.
-- `/think-deliberate`, `/think-reframe`, `/think-diagnose`, `/think-scrutinize` — close calls, wrong-seeming framings, unclear failures, risky plans.
+- `/think-deliberate`, `/think-brainstorm` (framing check), `/think-diagnose`, `/think-scrutinize` — close calls, wrong-seeming framings, unclear failures, risky plans.
 
 **Only when intent asks:** `/review-repo value` — its trade menu is product decisions, so surface it rather than act on it. **Never:** `/release`.
 

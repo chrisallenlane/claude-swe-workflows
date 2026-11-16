@@ -93,7 +93,7 @@ Capture two things:
 - Is the scenario mechanistically plausible against the system as described, even if hypothetical?
 
 If the input fails its checks, **say so plainly and offer the alternative**:
-- Plan mode: refine the plan first (`/scope`, `/think-reframe`).
+- Plan mode: refine the plan first (`/scope`, or `/think-brainstorm`'s framing check).
 - Scenario mode: refine the scenario into something mechanistically posable, or — if the user is asking about an *actually-occurring* failure rather than a hypothetical — redirect to `/think-diagnose` (causes of an observed phenomenon) or `/think-reflect` (learning from a resolved incident). Scenario-mode pre-mortem is for *hypothetical* catastrophes against running systems, not for incidents that have actually happened.
 
 ### 3. Choose Failure-Class Lenses
@@ -300,7 +300,7 @@ This skill is one-shot. If the user revises the plan based on the report, they *
 
 **Poor fit:**
 
-- Plans too vague to fail concretely (refine first via `/scope` or `/think-reframe`)
+- Plans too vague to fail concretely (refine first via `/scope` or `/think-brainstorm`'s framing check)
 - Currently-failing situations whose cause is unclear (use `/think-diagnose` — that skill handles real, observable failures with unknown causes; scenario-mode pre-mortem is for *hypothetical* catastrophes)
 - Already-resolved incidents the user wants to learn from (use `/think-reflect`)
 - Choosing between options (use `/think-deliberate`)

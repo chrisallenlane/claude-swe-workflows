@@ -18,7 +18,7 @@ The `/think-brainstorm` skill generates candidate approaches for achieving a goa
 - Early-stage exploration where you know the goal but not the approach
 - Escaping conventional thinking on a stuck problem
 - Generating a diverse candidate set before committing to a direction
-- Pressure-testing a problem framing (the assumption-validation phase often reframes the goal)
+- Pressure-testing a problem framing: assumption validation catches wrong premises, and the framing check (parallel reframers) catches the wrong problem
 
 **Don't use `/think-brainstorm` for:**
 - Choosing between known options (use `/think-deliberate`)
@@ -52,6 +52,15 @@ The `/think-brainstorm` skill generates candidate approaches for achieving a goa
  │  • Validate each with the user               │
  │  • Refine the goal if needed                 │
  │  (May dissolve or reframe the problem)       │
+ └──────────────────┬───────────────────────────┘
+                    ▼
+ ┌──────────────────────────────────────────────┐
+ │  2b. FRAMING CHECK (when framing is in doubt)│
+ │  ────────────────────────────────────────    │
+ │  Premise snapshot → 3-6 reframing lenses     │
+ │  One THK - Reframer per lens (isolated)      │
+ │  Classify: shifts / refines / holds          │
+ │  You choose: keep / adopt / pick among       │
  └──────────────────┬───────────────────────────┘
                     ▼
  ┌──────────────────────────────────────────────┐
@@ -98,6 +107,7 @@ The `/think-brainstorm` skill generates candidate approaches for achieving a goa
 | ------------- | ------------------------------------------------------------------------ |
 | Judge (you)   | Capture goal, validate assumptions, choose techniques, synthesize report |
 | Brainstormers | Generate ideas through assigned techniques, in isolation                 |
+| Reframers     | Framing check only: restate the problem through one lens, in isolation   |
 
 ## Brainstorming Techniques
 

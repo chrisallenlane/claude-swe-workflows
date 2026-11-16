@@ -76,10 +76,8 @@ Supporting workflows available at any level:
 
 **Reasoning and decisions:**
 
-- `/think-reframe` — problem redefinition
-- `/think-brainstorm` — divergent idea generation
-- `/think-diagnose` — abductive reasoning about causes
-- `/think-ach` — analysis of competing hypotheses
+- `/think-brainstorm` — divergent idea generation (with a framing check when the problem itself is in doubt)
+- `/think-diagnose` — abductive reasoning about causes (narrows ties by analysis of competing hypotheses)
 - `/think-deliberate` — adversarial decision-making
 - `/think-premortem` — prospective failure imagination
 - `/think-scrutinize` — adversarial idea critique

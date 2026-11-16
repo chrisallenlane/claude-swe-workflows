@@ -76,6 +76,8 @@ Several practices recur across the namespace. They are listed here so they can b
 
 Some valuable disciplines belong as *phases inside* skills, not as skills of their own. A surgical timeout is a phase. A pre-flight checklist is a phase. The bar for promoting a phase to a standalone `/think-*` skill is twofold: the discipline produces a transferable artifact that other skills could consume, *or* it can be invoked at multiple distinct points in workflows. Otherwise it lives inside a skill, not next to it.
 
+Two former skills were demoted on this test in v12. Problem reframing is now `/think-brainstorm`'s framing check, because it was only ever run upstream of brainstorming. Analysis of Competing Hypotheses is now `/think-diagnose`'s narrowing step, because in practice it only ever narrowed diagnose's candidates. Their agents and methods survived intact; only the entry points went.
+
 ## Spillover: values across the plugin
 
 The five tests above gate `/think-*` admission. They do not gate other skill families. That said, several values from this document apply across the plugin even without strict gating:

@@ -39,7 +39,7 @@ In both modes, the skill spawns parallel pre-mortemers in isolation across failu
 
 **Don't use `/think-premortem` for:**
 
-- Plans too vague to fail concretely (refine first via `/scope` or `/think-reframe`)
+- Plans too vague to fail concretely (refine first via `/scope` or `/think-brainstorm`'s framing check)
 - Currently-failing situations whose cause is unclear (use `/think-diagnose` — that skill handles real, observable failures with unknown causes; scenario-mode pre-mortem is for *hypothetical* catastrophes)
 - Already-resolved incidents the user wants to learn from (use `/think-reflect`)
 - Choosing between options (use `/think-deliberate`)

@@ -23,7 +23,7 @@ Helps the user understand a problem space through codebase exploration and dialo
 
 ## 1. Discover
 
-Understand what the user wants to explore — a feature, a refactoring, a bug that needs investigation, a whole project — and ask about scope, boundaries, the problem, and the desired outcome (not the implementation yet).
+Understand what the user wants to explore — a feature, a refactoring, a bug that needs investigation, a whole project — and ask about scope, boundaries, the problem, and the desired outcome (not the implementation yet). When the stated problem looks like a symptom, or its framing is contested, spawn a few `THK - Reframer` agents in isolation, each on a different lens (problem-vs-symptom, scope-shift, stakeholder-shift, category-shift), and settle the framing with the user before exploring. Turning the wrong problem into tickets is the most expensive way to solve it.
 
 ## 2. Explore
 

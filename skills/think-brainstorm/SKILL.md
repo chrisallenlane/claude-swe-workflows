@@ -1,6 +1,6 @@
 ---
 name: think-brainstorm
-description: Good-faith divergent brainstorming for achieving a goal. Validates assumptions, then spawns brainstormers running different techniques (first-principles, working-backwards, lateral, analogical, constraints-shift, etc.) in isolation, and synthesizes the pool into a report of standouts, reasonable ideas, and hybrid combinations. Produces feedback only — no code, no tickets, no artifacts.
+description: Good-faith divergent brainstorming for achieving a goal. Validates assumptions and, when the framing itself is in doubt, runs a framing check (parallel reframers across lenses such as problem-vs-symptom, scope-shift, stakeholder-shift, inversion, and category-shift) so the right problem gets brainstormed. Then spawns brainstormers running different techniques (first-principles, working-backwards, lateral, analogical, constraints-shift, etc.) in isolation, and synthesizes the pool into a report of standouts, reasonable ideas, and hybrid combinations. Produces feedback only — no code, no tickets, no artifacts.
 model: opus
 ---
 
@@ -15,8 +15,11 @@ Generates candidate approaches for achieving a goal. Uses parallel brainstormers
 **Judge (you, running this skill):**
 - Capture the goal in a written brief
 - Validate the assumptions embedded in the goal
+- When the framing itself is in doubt, run the framing check and let the user choose the problem to brainstorm
 - Choose appropriate brainstorming techniques
 - Spawn brainstormers and synthesize the exchange into a report
+
+**Reframers** (framing check only): Each receives one reframing lens and restates the problem through it, in isolation. Reframers restate the problem; they don't solve it.
 
 **Brainstormers:** Each receives a specific technique (first-principles, working-backwards, lateral, analogical, constraints-shift, worst-possible-idea, six-hats-green, SCAMPER) and generates ideas within that mode, in isolation from other brainstormers.
 
@@ -43,7 +46,51 @@ The goal may arrive as:
 
 **Present findings to the user.** For each assumption, ask: is this correct, negotiable, or wrong? Update the goal brief based on responses.
 
-**Sometimes this phase alone dissolves or reframes the problem.** That's a valuable outcome — better to stop here than brainstorm solutions to the wrong problem. If the user wants to proceed anyway, proceed with the refined brief.
+**Sometimes this phase alone dissolves or reframes the problem.** That's a valuable outcome. It's better to stop here than to brainstorm solutions to the wrong problem. If the user wants to proceed anyway, proceed with the refined brief.
+
+### 2b. Framing Check (when the framing is in doubt)
+
+Most wasted effort goes into solving well-defined versions of the wrong problem. Assumption validation catches a wrong *premise*. This check catches a wrong *problem*.
+
+**Run it when:**
+- Validation left the problem framing itself in doubt.
+- The problem feels stuck.
+- A debate has gone around without converging; the disagreement is often about framing, not solutions.
+- The stakes justify pressure-testing the framing.
+- The user asks "is this even the right problem?"
+
+When none of these hold, skip it and note one line in the report.
+
+**1. Premise snapshot.** From step 2, write down the goal's stated and unstated premises: its implied scope, category (technical, people, process, …), stakeholders, and time horizon. Reframers challenge this snapshot.
+
+**2. Choose 3–6 lenses** that fit, and drop the ones that don't:
+
+| Lens                 | Asks                                                         | Reach for it when the problem… |
+|----------------------|--------------------------------------------------------------|--------------------------------|
+| problem-vs-symptom   | Is this a symptom of something upstream?                     | comes with a clean story       |
+| scope-shift          | Is a narrower or wider framing the real one?                 | feels mis-sized                |
+| stakeholder-shift    | What does each party actually need?                          | is stated as "we need X"       |
+| level-of-abstraction | Is the real problem more general or more specific?           | feels stuck                    |
+| time-horizon         | What does it look like at 1 week, 6 months, 5 years?         | is described as urgent         |
+| inversion            | What new problems would solving this create?                 | feels stuck                    |
+| category-shift       | Is it really technical, people, process, spec, or incentive? | is stated as "we need X"       |
+| constraints-shift    | Which "fixed" constraints are negotiable?                    | comes with a hard constraint   |
+
+**3. Spawn one `THK - Reframer` per lens**, in parallel, with no cross-talk. Give each the brief, the premise snapshot, and its lens. Each returns a reframed problem statement, an explicit "what changed" diff, and "when this framing applies".
+
+**4. Synthesize.**
+- Classify each reframing:
+  - **Materially shifts meaning:** adopting it would lead to a different solution.
+  - **Refines:** it sharpens the original framing without replacing it.
+  - **No meaningful shift:** calibration that this dimension of the framing is robust.
+- Combine lenses only when the combination is genuinely illuminating, for example "the operator who maintains this for 5 years".
+
+**5. Recommend, and let the user choose:**
+- **Keep the original framing.**
+- **Adopt reframing X.**
+- **Pick among several** reframings that each materially shift the problem.
+
+Brainstorm whichever problem the user settles on. "The original framing holds" is a valid and valuable outcome: it is calibration, not failure.
 
 ### 3. Choose Techniques
 
@@ -72,7 +119,7 @@ Select 3-6 techniques from the palette based on the goal's shape. The orchestrat
 ### 4. Spawn Brainstormers (Parallel, Isolated)
 
 Spawn one `THK - Brainstormer` agent per chosen technique, in parallel. Each receives:
-- The written goal brief (from step 1, refined in step 2)
+- The written goal brief (from step 1, refined in step 2 and, if it ran, the framing check)
 - Its assigned technique
 - Validated assumptions and relevant context
 - Instruction to generate 5-10 ideas with rationale
@@ -113,6 +160,10 @@ Combine the isolated idea sets into a coherent catalog:
 ### Validated Assumptions
 
 - [Assumption] — [user's response: confirmed / revised / discarded]
+
+### Framing Check
+
+[If it ran: lenses applied; standout reframings (reframed statement + what changed); where the original framing held; which framing the user chose. If it didn't run: one line saying why.]
 
 ### Standouts
 
@@ -163,7 +214,8 @@ This skill is one-shot. If the user wants to go deeper on a specific direction, 
 ## Constraints
 
 - **No artifacts.** No code, tickets, commits, or documents.
-- **Isolated generation.** Brainstormers do not see each other's output.
+- **Isolated generation.** Brainstormers do not see each other's output, and neither do reframers.
+- **Reframing, not solving.** The framing check restates the problem; solutions come only from the brainstormers.
 - **Technique fit > technique count.** Drop techniques that don't fit the goal.
 - **Generation, not evaluation.** Surface standouts by axis, don't rank or pick.
 - **Honest "technique produced little"** is a valid brainstormer outcome.
@@ -172,6 +224,7 @@ This skill is one-shot. If the user wants to go deeper on a specific direction, 
 
 **Good fit:**
 - Early-stage exploration — you know the goal, not the approach
+- Suspecting you're solving the wrong problem — the framing check runs before any ideas are generated
 - Escaping conventional thinking on a stuck problem
 - Wanting a diverse set of candidate approaches before choosing one
 - Pre-mortem alternative: "what could we even do here?"
