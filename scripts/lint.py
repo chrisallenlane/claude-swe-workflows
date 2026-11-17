@@ -14,6 +14,8 @@ Checks:
   skill-refs    every plugin skill cited as `/name` exists (removed skills may
                 be named only on history lines: "v12", "formerly", "(now `/...`)")
   orphans       every agent is cited somewhere outside its own file
+  modes         every mode a caller invokes is one the agent declares in
+                `modes:`, and every declared mode appears in the agent body
 """
 import pathlib
 import re

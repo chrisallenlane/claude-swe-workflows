@@ -104,7 +104,7 @@ One-line summaries grouped by namespace. Click through to each skill's detailed 
 
 ### `/scope` — Planning
 
-- **`/scope`** — Explores a problem space with you and turns it into well-specified tickets — one, or a whole project's worth. Chooses which reviewers the drafts need (implementer, UX, security, performance); every draft gets a fresh-context review, and nothing is created without your approval. ([details](skills/scope/references/README.md))
+- **`/scope`** — Explores a problem space with you and turns it into well-specified tickets — one, or a whole project's worth. Chooses which reviewers the drafts need (implementer, UX, security, performance, architecture, value); every draft gets a fresh-context review, and nothing is created without your approval. ([details](skills/scope/references/README.md))
 
 ### `/review-*` — Read-only audits
 

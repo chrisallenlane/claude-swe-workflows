@@ -72,6 +72,7 @@
   - `/review-security` went from 701 lines to 435, `/review-test` from 643 to 433, and `/bug-fix` from 412 to 315.
   - The example sessions in `/test-mutation` and `/release` that repeated their steps are cut.
   - The `/think-premortem` README went from 618 lines to 387.
+  - `/pre-compact` is condensed by about 40 lines with no change in behavior.
   - Every SKILL.md is now within the house 500-line limit.
 
 ### Changed
@@ -85,7 +86,7 @@
   - **Agents:** every declared mode must appear in the agent's own body.
 
   Mismatched mode names were the most common defect in the v12 agent-fit pass, and they are now caught mechanically. The check covers 25 mode references. `swe-perf-reviewer`'s "Spec-time review" is renamed "Spec-time" to match what callers say.
-- **Each skill's `references/README.md` is now a guide, not a second copy of the procedure.** The 22 guides drop from about 5,800 lines to about 3,300. They keep:
+- **Each skill's `references/README.md` is now a guide, not a second copy of the procedure.** The 22 guides drop from about 5,800 lines to about 2,300. They keep:
   - the rationale and lineage;
   - when to use and not to use the skill;
   - what it asks and returns;
